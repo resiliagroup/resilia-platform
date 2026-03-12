@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kariyer — RESILIA</title>
+<link rel="icon" type="image/svg+xml" href="../resilia-assets/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0A1628;--navy2:#0D1E3A;--teal:#007A70;--teal2:#00C4B0;--warm:#F4F2EE;--warm2:#EAE7E1;--stone:#7C766E;--stone2:#A09A92;--border:rgba(10,22,40,.08);--border2:rgba(10,22,40,.14)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--navy);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#C0BAB2;border-radius:99px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes scaleX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.au{animation:fadeUp .75s ease both}.au1{animation:fadeUp .75s .1s ease both}.au2{animation:fadeUp .75s .22s ease both}.au3{animation:fadeUp .75s .36s ease both}
+.topbar{background:var(--navy);height:34px;display:flex;align-items:center;justify-content:center;gap:10px}
+.tb-dot{width:5px;height:5px;border-radius:50%;background:var(--teal2);animation:blink 2s infinite;flex-shrink:0}
+.tb-pill{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;padding:2px 9px;border-radius:99px;background:rgba(0,196,176,.12);color:var(--teal2);border:1px solid rgba(0,196,176,.18)}
+.topbar span{font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.03em}
+nav{position:sticky;top:0;z-index:200;height:58px;background:rgba(244,242,238,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 52px;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:33px;height:33px;border-radius:9px;background:var(--navy);display:flex;align-items:center;justify-content:center}
+.logo-mark span{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:white}
+.logo-word{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:700;color:var(--navy);letter-spacing:.03em}
+.logo-sep{width:1px;height:18px;background:var(--border2);margin:0 4px}
+.logo-sub{font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--stone2)}
+.nav-links{display:flex;gap:1px}
+.nav-links a{font-size:12.5px;font-weight:500;color:var(--stone);padding:6px 12px;border-radius:8px;transition:all .15s}
+.nav-links a:hover,.nav-links a.on{color:var(--navy);background:var(--warm2)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-demo{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--stone2);padding:5px 10px;border-radius:8px;background:white;border:1px solid var(--border)}
+.nav-btn{font-size:12.5px;font-weight:600;background:var(--navy);color:white;padding:8px 20px;border-radius:9px;transition:all .2s}
+.nav-btn:hover{background:var(--navy2);box-shadow:0 4px 16px rgba(10,22,40,.15)}
+.sub-nav{background:white;border-bottom:1px solid var(--border);padding:0 52px;display:flex;gap:0}
+.sn{font-size:12.5px;font-weight:600;color:var(--stone2);padding:14px 18px;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .18s;display:flex;align-items:center;gap:6px}
+.sn:hover{color:var(--navy)}
+.sn.on{color:var(--navy);border-bottom-color:var(--teal)}
+.sn-dot{width:6px;height:6px;border-radius:50%}
+.sec{padding:84px 52px}
+.sec-in{max-width:1200px;margin:0 auto}
+.ey{font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:12px}
+.div{width:44px;height:2px;background:var(--teal);border-radius:99px;margin-bottom:20px;transform-origin:left;animation:scaleX .55s ease forwards}
+.h2{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3vw,44px);font-weight:600;line-height:1.14;color:var(--navy);margin-bottom:14px}
+.h2 em{font-style:italic;color:var(--teal)}
+.lead{font-size:14.5px;color:var(--stone);line-height:1.84;max-width:580px}
+.btn-p{background:var(--navy);color:white;padding:12px 24px;border-radius:10px;font-size:13.5px;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+.btn-p:hover{background:var(--navy2);transform:translateY(-1px)}
+.btn-t{background:var(--teal);color:white;padding:12px 24px;border-radius:10px;font-size:13.5px;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+.btn-t:hover{background:#006860;transform:translateY(-1px)}
+.btn-g{background:transparent;color:var(--navy);padding:12px 20px;border-radius:10px;font-size:13.5px;font-weight:500;border:1px solid var(--border);transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+.btn-g:hover{background:var(--warm2)}
+.btn-wg{background:transparent;color:rgba(255,255,255,.48);padding:12px 20px;border-radius:10px;font-size:13.5px;font-weight:500;border:1px solid rgba(255,255,255,.12);transition:all .2s}
+.btn-wg:hover{background:rgba(255,255,255,.06);color:white}
+
+/* ── HERO ── */
+.hero{background:var(--navy);padding:96px 52px 80px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 70% at 90% 30%,rgba(109,40,217,.12) 0%,transparent 55%),radial-gradient(ellipse 35% 45% at 5% 80%,rgba(0,122,112,.08) 0%,transparent 50%)}
+.hg{position:absolute;inset:0;opacity:.022;background-image:linear-gradient(rgba(255,255,255,.9) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.9) 1px,transparent 1px);background-size:52px 52px}
+.hero-in{max-width:1200px;margin:0 auto;position:relative;z-index:1;display:grid;grid-template-columns:1.1fr .9fr;gap:88px;align-items:center}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--teal2);border:1px solid rgba(0,196,176,.2);background:rgba(0,196,176,.06);padding:4px 12px;border-radius:99px;margin-bottom:22px;width:fit-content}
+.hero-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,4.8vw,64px);font-weight:600;line-height:1.08;color:white;letter-spacing:-.015em;margin-bottom:20px}
+.hero-h1 em{font-style:italic;color:var(--teal2)}
+.hero-p{font-size:15px;color:rgba(255,255,255,.4);line-height:1.85;margin-bottom:34px;max-width:480px}
+.hero-acts{display:flex;gap:10px;flex-wrap:wrap}
+
+/* Kültür pilleri sağ */
+.culture-cards{display:flex;flex-direction:column;gap:10px}
+.cc{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:18px 20px;display:flex;gap:14px;align-items:flex-start;transition:all .2s}
+.cc:hover{background:rgba(255,255,255,.08);transform:translateX(4px)}
+.cc-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cc-title{font-size:13px;font-weight:700;color:white;margin-bottom:3px}
+.cc-desc{font-size:11.5px;color:rgba(255,255,255,.35);line-height:1.6}
+
+/* ── AÇIK POZİSYONLAR ── */
+.pos-list{display:flex;flex-direction:column;gap:0;border-radius:20px;overflow:hidden;border:1px solid var(--border);margin-top:44px}
+.pos{background:white;border-bottom:1px solid var(--border);transition:all .2s;cursor:pointer;position:relative}
+.pos:last-child{border-bottom:none}
+.pos::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--pc,var(--teal));transform:scaleY(0);transform-origin:center;transition:transform .25s}
+.pos:hover{background:rgba(244,242,238,.6)}
+.pos:hover::before{transform:scaleY(1)}
+.pos-inner{padding:28px 32px;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center}
+.pos-left{}
+.pos-dept{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}
+.pos-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--navy);margin-bottom:9px;line-height:1.2}
+.pos-desc{font-size:13px;color:var(--stone);line-height:1.68;max-width:560px;margin-bottom:14px}
+.pos-tags{display:flex;gap:5px;flex-wrap:wrap}
+.pt{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:.05em;padding:3px 8px;border-radius:5px;background:var(--warm);border:1px solid var(--border);color:var(--stone2)}
+.pos-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0}
+.pos-type{font-size:11.5px;font-weight:600;padding:5px 14px;border-radius:99px}
+.pos-loc{font-size:11.5px;color:var(--stone2);display:flex;align-items:center;gap:5px}
+.pos-apply{font-size:13px;font-weight:700;display:flex;align-items:center;gap:5px;transition:all .15s}
+.pos:hover .pos-apply{gap:10px}
+
+/* Boş/Genel başvuru -->
+.pos-empty{background:var(--warm);border:2px dashed var(--warm2)}
+.pos-empty:hover{background:var(--warm)}
+.pos-empty::before{display:none}
+
+/* ── NEDEN RESILIA ── */
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:88px;align-items:start;margin-top:0}
+.why-list{display:flex;flex-direction:column;gap:0}
+.wi{display:flex;gap:18px;padding:20px 0;border-bottom:1px solid var(--warm2);align-items:flex-start}
+.wi:last-child{border-bottom:none}
+.wi-icon{width:40px;height:40px;border-radius:12px;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wi-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.wi-desc{font-size:12.5px;color:var(--stone);line-height:1.68}
+
+/* Başvuru formu -->
+.form-card{background:white;border-radius:24px;padding:36px;border:1px solid var(--border);box-shadow:0 8px 32px rgba(10,22,40,.06);position:sticky;top:80px}
+.form-h{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--navy);margin-bottom:6px}
+.form-sub{font-size:13px;color:var(--stone);margin-bottom:26px;line-height:1.65}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.f-field{margin-bottom:14px}
+.f-label{font-size:10.5px;font-weight:700;color:var(--navy);letter-spacing:.04em;display:block;margin-bottom:6px;text-transform:uppercase}
+.f-input{width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--warm);font-size:13px;color:var(--navy);font-family:'DM Sans',sans-serif;transition:border-color .15s;outline:none;resize:none;display:block}
+.f-input:focus{border-color:rgba(0,122,112,.4);background:white;box-shadow:0 0 0 3px rgba(0,122,112,.06)}
+.f-input::placeholder{color:var(--stone2)}
+select.f-input{-webkit-appearance:none;-moz-appearance:none;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237C766E' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+select.f-input option{background:white;color:var(--navy);padding:8px}
+.f-submit{width:100%;padding:13px;border-radius:11px;background:var(--navy);color:white;font-size:13.5px;font-weight:700;font-family:'DM Sans',sans-serif;border:none;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px}
+.f-submit:hover{background:var(--navy2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(10,22,40,.15)}
+.f-note{font-size:10.5px;color:var(--stone2);margin-top:12px;line-height:1.65;text-align:center}
+
+/* CTA + Footer */
+.cta-strip{padding:80px 52px;background:var(--navy);position:relative;overflow:hidden}
+.cta-strip::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 65% at 50% 0%,rgba(0,122,112,.13) 0%,transparent 55%)}
+.cta-in{max-width:600px;margin:0 auto;text-align:center;position:relative;z-index:1}
+.cta-h{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3.8vw,50px);font-weight:600;color:white;line-height:1.16;margin-bottom:14px}
+.cta-h em{font-style:italic;color:var(--teal2)}
+.cta-p{font-size:14px;color:rgba(255,255,255,.35);margin-bottom:30px;line-height:1.8}
+.cta-acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+footer{background:var(--navy2);padding:44px 52px 26px}
+.fi{max-width:1200px;margin:0 auto}
+.ft-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px;margin-bottom:30px;padding-bottom:30px;border-bottom:1px solid rgba(255,255,255,.06)}
+.fb-n{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:white;margin-bottom:8px}
+.fb-d{font-size:11px;color:rgba(255,255,255,.26);line-height:1.72;max-width:200px;margin-bottom:12px}
+.fb-badges{display:flex;gap:4px;flex-wrap:wrap}
+.fbadge{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:.06em;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.26)}
+.fc-h{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:12px}
+.fc a{display:block;font-size:11px;color:rgba(255,255,255,.34);margin-bottom:8px;transition:color .15s}
+.fc a:hover{color:rgba(255,255,255,.72)}
+.ft-bot{display:flex;justify-content:space-between;align-items:center}
+.ft-copy{font-size:10px;color:rgba(255,255,255,.17)}
+.ft-itu{display:flex;align-items:center;gap:5px;font-size:10px;color:rgba(255,255,255,.17)}
+.ft-itu-t{background:#D41223;color:white;font-size:8px;font-weight:700;font-family:'DM Mono',monospace;padding:2px 4px;border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-dot"></div>
+  <div class="tb-pill">Kariyer</div>
+  <span>·</span>
+  <span>3 açık pozisyon · İstanbul</span>
+</div>
+
+<nav>
+  <a href="/Users/erkanakdeniz/Desktop/resilia-platform/public/index.html" class="logo">
+    <div class="logo-mark"><span>R</span></div>
+    <span class="logo-word">RESILIA</span>
+    <div class="logo-sep"></div>
+    <span class="logo-sub">Platform</span>
+  </a>
+  <div class="nav-links">
+    <a href="../index.html#sektorler">Sektörler</a>
+    <a href="/Users/erkanakdeniz/Desktop/resilia-platform/public/platform/index.html">Platform</a>
+    <a href="/Users/erkanakdeniz/Desktop/resilia-platform/public/egitim/index.html">Eğitim</a>
+    <a href="#" class="on">Hakkımızda</a>
+  </div>
+  <div class="nav-right">
+    <div class="nav-demo"><div class="tb-dot"></div><span>Canlı Demo</span></div>
+    <a href="/login" class="nav-btn">Platforma Giriş →</a>
+  </div>
+</nav>
+
+<div class="sub-nav">
+  <a href="/Users/erkanakdeniz/Desktop/resilia-platform/public/sirket/index.html" class="sn"><div class="sn-dot" style="background:var(--teal)"></div>Şirket</a>
+  <a href="/Users/erkanakdeniz/Desktop/resilia-platform/public/referanslar/index.html" class="sn"><div class="sn-dot" style="background:#A85C00"></div>Referanslar</a>
+  <a href="." class="sn on"><div class="sn-dot" style="background:#6D28D9"></div>Kariyer</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hg"></div>
+  <div class="hero-in">
+    <div>
+      <div class="hero-eyebrow au"><div class="tb-dot"></div>Kariyer</div>
+      <h1 class="hero-h1 au1">Dayanıklılığın<br>geleceğini birlikte<br><em>inşa edin.</em></h1>
+      <p class="hero-p au2">RESILIA, BCM metodolojisi, yazılım geliştirme ve müşteri başarısı alanlarında tutkulu uzmanlar arıyor. Küçük, odaklı ve yüksek etkili bir ekipte yer alın.</p>
+      <div class="hero-acts au3">
+        <a href="#pozisyonlar" class="btn-t">Açık Pozisyonları Gör →</a>
+        <a href="#basvuru" class="btn-wg">Genel Başvuru</a>
+      </div>
+    </div>
+    <!-- Kültür pilleri -->
+    <div class="culture-cards au2">
+      <div class="cc">
+        <div class="cc-icon" style="background:rgba(0,122,112,.2)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal2)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div><div class="cc-title">Esnek & Uzaktan</div><div class="cc-desc">Hibrit çalışma modeli. Sonuç odaklı, saat takip etmeden.</div></div>
+      </div>
+      <div class="cc">
+        <div class="cc-icon" style="background:rgba(27,79,216,.2)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#93C5FD" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </div>
+        <div><div class="cc-title">Sürekli Öğrenme</div><div class="cc-desc">İTÜ AYM eğitimleri, konferans katılımı, sertifikasyon desteği.</div></div>
+      </div>
+      <div class="cc">
+        <div class="cc-icon" style="background:rgba(168,92,0,.2)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FCD34D" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div><div class="cc-title">Gerçek Etki</div><div class="cc-desc">Akbank'tan İBB'ye gerçek kurumların risk sorunlarını çözün.</div></div>
+      </div>
+      <div class="cc">
+        <div class="cc-icon" style="background:rgba(109,40,217,.2)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4B5FD" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div><div class="cc-title">Küçük Ekip</div><div class="cc-desc">Düz hiyerarşi. Fikriniz doğrudan ürüne girer.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AÇIK POZİSYONLAR -->
+<section class="sec" style="background:white" id="pozisyonlar">
+  <div class="sec-in">
+    <span class="ey">Açık Pozisyonlar</span>
+    <div class="div"></div>
+    <h2 class="h2" style="margin-bottom:8px">Şu an arıyoruz.</h2>
+    <p class="lead" style="margin-bottom:0">Tüm pozisyonlar tam zamanlı, hibrit (İstanbul bazlı). Uzaktan çalışma imkânı mevcuttur.</p>
+
+    <div class="pos-list">
+
+      <!-- Full-Stack -->
+      <div class="pos" style="--pc:#007A70">
+        <div class="pos-inner">
+          <div class="pos-left">
+            <div class="pos-dept" style="color:var(--teal)">Yazılım Geliştirme</div>
+            <div class="pos-title">Senior Full-Stack Geliştirici</div>
+            <div class="pos-desc">Next.js, TypeScript ve Supabase ile RESILIA platformunun yeni modüllerini ve sektörel özelliklerini geliştirin. GIS entegrasyonu ve gerçek zamanlı veri deneyimi tercih sebebidir.</div>
+            <div class="pos-tags">
+              <span class="pt">Next.js</span><span class="pt">TypeScript</span><span class="pt">Supabase</span><span class="pt">PostgreSQL</span><span class="pt">GIS / Mapbox</span><span class="pt">Tailwind</span>
+            </div>
+          </div>
+          <div class="pos-right">
+            <div class="pos-type" style="background:rgba(0,122,112,.1);color:var(--teal);border:1px solid rgba(0,122,112,.18)">Tam Zamanlı</div>
+            <div class="pos-loc">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              İstanbul / Uzaktan
+            </div>
+            <a href="#basvuru" class="pos-apply" style="color:var(--teal)">Başvur →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- BCM Uzmanı -->
+      <div class="pos" style="--pc:#C13030">
+        <div class="pos-inner">
+          <div class="pos-left">
+            <div class="pos-dept" style="color:#C13030">BCM & Risk</div>
+            <div class="pos-title">BCM Uzmanı — Bankacılık & Finans</div>
+            <div class="pos-desc">Akbank ve İş Bankası projelerinde HFE-360 değerlendirmesi, BDDK uyum raporlaması ve müşteri onboarding süreçlerini yönetin. ISO 22301 sertifikasyonu veya deneyimi zorunludur.</div>
+            <div class="pos-tags">
+              <span class="pt">ISO 22301</span><span class="pt">BDDK 26333</span><span class="pt">HFE-360</span><span class="pt">BIA</span><span class="pt">Operasyonel Risk</span>
+            </div>
+          </div>
+          <div class="pos-right">
+            <div class="pos-type" style="background:rgba(193,48,48,.08);color:#C13030;border:1px solid rgba(193,48,48,.15)">Tam Zamanlı</div>
+            <div class="pos-loc">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              İstanbul
+            </div>
+            <a href="#basvuru" class="pos-apply" style="color:#C13030">Başvur →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- İSG & BCM -->
+      <div class="pos" style="--pc:#B45309">
+        <div class="pos-inner">
+          <div class="pos-left">
+            <div class="pos-dept" style="color:#B45309">Sanayi & OSB</div>
+            <div class="pos-title">İSG & BCM Uzmanı — Üretim Sektörü</div>
+            <div class="pos-desc">İstanbul Sanayi Odası projelerinde Seveso III uyum analizi, ISO 45001 entegrasyonu ve üretim tesisleri BCM değerlendirmelerini yürütün. Saha deneyimi ve OSB bilgisi tercih sebebidir.</div>
+            <div class="pos-tags">
+              <span class="pt">Seveso III</span><span class="pt">ISO 45001</span><span class="pt">6331 İSG</span><span class="pt">OSB</span><span class="pt">OSGB</span>
+            </div>
+          </div>
+          <div class="pos-right">
+            <div class="pos-type" style="background:rgba(180,83,9,.08);color:#B45309;border:1px solid rgba(180,83,9,.15)">Tam Zamanlı</div>
+            <div class="pos-loc">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              İstanbul / Saha
+            </div>
+            <a href="#basvuru" class="pos-apply" style="color:#B45309">Başvur →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Genel başvuru -->
+      <div class="pos pos-empty">
+        <div class="pos-inner">
+          <div class="pos-left">
+            <div class="pos-dept" style="color:var(--stone2)">Genel Başvuru</div>
+            <div class="pos-title" style="font-size:22px;color:var(--stone)">Uygun pozisyon bulamadınız mı?</div>
+            <div class="pos-desc">CV ve kısa motivasyon mektubunuzu gönderin. Uygun bir pozisyon açıldığında ilk sizinle iletişime geçeceğiz.</div>
+          </div>
+          <div class="pos-right">
+            <a href="mailto:kariyer@resilia.com.tr" class="pos-apply" style="color:var(--stone)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              E-posta gönder →
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- NEDEN RESILIA -->
+<section class="sec" id="basvuru">
+  <div class="sec-in">
+    <span class="ey">Neden RESILIA?</span>
+    <div class="div"></div>
+    <h2 class="h2" style="margin-bottom:32px">Küçük ekip, <em>büyük etki.</em></h2>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+      <div style="border:1px solid var(--border);border-radius:16px;padding:22px 20px;background:white">
+        <div class="wi-icon" style="margin-bottom:14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="wi-title" style="margin-bottom:6px">Gerçek kurumsal sorunlar</div>
+        <div class="wi-desc">Akbank, IBB, Istanbul Sanayi Odasi gibi Turkiye'nin onde gelen kurumlarinin gercek risk sorunlarini cozun.</div>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:16px;padding:22px 20px;background:white">
+        <div class="wi-icon" style="margin-bottom:14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg></div>
+        <div class="wi-title" style="margin-bottom:6px">ITU AYM akademik ortam</div>
+        <div class="wi-desc">Metodoloji gelistirme sureclerine akademik boyut katilir, arastirma calismalarına katki saglayabilirsiniz.</div>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:16px;padding:22px 20px;background:white">
+        <div class="wi-icon" style="margin-bottom:14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <div class="wi-title" style="margin-bottom:6px">Modern teknoloji yigini</div>
+        <div class="wi-desc">Next.js, Supabase, PostgreSQL, GIS. Sifir legacy kod.</div>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:16px;padding:22px 20px;background:white">
+        <div class="wi-icon" style="margin-bottom:14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="wi-title" style="margin-bottom:6px">Guclu ekip kulturu</div>
+        <div class="wi-desc">Duz hiyerarsi, dogrudan geri bildirim. Kararlar hizli alinir ve uygulanir.</div>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:16px;padding:22px 20px;background:white">
+        <div class="wi-icon" style="margin-bottom:14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+        <div class="wi-title" style="margin-bottom:6px">Sertifikasyon destegi</div>
+        <div class="wi-desc">ISO 22301 Lead Auditor, BCI sertifikalari, konferans katilimi desteklenir.</div>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:16px;padding:22px 20px;background:white">
+        <div class="wi-icon" style="margin-bottom:14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="wi-title" style="margin-bottom:6px">Esnek calisma</div>
+        <div class="wi-desc">Hibrit ve uzaktan calisma imkani. Sonuc odakli, saat takip etmeden.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BASVURU FORMU -->
+<section class="sec" style="background:white;border-top:1px solid var(--border)" id="form-anchor">
+  <div class="sec-in">
+    <div style="max-width:620px;margin:0 auto">
+      <span class="ey">Basvuru</span>
+      <div class="div"></div>
+      <h2 class="h2" style="margin-bottom:8px">Basvuru Formu</h2>
+      <p style="font-size:13.5px;color:var(--stone);margin-bottom:32px;line-height:1.7">5 is gunu icinde geri donecegiz. Tum alanlari doldurun.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div>
+          <label class="f-label">Ad Soyad</label>
+          <input class="f-input" type="text" placeholder="Adiniz Soyadiniz">
+        </div>
+        <div>
+          <label class="f-label">E-posta</label>
+          <input class="f-input" type="email" placeholder="ad@sirket.com">
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px">
+        <label class="f-label">Basvurdugunuz Pozisyon</label>
+        <div style="position:relative">
+          <select class="f-input" style="-webkit-appearance:none;appearance:none;padding-right:38px;cursor:pointer;height:42px;overflow:hidden">
+            <option value="">&#8212; Secin &#8212;</option>
+            <option>Senior Full-Stack Gelistirici</option>
+            <option>BCM Uzmani &mdash; Bankacilik ve Finans</option>
+            <option>ISG ve BCM Uzmani &mdash; Uretim Sektoru</option>
+            <option>Genel Basvuru</option>
+          </select>
+          <svg style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1l5 5 5-5" stroke="#7C766E" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px">
+        <label class="f-label">LinkedIn veya Portfolio URL</label>
+        <input class="f-input" type="url" placeholder="https://linkedin.com/in/...">
+      </div>
+
+      <div style="margin-bottom:16px">
+        <label class="f-label">Kisa Motivasyon</label>
+        <textarea class="f-input" rows="4" placeholder="Neden RESILIA? Ekibe ne katki saglayabilirsiniz? (3-5 cumle yeterli)" style="height:auto"></textarea>
+      </div>
+
+      <div style="margin-bottom:28px">
+        <label class="f-label">Mevcut Konum</label>
+        <input class="f-input" type="text" placeholder="Istanbul, Ankara...">
+      </div>
+
+      <button class="f-submit" type="button">Basvuruyu Gonder &#8594;</button>
+      <p class="f-note">Bilgileriniz yalnizca ise alim surecinde kullanilir ve ucuncu taraflarla paylasilmaz.</p>
+    </div>
+  </div>
+</section>
+
+<section class="cta-strip">
+  <div class="cta-in">
+    <h2 class="cta-h">Platformu keşfetmek<br>ister <em>misiniz?</em></h2>
+    <p class="cta-p">Demo hesapla tüm modüllere erişin. Gerçek veri, gerçek arayüz.</p>
+    <div class="cta-acts">
+      <a href="/login" class="btn-t">Demo Platforma Erişin →</a>
+      <a href="/Users/erkanakdeniz/Desktop/resilia-platform/public/index.html" class="btn-wg">Ana Sayfaya Dön</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fi">
+    <div class="ft-grid">
+      <div>
+        <div class="fb-n">RESILIA</div>
+        <p class="fb-d">Kurumsal dayanıklılık yönetimi için bilimsel temelli, sektöre özgü dijital platform.</p>
+        <div class="fb-badges"><span class="fbadge">ISO 22301</span><span class="fbadge">BDDK 26333</span><span class="fbadge">SEVESO III</span><span class="fbadge">ISO 45001</span></div>
+      </div>
+      <div class="fc"><div class="fc-h">Kariyer</div><a href="#pozisyonlar">Açık Pozisyonlar</a><a href="#basvuru">Başvuru Formu</a><a href="mailto:kariyer@resilia.com.tr">E-posta</a></div>
+      <div class="fc"><div class="fc-h">Platform</div><a href="/Users/erkanakdeniz/Desktop/resilia-platform/public/platform/index.html">Yazılım</a><a href="/Users/erkanakdeniz/Desktop/resilia-platform/public/egitim/index.html">Eğitim</a><a href="/login">Giriş Yap</a></div>
+      <div class="fc"><div class="fc-h">Hakkımızda</div><a href="/Users/erkanakdeniz/Desktop/resilia-platform/public/sirket/index.html">Şirket</a><a href="/Users/erkanakdeniz/Desktop/resilia-platform/public/referanslar/index.html">Referanslar</a><a href=".">Kariyer</a></div>
+    </div>
+    <div class="ft-bot">
+      <span class="ft-copy">© 2025–2026 RESILIA. Tüm hakları saklıdır.</span>
+      <div class="ft-itu"><span class="ft-itu-t">İTÜ</span>Afet Yönetim Merkezi iş birliğiyle</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RESILIA — Kurumsal Dayanıklılık Platformu</title>
+<link rel="icon" type="image/svg+xml" href="resilia-assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0A1628; --navy2:#0D1E3A; --teal:#007A70; --teal2:#00C4B0;
+  --warm:#F4F2EE; --warm2:#EAE7E1; --stone:#7C766E; --stone2:#A09A92;
+  --red:#C13030; --amber:#A85C00; --green:#14622E; --border:rgba(10,22,40,.09);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--navy);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#C0BAB2;border-radius:99px}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.a0{animation:fadeUp .7s ease both}.a1{animation:fadeUp .7s .12s ease both}
+.a2{animation:fadeUp .7s .24s ease both}.a3{animation:fadeUp .7s .38s ease both}
+.a4{animation:fadeUp .7s .52s ease both}
+
+/* NAV */
+.topbar{background:var(--navy);height:34px;display:flex;align-items:center;justify-content:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.05)}
+.topbar span{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.03em}
+.tb-pill{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;padding:2px 9px;border-radius:99px;background:rgba(0,196,176,.12);color:var(--teal2);border:1px solid rgba(0,196,176,.18)}
+.tb-dot{width:5px;height:5px;border-radius:50%;background:var(--teal2);animation:blink 2.2s infinite;flex-shrink:0}
+nav{position:sticky;top:0;z-index:200;height:58px;background:rgba(244,242,238,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 52px;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:33px;height:33px;border-radius:9px;background:var(--navy);display:flex;align-items:center;justify-content:center}
+.logo-mark span{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:white}
+.logo-wordmark{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:700;color:var(--navy);letter-spacing:.03em}
+.logo-sep{width:1px;height:18px;background:var(--border);margin:0 4px}
+.logo-sub{font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--stone2)}
+.nav-links{display:flex;gap:1px}
+.nav-links a{font-size:12.5px;font-weight:500;color:var(--stone);padding:6px 12px;border-radius:8px;transition:all .15s}
+.nav-links a:hover{color:var(--navy);background:var(--warm2)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-live{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--stone2);padding:5px 10px;border-radius:8px;background:white;border:1px solid var(--border)}
+.nav-cta{font-size:12.5px;font-weight:600;background:var(--navy);color:white;padding:8px 20px;border-radius:9px;transition:all .2s;display:flex;align-items:center;gap:5px}
+.nav-cta:hover{background:var(--navy2);box-shadow:0 4px 16px rgba(10,22,40,.16)}
+
+/* HERO */
+.hero{min-height:calc(100vh - 92px);display:grid;grid-template-columns:1.05fr .95fr;position:relative;overflow:hidden}
+.hero-left{padding:80px 52px 72px;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2;background:var(--warm)}
+.hero-left::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 0% 60%,rgba(0,122,112,.05) 0%,transparent 55%),url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%230A1628' stroke-width='0.3' opacity='0.04'%3E%3Cline x1='0' y1='0' x2='60' y2='0'/%3E%3Cline x1='0' y1='0' x2='0' y2='60'/%3E%3C/g%3E%3C/svg%3E");background-size:auto,60px 60px;z-index:-1}
+.hero-right{background:var(--navy);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:60px 48px}
+.hero-right::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 65% 55% at 25% 40%,rgba(0,122,112,.15) 0%,transparent 55%),radial-gradient(ellipse 35% 35% at 90% 80%,rgba(0,196,176,.06) 0%,transparent 50%)}
+.hr-grid{position:absolute;inset:0;opacity:.028;background-image:linear-gradient(rgba(255,255,255,.7) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.7) 1px,transparent 1px);background-size:56px 56px}
+.hr-ring{position:absolute;right:-80px;top:50%;transform:translateY(-50%);width:460px;height:460px;border-radius:50%;border:1px solid rgba(255,255,255,.04)}
+.hr-ring::before{content:'';position:absolute;inset:50px;border-radius:50%;border:1px solid rgba(0,196,176,.07)}
+
+/* Hero typography */
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);border:1px solid rgba(0,122,112,.2);background:rgba(0,122,112,.05);padding:5px 13px;border-radius:99px;margin-bottom:24px;width:fit-content}
+.hero-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(46px,5.2vw,70px);font-weight:600;line-height:1.07;color:var(--navy);letter-spacing:-.018em;margin-bottom:24px}
+.hero-h1 em{font-style:italic;color:var(--teal)}
+.hero-lead{font-size:15px;color:var(--stone);line-height:1.8;max-width:480px;margin-bottom:36px}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:34px}
+.btn-primary{background:var(--navy);color:white;padding:13px 26px;border-radius:10px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:all .2s;cursor:pointer;border:none}
+.btn-primary:hover{background:var(--navy2);transform:translateY(-1px);box-shadow:0 6px 22px rgba(10,22,40,.17)}
+.btn-ghost{background:white;color:var(--navy);padding:12px 20px;border-radius:10px;font-size:13.5px;font-weight:500;border:1px solid var(--border);display:inline-flex;align-items:center;gap:6px;transition:all .2s;cursor:pointer}
+.btn-ghost:hover{background:var(--warm2)}
+.comp-row{display:flex;gap:5px;flex-wrap:wrap}
+.c-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;padding:3px 9px;border-radius:5px;background:white;border:1px solid var(--border);color:var(--stone);transition:all .15s;cursor:default}
+.c-tag:hover{border-color:rgba(0,122,112,.35);color:var(--teal)}
+
+/* Dashboard */
+.hero-dash{width:100%;max-width:380px;position:relative;z-index:2;animation:float 5.5s ease-in-out infinite}
+.dash-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:24px;backdrop-filter:blur(8px)}
+.dash-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.07)}
+.dash-ttl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.sc-num{font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:700;color:white;line-height:1}
+.sc-lbl{font-size:9.5px;font-weight:600;color:var(--teal2);text-transform:uppercase;letter-spacing:.07em;text-align:right}
+.bar-r{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.bar-l{font-size:10px;color:rgba(255,255,255,.4);width:95px;flex-shrink:0;font-weight:500}
+.bar-t{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden}
+.bar-f{height:100%;border-radius:99px;transform-origin:left;animation:scaleIn .9s ease forwards}
+.bar-v{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.7);width:22px;text-align:right}
+.dtags{display:flex;gap:4px;flex-wrap:wrap;margin-top:14px}
+.dt{font-size:9px;font-weight:600;padding:3px 8px;border-radius:5px;letter-spacing:.03em}
+.dt-r{background:rgba(193,48,48,.2);color:#FCA5A5}
+.dt-a{background:rgba(168,92,0,.2);color:#FCD34D}
+.dt-g{background:rgba(0,196,176,.15);color:var(--teal2)}
+.dt-b{background:rgba(27,79,216,.2);color:#93C5FD}
+/* Chips */
+.chip{position:absolute;border-radius:14px;padding:12px 16px;box-shadow:0 8px 28px rgba(0,0,0,.25)}
+.chip-a{top:-22px;right:-22px;background:white;border:1px solid var(--border);text-align:center}
+.chip-a-n{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--navy);line-height:1}
+.chip-a-n sup{font-size:13px;color:var(--teal)}
+.chip-a-l{font-size:9px;color:var(--stone2);margin-top:2px}
+.chip-b{bottom:-18px;left:-18px;background:var(--navy);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:7px}
+.chip-b-txt{font-size:10.5px;font-weight:600;color:rgba(255,255,255,.8);white-space:nowrap}
+
+/* Mini map */
+.mini-map{margin-top:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px;height:70px;overflow:hidden}
+.mm-lbl{font-size:8.5px;color:rgba(255,255,255,.28);letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px}
+.mm-dots{display:flex;flex-wrap:wrap;gap:3px}
+.mm-d{width:5px;height:5px;border-radius:50%;opacity:.7}
+
+/* STATS */
+.stats{background:var(--navy);padding:0}
+.stats img{width:100%;display:block}
+
+/* SECTIONS */
+.section{padding:88px 52px}
+.si{max-width:1200px;margin:0 auto}
+.eyebrow{font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:12px}
+.s-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3.2vw,44px);font-weight:600;line-height:1.18;color:var(--navy);margin-bottom:14px}
+.s-lead{font-size:14.5px;color:var(--stone);line-height:1.8;max-width:540px}
+.divider{width:44px;height:2px;background:var(--teal);border-radius:99px;margin-bottom:20px;animation:scaleIn .6s ease forwards;transform-origin:left}
+
+/* SEKTÖR KARTLARI */
+.sk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.sk-card{--cc:#007A70;background:white;border:1px solid var(--border);border-radius:20px;overflow:hidden;transition:all .28s;cursor:pointer}
+.sk-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(10,22,40,.09);border-color:rgba(10,22,40,.14)}
+.sk-stripe{height:5px;background:var(--cc);background-image:repeating-linear-gradient(90deg,transparent,transparent 8px,rgba(255,255,255,.15) 8px,rgba(255,255,255,.15) 9px)}
+.sk-body{padding:24px 22px}
+.sk-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+/* SVG icon container — NO EMOJI */
+.sk-icon{width:52px;height:52px;border-radius:14px;overflow:hidden;flex-shrink:0}
+.sk-icon img{width:100%;height:100%;display:block}
+.sk-regs{display:flex;flex-direction:column;gap:3px;align-items:flex-end}
+.r-tag{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.05em;padding:2.5px 7px;border-radius:5px;background:var(--warm);border:1px solid var(--border);color:var(--stone2);white-space:nowrap}
+.sk-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--navy);margin-bottom:8px;line-height:1.2}
+.sk-desc{font-size:12.5px;color:var(--stone);line-height:1.74;margin-bottom:16px}
+.sk-features{list-style:none;margin-bottom:20px}
+.sk-features li{font-size:12px;color:#4B5563;padding:5px 0;border-bottom:1px solid var(--warm2);display:flex;align-items:center;gap:8px}
+.sk-features li:last-child{border-bottom:none}
+.sk-features li::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--cc);flex-shrink:0}
+.sk-footer{padding:13px 22px;background:var(--warm);border-top:1px solid rgba(10,22,40,.05);display:flex;justify-content:space-between;align-items:center}
+.sk-link{font-size:11.5px;font-weight:700;color:var(--cc);display:flex;align-items:center;gap:4px;transition:gap .15s}
+.sk-card:hover .sk-link{gap:9px}
+.sk-badge{font-family:'DM Mono',monospace;font-size:9px;color:var(--stone2)}
+
+/* PLATFORM */
+.plat{padding:88px 52px;background:var(--navy);position:relative;overflow:hidden}
+.plat::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 82% 48%,rgba(0,122,112,.12) 0%,transparent 55%)}
+.plat::after{content:'';position:absolute;inset:0;opacity:.026;background-image:linear-gradient(rgba(255,255,255,.7) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.7) 1px,transparent 1px);background-size:60px 60px}
+.plat-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.plat-top{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:end;margin-bottom:40px}
+.plat-eyebrow{font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--teal2);display:block;margin-bottom:12px}
+.plat-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3.5vw,46px);font-weight:600;color:white;line-height:1.15}
+.plat-lead{font-size:13.5px;color:rgba(255,255,255,.38);line-height:1.82;align-self:end}
+/* Platform infographic embed */
+.plat-infographic{width:100%;border-radius:16px;overflow:hidden;display:block;margin-top:8px}
+
+/* METODOLOJİ */
+.metod{padding:88px 52px;background:white}
+.metod-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.metod-text p{font-size:14px;color:var(--stone);line-height:1.84;margin-bottom:16px}
+.metod-text p strong{color:var(--navy);font-weight:600}
+.msteps{margin:22px 0;display:flex;flex-direction:column}
+.mstep{display:flex;gap:14px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--warm2)}
+.mstep:last-child{border-bottom:none}
+.mstep-n{width:28px;height:28px;border-radius:8px;background:var(--navy);color:white;font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mstep-title{font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.mstep-desc{font-size:11.5px;color:var(--stone)}
+.itu-badge{display:inline-flex;align-items:center;gap:12px;background:var(--warm);border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-top:16px}
+.itu-box{width:38px;height:38px;border-radius:8px;background:#D41223;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;color:white;flex-shrink:0}
+.itu-name{font-size:13px;font-weight:700;color:var(--navy);display:block;margin-bottom:2px}
+.itu-sub{font-size:11px;color:var(--stone)}
+.infographic-wrap{border-radius:20px;overflow:hidden;box-shadow:0 16px 52px rgba(10,22,40,.1);border:1px solid var(--border)}
+.infographic-wrap img{width:100%;display:block}
+
+/* SÜREÇ */
+.process{padding:88px 52px;background:var(--warm)}
+.process-inner{max-width:1200px;margin:0 auto}
+.process-hdr{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:end;margin-bottom:48px}
+.proc-img{width:100%;border-radius:16px;overflow:hidden;display:block;box-shadow:0 8px 32px rgba(10,22,40,.07);border:1px solid var(--border)}
+
+/* REFERANSLAR */
+.ref{padding:48px 52px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:white}
+.ref-inner{max-width:1200px;margin:0 auto}
+.ref-lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--stone2);text-align:center;margin-bottom:26px}
+.ref-row{display:flex;align-items:center;justify-content:center;flex-wrap:wrap}
+.ref-item{padding:9px 34px;border-right:1px solid var(--border)}
+.ref-item:last-child{border-right:none}
+.ref-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#C0BAB2;white-space:nowrap;transition:color .2s}
+.ref-item:hover .ref-name{color:var(--navy)}
+
+/* CTA */
+.cta{padding:88px 52px;background:var(--navy);position:relative;overflow:hidden}
+.cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 65% at 50% 0%,rgba(0,122,112,.14) 0%,transparent 55%)}
+.cta-inner{max-width:660px;margin:0 auto;text-align:center;position:relative;z-index:1}
+.cta-title{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,4vw,52px);font-weight:600;color:white;line-height:1.18;margin-bottom:16px}
+.cta-title em{font-style:italic;color:var(--teal2)}
+.cta-sub{font-size:14.5px;color:rgba(255,255,255,.38);margin-bottom:36px;line-height:1.78}
+.cta-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+.btn-teal{background:var(--teal);color:white;padding:13px 30px;border-radius:10px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:5px;transition:all .2s;border:none;cursor:pointer}
+.btn-teal:hover{background:#006860;transform:translateY(-1px);box-shadow:0 8px 26px rgba(0,122,112,.34)}
+.btn-wg{background:transparent;color:rgba(255,255,255,.55);padding:13px 26px;border-radius:10px;font-size:13.5px;font-weight:500;border:1px solid rgba(255,255,255,.12);transition:all .2s;cursor:pointer}
+.btn-wg:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85)}
+.demo-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.demo-p{font-size:10.5px;padding:5px 12px;border-radius:99px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);font-family:'DM Mono',monospace;letter-spacing:.04em;transition:all .15s}
+.demo-p:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.72)}
+
+/* FOOTER */
+footer{background:var(--navy2);padding:48px 52px 28px}
+.fi{max-width:1200px;margin:0 auto}
+.ft{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:36px;padding-bottom:36px;border-bottom:1px solid rgba(255,255,255,.06)}
+.fbn{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:white;margin-bottom:10px}
+.fbd{font-size:11.5px;color:rgba(255,255,255,.28);line-height:1.75;max-width:220px;margin-bottom:14px}
+.fbadges{display:flex;gap:4px;flex-wrap:wrap}
+.fbadge{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;padding:3px 7px;border-radius:4px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.3)}
+.fch{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.22);margin-bottom:14px}
+.fc a{display:block;font-size:11.5px;color:rgba(255,255,255,.38);margin-bottom:9px;transition:color .15s}
+.fc a:hover{color:rgba(255,255,255,.78)}
+.fb{display:flex;justify-content:space-between;align-items:center}
+.fc2{font-size:10.5px;color:rgba(255,255,255,.18)}
+.fitu{display:flex;align-items:center;gap:6px;font-size:10.5px;color:rgba(255,255,255,.18)}
+.fitu-tag{background:#D41223;color:white;font-size:8.5px;font-weight:700;font-family:'DM Mono',monospace;padding:2px 5px;border-radius:4px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-dot"></div>
+  <div class="tb-pill">Demo Aktif</div>
+  <span>·</span>
+  <span>600+ birim · 6 sektör · İTÜ AYM akademik iş birliği</span>
+</div>
+
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>R</span></div>
+    <span class="logo-wordmark">RESILIA</span>
+    <div class="logo-sep"></div>
+    <span class="logo-sub">Kurumsal Dayanıklılık</span>
+  </a>
+  <div class="nav-links">
+    <a href="#sektorler">Sektörler</a>
+    <a href="/platform">Platform</a>
+    <a href="/egitim">Eğitim</a>
+    <a href="/fiyatlar">Fiyatlar</a>
+    <a href="/sirket">Hakkımızda</a>
+    <a href="/iletisim">İletişim</a>
+  </div>
+  <div class="nav-right">
+    <div class="nav-live"><div class="tb-dot"></div><span>Canlı Demo</span></div>
+    <a href="/login" class="nav-cta">Platforma Giriş <span style="opacity:.55">→</span></a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-right">
+    <div class="hr-grid"></div>
+    <div class="hr-ring"></div>
+    <div class="hero-dash a2">
+      <div class="chip chip-a">
+        <div class="chip-a-n">600<sup>+</sup></div>
+        <div class="chip-a-l">izlenen birim</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-hdr">
+          <div class="dash-ttl">HFE-360 · Birim Risk Skoru</div>
+          <div><div class="sc-num">67</div><div class="sc-lbl">Orta Risk</div></div>
+        </div>
+        <div class="bar-r"><span class="bar-l">Tehlike (H)</span><div class="bar-t"><div class="bar-f" style="width:72%;background:#C13030"></div></div><span class="bar-v">72</span></div>
+        <div class="bar-r"><span class="bar-l">Kırılganlık (F)</span><div class="bar-t"><div class="bar-f" style="width:58%;background:#A85C00;animation-delay:.18s"></div></div><span class="bar-v">58</span></div>
+        <div class="bar-r"><span class="bar-l">Kapasite (E)</span><div class="bar-t"><div class="bar-f" style="width:81%;background:#007A70;animation-delay:.35s"></div></div><span class="bar-v">81</span></div>
+        <div class="dtags">
+          <span class="dt dt-r">Deprem · 1. Bölge</span>
+          <span class="dt dt-a">Siber Risk</span>
+          <span class="dt dt-g">BCP Güncel</span>
+          <span class="dt dt-b">BDDK Uyumlu</span>
+        </div>
+        <div class="mini-map">
+          <div class="mm-lbl">İstanbul · 200 Lokasyon</div>
+          <div class="mm-dots" id="mapdots"></div>
+        </div>
+      </div>
+      <div class="chip chip-b">
+        <div class="tb-dot"></div>
+        <span class="chip-b-txt">Gerçek zamanlı izleme aktif</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-left">
+    <div class="hero-eyebrow a0"><div class="tb-dot"></div>HFE-360 · İTÜ AYM Metodolojisi</div>
+    <h1 class="hero-h1 a1">Kurumsal<br>dayanıklılık,<br><em>bilimsel temelli.</em></h1>
+    <p class="hero-lead a2">Bankacılıktan eğitime, üretim tesislerinden belediyelere — altı kritik sektörde merkezi risk skorlaması, düzenleyici uyum izleme ve gerçek zamanlı kriz koordinasyonu.</p>
+    <div class="hero-actions a3">
+      <a href="/login" class="btn-primary">Platforma Giriş Yap <span>→</span></a>
+      <a href="#platform" class="btn-ghost">Platformu İncele</a>
+    </div>
+    <div class="comp-row a4">
+      <span class="c-tag">ISO 22301</span><span class="c-tag">BDDK 26333</span>
+      <span class="c-tag">SEVESO III</span><span class="c-tag">ISO 45001</span>
+      <span class="c-tag">AFAD</span><span class="c-tag">JCI · HAP</span>
+      <span class="c-tag">SWIFT CSP</span><span class="c-tag">TOBB</span>
+    </div>
+  </div>
+</section>
+
+<!-- STATS — SVG infographic -->
+<div class="stats">
+  <img src="resilia-assets/stats-infographic.svg" alt="Platform İstatistikleri" style="width:100%;display:block">
+</div>
+
+<!-- SEKTÖRLER -->
+<section class="section" id="sektorler" style="background:white">
+  <div class="si">
+    <span class="eyebrow">Sektörel Çözümler</span>
+    <div class="divider"></div>
+    <h2 class="s-title">Her sektörün kendine özgü risk profili<br>ve düzenleyici çerçevesi vardır.</h2>
+    <p class="s-lead" style="margin-bottom:52px">RESILIA, her sektörün düzenleyici zorunlulukları, operasyonel yapısı ve tehlike sınıfına göre özelleştirilmiş değerlendirme metodolojisi sunar.</p>
+
+    <div class="sk-grid">
+
+      <div class="sk-card" style="--cc:#1B4FD8">
+        <div class="sk-stripe"></div>
+        <div class="sk-body">
+          <div class="sk-top">
+            <div class="sk-icon"><img src="resilia-assets/icon-bankacilik.svg" alt="Bankacılık"></div>
+            <div class="sk-regs"><span class="r-tag">BDDK 26333</span><span class="r-tag">ISO 22301</span><span class="r-tag">SWIFT CSP</span></div>
+          </div>
+          <h3 class="sk-title">Bankacılık & Finans</h3>
+          <p class="sk-desc">Yüzlerce şubeden oluşan bankacılık ağlarında merkezi dayanıklılık skorlaması, düzenleyici uyum takibi ve gerçek zamanlı kriz koordinasyonu.</p>
+          <ul class="sk-features">
+            <li>Şube bazlı HFE-360 değerlendirmesi</li>
+            <li>BDDK 26333 otomatik uyum raporları</li>
+            <li>SWIFT & ödeme sistemi sürekliliği</li>
+            <li>Merkezi kriz komuta merkezi</li>
+          </ul>
+        </div>
+        <div class="sk-footer">
+          <a href="/platform" class="sk-link" style="color:#1B4FD8">Çözümü incele <span>→</span></a>
+          <span class="sk-badge">400 şube · 2 banka</span>
+        </div>
+      </div>
+
+      <div class="sk-card" style="--cc:#14622E">
+        <div class="sk-stripe"></div>
+        <div class="sk-body">
+          <div class="sk-top">
+            <div class="sk-icon"><img src="resilia-assets/icon-saglik.svg" alt="Sağlık"></div>
+            <div class="sk-regs"><span class="r-tag">HAP</span><span class="r-tag">JCI</span><span class="r-tag">ISO 27799</span></div>
+          </div>
+          <h3 class="sk-title">Sağlık</h3>
+          <p class="sk-desc">Hastane ve sağlık tesislerinde hasta güvenliğini merkeze alan iş sürekliliği planlaması, akreditasyon hazırlığı ve kritik tıbbi altyapı koruması.</p>
+          <ul class="sk-features">
+            <li>Kritik tıbbi ekipman sürekliliği</li>
+            <li>Hasta tahliye protokolleri</li>
+            <li>HAP/JCI akreditasyon desteği</li>
+            <li>Sağlık bilgi sistemi kurtarma</li>
+          </ul>
+        </div>
+        <div class="sk-footer">
+          <a href="/platform" class="sk-link" style="color:#14622E">Çözümü incele <span>→</span></a>
+          <span class="sk-badge">28 tesis</span>
+        </div>
+      </div>
+
+      <div class="sk-card" style="--cc:#6D28D9">
+        <div class="sk-stripe"></div>
+        <div class="sk-body">
+          <div class="sk-top">
+            <div class="sk-icon"><img src="resilia-assets/icon-belediye.svg" alt="Belediye"></div>
+            <div class="sk-regs"><span class="r-tag">5393 Sayılı K.</span><span class="r-tag">AFAD</span><span class="r-tag">ISO 22301</span></div>
+          </div>
+          <h3 class="sk-title">Belediyeler</h3>
+          <p class="sk-desc">Büyükşehir ve ilçe belediyelerinde afet koordinasyonu, altyapı dayanıklılığı ve vatandaş hizmetlerinin kesintisiz sürdürülmesi.</p>
+          <ul class="sk-features">
+            <li>Kent geneli risk haritalaması</li>
+            <li>AFAD koordinasyon entegrasyonu</li>
+            <li>Altyapı servis sürekliliği</li>
+            <li>Kriz iletişim yönetimi</li>
+          </ul>
+        </div>
+        <div class="sk-footer">
+          <a href="/platform" class="sk-link" style="color:#6D28D9">Çözümü incele <span>→</span></a>
+          <span class="sk-badge">45 birim</span>
+        </div>
+      </div>
+
+      <div class="sk-card" style="--cc:#0369A1">
+        <div class="sk-stripe"></div>
+        <div class="sk-body">
+          <div class="sk-top">
+            <div class="sk-icon"><img src="resilia-assets/icon-meb.svg" alt="MEB"></div>
+            <div class="sk-regs"><span class="r-tag">MEB Genelge</span><span class="r-tag">AFAD</span><span class="r-tag">Yangın Y.</span></div>
+          </div>
+          <h3 class="sk-title">MEB / Eğitim</h3>
+          <p class="sk-desc">İl millî eğitim müdürlüklerinin bağlı okullarını merkezi ekrandan izleyebileceği, okul bazlı dayanıklılık değerlendirme ve raporlama sistemi.</p>
+          <ul class="sk-features">
+            <li>Okul bazlı HFE değerlendirmesi</li>
+            <li>Tahliye planı yönetimi</li>
+            <li>İl/ilçe MEM dashboard</li>
+            <li>Deprem ve yangın hazırlık skorlaması</li>
+          </ul>
+        </div>
+        <div class="sk-footer">
+          <a href="/platform" class="sk-link" style="color:#0369A1">Çözümü incele <span>→</span></a>
+          <span class="sk-badge">1.200 okul</span>
+        </div>
+      </div>
+
+      <div class="sk-card" style="--cc:#B45309">
+        <div class="sk-stripe"></div>
+        <div class="sk-body">
+          <div class="sk-top">
+            <div class="sk-icon"><img src="resilia-assets/icon-uretim.svg" alt="Üretim"></div>
+            <div class="sk-regs"><span class="r-tag">6331 İSG</span><span class="r-tag">Seveso III</span><span class="r-tag">ISO 45001</span></div>
+          </div>
+          <h3 class="sk-title">Üretim Tesisleri</h3>
+          <p class="sk-desc">OSB ve üretim tesislerinde iş sağlığı ve güvenliği uyumu, tehlikeli madde yönetimi ve operasyonel sürekliliğin entegre platformu.</p>
+          <ul class="sk-features">
+            <li>Seveso III tehlikeli madde takibi</li>
+            <li>6331 İSG uyum yönetimi</li>
+            <li>Üretim hattı sürekliliği</li>
+            <li>Tedarik zinciri risk analizi</li>
+          </ul>
+        </div>
+        <div class="sk-footer">
+          <a href="/platform" class="sk-link" style="color:#B45309">Çözümü incele <span>→</span></a>
+          <span class="sk-badge">200 tesis · 19 OSB</span>
+        </div>
+      </div>
+
+      <div class="sk-card" style="--cc:#7C3AED">
+        <div class="sk-stripe"></div>
+        <div class="sk-body">
+          <div class="sk-top">
+            <div class="sk-icon"><img src="resilia-assets/icon-odalar.svg" alt="Odalar"></div>
+            <div class="sk-regs"><span class="r-tag">TOBB</span><span class="r-tag">TESK</span><span class="r-tag">ISO 22313</span></div>
+          </div>
+          <h3 class="sk-title">Sanayi & Ticaret Odaları</h3>
+          <p class="sk-desc">Odaya bağlı sanayi ve ticaret kuruluşlarının tamamını kapsayan merkezi dayanıklılık izleme ve üye firma raporlama platformu.</p>
+          <ul class="sk-features">
+            <li>Üye firma bazlı değerlendirme</li>
+            <li>Sektörel kıyaslama raporları</li>
+            <li>TOBB/TESK uyum takibi</li>
+            <li>Toplu raporlama araçları</li>
+          </ul>
+        </div>
+        <div class="sk-footer">
+          <a href="/platform" class="sk-link" style="color:#7C3AED">Çözümü incele <span>→</span></a>
+          <span class="sk-badge">Oda · Üye firma</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PLATFORM — infographic -->
+<section class="plat" id="platform">
+  <div class="plat-inner">
+    <div class="plat-top">
+      <div>
+        <span class="plat-eyebrow">Platform Mimarisi</span>
+        <h2 class="plat-title">Risk yönetiminden<br>kriz koordinasyonuna<br>uçtan uca.</h2>
+      </div>
+      <p class="plat-lead">RESILIA, risk değerlendirmesinden iş etki analizine, düzenleyici raporlamadan gerçek zamanlı kriz koordinasyonuna tüm süreci tek bir entegre platformda yönetmenizi sağlar.</p>
+    </div>
+    <img src="resilia-assets/platform-infographic.svg" alt="Platform Modülleri" class="plat-infographic">
+  </div>
+</section>
+
+<!-- METODOLOJİ -->
+<section class="metod" id="metodoloji">
+  <div class="metod-inner">
+    <div>
+      <span class="eyebrow">Bilimsel Temel</span>
+      <div class="divider"></div>
+      <h2 class="s-title" style="margin-bottom:18px">HFE-360<br>Metodolojisi</h2>
+      <div class="metod-text">
+        <p>İTÜ Afet Yönetim Merkezi ile ortaklaşa geliştirilen <strong>HFE-360</strong>, kurumsal dayanıklılığı üç temel boyut üzerinden ölçer: <strong>Tehlike (Hazard)</strong>, <strong>Kırılganlık (Fragility)</strong> ve <strong>Kapasite (Enhancement)</strong>.</p>
+        <p>Her sektör için özelleştirilmiş değerlendirme formu, gerçek operasyonel verilere dayanarak 0–100 aralığında bir dayanıklılık skoru üretir. Skor; aksiyon önceliklendirme, bütçe planlaması ve düzenleyici raporlamayı doğrudan besler.</p>
+      </div>
+      <div class="msteps">
+        <div class="mstep"><div class="mstep-n">1</div><div><div class="mstep-title">Değerlendirme Formunun Doldurulması</div><div class="mstep-desc">44 soruluk sektör bazlı HFE-360 formu birim tarafından tamamlanır.</div></div></div>
+        <div class="mstep"><div class="mstep-n">2</div><div><div class="mstep-title">Otomatik Skor Hesaplama</div><div class="mstep-desc">H, F, E bileşenleri ağırlıklı formülle 0–100 skora dönüştürülür.</div></div></div>
+        <div class="mstep"><div class="mstep-n">3</div><div><div class="mstep-title">Aksiyon Planı Üretimi</div><div class="mstep-desc">ROI analizi ile önceliklendirilmiş müdahale önerileri çıkarılır.</div></div></div>
+        <div class="mstep"><div class="mstep-n">4</div><div><div class="mstep-title">Düzenleyici Raporlama</div><div class="mstep-desc">BDDK, AFAD, MEB mevzuatına uyumlu otomatik raporlar üretilir.</div></div></div>
+      </div>
+      <div class="itu-badge">
+        <div class="itu-box">İTÜ</div>
+        <div><span class="itu-name">İTÜ Afet Yönetim Merkezi</span><span class="itu-sub">Akademik İş Birliği · HFE-360 Metodolojisi</span></div>
+      </div>
+    </div>
+    <div class="infographic-wrap">
+      <img src="resilia-assets/hfe360-infographic.svg" alt="HFE-360 Metodoloji İnfografik">
+    </div>
+  </div>
+</section>
+
+<!-- SÜREÇ -->
+<section class="process" id="surec">
+  <div class="process-inner">
+    <div class="process-hdr">
+      <div>
+        <span class="eyebrow">BCM Süreç Modeli</span>
+        <div class="divider"></div>
+        <h2 class="s-title">ISO 22301 uyumlu<br>yaşam döngüsü.</h2>
+      </div>
+      <p class="s-lead">RESILIA, iş sürekliliği yönetiminin tüm aşamalarını birbirine bağlar. Risk değerlendirmesinden tatbikata, iyileştirmeden düzenleyici uyuma kadar bütünleşik süreç.</p>
+    </div>
+    <img src="resilia-assets/process-cycle.svg" alt="BCM Süreç Modeli" class="proc-img">
+  </div>
+</section>
+
+<!-- REFERANSLAR -->
+<section class="ref" id="referanslar">
+  <div class="ref-inner">
+    <div class="ref-lbl">Pilot Kurumlar & Akademik İş Birlikleri</div>
+    <div class="ref-row">
+      <div class="ref-item"><span class="ref-name">Akbank A.Ş.</span></div>
+      <div class="ref-item"><span class="ref-name">İş Bankası</span></div>
+      <div class="ref-item"><span class="ref-name">Medical Park</span></div>
+      <div class="ref-item"><span class="ref-name">İstanbul Büyükşehir Belediyesi</span></div>
+      <div class="ref-item"><span class="ref-name">İstanbul Sanayi Odası</span></div>
+      <div class="ref-item"><span class="ref-name" style="color:#D41223">İTÜ AYM</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- MÜŞTERİ ALINTILAR -->
+<section style="padding:72px 52px;background:var(--warm);border-top:1px solid var(--border)">
+  <div style="max-width:1200px;margin:0 auto">
+    <span style="font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:12px">Müşteri Görüşleri</span>
+    <div style="width:44px;height:2px;background:var(--teal);border-radius:99px;margin-bottom:44px"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+
+      <div style="background:white;border:1px solid var(--border);border-radius:20px;padding:28px 24px;border-top:3px solid #1B4FD8;transition:all .22s" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 36px rgba(10,22,40,.09)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:48px;color:rgba(10,22,40,.07);line-height:.85;display:block;margin-bottom:10px">"</span>
+        <p style="font-size:13.5px;color:var(--stone);line-height:1.76;font-style:italic;margin-bottom:18px">200 şubemizin dayanıklılık profilini tek ekrandan yönetmek, BDDK denetim sürecimizi temelden değiştirdi. HFE-360 skoru kaynak tahsis kararlarımızda belirleyici oluyor.</p>
+        <div style="height:1px;background:var(--border);margin-bottom:14px"></div>
+        <div style="font-size:13px;font-weight:700;color:var(--navy)">Ahmet Yılmaz</div>
+        <div style="font-size:11px;color:var(--stone2);margin-bottom:8px">Operasyonel Risk Direktörü</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <span style="font-family:'DM Mono',monospace;font-size:8px;padding:2.5px 7px;border-radius:4px;background:rgba(27,79,216,.08);color:#1B4FD8;border:1px solid rgba(27,79,216,.18)">Akbank A.Ş.</span>
+          <span style="font-family:'DM Mono',monospace;font-size:8px;padding:2.5px 7px;border-radius:4px;background:var(--warm);color:var(--stone2);border:1px solid var(--border)">400 Şube</span>
+        </div>
+      </div>
+
+      <div style="background:white;border:1px solid var(--border);border-radius:20px;padding:28px 24px;border-top:3px solid #B45309;transition:all .22s" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 36px rgba(10,22,40,.09)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:48px;color:rgba(10,22,40,.07);line-height:.85;display:block;margin-bottom:10px">"</span>
+        <p style="font-size:13.5px;color:var(--stone);line-height:1.76;font-style:italic;margin-bottom:18px">200 üye tesisimizde standartlaştırılmış değerlendirme ve Seveso III uyum takibi artık otomatik. Karşılaştırmalı raporlama üye firmalarımızın çok işine yarıyor.</p>
+        <div style="height:1px;background:var(--border);margin-bottom:14px"></div>
+        <div style="font-size:13px;font-weight:700;color:var(--navy)">Murat Öztürk</div>
+        <div style="font-size:11px;color:var(--stone2);margin-bottom:8px">Sanayi ve Çevre Direktörü</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <span style="font-family:'DM Mono',monospace;font-size:8px;padding:2.5px 7px;border-radius:4px;background:rgba(180,83,9,.08);color:#B45309;border:1px solid rgba(180,83,9,.18)">İstanbul Sanayi Odası</span>
+          <span style="font-family:'DM Mono',monospace;font-size:8px;padding:2.5px 7px;border-radius:4px;background:var(--warm);color:var(--stone2);border:1px solid var(--border)">200 Tesis</span>
+        </div>
+      </div>
+
+      <div style="background:white;border:1px solid var(--border);border-radius:20px;padding:28px 24px;border-top:3px solid #14622E;transition:all .22s" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 36px rgba(10,22,40,.09)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:48px;color:rgba(10,22,40,.07);line-height:.85;display:block;margin-bottom:10px">"</span>
+        <p style="font-size:13.5px;color:var(--stone);line-height:1.76;font-style:italic;margin-bottom:18px">JCI akreditasyon sürecimizde HFE-RİSK modülü klinik süreç önceliklendirmemizde belirleyici oldu. Hasta güvenliği ve iş sürekliliği artık tek platformda.</p>
+        <div style="height:1px;background:var(--border);margin-bottom:14px"></div>
+        <div style="font-size:13px;font-weight:700;color:var(--navy)">Dr. Selin Kaya</div>
+        <div style="font-size:11px;color:var(--stone2);margin-bottom:8px">Kalite ve Akreditasyon Direktörü</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <span style="font-family:'DM Mono',monospace;font-size:8px;padding:2.5px 7px;border-radius:4px;background:rgba(20,98,46,.08);color:#14622E;border:1px solid rgba(20,98,46,.18)">Medical Park</span>
+          <span style="font-family:'DM Mono',monospace;font-size:8px;padding:2.5px 7px;border-radius:4px;background:var(--warm);color:var(--stone2);border:1px solid var(--border)">28 Tesis</span>
+        </div>
+      </div>
+
+    </div>
+    <div style="text-align:center;margin-top:28px">
+      <a href="/referanslar" style="font-size:12.5px;font-weight:700;color:var(--teal);display:inline-flex;align-items:center;gap:5px">Tüm referansları gör →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="cta-inner">
+    <h2 class="cta-title">Kurumunuzun dayanıklılık<br>profilini <em>bugün</em> değerlendirin.</h2>
+    <p class="cta-sub">Demo hesapla platforma erişin. Akbank, İş Bankası, İstanbul Sanayi Odası ve daha fazlası için önceden yüklenmiş veriyle sistemi keşfedin.</p>
+    <div class="cta-actions">
+      <a href="/login" class="btn-teal">Demo Platforma Erişin →</a>
+      <a href="/iletisim" class="btn-wg">İletişime Geçin</a>
+    </div>
+    <div class="demo-row">
+      <span class="demo-p">board@akbank.com</span>
+      <span class="demo-p">uzman@isoistanbul.com</span>
+      <span class="demo-p">birim@ibb.istanbul</span>
+      <span class="demo-p">uzman@medicalpark.com</span>
+      <span class="demo-p">+ 13 hesap</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fi">
+    <div class="ft">
+      <div>
+        <div class="fbn">RESILIA</div>
+        <p class="fbd">Kurumsal dayanıklılık yönetimi için bilimsel temelli, sektöre özgü dijital platform. İTÜ AYM iş birliğiyle geliştirilmiştir.</p>
+        <div class="fbadges">
+          <span class="fbadge">ISO 22301</span><span class="fbadge">BDDK 26333</span>
+          <span class="fbadge">SEVESO III</span><span class="fbadge">ISO 45001</span><span class="fbadge">AFAD</span>
+        </div>
+      </div>
+      <div class="fc"><div class="fch">Platform</div>
+        <a href="/platform">Yazılım Modülleri</a>
+        <a href="/egitim">Eğitim &amp; Sertifikasyon</a>
+        <a href="/fiyatlar">Fiyatlandırma</a>
+        <a href="/login">Platforma Giriş</a>
+      </div>
+      <div class="fc"><div class="fch">Sektörler</div>
+        <a href="#">Bankacılık & Finans</a><a href="#">Sağlık</a>
+        <a href="#">Belediyeler</a><a href="#">MEB / Eğitim</a>
+        <a href="#">Üretim Tesisleri</a><a href="#">Sanayi & Ticaret Odaları</a>
+      </div>
+      <div class="fc"><div class="fch">Kurumsal</div>
+        <a href="/sirket">Şirket</a>
+        <a href="/referanslar">Referanslar</a>
+        <a href="/kariyer">Kariyer</a>
+        <a href="/iletisim">İletişim</a>
+      </div>
+    </div>
+    <div class="fb">
+      <span class="fc2">© 2025–2026 RESILIA. Tüm hakları saklıdır.</span>
+      <div class="fitu"><span class="fitu-tag">İTÜ</span>Afet Yönetim Merkezi iş birliğiyle geliştirilmiştir</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Mini map dots
+const dots = document.getElementById('mapdots');
+const colors = ['#C13030','#C13030','#A85C00','#A85C00','#A85C00','#007A70','#007A70','#A85C00','#C13030','#007A70','#A85C00','#007A70','#C13030','#A85C00','#007A70','#007A70','#A85C00','#C13030','#007A70','#A85C00','#007A70','#007A70','#A85C00','#C13030','#007A70','#007A70','#A85C00','#C13030'];
+colors.forEach(c => { const d = document.createElement('div'); d.className='mm-d'; d.style.background=c; dots.appendChild(d); });
+</script>
+</body>
+</html>

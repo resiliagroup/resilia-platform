@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <style>
+      .omni-text { font-family: Georgia, serif; font-size: 52px; font-weight: 700; fill: #0A1628; letter-spacing: 8px; }
+      .tagline { font-family: Arial, sans-serif; font-size: 10px; fill: #9CA3AF; letter-spacing: 4px; }
+    </style>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="400" height="400" fill="#F8F6F3" rx="24"/>
+
+  <!-- Dış halka - Pastel Altın -->
+  <circle cx="200" cy="170" r="100" fill="none" stroke="#E8C97A" stroke-width="10"
+    stroke-dasharray="520 107" stroke-dashoffset="-15" stroke-linecap="round" filter="url(#glow)"/>
+
+  <!-- Orta halka - Pastel Lacivert -->
+  <circle cx="200" cy="170" r="70" fill="none" stroke="#7B9FD4" stroke-width="10"
+    stroke-dasharray="350 90" stroke-dashoffset="75" stroke-linecap="round" filter="url(#glow)"/>
+
+  <!-- İç halka - Pastel Teal -->
+  <circle cx="200" cy="170" r="40" fill="none" stroke="#6ABFB8" stroke-width="10"
+    stroke-dasharray="185 66" stroke-dashoffset="160" stroke-linecap="round" filter="url(#glow)"/>
+
+  <!-- Merkez -->
+  <circle cx="200" cy="170" r="5" fill="#0A1628"/>
+
+  <!-- OMNI -->
+  <text x="200" y="318" text-anchor="middle" class="omni-text">OMNI</text>
+  <text x="200" y="340" text-anchor="middle" class="tagline">RESILIENCE PLATFORM</text>
+
+  <!-- 3 renkli çizgi -->
+  <line x1="150" y1="355" x2="178" y2="355" stroke="#E8C97A" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="182" y1="355" x2="210" y2="355" stroke="#7B9FD4" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="214" y1="355" x2="242" y2="355" stroke="#6ABFB8" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

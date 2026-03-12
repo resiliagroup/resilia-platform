@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <rect width="48" height="48" rx="14" fill="#F0FDF4"/>
+  <!-- Hastane binası -->
+  <rect x="10" y="18" width="28" height="21" rx="2" fill="#14622E" opacity="0.15"/>
+  <rect x="10" y="18" width="28" height="21" rx="2" stroke="#14622E" stroke-width="1.5" opacity="0.5"/>
+  <!-- Kapı -->
+  <rect x="20" y="29" width="8" height="10" rx="1" fill="#14622E" opacity="0.4"/>
+  <!-- Pencereler -->
+  <rect x="14" y="22" width="5" height="5" rx="1" fill="#14622E" opacity="0.3"/>
+  <rect x="29" y="22" width="5" height="5" rx="1" fill="#14622E" opacity="0.3"/>
+  <!-- Artı işareti beyaz zemin -->
+  <rect x="19" y="9" width="10" height="10" rx="2" fill="#14622E"/>
+  <rect x="22" y="11" width="4" height="6" rx="0.5" fill="white"/>
+  <rect x="20" y="13" width="8" height="2" rx="0.5" fill="white"/>
+  <!-- EKG çizgisi -->
+  <polyline points="8,38 14,38 16,32 18,43 21,33 23,38 40,38" stroke="#14622E" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+</svg>

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RESILIA Platform — Yazılım Modülleri</title>
+<link rel="icon" type="image/svg+xml" href="../resilia-assets/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0A1628;--navy2:#0D1E3A;--teal:#007A70;--teal2:#00C4B0;--warm:#F4F2EE;--warm2:#EAE7E1;--stone:#7C766E;--stone2:#A09A92;--red:#C13030;--amber:#A85C00;--border:rgba(10,22,40,.09)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--navy);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#C0BAB2;border-radius:99px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes scaleIn{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.a0{animation:fadeUp .7s ease both}.a1{animation:fadeUp .7s .12s ease both}.a2{animation:fadeUp .7s .24s ease both}.a3{animation:fadeUp .7s .38s ease both}
+
+/* ── NAV ── */
+.topbar{background:var(--navy);height:34px;display:flex;align-items:center;justify-content:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.05)}
+.topbar span{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.03em}
+.tb-pill{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;padding:2px 9px;border-radius:99px;background:rgba(0,196,176,.12);color:var(--teal2);border:1px solid rgba(0,196,176,.18)}
+.tb-dot{width:5px;height:5px;border-radius:50%;background:var(--teal2);animation:blink 2.2s infinite;flex-shrink:0}
+nav{position:sticky;top:0;z-index:200;height:58px;background:rgba(244,242,238,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 52px;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:33px;height:33px;border-radius:9px;background:var(--navy);display:flex;align-items:center;justify-content:center}
+.logo-mark span{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:white}
+.logo-wordmark{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:700;color:var(--navy);letter-spacing:.03em}
+.logo-sep{width:1px;height:18px;background:var(--border);margin:0 4px}
+.logo-sub{font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--stone2)}
+.nav-links{display:flex;gap:1px}
+.nav-links a{font-size:12.5px;font-weight:500;color:var(--stone);padding:6px 12px;border-radius:8px;transition:all .15s}
+.nav-links a:hover,.nav-links a.active{color:var(--navy);background:var(--warm2)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-live{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--stone2);padding:5px 10px;border-radius:8px;background:white;border:1px solid var(--border)}
+.nav-cta{font-size:12.5px;font-weight:600;background:var(--navy);color:white;padding:8px 20px;border-radius:9px;transition:all .2s;display:flex;align-items:center;gap:5px}
+.nav-cta:hover{background:var(--navy2);box-shadow:0 4px 16px rgba(10,22,40,.16)}
+
+/* ── HERO ── */
+.hero{background:var(--navy);padding:88px 52px 0;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 60% at 80% 40%,rgba(0,122,112,.14) 0%,transparent 55%),radial-gradient(ellipse 35% 35% at 10% 80%,rgba(0,196,176,.05) 0%,transparent 50%)}
+.hero-grid{position:absolute;inset:0;opacity:.025;background-image:linear-gradient(rgba(255,255,255,.8) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.8) 1px,transparent 1px);background-size:56px 56px}
+.hero-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.hero-top{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:end;padding-bottom:60px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--teal2);border:1px solid rgba(0,196,176,.2);background:rgba(0,196,176,.06);padding:5px 13px;border-radius:99px;margin-bottom:20px;width:fit-content}
+.hero-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,4.8vw,64px);font-weight:600;line-height:1.1;color:white;letter-spacing:-.015em;margin-bottom:20px}
+.hero-h1 em{font-style:italic;color:var(--teal2)}
+.hero-lead{font-size:15px;color:rgba(255,255,255,.45);line-height:1.8;margin-bottom:32px}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn-teal{background:var(--teal);color:white;padding:12px 24px;border-radius:10px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:5px;transition:all .2s;border:none;cursor:pointer}
+.btn-teal:hover{background:#006860;transform:translateY(-1px)}
+.btn-wg{background:transparent;color:rgba(255,255,255,.55);padding:12px 20px;border-radius:10px;font-size:13.5px;font-weight:500;border:1px solid rgba(255,255,255,.12);transition:all .2s;cursor:pointer}
+.btn-wg:hover{background:rgba(255,255,255,.06);color:white}
+.hero-right-content{align-self:end}
+/* Modül nav kartları sağda */
+.mod-nav{display:flex;flex-direction:column;gap:6px}
+.mod-nav-item{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);transition:all .2s;cursor:pointer;text-decoration:none}
+.mod-nav-item:hover,.mod-nav-item.active{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14)}
+.mod-nav-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.mod-nav-name{font-size:13px;font-weight:700;color:white}
+.mod-nav-desc{font-size:11px;color:rgba(255,255,255,.35);margin-top:1px}
+.mod-nav-arrow{margin-left:auto;font-size:14px;color:rgba(255,255,255,.2);transition:all .2s}
+.mod-nav-item:hover .mod-nav-arrow{color:rgba(255,255,255,.6);transform:translateX(3px)}
+
+/* Mockup şerit hero alt */
+.hero-mockup-strip{background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.07);border-radius:16px 16px 0 0;margin-top:48px;padding:28px 32px 0;overflow:hidden}
+.mockup-bar{height:26px;background:rgba(255,255,255,.06);border-radius:8px 8px 0 0;display:flex;align-items:center;padding:0 12px;gap:6px;margin-bottom:16px}
+.m-dot{width:8px;height:8px;border-radius:50%}
+.mockup-content-row{display:grid;grid-template-columns:200px 1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+
+/* ── MOD GRID ── */
+.section{padding:80px 52px}
+.si{max-width:1200px;margin:0 auto}
+.eyebrow{font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:12px}
+.divider{width:44px;height:2px;background:var(--teal);border-radius:99px;margin-bottom:18px;animation:scaleIn .6s ease forwards;transform-origin:left}
+.s-title{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,3vw,42px);font-weight:600;line-height:1.18;color:var(--navy);margin-bottom:12px}
+.s-lead{font-size:14.5px;color:var(--stone);line-height:1.8;max-width:540px}
+
+/* 4 modül kartları */
+.mod-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:48px}
+.mod-card{--mc:#007A70;border-radius:20px;overflow:hidden;border:1px solid var(--border);background:white;transition:all .25s;cursor:pointer}
+.mod-card:hover{transform:translateY(-3px);box-shadow:0 14px 44px rgba(10,22,40,.09)}
+.mc-header{padding:28px 28px 0;background:var(--mc);position:relative;overflow:hidden;min-height:200px}
+.mc-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 80% 20%,rgba(255,255,255,.08) 0%,transparent 55%)}
+.mc-header::after{content:'';position:absolute;inset:0;opacity:.04;background-image:linear-gradient(rgba(255,255,255,.8) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.8) 1px,transparent 1px);background-size:32px 32px}
+.mc-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1;margin-bottom:20px}
+.mc-badge{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.7)}
+.mc-num{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.06em}
+.mc-title{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;color:white;line-height:1;margin-bottom:8px;position:relative;z-index:1}
+.mc-title span{font-style:italic;opacity:.6}
+.mc-sub{font-size:12px;color:rgba(255,255,255,.5);position:relative;z-index:1;letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+/* SVG mockup in header */
+.mc-mockup{position:relative;z-index:1;margin-top:20px}
+.mc-body{padding:24px 28px}
+.mc-desc{font-size:13.5px;color:var(--stone);line-height:1.78;margin-bottom:18px}
+.mc-features{display:flex;flex-direction:column;gap:0}
+.mc-feat{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--warm2);font-size:12.5px;color:#374151}
+.mc-feat:last-child{border-bottom:none}
+.mc-feat::before{content:'';width:16px;height:16px;border-radius:5px;background:var(--mc);flex-shrink:0;opacity:.15}
+.mc-feat-dot{width:4px;height:4px;border-radius:50%;background:var(--mc);flex-shrink:0}
+.mc-footer{padding:16px 28px;background:var(--warm);border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.mc-link{font-size:12px;font-weight:700;color:var(--mc);display:flex;align-items:center;gap:4px;transition:gap .15s}
+.mod-card:hover .mc-link{gap:9px}
+.mc-tag{font-family:'DM Mono',monospace;font-size:9px;color:var(--stone2)}
+
+/* ── DETAY BÖLÜMLER: sol metin / sağ mockup, dönüşümlü ── */
+.detail-section{padding:80px 52px;border-top:1px solid var(--border)}
+.detail-section.dark{background:var(--navy)}
+.detail-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.detail-inner.rev{direction:rtl}
+.detail-inner.rev > *{direction:ltr}
+.det-eyebrow{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px}
+.det-title{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,2.8vw,40px);font-weight:600;line-height:1.18;margin-bottom:14px}
+.det-lead{font-size:14px;line-height:1.82;margin-bottom:24px}
+.det-feats{display:flex;flex-direction:column;gap:0;margin-bottom:24px}
+.det-feat{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)}
+.det-feat:last-child{border-bottom:none}
+.det-feat-icon{width:32px;height:32px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.det-feat-title{font-size:12.5px;font-weight:700;margin-bottom:2px}
+.det-feat-desc{font-size:11.5px;line-height:1.6}
+/* dark variant text colors */
+.dark .det-eyebrow{color:var(--teal2)}
+.dark .det-title{color:white}
+.dark .det-lead{color:rgba(255,255,255,.42)}
+.dark .det-feat{border-color:rgba(255,255,255,.07)}
+.dark .det-feat-title{color:white}
+.dark .det-feat-desc{color:rgba(255,255,255,.35)}
+/* light variant */
+.light .det-eyebrow{color:var(--teal)}
+.light .det-title{color:var(--navy)}
+.light .det-lead{color:var(--stone)}
+.light .det-feat-title{color:var(--navy)}
+.light .det-feat-desc{color:var(--stone)}
+
+/* Screen mockup components */
+.screen{background:white;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(10,22,40,.12),0 2px 8px rgba(10,22,40,.06);border:1px solid var(--border)}
+.screen.dark-screen{background:#0D1E3A;border-color:rgba(255,255,255,.08)}
+.screen-bar{height:36px;display:flex;align-items:center;padding:0 14px;gap:6px;border-bottom:1px solid rgba(10,22,40,.08)}
+.dark-screen .screen-bar{border-color:rgba(255,255,255,.06);background:#0A1628}
+.s-dot{width:8px;height:8px;border-radius:50%}
+.screen-title{font-size:10px;color:var(--stone2);letter-spacing:.04em;margin-left:4px;font-family:'DM Mono',monospace}
+.dark-screen .screen-title{color:rgba(255,255,255,.25)}
+.screen-body{padding:16px}
+
+/* ── CTA ── */
+.cta{padding:80px 52px;background:var(--navy);position:relative;overflow:hidden}
+.cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 65% at 50% 0%,rgba(0,122,112,.14) 0%,transparent 55%)}
+.cta-inner{max-width:640px;margin:0 auto;text-align:center;position:relative;z-index:1}
+.cta-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3.8vw,50px);font-weight:600;color:white;line-height:1.18;margin-bottom:14px}
+.cta-title em{font-style:italic;color:var(--teal2)}
+.cta-sub{font-size:14px;color:rgba(255,255,255,.38);margin-bottom:32px;line-height:1.78}
+.cta-acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.demo-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.demo-p{font-size:10px;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.38);font-family:'DM Mono',monospace}
+
+/* FOOTER */
+footer{background:var(--navy2);padding:40px 52px 24px}
+.fi{max-width:1200px;margin:0 auto}
+.ft{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,.06)}
+.fbn{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:white;margin-bottom:8px}
+.fbd{font-size:11px;color:rgba(255,255,255,.28);line-height:1.7;max-width:200px;margin-bottom:12px}
+.fbadges{display:flex;gap:4px;flex-wrap:wrap}
+.fbadge{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:.06em;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.28)}
+.fch{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.22);margin-bottom:12px}
+.fc a{display:block;font-size:11px;color:rgba(255,255,255,.36);margin-bottom:8px;transition:color .15s}
+.fc a:hover{color:rgba(255,255,255,.75)}
+.fb{display:flex;justify-content:space-between;align-items:center}
+.fc2{font-size:10px;color:rgba(255,255,255,.18)}
+.fitu{display:flex;align-items:center;gap:5px;font-size:10px;color:rgba(255,255,255,.18)}
+.fitu-tag{background:#D41223;color:white;font-size:8px;font-weight:700;font-family:'DM Mono',monospace;padding:2px 4px;border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-dot"></div>
+  <div class="tb-pill">Platform Tanıtımı</div>
+  <span>·</span>
+  <span>4 entegre modül · Uçtan uca BCM</span>
+</div>
+
+<nav>
+  <a href="../index.html" class="logo">
+    <div class="logo-mark"><span>R</span></div>
+    <span class="logo-wordmark">RESILIA</span>
+    <div class="logo-sep"></div>
+    <span class="logo-sub">Platform</span>
+  </a>
+  <div class="nav-links">
+    <a href="../index.html#sektorler">Sektörler</a>
+    <a href="#" class="active">Platform</a>
+    <a href="../index.html#metodoloji">Metodoloji</a>
+    <a href="../index.html#surec">Süreç</a>
+    <a href="../index.html#referanslar">Referanslar</a>
+  </div>
+  <div class="nav-right">
+    <div class="nav-live"><div class="tb-dot"></div><span>Canlı Demo</span></div>
+    <a href="/login" class="nav-cta">Platforma Giriş <span style="opacity:.55">→</span></a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-top">
+      <div>
+        <div class="hero-eyebrow a0"><div class="tb-dot"></div>Yazılım Platformu</div>
+        <h1 class="hero-h1 a1">Modern BCM<br>dijital de<em>olmalıdır.</em></h1>
+        <p class="hero-lead a2">RESILIA, iş sürekliliği yönetiminin tüm süreçlerini tek bir entegre platformda birleştirir. Risk değerlendirmesinden kriz koordinasyonuna — modüler, sezgisel ve denetim-kanıtı.</p>
+        <div class="hero-actions a3">
+          <a href="/login" class="btn-teal">Demo Platforma Erişin →</a>
+          <a href="../index.html" class="btn-wg">Ana Sayfaya Dön</a>
+        </div>
+      </div>
+      <div class="hero-right-content a2">
+        <div class="mod-nav">
+          <a href="#risk" class="mod-nav-item active">
+            <div class="mod-nav-dot" style="background:#C13030"></div>
+            <div><div class="mod-nav-name">HFE-RİSK</div><div class="mod-nav-desc">Risk değerlendirme & senaryo analizi</div></div>
+            <span class="mod-nav-arrow">→</span>
+          </a>
+          <a href="#bia" class="mod-nav-item">
+            <div class="mod-nav-dot" style="background:#A85C00"></div>
+            <div><div class="mod-nav-name">HFE-İMPACT</div><div class="mod-nav-desc">İş etki analizi & RTO/RPO</div></div>
+            <span class="mod-nav-arrow">→</span>
+          </a>
+          <a href="#plan" class="mod-nav-item">
+            <div class="mod-nav-dot" style="background:#007A70"></div>
+            <div><div class="mod-nav-name">HFE-PLAN</div><div class="mod-nav-desc">Kurtarma planlaması & BCP</div></div>
+            <span class="mod-nav-arrow">→</span>
+          </a>
+          <a href="#crisis" class="mod-nav-item">
+            <div class="mod-nav-dot" style="background:#6D28D9"></div>
+            <div><div class="mod-nav-name">HFE-KRİZ</div><div class="mod-nav-desc">Kriz koordinasyonu & komuta</div></div>
+            <span class="mod-nav-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard mockup strip -->
+    <div class="hero-mockup-strip">
+      <div class="mockup-bar">
+        <div class="m-dot" style="background:#FF5F57"></div>
+        <div class="m-dot" style="background:#FFBD2E"></div>
+        <div class="m-dot" style="background:#28C840"></div>
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);margin-left:8px">resilia.platform / uzman / dashboard</span>
+      </div>
+      <!-- Fake dashboard content -->
+      <svg width="100%" viewBox="0 0 1100 220" xmlns="http://www.w3.org/2000/svg" style="display:block">
+        <defs>
+          <linearGradient id="dg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#007A70"/><stop offset="100%" stop-color="#00C4B0"/></linearGradient>
+        </defs>
+        <!-- Sidebar -->
+        <rect x="0" y="0" width="180" height="220" fill="rgba(255,255,255,0.04)"/>
+        <rect x="12" y="16" width="156" height="28" rx="8" fill="rgba(0,196,176,0.12)" stroke="rgba(0,196,176,0.2)" stroke-width="1"/>
+        <rect x="20" y="24" width="8" height="8" rx="2" fill="rgba(0,196,176,0.6)"/>
+        <text x="34" y="33" font-family="sans-serif" font-size="10" fill="rgba(255,255,255,0.7)" font-weight="600">Dashboard</text>
+        <rect x="12" y="52" width="156" height="24" rx="6" fill="rgba(255,255,255,0.03)"/>
+        <text x="20" y="67" font-family="sans-serif" font-size="9" fill="rgba(255,255,255,0.3)">HFE-Risk</text>
+        <rect x="12" y="80" width="156" height="24" rx="6" fill="rgba(255,255,255,0.03)"/>
+        <text x="20" y="95" font-family="sans-serif" font-size="9" fill="rgba(255,255,255,0.3)">BIA / İmpact</text>
+        <rect x="12" y="108" width="156" height="24" rx="6" fill="rgba(255,255,255,0.03)"/>
+        <text x="20" y="123" font-family="sans-serif" font-size="9" fill="rgba(255,255,255,0.3)">Kurtarma Planı</text>
+        <rect x="12" y="136" width="156" height="24" rx="6" fill="rgba(255,255,255,0.03)"/>
+        <text x="20" y="151" font-family="sans-serif" font-size="9" fill="rgba(255,255,255,0.3)">Kriz Merkezi</text>
+        <!-- KPI cards -->
+        <rect x="196" y="12" width="200" height="80" rx="10" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+        <text x="210" y="34" font-family="sans-serif" font-size="9" fill="rgba(255,255,255,0.35)" letter-spacing="0.5">ORTALAMA SKOR</text>
+        <text x="210" y="62" font-family="Georgia,serif" font-size="32" font-weight="700" fill="white">55.6</text>
+        <text x="210" y="78" font-family="sans-serif" font-size="9" fill="rgba(168,92,0,0.8)">● Orta Risk</text>
+        <rect x="408" y="12" width="200" height="80" rx="10" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+        <text x="422" y="34" font-family="sans-serif" font-size="9" fill="rgba(255,255,255,0.35)" letter-spacing="0.5">KRİTİK BİRİM</text>
+        <text x="422" y="62" font-family="Georgia,serif" font-size="32" font-weight="700" fill="#EF4444">35</text>
+        <text x="422" y="78" font-family="sans-serif" font-size="9" fill="rgba(255,255,255,0.3)">/ 200 şube</text>
+        <rect x="620" y="12" width="200" height="80" rx="10" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+        <text x="634" y="34" font-family="sans-serif" font-size="9" fill="rgba(255,255,255,0.35)" letter-spacing="0.5">EAL / YIL</text>
+        <text x="634" y="62" font-family="Georgia,serif" font-size="32" font-weight="700" fill="white">₺32M</text>
+        <text x="634" y="78" font-family="sans-serif" font-size="9" fill="rgba(0,196,176,0.7)">↓ %12 risk azalımı</text>
+        <rect x="832" y="12" width="200" height="80" rx="10" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+        <text x="846" y="34" font-family="sans-serif" font-size="9" fill="rgba(255,255,255,0.35)" letter-spacing="0.5">UYUM ORANI</text>
+        <text x="846" y="62" font-family="Georgia,serif" font-size="32" font-weight="700" fill="#00C4B0">%87</text>
+        <text x="846" y="78" font-family="sans-serif" font-size="9" fill="rgba(255,255,255,0.3)">BDDK 26333</text>
+        <!-- Bar chart -->
+        <rect x="196" y="104" width="420" height="104" rx="10" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <text x="210" y="122" font-family="sans-serif" font-size="9" fill="rgba(255,255,255,0.35)" letter-spacing="0.5">SKOR DAĞILIMI — 200 ŞUBE</text>
+        <!-- bars -->
+        <rect x="210" y="168" width="20" height="28" rx="3" fill="#EF4444" opacity="0.7"/>
+        <rect x="234" y="155" width="20" height="41" rx="3" fill="#EF4444" opacity="0.8"/>
+        <rect x="258" y="148" width="20" height="48" rx="3" fill="#F59E0B" opacity="0.7"/>
+        <rect x="282" y="138" width="20" height="58" rx="3" fill="#F59E0B" opacity="0.8"/>
+        <rect x="306" y="143" width="20" height="53" rx="3" fill="#F59E0B"/>
+        <rect x="330" y="151" width="20" height="45" rx="3" fill="#F59E0B" opacity="0.7"/>
+        <rect x="354" y="160" width="20" height="36" rx="3" fill="#10B981" opacity="0.7"/>
+        <rect x="378" y="152" width="20" height="44" rx="3" fill="#10B981" opacity="0.8"/>
+        <rect x="402" y="162" width="20" height="34" rx="3" fill="#10B981"/>
+        <rect x="426" y="170" width="20" height="26" rx="3" fill="#10B981" opacity="0.6"/>
+        <line x1="210" y1="197" x2="450" y2="197" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+        <!-- Map placeholder -->
+        <rect x="628" y="104" width="404" height="104" rx="10" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <text x="642" y="122" font-family="sans-serif" font-size="9" fill="rgba(255,255,255,0.35)" letter-spacing="0.5">İSTANBUL RİSK HARİTASI</text>
+        <!-- fake map dots -->
+        <circle cx="720" cy="160" r="4" fill="#EF4444" opacity="0.8"/>
+        <circle cx="750" cy="148" r="3" fill="#F59E0B" opacity="0.8"/>
+        <circle cx="780" cy="165" r="5" fill="#EF4444" opacity="0.7"/>
+        <circle cx="810" cy="155" r="3" fill="#10B981" opacity="0.8"/>
+        <circle cx="840" cy="162" r="4" fill="#F59E0B" opacity="0.8"/>
+        <circle cx="870" cy="152" r="3" fill="#10B981" opacity="0.7"/>
+        <circle cx="900" cy="168" r="4" fill="#EF4444" opacity="0.7"/>
+        <circle cx="690" cy="170" r="3" fill="#F59E0B" opacity="0.6"/>
+        <circle cx="930" cy="158" r="3" fill="#10B981" opacity="0.8"/>
+        <circle cx="760" cy="178" r="3" fill="#EF4444" opacity="0.6"/>
+        <circle cx="820" cy="175" r="4" fill="#F59E0B" opacity="0.7"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- MOD GRID -->
+<section class="section" style="background:white">
+  <div class="si">
+    <span class="eyebrow">Entegre Yazılım Modülleri</span>
+    <div class="divider"></div>
+    <h2 class="s-title">Tüm BCM süreci,<br>tek bir platformda.</h2>
+    <p class="s-lead" style="margin-bottom:0">Her modül bağımsız çalışabilir ya da tüm döngüyü kapsamak için birleşik olarak kullanılabilir.</p>
+
+    <div class="mod-grid">
+
+      <!-- HFE-RİSK -->
+      <div class="mod-card" style="--mc:#C13030" id="risk">
+        <div class="mc-header" style="background:#C13030">
+          <div class="mc-top">
+            <span class="mc-badge">Risk Yönetimi</span>
+            <span class="mc-num">01</span>
+          </div>
+          <div class="mc-title">HFE-<span>RİSK</span></div>
+          <div class="mc-sub">Tehdit · Senaryo · Skor</div>
+          <!-- Mini mockup -->
+          <div class="mc-mockup">
+            <svg viewBox="0 0 340 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:10px 10px 0 0;display:block;background:rgba(0,0,0,0.2)">
+              <rect x="8" y="8" width="100" height="74" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+              <text x="16" y="24" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.4)" letter-spacing="0.5">SENARYO LİSTESİ</text>
+              <rect x="16" y="30" width="84" height="10" rx="3" fill="rgba(239,68,68,0.3)"/><text x="20" y="38" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.6)">Deprem · 6.37</text>
+              <rect x="16" y="44" width="84" height="10" rx="3" fill="rgba(245,158,11,0.25)"/><text x="20" y="52" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.5)">Siber Saldırı · 4.12</text>
+              <rect x="16" y="58" width="84" height="10" rx="3" fill="rgba(245,158,11,0.2)"/><text x="20" y="66" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.5)">Yangın · 3.80</text>
+              <rect x="16" y="72" width="84" height="8" rx="3" fill="rgba(16,185,129,0.15)"/><text x="20" y="79" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.35)">Sel · 1.72</text>
+              <!-- Risk matrix -->
+              <rect x="120" y="8" width="74" height="74" rx="6" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+              <text x="128" y="20" font-family="sans-serif" font-size="6" fill="rgba(255,255,255,0.3)">Etki →</text>
+              <rect x="128" y="24" width="22" height="22" rx="2" fill="rgba(245,158,11,0.3)"/>
+              <rect x="153" y="24" width="22" height="22" rx="2" fill="rgba(239,68,68,0.4)"/>
+              <rect x="128" y="50" width="22" height="22" rx="2" fill="rgba(16,185,129,0.25)"/>
+              <rect x="153" y="50" width="22" height="22" rx="2" fill="rgba(245,158,11,0.3)"/>
+              <!-- Score gauge -->
+              <rect x="206" y="8" width="126" height="74" rx="6" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+              <text x="214" y="22" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.35)" letter-spacing="0.5">HFE SKORU</text>
+              <text x="214" y="50" font-family="Georgia,serif" font-size="28" font-weight="700" fill="white">67</text>
+              <rect x="214" y="58" width="108" height="5" rx="2" fill="rgba(255,255,255,0.08)"/>
+              <rect x="214" y="58" width="72" height="5" rx="2" fill="rgba(245,158,11,0.8)"/>
+              <text x="214" y="74" font-family="sans-serif" font-size="7" fill="rgba(245,158,11,0.7)">ORTA RİSK</text>
+            </svg>
+          </div>
+        </div>
+        <div class="mc-body">
+          <p class="mc-desc">Tehditleri yapılandırılmış ve izlenebilir biçimde tanımlayın, değerlendirin ve belgeleyin. HFE-360 metodolojisiyle her sektöre özel senaryo analizi ve risk matrisi.</p>
+          <div class="mc-features">
+            <div class="mc-feat"><div class="mc-feat-dot" style="background:#C13030"></div>HFE-360 tabanlı risk skorlaması (0–100)</div>
+            <div class="mc-feat"><div class="mc-feat-dot" style="background:#C13030"></div>Sektöre özel tehdit senaryoları</div>
+            <div class="mc-feat"><div class="mc-feat-dot" style="background:#C13030"></div>Olasılık × Etki risk matrisi</div>
+            <div class="mc-feat"><div class="mc-feat-dot" style="background:#C13030"></div>Denetim izi ve versiyon kontrolü</div>
+          </div>
+        </div>
+        <div class="mc-footer">
+          <a href="#risk-detail" class="mc-link" style="color:#C13030">Detayları gör <span>→</span></a>
+          <span class="mc-tag">ISO 22301 · BDDK</span>
+        </div>
+      </div>
+
+      <!-- HFE-İMPACT -->
+      <div class="mod-card" style="--mc:#A85C00" id="bia">
+        <div class="mc-header" style="background:#A85C00">
+          <div class="mc-top">
+            <span class="mc-badge">İş Etki Analizi</span>
+            <span class="mc-num">02</span>
+          </div>
+          <div class="mc-title">HFE-<span>İMPACT</span></div>
+          <div class="mc-sub">BIA · RTO/RPO · EAL</div>
+          <div class="mc-mockup">
+            <svg viewBox="0 0 340 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:10px 10px 0 0;display:block;background:rgba(0,0,0,0.2)">
+              <!-- Process criticality table -->
+              <rect x="8" y="8" width="200" height="74" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+              <text x="16" y="22" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.4)" letter-spacing="0.5">KRİTİK SÜREÇLER</text>
+              <rect x="16" y="27" width="180" height="1" fill="rgba(255,255,255,0.08)"/>
+              <text x="16" y="38" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.55)">Ödeme Sistemleri</text>
+              <text x="140" y="38" font-family="DM Mono,monospace" font-size="7" fill="rgba(239,68,68,0.8)">RTO: 4s</text>
+              <rect x="16" y="41" width="180" height="1" fill="rgba(255,255,255,0.05)"/>
+              <text x="16" y="52" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.45)">ATM Ağı</text>
+              <text x="140" y="52" font-family="DM Mono,monospace" font-size="7" fill="rgba(245,158,11,0.8)">RTO: 8s</text>
+              <rect x="16" y="55" width="180" height="1" fill="rgba(255,255,255,0.05)"/>
+              <text x="16" y="66" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.35)">Müşteri Hizmetleri</text>
+              <text x="140" y="66" font-family="DM Mono,monospace" font-size="7" fill="rgba(16,185,129,0.7)">RTO: 24s</text>
+              <rect x="16" y="69" width="180" height="1" fill="rgba(255,255,255,0.05)"/>
+              <text x="16" y="79" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.25)">Muhasebe</text>
+              <text x="140" y="79" font-family="DM Mono,monospace" font-size="7" fill="rgba(16,185,129,0.5)">RTO: 72s</text>
+              <!-- EAL display -->
+              <rect x="220" y="8" width="112" height="74" rx="6" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+              <text x="228" y="22" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.35)" letter-spacing="0.5">YILLIK EAL</text>
+              <text x="228" y="46" font-family="Georgia,serif" font-size="20" font-weight="700" fill="white">₺32M</text>
+              <text x="228" y="58" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.3)">Bankacılık</text>
+              <rect x="228" y="64" width="96" height="4" rx="2" fill="rgba(255,255,255,0.08)"/>
+              <rect x="228" y="64" width="60" height="4" rx="2" fill="rgba(168,92,0,0.9)"/>
+            </svg>
+          </div>
+        </div>
+        <div class="mc-body">
+          <p class="mc-desc">Kritik süreçlerin ve bağımlılıkların finansal etkisini ölçün. RTO/RPO metriklerini belirleyin, senaryo bazlı yıllık beklenen kayıp hesaplayın ve aksiyon önceliklendirin.</p>
+          <div class="mc-features">
+            <div class="mc-feat"><div class="mc-feat-dot" style="background:#A85C00"></div>Süreç kritiklik matrisi ve bağımlılık haritası</div>
+            <div class="mc-feat"><div class="mc-feat-dot" style="background:#A85C00"></div>RTO/RPO hedef belirleme ve takip</div>
+            <div class="mc-feat"><div class="mc-feat-dot" style="background:#A85C00"></div>Senaryo bazlı EAL (Yıllık Beklenen Kayıp)</div>
+            <div class="mc-feat"><div class="mc-feat-dot" style="background:#A85C00"></div>ROI odaklı aksiyon maliyet analizi</div>
+          </div>
+        </div>
+        <div class="mc-footer">
+          <a href="#bia-detail" class="mc-link" style="color:#A85C00">Detayları gör <span>→</span></a>
+          <span class="mc-tag">ISO 22317 · BIA</span>
+        </div>
+      </div>
+
+      <!-- HFE-PLAN -->
+      <div class="mod-card" style="--mc:#007A70" id="plan">
+        <div class="mc-header" style="background:#007A70">
+          <div class="mc-top">
+            <span class="mc-badge">Kurtarma Planlaması</span>
+            <span class="mc-num">03</span>
+          </div>
+          <div class="mc-title">HFE-<span>PLAN</span></div>
+          <div class="mc-sub">BCP · DRP · Tatbikat</div>
+          <div class="mc-mockup">
+            <svg viewBox="0 0 340 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:10px 10px 0 0;display:block;background:rgba(0,0,0,0.2)">
+              <!-- Plan checklist -->
+              <rect x="8" y="8" width="156" height="74" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+              <text x="16" y="22" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.4)" letter-spacing="0.5">BCP KONTROL LİSTESİ</text>
+              <rect x="16" y="28" width="10" height="10" rx="2" fill="rgba(0,196,176,0.4)"/>
+              <polyline points="18,33 21,36 26,30" stroke="white" stroke-width="1.2" fill="none"/>
+              <text x="32" y="36" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.6)">İletişim Planı</text>
+              <rect x="16" y="42" width="10" height="10" rx="2" fill="rgba(0,196,176,0.4)"/>
+              <polyline points="18,47 21,50 26,44" stroke="white" stroke-width="1.2" fill="none"/>
+              <text x="32" y="50" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.6)">Tahliye Prosedürü</text>
+              <rect x="16" y="56" width="10" height="10" rx="2" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+              <text x="32" y="64" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.35)">IT Kurtarma Planı</text>
+              <rect x="16" y="70" width="10" height="10" rx="2" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+              <text x="32" y="78" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.25)">Tedarikçi Yedekleme</text>
+              <!-- Tatbikat takvim -->
+              <rect x="175" y="8" width="157" height="74" rx="6" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+              <text x="183" y="22" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.35)" letter-spacing="0.5">TATBİKAT TAKVİMİ</text>
+              <rect x="183" y="28" width="141" height="18" rx="3" fill="rgba(0,196,176,0.15)" stroke="rgba(0,196,176,0.25)" stroke-width="1"/>
+              <text x="189" y="40" font-family="sans-serif" font-size="7" fill="rgba(0,196,176,0.8)">Mar 2026 · Masa Başı Tatbikat</text>
+              <rect x="183" y="50" width="141" height="18" rx="3" fill="rgba(255,255,255,0.06)"/>
+              <text x="189" y="62" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.3)">Haz 2026 · Saha Tatbikatı</text>
+              <rect x="183" y="72" width="141" height="8" rx="3" fill="rgba(255,255,255,0.04)"/>
+              <text x="189" y="79" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.2)">Ara 2026 · Kriz Simülasyonu</text>
+            </svg>
+          </div>
+        </div>
+        <div class="mc-body">
+          <p class="mc-desc">İş sürekliliği ve felaket kurtarma planlarınızı yapılandırın, güncel tutun ve denetim süreçleri için hazır hale getirin. Tatbikat takvimi ve performans izleme dahil.</p>
+          <div class="mc-features">
+            <div class="mc-feat"><div class="mc-feat-dot" style="background:#007A70"></div>BCP / DRP şablonları ve versiyon yönetimi</div>
+            <div class="mc-feat"><div class="mc-feat-dot" style="background:#007A70"></div>Görev bazlı aksiyon listesi ve sorumluluk matrisi</div>
+            <div class="mc-feat"><div class="mc-feat-dot" style="background:#007A70"></div>Tatbikat planlama ve sonuç takibi</div>
+            <div class="mc-feat"><div class="mc-feat-dot" style="background:#007A70"></div>Çapraz plan koordinasyonu ve çakışma analizi</div>
+          </div>
+        </div>
+        <div class="mc-footer">
+          <a href="#plan-detail" class="mc-link" style="color:#007A70">Detayları gör <span>→</span></a>
+          <span class="mc-tag">ISO 22301 · DRP</span>
+        </div>
+      </div>
+
+      <!-- HFE-KRİZ -->
+      <div class="mod-card" style="--mc:#6D28D9" id="crisis">
+        <div class="mc-header" style="background:#6D28D9">
+          <div class="mc-top">
+            <span class="mc-badge">Kriz Koordinasyonu</span>
+            <span class="mc-num">04</span>
+          </div>
+          <div class="mc-title">HFE-<span>KRİZ</span></div>
+          <div class="mc-sub">Olay · Komuta · İletişim</div>
+          <div class="mc-mockup">
+            <svg viewBox="0 0 340 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:10px 10px 0 0;display:block;background:rgba(0,0,0,0.2)">
+              <!-- Alert banner -->
+              <rect x="8" y="8" width="324" height="18" rx="4" fill="rgba(239,68,68,0.25)" stroke="rgba(239,68,68,0.4)" stroke-width="1"/>
+              <circle cx="20" cy="17" r="4" fill="#EF4444"/>
+              <text x="30" y="20" font-family="sans-serif" font-size="7" fill="rgba(239,68,68,0.9)" font-weight="600">AKTİF KRİZ: Veri merkezi erişim kesintisi — Seviye 2</text>
+              <!-- Task board -->
+              <rect x="8" y="32" width="100" height="50" rx="6" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+              <text x="16" y="44" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.35)">AÇIK (3)</text>
+              <rect x="14" y="48" width="86" height="10" rx="2" fill="rgba(239,68,68,0.2)"/><text x="18" y="56" font-family="sans-serif" font-size="6.5" fill="rgba(255,255,255,0.5)">BT Altyapısı Kontrolü</text>
+              <rect x="14" y="60" width="86" height="10" rx="2" fill="rgba(245,158,11,0.15)"/><text x="18" y="68" font-family="sans-serif" font-size="6.5" fill="rgba(255,255,255,0.4)">Yedek Sistem Devreye Al</text>
+              <rect x="14" y="72" width="86" height="8" rx="2" fill="rgba(255,255,255,0.08)"/><text x="18" y="79" font-family="sans-serif" font-size="6.5" fill="rgba(255,255,255,0.3)">Paydaş Bilgilendirme</text>
+              <!-- Timeline -->
+              <rect x="118" y="32" width="110" height="50" rx="6" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              <text x="126" y="44" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.3)">ZAMAN ÇİZELGESİ</text>
+              <line x1="130" y1="50" x2="130" y2="80" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+              <circle cx="130" cy="52" r="2.5" fill="#EF4444"/>
+              <text x="136" y="56" font-family="sans-serif" font-size="6.5" fill="rgba(255,255,255,0.45)">09:14 Olay tespit</text>
+              <circle cx="130" cy="65" r="2.5" fill="#F59E0B"/>
+              <text x="136" y="69" font-family="sans-serif" font-size="6.5" fill="rgba(255,255,255,0.35)">09:22 Kriz ekibi</text>
+              <circle cx="130" cy="77" r="2" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+              <text x="136" y="80" font-family="sans-serif" font-size="6.5" fill="rgba(255,255,255,0.2)">Devam ediyor...</text>
+              <!-- Comm -->
+              <rect x="238" y="32" width="94" height="50" rx="6" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              <text x="246" y="44" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.3)">İLETİŞİM</text>
+              <rect x="246" y="48" width="78" height="10" rx="3" fill="rgba(109,40,217,0.3)"/>
+              <text x="250" y="56" font-family="sans-serif" font-size="6.5" fill="rgba(255,255,255,0.6)">SMS gönderildi · 14 kişi</text>
+              <rect x="246" y="62" width="78" height="10" rx="3" fill="rgba(255,255,255,0.08)"/>
+              <text x="250" y="70" font-family="sans-serif" font-size="6.5" fill="rgba(255,255,255,0.35)">E-posta · 8 yönetici</text>
+              <rect x="246" y="76" width="78" height="6" rx="2" fill="rgba(255,255,255,0.05)"/>
+              <text x="250" y="81" font-family="sans-serif" font-size="6" fill="rgba(255,255,255,0.2)">AFAD bildirimi · bekliyor</text>
+            </svg>
+          </div>
+        </div>
+        <div class="mc-body">
+          <p class="mc-desc">Kriz anında merkezi komuta ve koordinasyon. Olay kaydından görev atamaya, çok kanallı iletişimden denetim izine kadar tüm kriz süreci tek ekrandan yönetilir.</p>
+          <div class="mc-features">
+            <div class="mc-feat"><div class="mc-feat-dot" style="background:#6D28D9"></div>Gerçek zamanlı olay kayıt ve seviye belirleme</div>
+            <div class="mc-feat"><div class="mc-feat-dot" style="background:#6D28D9"></div>Görev atama ve kriz ekibi yönetimi</div>
+            <div class="mc-feat"><div class="mc-feat-dot" style="background:#6D28D9"></div>SMS / e-posta / push çok kanallı bildirim</div>
+            <div class="mc-feat"><div class="mc-feat-dot" style="background:#6D28D9"></div>Kriz sonrası otomatik olay raporu</div>
+          </div>
+        </div>
+        <div class="mc-footer">
+          <a href="#crisis-detail" class="mc-link" style="color:#6D28D9">Detayları gör <span>→</span></a>
+          <span class="mc-tag">ISO 22320 · Kriz</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="cta-inner">
+    <h2 class="cta-title">Platformu <em>canlı</em> görün.</h2>
+    <p class="cta-sub">Demo hesapla tüm modüllere erişin. Gerçek veri, gerçek arayüz — hiç kurulum gerektirmez.</p>
+    <div class="cta-acts">
+      <a href="/login" class="btn-teal">Demo Platforma Erişin →</a>
+      <a href="../index.html" class="btn-wg">Ana Sayfaya Dön</a>
+    </div>
+    <div class="demo-row">
+      <span class="demo-p">board@akbank.com</span>
+      <span class="demo-p">uzman@isoistanbul.com</span>
+      <span class="demo-p">birim@ibb.istanbul</span>
+      <span class="demo-p">Şifre: 1234</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fi">
+    <div class="ft">
+      <div>
+        <div class="fbn">RESILIA</div>
+        <p class="fbd">Kurumsal dayanıklılık yönetimi için bilimsel temelli, sektöre özgü dijital platform.</p>
+        <div class="fbadges"><span class="fbadge">ISO 22301</span><span class="fbadge">BDDK 26333</span><span class="fbadge">SEVESO III</span><span class="fbadge">ISO 45001</span></div>
+      </div>
+      <div class="fc"><div class="fch">Platform</div>
+        <a href="#risk">HFE-RİSK</a><a href="#bia">HFE-İMPACT</a>
+        <a href="#plan">HFE-PLAN</a><a href="#crisis">HFE-KRİZ</a>
+      </div>
+      <div class="fc"><div class="fch">Sektörler</div>
+        <a href="../index.html#sektorler">Bankacılık</a><a href="../index.html#sektorler">Sağlık</a>
+        <a href="../index.html#sektorler">Belediyeler</a><a href="../index.html#sektorler">MEB</a>
+        <a href="../index.html#sektorler">Üretim</a><a href="../index.html#sektorler">Odalar</a>
+      </div>
+      <div class="fc"><div class="fch">Kurumsal</div>
+        <a href="../index.html#metodoloji">Metodoloji</a>
+        <a href="../index.html#referanslar">Referanslar</a>
+        <a href="/login">Giriş Yap</a>
+      </div>
+    </div>
+    <div class="fb">
+      <span class="fc2">© 2025–2026 RESILIA. Tüm hakları saklıdır.</span>
+      <div class="fitu"><span class="fitu-tag">İTÜ</span>Afet Yönetim Merkezi iş birliğiyle</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

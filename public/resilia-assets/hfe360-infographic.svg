@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" font-family="Georgia, serif">
+  <defs>
+    <linearGradient id="navy-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A1628"/>
+      <stop offset="100%" stop-color="#0F2448"/>
+    </linearGradient>
+    <linearGradient id="h-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#C13030"/>
+      <stop offset="100%" stop-color="#E05555"/>
+    </linearGradient>
+    <linearGradient id="f-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A85C00"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <linearGradient id="e-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#007A70"/>
+      <stop offset="100%" stop-color="#00C4B0"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#0A1628" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="600" height="400" fill="#F4F2EE" rx="16"/>
+  
+  <!-- Header band -->
+  <rect width="600" height="64" fill="url(#navy-grad)" rx="16"/>
+  <rect width="600" height="20" y="44" fill="url(#navy-grad)"/>
+  
+  <!-- Title -->
+  <text x="30" y="29" fill="white" font-size="18" font-weight="700" font-family="Georgia,serif">HFE-360</text>
+  <text x="30" y="48" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif" letter-spacing="1.5">KURUMSAL DAYANIKLILIK METODOLOJİSİ</text>
+  
+  <!-- Score circle right of header -->
+  <circle cx="536" cy="32" r="26" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  <text x="536" y="28" fill="white" font-size="20" font-weight="700" font-family="Georgia,serif" text-anchor="middle">67</text>
+  <text x="536" y="42" fill="rgba(255,255,255,0.5)" font-size="8" font-family="sans-serif" text-anchor="middle">ORTA</text>
+
+  <!-- Three columns: H, F, E -->
+  <!-- H Column -->
+  <rect x="28" y="84" width="172" height="220" fill="white" rx="12" filter="url(#shadow)"/>
+  <rect x="28" y="84" width="172" height="4" fill="url(#h-grad)" rx="2"/>
+  <!-- H letter badge -->
+  <rect x="44" y="102" width="40" height="40" rx="10" fill="#C13030"/>
+  <text x="64" y="129" fill="white" font-size="22" font-weight="700" font-family="Georgia,serif" text-anchor="middle">H</text>
+  <!-- H label -->
+  <text x="92" y="116" fill="#0A1628" font-size="13" font-weight="600" font-family="sans-serif">Tehlike</text>
+  <text x="92" y="131" fill="#9CA3AF" font-size="9" font-family="sans-serif">Hazard</text>
+  <!-- H score -->
+  <text x="44" y="168" fill="#C13030" font-size="32" font-weight="700" font-family="Georgia,serif">72</text>
+  <text x="44" y="183" fill="#9CA3AF" font-size="9" font-family="sans-serif">/ 100 · ters ağırlık</text>
+  <!-- H bar -->
+  <rect x="44" y="195" width="140" height="5" rx="3" fill="#F1F0EF"/>
+  <rect x="44" y="195" width="101" height="5" rx="3" fill="url(#h-grad)"/>
+  <!-- H factors -->
+  <text x="44" y="218" fill="#6B7280" font-size="9" font-family="sans-serif">• Deprem bölgesi</text>
+  <text x="44" y="232" fill="#6B7280" font-size="9" font-family="sans-serif">• Sel/taşkın riski</text>
+  <text x="44" y="246" fill="#6B7280" font-size="9" font-family="sans-serif">• Yangın tehlikesi</text>
+  <text x="44" y="260" fill="#6B7280" font-size="9" font-family="sans-serif">• Siber tehdit seviyesi</text>
+  <text x="44" y="274" fill="#6B7280" font-size="9" font-family="sans-serif">• Teknolojik riskler</text>
+  
+  <!-- F Column -->
+  <rect x="214" y="84" width="172" height="220" fill="white" rx="12" filter="url(#shadow)"/>
+  <rect x="214" y="84" width="172" height="4" fill="url(#f-grad)" rx="2"/>
+  <rect x="230" y="102" width="40" height="40" rx="10" fill="#A85C00"/>
+  <text x="250" y="129" fill="white" font-size="22" font-weight="700" font-family="Georgia,serif" text-anchor="middle">F</text>
+  <text x="278" y="116" fill="#0A1628" font-size="13" font-weight="600" font-family="sans-serif">Kırılganlık</text>
+  <text x="278" y="131" fill="#9CA3AF" font-size="9" font-family="sans-serif">Fragility</text>
+  <text x="230" y="168" fill="#A85C00" font-size="32" font-weight="700" font-family="Georgia,serif">58</text>
+  <text x="230" y="183" fill="#9CA3AF" font-size="9" font-family="sans-serif">/ 100 · ters ağırlık</text>
+  <rect x="230" y="195" width="140" height="5" rx="3" fill="#F1F0EF"/>
+  <rect x="230" y="195" width="81" height="5" rx="3" fill="url(#f-grad)"/>
+  <text x="230" y="218" fill="#6B7280" font-size="9" font-family="sans-serif">• Yapısal dayanım</text>
+  <text x="230" y="232" fill="#6B7280" font-size="9" font-family="sans-serif">• Altyapı yaşı</text>
+  <text x="230" y="246" fill="#6B7280" font-size="9" font-family="sans-serif">• BT sistemleri</text>
+  <text x="230" y="260" fill="#6B7280" font-size="9" font-family="sans-serif">• Tedarik zinciri</text>
+  <text x="230" y="274" fill="#6B7280" font-size="9" font-family="sans-serif">• Personel yetkinliği</text>
+  
+  <!-- E Column -->
+  <rect x="400" y="84" width="172" height="220" fill="white" rx="12" filter="url(#shadow)"/>
+  <rect x="400" y="84" width="172" height="4" fill="url(#e-grad)" rx="2"/>
+  <rect x="416" y="102" width="40" height="40" rx="10" fill="#007A70"/>
+  <text x="436" y="129" fill="white" font-size="22" font-weight="700" font-family="Georgia,serif" text-anchor="middle">E</text>
+  <text x="464" y="116" fill="#0A1628" font-size="13" font-weight="600" font-family="sans-serif">Kapasite</text>
+  <text x="464" y="131" fill="#9CA3AF" font-size="9" font-family="sans-serif">Enhancement</text>
+  <text x="416" y="168" fill="#007A70" font-size="32" font-weight="700" font-family="Georgia,serif">81</text>
+  <text x="416" y="183" fill="#9CA3AF" font-size="9" font-family="sans-serif">/ 100 · düz ağırlık</text>
+  <rect x="416" y="195" width="140" height="5" rx="3" fill="#F1F0EF"/>
+  <rect x="416" y="195" width="113" height="5" rx="3" fill="url(#e-grad)"/>
+  <text x="416" y="218" fill="#6B7280" font-size="9" font-family="sans-serif">• BCP/DRP planları</text>
+  <text x="416" y="232" fill="#6B7280" font-size="9" font-family="sans-serif">• Tatbikat geçmişi</text>
+  <text x="416" y="246" fill="#6B7280" font-size="9" font-family="sans-serif">• Sigorta kapsamı</text>
+  <text x="416" y="260" fill="#6B7280" font-size="9" font-family="sans-serif">• Kriz ekibi</text>
+  <text x="416" y="274" fill="#6B7280" font-size="9" font-family="sans-serif">• Yedekleme altyapısı</text>
+
+  <!-- Bottom formula bar -->
+  <rect x="28" y="320" width="544" height="56" fill="url(#navy-grad)" rx="12"/>
+  <text x="300" y="345" fill="white" font-size="14" font-weight="700" font-family="Georgia,serif" text-anchor="middle">D = f ( H⁻¹, F⁻¹, E )</text>
+  <!-- Legend -->
+  <rect x="60" y="354" width="8" height="8" rx="2" fill="#C13030"/>
+  <text x="74" y="362" fill="rgba(255,255,255,0.55)" font-size="8.5" font-family="sans-serif">Kritik &lt;40</text>
+  <rect x="170" y="354" width="8" height="8" rx="2" fill="#D97706"/>
+  <text x="184" y="362" fill="rgba(255,255,255,0.55)" font-size="8.5" font-family="sans-serif">Orta 40–70</text>
+  <rect x="280" y="354" width="8" height="8" rx="2" fill="#007A70"/>
+  <text x="294" y="362" fill="rgba(255,255,255,0.55)" font-size="8.5" font-family="sans-serif">Güçlü ≥70</text>
+  <text x="490" y="362" fill="rgba(255,255,255,0.3)" font-size="8" font-family="sans-serif">ISO 22301 uyumlu</text>
+</svg>
