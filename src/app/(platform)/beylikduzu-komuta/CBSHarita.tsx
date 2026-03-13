@@ -91,6 +91,7 @@ import { useState } from 'react'
 
 export default function CBSHarita() {
   const [filtre, setFiltre] = useState<CBSKategori | 'hepsi'>('hepsi')
+  const [katman, setKatman] = useState<'sokak' | 'uydu'>('sokak')
 
   const gösterilen = filtre === 'hepsi'
     ? TUM_TESİSLER
@@ -126,16 +127,37 @@ export default function CBSHarita() {
       </div>
 
       {/* Harita */}
-      <div className="rounded-xl overflow-hidden border border-slate-700/40" style={{ height: 520 }}>
+      <div className="rounded-xl overflow-hidden border border-slate-700/40" style={{ height: 520, position: 'relative' }}>
+        <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 1000, display: 'flex', gap: 4, background: 'white', borderRadius: 8, padding: 4, boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+          {(['sokak', 'uydu'] as const).map(k => (
+            <button key={k} onClick={() => setKatman(k)}
+              style={{
+                padding: '4px 12px', borderRadius: 6, border: 'none', cursor: 'pointer',
+                fontSize: 11, fontWeight: 600, fontFamily: "'DM Sans', sans-serif",
+                background: katman === k ? '#0A1628' : 'transparent',
+                color: katman === k ? 'white' : '#64748B',
+                transition: 'all .15s',
+              }}>
+              {k === 'sokak' ? 'Sokak' : 'Uydu'}
+            </button>
+          ))}
+        </div>
         <MapContainer
           center={[CBS_OZET.merkez_koordinat.lat, CBS_OZET.merkez_koordinat.lng]}
           zoom={CBS_OZET.zoom_seviyesi}
-          style={{ height: '100%', width: '100%', background: '#0A1628' }}>
+          style={{ height: '100%', width: '100%', background: katman === 'sokak' ? '#fff' : '#000' }}>
           <InvalidateFix />
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          />
+          {katman === 'sokak' ? (
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          ) : (
+            <TileLayer
+              attribution='Tiles &copy; Esri'
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            />
+          )}
 
           {gösterilen.map((tesis: CBSTesis) => {
             const kritik = (tesis.risk_skoru ?? 0) >= 4

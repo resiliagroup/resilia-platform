@@ -277,10 +277,18 @@ export default function FormPage() {
     @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}} .fi{animation:fi .2s ease}
   `
 
-  const Inp = ({ l, k, t='text', ph='', req=false }: {l:string;k:keyof TesisKarti;t?:string;ph?:string;req?:boolean}) => (
+  const Inp = ({ l, k, t='text', ph='', req=false, min, max }: {l:string;k:keyof TesisKarti;t?:string;ph?:string;req?:boolean;min?:number;max?:number}) => (
     <div className="fg" style={{margin:0}}>
       <label className="fl">{l}{req && <span style={{color:'#EF4444',marginLeft:2}}>*</span>}</label>
-      <input type={t} className="inp" placeholder={ph} value={tesis[k] as string} onChange={e=>tD(k,e.target.value)} />
+      <input
+        type={t === 'number' ? 'number' : t === 'email' ? 'email' : t === 'date' ? 'date' : 'text'}
+        className="inp"
+        placeholder={ph}
+        value={tesis[k] as string}
+        onChange={e=>tD(k,e.target.value)}
+        {...(min !== undefined ? { min } : {})}
+        {...(max !== undefined ? { max } : {})}
+      />
     </div>
   )
   const Sel = ({l,k,opts,req=false}:{l:string;k:keyof TesisKarti;opts:string[];req?:boolean}) => (
@@ -492,12 +500,12 @@ export default function FormPage() {
             <div className="card" style={{marginBottom:14}}>
               <p className="sek-h"><span className="num">1</span> Yapısal Bilgiler</p>
               <div className="g2" style={{marginBottom:12}}>
-                <Inp l="Binanın Yapım Yılı" k="yapi_yili" t="number" ph="ör. 1998" req />
-                <Inp l="Kat Adedi" k="kat_adeti" ph="ör. 4" req />
+                <Inp l="Binanın Yapım Yılı" k="yapi_yili" t="number" ph="ör. 1998" req min={1900} max={2026} />
+                <Inp l="Kat Adedi" k="kat_adeti" t="number" ph="ör. 4" req min={1} max={50} />
               </div>
               <div className="g3" style={{marginBottom:12}}>
                 <Sel l="Yapı Tipi" k="yapi_tipi" opts={['betonarme','çelik','prefabrik','yığma','karma']} />
-                <Inp l="Kapalı Alan (m²)" k="alan_m2" t="number" ph="ör. 450" />
+                <Inp l="Kapalı Alan (m²)" k="alan_m2" t="number" ph="ör. 450" min={10} max={200000} />
                 <Sel l="Mülkiyet" k="mulk_durumu" opts={['kira','mülk']} />
               </div>
               {tesis.mulk_durumu==='kira'&&<div style={{marginBottom:12}}><Inp l="Kira Bitiş Tarihi" k="kira_bitis" t="date" /></div>}
@@ -520,8 +528,8 @@ export default function FormPage() {
               <div className="sbox">
                 <span className="slbl">ATM & Kasa</span>
                 <div className="g3">
-                  <Inp l="İç ATM Sayısı" k="atm_sayisi" t="number" ph="0" />
-                  <Inp l="Dış ATM Sayısı" k="atm_dis_sayisi" t="number" ph="0" />
+                  <Inp l="İç ATM Sayısı" k="atm_sayisi" t="number" ph="0" min={0} max={50} />
+                  <Inp l="Dış ATM Sayısı" k="atm_dis_sayisi" t="number" ph="0" min={0} max={50} />
                   <Sel l="Kasa Tipi" k="kasa_tipi" opts={['kasa odası','çelik kasa','yok']} />
                 </div>
               </div>
@@ -531,11 +539,11 @@ export default function FormPage() {
                 <div className="g2">
                   <div>
                     <Chk l="Yedek Güç Jeneratörü" k="jenerator_var" />
-                    {tesis.jenerator_var&&<div style={{marginTop:-4}}><Inp l="Kapasite (kW)" k="jenerator_kw" t="number" ph="ör. 50" /></div>}
+                    {tesis.jenerator_var&&<div style={{marginTop:-4}}><Inp l="Kapasite (kW)" k="jenerator_kw" t="number" ph="ör. 50" min={1} max={5000} /></div>}
                   </div>
                   <div>
                     <Chk l="UPS Sistemi" k="ups_var" />
-                    {tesis.ups_var&&<div style={{marginTop:-4}}><Inp l="Özerk Süre (dk)" k="ups_dakika" t="number" ph="ör. 30" /></div>}
+                    {tesis.ups_var&&<div style={{marginTop:-4}}><Inp l="Özerk Süre (dk)" k="ups_dakika" t="number" ph="ör. 30" min={1} max={1440} /></div>}
                   </div>
                 </div>
                 <Chk l="Sismik Erken Uyarı Sistemi" k="erken_uyari" />
@@ -547,7 +555,7 @@ export default function FormPage() {
                 <div style={{marginTop:8,display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
                   <div>
                     <Chk l="Güvenlik Kamera" k="guvenlik_kamera" />
-                    {tesis.guvenlik_kamera&&<Inp l="Kayıt Süresi (gün)" k="kamera_kayit_gun" t="number" ph="30" />}
+                    {tesis.guvenlik_kamera&&<Inp l="Kayıt Süresi (gün)" k="kamera_kayit_gun" t="number" ph="30" min={1} max={365} />}
                   </div>
                 </div>
               </div>
