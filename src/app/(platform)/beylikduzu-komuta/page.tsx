@@ -1,6 +1,19 @@
 'use client'
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { Shield, MapPin, Building2, AlertTriangle, Activity, Users, TrendingUp, Loader2, WifiOff } from 'lucide-react'
+
+const CBSHarita = dynamic(() => import('./CBSHarita'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-[520px] bg-slate-800/40 border border-slate-700/40 rounded-xl">
+      <div className="flex items-center gap-2 text-slate-400 text-sm">
+        <Loader2 className="w-4 h-4 animate-spin" />
+        Harita yükleniyor…
+      </div>
+    </div>
+  ),
+})
 import {
   useOmniFacilities,
   usePortfolioSummary,
@@ -112,6 +125,7 @@ const TABS = [
   { key: 'ozet',    label: 'İlçe Özeti' },
   { key: 'mahalle', label: 'Mahalle Analizi' },
   { key: 'tesis',   label: 'Tesis Ağı' },
+  { key: 'harita',  label: 'CBS Harita' },
   { key: 'natech',  label: 'NATECH Senaryo' },
   { key: 'sendai',  label: 'Sendai Uyum' },
 ] as const
@@ -630,6 +644,11 @@ export default function BeylikduzuKomuta() {
             </div>
           )}
         </div>
+      )}
+
+      {/* ===== CBS HARİTA ===== */}
+      {tab === 'harita' && (
+        <CBSHarita />
       )}
 
       {/* ===== NATECH SENARYO ===== */}
