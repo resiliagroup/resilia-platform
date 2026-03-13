@@ -19,7 +19,7 @@ const GRUPLAR = [
   },
   {
     id: 'kamu', label: 'Kamu & Eğitim', icon: '🏛️', renk: '#9B8EC4', kenar: '#9B8EC433',
-    hesaplar: DEMO_KULLANICILAR.filter(k => k.sektor === 'kamu'),
+    hesaplar: DEMO_KULLANICILAR.filter(k => k.sektor === 'belediye' || k.sektor === 'meb'),
   },
 ]
 

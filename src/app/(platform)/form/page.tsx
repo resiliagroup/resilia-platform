@@ -3,6 +3,9 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { SORULAR } from '@/lib/sorular'
 import { SORULAR_SANAYI, SANAYI_SORU_META } from '@/lib/sorular-sanayi'
+import { SORULAR_SAGLIK, SAGLIK_SORU_META } from '@/lib/sorular-saglik'
+import { SORULAR_KONAKLAMA, KONAKLAMA_SORU_META } from '@/lib/sorular-konaklama'
+import { SORULAR_BELEDIYE, BELEDIYE_SORU_META } from '@/lib/sorular-belediye'
 import { skorHesapla, type HFESkor } from '@/lib/bcm-hesapla'
 import { getSektorSenaryolari } from '@/lib/senaryolar'
 import { mevcutKullanici, oturumKapat } from '@/lib/auth'
@@ -59,8 +62,11 @@ const DEMO_TENANT_ID = '11111111-1111-1111-1111-111111111111'
 const SEKTOR_RAILWAY: Record<string, OmniSector> = {
   bankacilik: 'bank',
   saglik:     'hospital',
+  konaklama:  'hotel',
   uretim:     'industrial',
-  kamu:       'municipality',
+  hizmet:     'infrastructure',
+  belediye:   'municipality',
+  kamu:       'municipality',   // legacy uyumluluk
   meb:        'education',
   odalar:     'municipality',
 }
@@ -133,17 +139,38 @@ function buildRailwayPayload(
       drill_frequency_per_year:   1,
       staff_certification_pct:    Math.round(hfe.e_skoru * 0.6),
       crisis_team_exists:         !!(tesis.acil_yetkili && tesis.acil_yetkili_tel),
-      mutual_aid_agreements:      sektor === 'kamu' ? 3 : 1,
+      mutual_aid_agreements:      (sektor === 'belediye' || sektor === 'kamu') ? 3 : 1,
       coordination_score:         hfe.e_skoru / 100,
     },
   }
 }
 
 const getSektorSorular = (sektor: Sektor) => {
-  switch (sektor) { case 'uretim': return SORULAR_SANAYI; default: return SORULAR }
+  switch (sektor) {
+    case 'uretim':    return SORULAR_SANAYI
+    case 'saglik':    return SORULAR_SAGLIK
+    case 'konaklama': return SORULAR_KONAKLAMA
+    case 'belediye':  return SORULAR_BELEDIYE
+    default:          return SORULAR
+  }
 }
 const SEKTOR_KAYNAK: Partial<Record<Sektor, string>> = {
-  uretim: `İSO AADY 2025 + İTÜ AYM HFE-360 — ${SANAYI_SORU_META.toplam} soru`,
+  uretim:    `İSO AADY 2025 + İTÜ AYM HFE-360 — ${SANAYI_SORU_META.toplam} soru`,
+  saglik:    `HAP + JCI + İTÜ AYM HFE-360 — ${SAGLIK_SORU_META.toplam} soru`,
+  konaklama: `TÜRSAB + Yangın Yön. + HFE-360 — ${KONAKLAMA_SORU_META.toplam} soru`,
+  belediye:  `5393 BelK. + AFAD + Sendai + HFE-360 — ${BELEDIYE_SORU_META.toplam} soru`,
+}
+
+// Sektöre göre birim adı (üst bar için)
+const SEKTOR_BIRIM_LABEL: Partial<Record<Sektor, string>> = {
+  bankacilik: 'Şube Değerlendirmesi',
+  saglik:     'Tesis Değerlendirmesi',
+  konaklama:  'Otel Değerlendirmesi',
+  uretim:     'Fabrika / OSB Değerlendirmesi',
+  belediye:   'Birim Değerlendirmesi',
+  meb:        'Okul Değerlendirmesi',
+  hizmet:     'İşletme Değerlendirmesi',
+  odalar:     'Üye Firma Değerlendirmesi',
 }
 const BOLUMLER = ['TEHLİKE', 'KIRILGANLIK', 'KAPASİTE'] as const
 const TEAL = '#009B8D'; const NAVY = '#0A1628'; const AMBER = '#D97706'
@@ -435,24 +462,47 @@ export default function FormPage() {
 
       {/* Üst bar */}
       <div style={{background:'white',borderBottom:'1px solid #ECEAE8',padding:'12px 20px',display:'flex',justifyContent:'space-between',alignItems:'center',position:'sticky',top:0,zIndex:10}}>
-        <div>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
           <span style={{fontWeight:800,color:NAVY,fontSize:16}}>OMNI</span>
-          <span style={{color:'#9CA3AF',fontSize:13,marginLeft:8}}>{SEKTOR_IKON[sektor]} Şube Değerlendirmesi</span>
+          <span style={{color:'#D1D5DB',fontSize:13}}>·</span>
+          <span style={{fontSize:13}}>{SEKTOR_IKON[sektor]}</span>
+          <span style={{color:'#9CA3AF',fontSize:13}}>{SEKTOR_BIRIM_LABEL[sektor] || 'Değerlendirme'}</span>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:14}}>
-          <span style={{fontSize:12,color:'#6B7280',fontWeight:600}}>{kullanici?.birim_kodu}</span>
+          <span style={{fontSize:11,color:'#6B7280',fontWeight:600,background:'#F3F4F6',padding:'3px 10px',borderRadius:99}}>{kullanici?.birim_kodu}</span>
           <button onClick={oturumKapat} style={{fontSize:12,color:'#9CA3AF',border:'none',background:'none',cursor:'pointer'}}>Çıkış</button>
         </div>
       </div>
 
       <div style={{maxWidth:640,margin:'0 auto',padding:'20px 16px 80px'}}>
 
+        {/* ── Sektör Bilgi Bandı (Otomatik Algılama) ─────────── */}
+        <div style={{
+          background:'linear-gradient(135deg,#EFF6FF,#F0FDF4)',
+          border:'1px solid #BFDBFE',borderRadius:14,
+          padding:'14px 18px',marginBottom:16,
+          display:'flex',alignItems:'center',gap:14,
+        }}>
+          <div style={{fontSize:32,lineHeight:1,flexShrink:0}}>{SEKTOR_IKON[sektor]}</div>
+          <div style={{flex:1,minWidth:0}}>
+            <p style={{fontSize:10,fontWeight:700,color:'#2563EB',textTransform:'uppercase' as const,letterSpacing:'.08em',marginBottom:3}}>
+              Sektörünüz · Otomatik Algılandı
+            </p>
+            <p style={{fontSize:15,fontWeight:700,color:NAVY,margin:0}}>{SEKTOR_ETIKET[sektor]}</p>
+            <p style={{fontSize:11,color:'#6B7280',margin:'2px 0 0'}}>{kaynak}</p>
+          </div>
+          <div style={{textAlign:'right' as const,flexShrink:0}}>
+            <p style={{fontSize:10,color:'#9CA3AF',marginBottom:2}}>Kurum</p>
+            <p style={{fontSize:12,fontWeight:600,color:'#374151'}}>{kullanici?.tenant}</p>
+          </div>
+        </div>
+
         {/* Senaryo + Birim */}
         <div className="card" style={{marginBottom:14,display:'flex',gap:14}}>
           <div style={{flex:1}}>
-            <label className="fl">Birim</label>
+            <label className="fl">Birim Kodu</label>
             <div style={{background:'#F8F6F3',border:'1px solid #E5E3E1',borderRadius:10,padding:'9px 12px',fontSize:13,fontWeight:700,color:NAVY}}>
-              {kullanici?.birim_kodu||'—'} · {SEKTOR_ETIKET[sektor]}
+              {kullanici?.birim_kodu||'—'}
             </div>
           </div>
           <div style={{flex:1}}>

@@ -1,5 +1,15 @@
 export type Rol = 'birim' | 'uzman' | 'board' | 'oda' | 'admin'
-export type Sektor = 'bankacilik' | 'saglik' | 'uretim' | 'kamu' | 'meb' | 'odalar'
+
+// types/index.ts ile senkronize
+export type Sektor =
+  | 'bankacilik'
+  | 'saglik'
+  | 'konaklama'
+  | 'uretim'
+  | 'hizmet'
+  | 'odalar'
+  | 'belediye'
+  | 'meb'
 
 export interface DemoKullanici {
   email: string
@@ -13,19 +23,29 @@ export interface DemoKullanici {
 }
 
 export const DEMO_KULLANICILAR: DemoKullanici[] = [
-  { email: 'board@akbank.com',      sifre: '1234', ad_soyad: 'Dr. Fatma Şahin',        rol: 'board', tenant: 'Akbank A.Ş.',              sektor: 'bankacilik' },
-  { email: 'uzman@akbank.com',      sifre: '1234', ad_soyad: 'Mehmet Demir',            rol: 'uzman', tenant: 'Akbank A.Ş.',              sektor: 'bankacilik' },
-  { email: 'sube@akbank.com',       sifre: '1234', ad_soyad: 'Ayşe Kaya',              rol: 'birim', tenant: 'Akbank A.Ş.',              sektor: 'bankacilik', birim_kodu: 'AKB-0042' },
-  { email: 'board@isbank.com',      sifre: '1234', ad_soyad: 'İş Bankası Yönetim',     rol: 'board', tenant: 'İş Bankası A.Ş.',          sektor: 'bankacilik' },
-  { email: 'uzman@isbank.com',      sifre: '1234', ad_soyad: 'İş Bankası Uzman',       rol: 'uzman', tenant: 'İş Bankası A.Ş.',          sektor: 'bankacilik' },
-  { email: 'uzman@medicalpark.com', sifre: '1234', ad_soyad: 'Medical Park Uzman',     rol: 'uzman', tenant: 'Medical Park',             sektor: 'saglik' },
-  { email: 'board@medicalpark.com', sifre: '1234', ad_soyad: 'Medical Park Yönetim',   rol: 'board', tenant: 'Medical Park',             sektor: 'saglik' },
-  { email: 'izleme@isoistanbul.com',sifre: '1234', ad_soyad: 'ISO İzleme Uzman',       rol: 'uzman', tenant: 'İstanbul Sanayi Odası',    sektor: 'uretim' },
-  { email: 'fabrika@gebzeosb.com',  sifre: '1234', ad_soyad: 'Müh. Can Özdemir',       rol: 'birim', tenant: 'Gebze OSB',                sektor: 'uretim', birim_kodu: 'GOSB-0011' },
-  { email: 'izleme@iso.org.tr',     sifre: '1234', ad_soyad: 'Gn. Sek. Tuba Erdoğan', rol: 'oda',   tenant: 'İstanbul Sanayi Odası',    sektor: 'uretim' },
-  { email: 'uzman@beylikduzu.bel.tr',sifre:'1234', ad_soyad: 'Belediye Uzman',         rol: 'uzman', tenant: 'Beylikdüzü Belediyesi',    sektor: 'kamu' },
-  { email: 'board@beylikduzu.bel.tr',sifre:'1234', ad_soyad: 'Belediye Yönetim',       rol: 'board', tenant: 'Beylikdüzü Belediyesi',    sektor: 'kamu' },
-  { email: 'uzman@itu.edu.tr',      sifre: '1234', ad_soyad: 'İTÜ Uzman',              rol: 'uzman', tenant: 'İTÜ',                      sektor: 'kamu' },
+  // ── Bankacılık ─────────────────────────────────────────────────
+  { email: 'board@akbank.com',       sifre: '1234', ad_soyad: 'Dr. Fatma Şahin',        rol: 'board', tenant: 'Akbank A.Ş.',              sektor: 'bankacilik' },
+  { email: 'uzman@akbank.com',       sifre: '1234', ad_soyad: 'Mehmet Demir',            rol: 'uzman', tenant: 'Akbank A.Ş.',              sektor: 'bankacilik' },
+  { email: 'sube@akbank.com',        sifre: '1234', ad_soyad: 'Ayşe Kaya',              rol: 'birim', tenant: 'Akbank A.Ş.',              sektor: 'bankacilik', birim_kodu: 'AKB-0042' },
+  { email: 'board@isbank.com',       sifre: '1234', ad_soyad: 'İş Bankası Yönetim',     rol: 'board', tenant: 'İş Bankası A.Ş.',          sektor: 'bankacilik' },
+  { email: 'uzman@isbank.com',       sifre: '1234', ad_soyad: 'İş Bankası Uzman',       rol: 'uzman', tenant: 'İş Bankası A.Ş.',          sektor: 'bankacilik' },
+  // ── Sağlık ─────────────────────────────────────────────────────
+  { email: 'uzman@medicalpark.com',  sifre: '1234', ad_soyad: 'Medical Park Uzman',     rol: 'uzman', tenant: 'Medical Park',             sektor: 'saglik' },
+  { email: 'board@medicalpark.com',  sifre: '1234', ad_soyad: 'Medical Park Yönetim',   rol: 'board', tenant: 'Medical Park',             sektor: 'saglik' },
+  { email: 'tesis@medicalpark.com',  sifre: '1234', ad_soyad: 'Hemşire Elif Yıldız',    rol: 'birim', tenant: 'Medical Park',             sektor: 'saglik', birim_kodu: 'MP-001' },
+  // ── Konaklama ──────────────────────────────────────────────────
+  { email: 'board@grandhotel.com',   sifre: '1234', ad_soyad: 'Grand Hotel Yönetim',    rol: 'board', tenant: 'Grand Hotel Group',         sektor: 'konaklama' },
+  { email: 'otel@grandhotel.com',    sifre: '1234', ad_soyad: 'Mng. Serkan Arslan',     rol: 'birim', tenant: 'Grand Hotel Group',         sektor: 'konaklama', birim_kodu: 'GH-0001' },
+  // ── Üretim ─────────────────────────────────────────────────────
+  { email: 'izleme@isoistanbul.com', sifre: '1234', ad_soyad: 'ISO İzleme Uzman',       rol: 'uzman', tenant: 'İstanbul Sanayi Odası',    sektor: 'uretim' },
+  { email: 'fabrika@gebzeosb.com',   sifre: '1234', ad_soyad: 'Müh. Can Özdemir',       rol: 'birim', tenant: 'Gebze OSB',                sektor: 'uretim', birim_kodu: 'GOSB-0011' },
+  { email: 'izleme@iso.org.tr',      sifre: '1234', ad_soyad: 'Gn. Sek. Tuba Erdoğan', rol: 'oda',   tenant: 'İstanbul Sanayi Odası',    sektor: 'uretim' },
+  // ── Belediye ───────────────────────────────────────────────────
+  { email: 'uzman@beylikduzu.bel.tr',sifre: '1234', ad_soyad: 'Belediye Uzman',         rol: 'uzman', tenant: 'Beylikdüzü Belediyesi',    sektor: 'belediye' },
+  { email: 'board@beylikduzu.bel.tr',sifre: '1234', ad_soyad: 'Belediye Yönetim',       rol: 'board', tenant: 'Beylikdüzü Belediyesi',    sektor: 'belediye' },
+  { email: 'birim@beylikduzu.bel.tr',sifre: '1234', ad_soyad: 'Zabıta Amiri Ali Kılıç', rol: 'birim', tenant: 'Beylikdüzü Belediyesi',    sektor: 'belediye', birim_kodu: 'BLD-ZABITA-01' },
+  // ── Eğitim ─────────────────────────────────────────────────────
+  { email: 'uzman@itu.edu.tr',       sifre: '1234', ad_soyad: 'İTÜ Uzman',              rol: 'uzman', tenant: 'İTÜ',                      sektor: 'meb' },
 ]
 
 export const AUTH_KEYS = {
