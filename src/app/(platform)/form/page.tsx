@@ -3,11 +3,21 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { SORULAR } from '@/lib/sorular'
 import { SORULAR_SANAYI, SANAYI_SORU_META } from '@/lib/sorular-sanayi'
-import { skorHesapla } from '@/lib/bcm-hesapla'
+import { skorHesapla, type HFESkor } from '@/lib/bcm-hesapla'
 import { getSektorSenaryolari } from '@/lib/senaryolar'
 import { mevcutKullanici, oturumKapat } from '@/lib/auth'
 import { SEKTOR_ETIKET, SEKTOR_IKON, Sektor } from '@/types'
 import { bolgedenOneriHesapla, bolgeRiskOzeti, IL_PROFIL } from '@/lib/bolge-profil'
+import {
+  createAssessment,
+  createFacility,
+  fetchFacilitiesByTenant,
+  type OmniAssessment,
+  type OmniSector,
+  type AssessmentCreatePayload,
+  RISK_CLASS_TR,
+  RISK_CLASS_COLOR,
+} from '@/lib/api'
 
 export interface TesisKarti {
   yapi_yili: string; yapi_tipi: string; kat_adeti: string
@@ -42,6 +52,93 @@ const TESİS_BOŞ: TesisKarti = {
   komsu_risk: '', ek_not: '',
 }
 
+// ─── Railway sabitleri ─────────────────────────────────────────
+// Demo tenant: production'da kullaniciya göre resolve edilir
+const DEMO_TENANT_ID = '11111111-1111-1111-1111-111111111111'
+
+const SEKTOR_RAILWAY: Record<string, OmniSector> = {
+  bankacilik: 'bank',
+  saglik:     'hospital',
+  uretim:     'industrial',
+  kamu:       'municipality',
+  meb:        'education',
+  odalar:     'municipality',
+}
+
+// ─── HFE-360 → Railway AssessmentCreatePayload dönüşümü ───────
+function buildRailwayPayload(
+  facilityId: string,
+  puanlar: Record<string, number>,
+  tesis: TesisKarti,
+  hfe: HFESkor,
+  sektor: string,
+  birimKodu: string,
+  tenant: string,
+): AssessmentCreatePayload {
+  const p = (kod: string) => (puanlar[kod] ?? 1) / 3   // 0-1 raw
+
+  const yil  = parseInt(tesis.yapi_yili) || 2000
+  const age  = new Date().getFullYear() - yil
+  const yapiDurum = parseInt(tesis.yapisal_durum?.[0]) || 3  // '3 — Orta' → 3
+
+  return {
+    facility_id: facilityId,
+    notes: `HFE-360 · ${tenant} · ${birimKodu} · ${new Date().toLocaleDateString('tr-TR')}`,
+
+    hazard: {
+      seismic:              p('H2'),                   // fiziksel etki
+      seismic_probability:  p('H1'),                   // gerçekleşme sıklığı
+      flood:                p('H5'),                   // coğrafi/iklim riski
+      flood_probability:    p('H5') * 0.8,
+      supply_chain:         p('H7'),                   // zincirleme etki
+      cyber:                p('H6') * 0.4,             // ekonomik/siber etki
+      cyber_probability:    p('H6') * 0.3,
+      pandemic:             p('H4') * 0.3,             // etki süresi
+    },
+
+    fragility: {
+      building_age_score:      Math.min(1, age / 60),
+      construction_quality:    1 - (yapiDurum - 1) / 4,  // 5→0.0, 1→1.0
+      seismic_compliance:      tesis.guclendirilmis === 'var'   ? 0.1
+                             : tesis.guclendirilmis === 'kısmi' ? 0.45 : 0.85,
+      maintenance_score:       1 - hfe.f_skoru / 100,    // düşük f_skoru = kötü bakım
+      single_point_of_failure: p('F2'),                  // kilit personel riski
+      redundancy_score:        tesis.jenerator_var && tesis.ups_var ? 0.15
+                             : tesis.jenerator_var || tesis.ups_var ? 0.45 : 0.80,
+      supply_dependency:       p('H7'),
+      staff_training_score:    1 - hfe.e_skoru / 100,   // düşük kapasite = az eğitim
+      bcm_awareness:           1 - hfe.e_skoru / 100,
+      cyber_hygiene:           p('H6') * 0.5,
+      backup_status:           tesis.ups_var ? 0.2 : 0.75,
+      system_age_score:        Math.min(1, age / 50),
+    },
+
+    exposure: {
+      asset_criticality:          sektor === 'saglik' || sektor === 'kamu' ? 0.9 : 0.75,
+      critical_service_count:     tesis.atm_sayisi ? parseInt(tesis.atm_sayisi) || 1 : 1,
+      dependency_count:           3,
+      dependency_criticality:     0.6,
+      serves_critical_population: sektor === 'saglik' || sektor === 'kamu',
+    },
+
+    response: {
+      bcm_plan_exists:            hfe.e_skoru > 50,
+      plan_tested_last_12m:       hfe.e_skoru > 70,
+      iso_22301_certified:        false,
+      plan_digitized:             true,
+      backup_power_hours:         tesis.jenerator_var ? 8 : tesis.ups_var ? 0.5 : 0,
+      backup_systems_score:       tesis.jenerator_var && tesis.ups_var ? 0.85
+                                : tesis.jenerator_var || tesis.ups_var ? 0.5 : 0.1,
+      emergency_stockpile_days:   1,
+      drill_frequency_per_year:   1,
+      staff_certification_pct:    Math.round(hfe.e_skoru * 0.6),
+      crisis_team_exists:         !!(tesis.acil_yetkili && tesis.acil_yetkili_tel),
+      mutual_aid_agreements:      sektor === 'kamu' ? 3 : 1,
+      coordination_score:         hfe.e_skoru / 100,
+    },
+  }
+}
+
 const getSektorSorular = (sektor: Sektor) => {
   switch (sektor) { case 'uretim': return SORULAR_SANAYI; default: return SORULAR }
 }
@@ -58,6 +155,7 @@ export default function FormPage() {
   const [senaryo, setSenaryo] = useState('')
   const [gonderiyor, setGonderiyor] = useState(false)
   const [gonderildi, setGonderildi] = useState(false)
+  const [assessmentSonucu, setAssessmentSonucu] = useState<OmniAssessment | null>(null)
   const [kullanici, setKullanici] = useState<ReturnType<typeof mevcutKullanici>>(null)
   const [bolgeOneri, setBolgeOneri] = useState<Record<string, number>>({})
   const [ilKodu, setIlKodu] = useState('')
@@ -93,19 +191,66 @@ export default function FormPage() {
     if (!kullanici?.birim_kodu) return
     setGonderiyor(true)
     const hfe = skorHesapla(puanlar)
-    const { error } = await supabase.from('form_cevaplari').insert({
-      tenant_id: null, birim_kodu: kullanici.birim_kodu, senaryo,
-      sektor: kullanici.sektor || 'bankacilik',
-      puanlar: { ...puanlar, _tesis_karti: tesis },
-      dayaniklilik_skoru: hfe.toplam, h_skoru: hfe.h_skoru,
-      f_skoru: hfe.f_skoru, e_skoru: hfe.e_skoru, durum,
-      dolduran_email: kullanici.email,
-      gonderilme: durum === 'gonderildi' ? new Date().toISOString() : null,
-    })
-    setGonderiyor(false)
-    if (error) { alert('Hata: ' + error.message); return }
-    if (durum === 'gonderildi') setGonderildi(true)
-    else alert('✅ Taslak kaydedildi.')
+
+    // ── Taslak: Supabase'e kaydet ─────────────────────────────
+    if (durum === 'taslak') {
+      const { error } = await supabase.from('form_cevaplari').insert({
+        tenant_id: null, birim_kodu: kullanici.birim_kodu, senaryo,
+        sektor: kullanici.sektor || 'bankacilik',
+        puanlar: { ...puanlar, _tesis_karti: tesis },
+        dayaniklilik_skoru: hfe.toplam, h_skoru: hfe.h_skoru,
+        f_skoru: hfe.f_skoru, e_skoru: hfe.e_skoru, durum,
+        dolduran_email: kullanici.email, gonderilme: null,
+      })
+      setGonderiyor(false)
+      if (error) { alert('Hata: ' + error.message); return }
+      alert('✅ Taslak kaydedildi.')
+      return
+    }
+
+    // ── Gönderildi: Railway API ───────────────────────────────
+    try {
+      const omniSektor = SEKTOR_RAILWAY[sektor] ?? 'bank'
+
+      // Facility bul veya oluştur
+      let facilityId: string | null = null
+      try {
+        const facilities = await fetchFacilitiesByTenant(DEMO_TENANT_ID)
+        facilityId = facilities.find(f => f.code === kullanici.birim_kodu)?.id ?? null
+      } catch { /* tenant mevcut değil, yeni facility oluştur */ }
+
+      if (!facilityId) {
+        const yil = parseInt(tesis.yapi_yili) || 2000
+        const created = await createFacility({
+          tenant_id:         DEMO_TENANT_ID,
+          code:              kullanici.birim_kodu!,
+          name:              `${kullanici.tenant} · ${kullanici.birim_kodu}`,
+          sector:            omniSektor,
+          building_age:      new Date().getFullYear() - yil,
+          floor_count:       parseInt(tesis.kat_adeti) || 3,
+          seismic_zone:      1,
+          construction_type: tesis.yapi_tipi,
+          soil_class:        'ZD',
+          employee_count:    10,
+        })
+        facilityId = created.id
+      }
+
+      // HFE-360 → Railway payload dönüşümü
+      const payload = buildRailwayPayload(
+        facilityId!, puanlar, tesis, hfe, sektor,
+        kullanici.birim_kodu!, kullanici.tenant,
+      )
+
+      // Railway HFER-720 assessment çalıştır
+      const sonuc = await createAssessment(payload)
+      setAssessmentSonucu(sonuc)
+      setGonderildi(true)
+    } catch (err) {
+      alert('Railway API hatası: ' + (err as Error).message)
+    } finally {
+      setGonderiyor(false)
+    }
   }
 
   const css = `
@@ -152,21 +297,129 @@ export default function FormPage() {
     </label>
   )
 
-  if (gonderildi) return (
-    <div style={{minHeight:'100vh',background:'#F8F6F3',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:"'DM Sans',sans-serif",padding:16}}>
-      <style dangerouslySetInnerHTML={{__html:css}} />
-      <div style={{background:'white',borderRadius:20,border:'1px solid #ECEAE8',padding:40,textAlign:'center',maxWidth:400,width:'100%'}}>
-        <div style={{fontSize:52,marginBottom:16}}>✅</div>
-        <h2 style={{fontSize:20,fontWeight:700,color:NAVY,marginBottom:8}}>Teşekkürler!</h2>
-        <p style={{color:'#6B7280',fontSize:14,marginBottom:6,lineHeight:1.6}}>Tesis Kartı ve dayanıklılık değerlendirmesi başarıyla gönderildi.</p>
-        <p style={{color:'#9CA3AF',fontSize:13,marginBottom:28,lineHeight:1.6}}>Uzman ekibimiz inceleyerek sizinle paylaşacaktır.</p>
-        <button onClick={()=>{setPuanlar({});setTesis(TESİS_BOŞ);setTesisTamam(false);setAdim(1);setGonderildi(false)}}
-          style={{background:TEAL,color:'white',border:'none',borderRadius:12,padding:'12px 32px',fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>
-          Yeni Değerlendirme
-        </button>
+  if (gonderildi && assessmentSonucu) {
+    const s = assessmentSonucu
+    const renkHex = RISK_CLASS_COLOR[s.risk_class]
+    const sinifTR = RISK_CLASS_TR[s.risk_class]
+    const ds = s.dimension_scores
+    const sifirla = () => {
+      setPuanlar({}); setTesis(TESİS_BOŞ); setTesisTamam(false)
+      setAdim(1); setGonderildi(false); setAssessmentSonucu(null)
+    }
+    const dimRenk = (v: number) =>
+      v >= 0.75 ? '#22C55E' : v >= 0.50 ? '#F59E0B' : v >= 0.30 ? '#F97316' : '#EF4444'
+
+    return (
+      <div style={{minHeight:'100vh',background:'#F8F6F3',fontFamily:"'DM Sans',sans-serif",padding:16}}>
+        <style dangerouslySetInnerHTML={{__html:css}} />
+        <div style={{maxWidth:560,margin:'0 auto',paddingTop:32}}>
+
+          {/* URI Skoru kartı */}
+          <div style={{background:'white',borderRadius:20,border:`2px solid ${renkHex}33`,padding:'32px 32px 24px',textAlign:'center',marginBottom:16}}>
+            <div style={{fontSize:13,fontWeight:700,color:'#9CA3AF',letterSpacing:'.08em',textTransform:'uppercase',marginBottom:12}}>
+              HFER-720 · URI Dayanıklılık Skoru
+            </div>
+            <div style={{fontSize:80,fontWeight:800,lineHeight:1,color:renkHex,marginBottom:8}}>
+              {Math.round(s.uri_score)}
+            </div>
+            <div style={{fontSize:12,color:'#9CA3AF',marginBottom:20}}>/100</div>
+            <div style={{
+              display:'inline-flex',alignItems:'center',gap:8,
+              background: renkHex + '15', border:`1.5px solid ${renkHex}40`,
+              borderRadius:99, padding:'8px 20px',
+            }}>
+              <div style={{width:8,height:8,borderRadius:'50%',background:renkHex}} />
+              <span style={{fontSize:14,fontWeight:700,color:renkHex}}>{sinifTR}</span>
+            </div>
+            <div style={{marginTop:12,fontSize:12,color:'#9CA3AF'}}>
+              {kullanici?.birim_kodu} · {new Date(s.assessed_at).toLocaleDateString('tr-TR')}
+            </div>
+          </div>
+
+          {/* HFE Boyut skorları */}
+          <div style={{background:'white',borderRadius:16,border:'1px solid #ECEAE8',padding:'20px 24px',marginBottom:16}}>
+            <p style={{fontSize:11,fontWeight:700,color:'#9CA3AF',letterSpacing:'.07em',textTransform:'uppercase',marginBottom:16}}>
+              HFER-720 Boyut Analizi
+            </p>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:12}}>
+              {([
+                {label:'H — Tehlike',  val:ds.h,  aciklama:'Düşük = iyi'},
+                {label:'F — Kırılg.',  val:ds.f,  aciklama:'Düşük = iyi'},
+                {label:'E — Kapasite', val:ds.e,  aciklama:'Yüksek = iyi'},
+                {label:'R — Müdahale', val:ds.r,  aciklama:'Yüksek = iyi'},
+              ] as const).map(({label,val,aciklama}) => {
+                const pct = Math.round(val * 100)
+                const renk = dimRenk(val)
+                return (
+                  <div key={label} style={{textAlign:'center'}}>
+                    <div style={{fontSize:24,fontWeight:800,color:renk}}>{pct}</div>
+                    <div style={{height:4,background:'#F1F0EF',borderRadius:99,margin:'6px 0'}}>
+                      <div style={{height:'100%',width:`${pct}%`,background:renk,borderRadius:99}} />
+                    </div>
+                    <div style={{fontSize:10,fontWeight:700,color:NAVY}}>{label}</div>
+                    <div style={{fontSize:9,color:'#9CA3AF'}}>{aciklama}</div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Öneriler */}
+          {s.recommendations.length > 0 && (
+            <div style={{background:'white',borderRadius:16,border:'1px solid #ECEAE8',padding:'20px 24px',marginBottom:16}}>
+              <p style={{fontSize:11,fontWeight:700,color:'#9CA3AF',letterSpacing:'.07em',textTransform:'uppercase',marginBottom:14}}>
+                Öncelikli İyileştirme Önerileri
+              </p>
+              <div style={{display:'flex',flexDirection:'column',gap:10}}>
+                {s.recommendations.slice(0, 3).map((rec, i) => {
+                  const effortRenk = rec.effort === 'low' ? '#22C55E' : rec.effort === 'medium' ? '#F59E0B' : '#EF4444'
+                  const effortTR = rec.effort === 'low' ? 'Kolay' : rec.effort === 'medium' ? 'Orta' : 'Zor'
+                  return (
+                    <div key={i} style={{display:'flex',gap:12,padding:'12px 14px',background:'#F8F6F3',borderRadius:12,border:'1px solid #ECEAE8'}}>
+                      <div style={{width:24,height:24,borderRadius:'50%',background:NAVY,color:'white',fontSize:11,fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                        {rec.priority}
+                      </div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:8,marginBottom:4}}>
+                          <p style={{fontSize:13,fontWeight:600,color:NAVY,margin:0}}>{rec.title}</p>
+                          <span style={{fontSize:10,fontWeight:600,color:effortRenk,background:effortRenk+'15',border:`1px solid ${effortRenk}40`,borderRadius:99,padding:'2px 8px',flexShrink:0}}>
+                            {effortTR}
+                          </span>
+                        </div>
+                        <p style={{fontSize:12,color:'#6B7280',margin:0,lineHeight:1.5}}>{rec.description}</p>
+                        {rec.standard_ref && (
+                          <p style={{fontSize:10,color:'#9CA3AF',margin:'4px 0 0',fontFamily:'monospace'}}>{rec.standard_ref}</p>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Güven skoru + Railway notu */}
+          <div style={{background:'#F0FDF4',border:'1px solid #BBFBD0',borderRadius:12,padding:'12px 16px',marginBottom:20,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+            <span style={{fontSize:12,color:'#166534'}}>
+              ✅ <strong>Railway HFER-720</strong> değerlendirmesi tamamlandı.
+            </span>
+            <span style={{fontSize:11,color:'#4ADE80',fontFamily:'monospace'}}>
+              güven: %{Math.round((s.confidence ?? 0.85) * 100)}
+            </span>
+          </div>
+
+          <button onClick={sifirla}
+            style={{width:'100%',background:TEAL,color:'white',border:'none',borderRadius:14,padding:'14px',fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>
+            Yeni Değerlendirme
+          </button>
+
+          <p style={{textAlign:'center',fontSize:11,color:'#D1CEC9',paddingTop:20}}>
+            OMNI · Railway HFER-720 Engine · İTÜ AYM
+          </p>
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   return (
     <div style={{minHeight:'100vh',background:'#F8F6F3',fontFamily:"'DM Sans',sans-serif"}}>
