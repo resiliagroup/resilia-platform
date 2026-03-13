@@ -1,8 +1,19 @@
-import React from 'react';
+'use client'
+import React, { useEffect, useState } from 'react';
+import { mevcutKullanici } from '@/lib/auth';
 import Link from 'next/link';
 import { Shield, BarChart3, Map, Building2, Settings, Activity, AlertTriangle, Database, History, Home } from 'lucide-react';
 
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
+  const [tenant, setTenant] = useState('...')
+  const [tenantHarf, setTenantHarf] = useState('?')
+  useEffect(() => {
+    const k = mevcutKullanici()
+    if (k) {
+      setTenant(k.tenant)
+      setTenantHarf(k.tenant.charAt(0).toUpperCase())
+    }
+  }, [])
   return (
     <div className="flex h-screen bg-[#0A1628] overflow-hidden">
       <aside className="w-64 bg-[#0D1F3C] text-slate-300 flex flex-col border-r border-slate-800/40">
@@ -47,6 +58,10 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
           <Link href="/harita" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
             <Map className="w-4 h-4 text-[#6ABFB8]" />
             <span>Harita</span>
+            </Link>
+            <Link href="/beylikduzu-komuta" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors hover:bg-white/5 text-slate-400 hover:text-white">
+              <span>🏛️</span>
+              <span>Beylikdüzü</span>
           </Link>
 
           <Link href="/tesis-agi" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
@@ -78,7 +93,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
               A
             </div>
             <div>
-              <p className="text-xs font-semibold text-white">Akbank A.Ş.</p>
+              <p className="text-xs font-semibold text-white">{tenant}</p>
               <p className="text-[10px] text-emerald-400 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
                 Aktif Oturum

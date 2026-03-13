@@ -36,7 +36,7 @@ export default function LoginPage() {
     setHata('')
     try {
       const kullanici = oturumAc(emailGir, sifreGir)
-      router.push(rolHedefi(kullanici.rol))
+      router.push(rolHedefi(kullanici.rol, kullanici.tenant))
     } catch {
       setHata('E-posta veya şifre hatalı.')
       setYukleniyor(false)

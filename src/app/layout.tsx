@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   keywords:    'BCM, ISO 22301, dayanıklılık, iş sürekliliği, afet yönetimi, İTÜ AYM, OMNI',
   authors:     [{ name: 'OMNI Resilience Platform' }],
   icons: {
-    icon: '/favicon.ico',
+    icon: '/favicon.svg',
   },
 }
 
