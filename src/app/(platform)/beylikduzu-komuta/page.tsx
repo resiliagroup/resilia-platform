@@ -1,7 +1,23 @@
 'use client'
 import { useState } from 'react'
-import { Shield, MapPin, Building2, AlertTriangle, Activity, Users, TrendingUp } from 'lucide-react'
+import { Shield, MapPin, Building2, AlertTriangle, Activity, Users, TrendingUp, Loader2, WifiOff } from 'lucide-react'
+import {
+  useOmniFacilities,
+  usePortfolioSummary,
+  RISK_CLASS_TR,
+  RISK_CLASS_COLOR,
+  type OmniFacility,
+  type RiskClass,
+} from '@/lib/api'
 
+// ─────────────────────────────────────────────────────────────
+// TENANT
+// ─────────────────────────────────────────────────────────────
+const TENANT_ID = '11111111-1111-1111-1111-111111111111'
+
+// ─────────────────────────────────────────────────────────────
+// STATİK MAHALLE VERİSİ (API'de yok — ilçe düzeyinde analiz)
+// ─────────────────────────────────────────────────────────────
 const MAHALLELER = [
   {
     ad: 'Yakuplu', nufus: 89420, alan_km2: 8.2,
@@ -65,11 +81,31 @@ const MAHALLELER = [
   },
 ]
 
-const RENKLER: Record<string, string> = {
+// ─────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────
+const MAHALLE_RENKLER: Record<string, string> = {
   'KRİTİK': 'text-red-400 bg-red-400/10 border-red-400/30',
   'YÜKSEK': 'text-orange-400 bg-orange-400/10 border-orange-400/30',
   'ORTA':   'text-amber-400 bg-amber-400/10 border-amber-400/30',
   'DÜŞÜK':  'text-emerald-400 bg-emerald-400/10 border-emerald-400/30',
+}
+
+const RISK_CLASS_TR_BADGE: Record<RiskClass, string> = {
+  CRITICAL:  'text-red-400 bg-red-400/10 border-red-400/30',
+  HIGH:      'text-orange-400 bg-orange-400/10 border-orange-400/30',
+  MEDIUM:    'text-amber-400 bg-amber-400/10 border-amber-400/30',
+  RESILIENT: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30',
+  EXEMPLARY: 'text-indigo-400 bg-indigo-400/10 border-indigo-400/30',
+}
+
+function facilityRiskBadge(f: OmniFacility): { label: string; cls: string } {
+  // seismic_zone + building_age'e göre hızlı risk tahmini
+  const age   = f.building_age ?? 20
+  const szone = f.seismic_zone ?? 2
+  if (szone === 1 && age > 35)  return { label: 'YÜKSEK',  cls: MAHALLE_RENKLER['YÜKSEK'] }
+  if (szone <= 2 && age > 20)   return { label: 'ORTA',    cls: MAHALLE_RENKLER['ORTA']   }
+  return { label: 'DÜŞÜK', cls: MAHALLE_RENKLER['DÜŞÜK'] }
 }
 
 const TABS = [
@@ -82,20 +118,55 @@ const TABS = [
 
 type Tab = typeof TABS[number]['key']
 
+// ─────────────────────────────────────────────────────────────
+// LOADING / ERROR ATOMS
+// ─────────────────────────────────────────────────────────────
+function Spinner() {
+  return (
+    <div className="flex items-center gap-2 text-slate-500 text-sm">
+      <Loader2 className="w-4 h-4 animate-spin" />
+      <span>Railway API'den alınıyor…</span>
+    </div>
+  )
+}
+
+function ApiError({ msg }: { msg: string }) {
+  return (
+    <div className="flex items-center gap-2 text-red-400/80 text-sm bg-red-400/5 border border-red-400/20 rounded-lg px-3 py-2">
+      <WifiOff className="w-4 h-4 flex-shrink-0" />
+      <span>API hatası: {msg}</span>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────
+// COMPONENT
+// ─────────────────────────────────────────────────────────────
 export default function BeylikduzuKomuta() {
-  const [tab, setTab] = useState<Tab>('ozet')
+  const [tab, setTab]       = useState<Tab>('ozet')
   const [secili, setSecili] = useState(MAHALLELER[0])
   const [senaryo, setSenaryo] = useState('deprem')
-  const [siddet, setSiddet] = useState(6.5)
+  const [siddet, setSiddet]   = useState(6.5)
 
-  const ilceUri = Math.round(MAHALLELER.reduce((a, m) => a + m.uri, 0) / MAHALLELER.length)
-  const kritik   = MAHALLELER.filter(m => m.risk === 'KRİTİK' || m.risk === 'YÜKSEK').length
-  const toplamNufus = MAHALLELER.reduce((a, m) => a + m.nufus, 0)
-  const ortH = Math.round(MAHALLELER.reduce((a, m) => a + m.h, 0) / MAHALLELER.length)
-  const ortF = Math.round(MAHALLELER.reduce((a, m) => a + m.f, 0) / MAHALLELER.length)
-  const ortE = Math.round(MAHALLELER.reduce((a, m) => a + m.e, 0) / MAHALLELER.length)
+  // ── Railway API ──────────────────────────────────────────
+  const { data: facilities, loading: facLoading, error: facError } = useOmniFacilities(TENANT_ID)
+  const { data: portfolio,  loading: portLoading                  } = usePortfolioSummary(TENANT_ID)
 
-  // NATECH simülasyon hesabı
+  // ── Statik hesaplar (fallback) ────────────────────────────
+  const ilceUriStatic   = Math.round(MAHALLELER.reduce((a, m) => a + m.uri, 0) / MAHALLELER.length)
+  const kritikStatic    = MAHALLELER.filter(m => m.risk === 'KRİTİK' || m.risk === 'YÜKSEK').length
+  const toplamNufus     = MAHALLELER.reduce((a, m) => a + m.nufus, 0)
+  const ortH            = Math.round(MAHALLELER.reduce((a, m) => a + m.h, 0) / MAHALLELER.length)
+  const ortF            = Math.round(MAHALLELER.reduce((a, m) => a + m.f, 0) / MAHALLELER.length)
+  const ortE            = Math.round(MAHALLELER.reduce((a, m) => a + m.e, 0) / MAHALLELER.length)
+
+  // ── Gerçek Railway değerleri (varsa) ─────────────────────
+  const ilceUri         = portfolio ? Math.round(portfolio.avg_uri ?? ilceUriStatic) : ilceUriStatic
+  const toplamTesis     = portfolio?.total ?? facilities?.length ?? 0
+  const kritikTesis     = portfolio?.critical_count ?? 0
+  const toplamPersonel  = facilities?.reduce((a, f) => a + (f.employee_count ?? 0), 0) ?? 0
+
+  // ── NATECH simülasyon ─────────────────────────────────────
   const natechEtki = senaryo === 'deprem'
     ? Math.min(100, Math.round((siddet - 5) * 28 * 1.4))
     : senaryo === 'yangin' ? 45 : 38
@@ -115,34 +186,101 @@ export default function BeylikduzuKomuta() {
             <p className="text-slate-500 text-sm mt-0.5">OMNI Afet Dayanıklılık Platformu · HFER-720 v2.0 · Sendai 2015–2030</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-lg">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-emerald-400 text-sm font-medium">Canlı · {new Date().toLocaleDateString('tr-TR')}</span>
+        <div className="flex items-center gap-3">
+          {/* Railway bağlantı durumu */}
+          <div className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border ${
+            facLoading || portLoading
+              ? 'bg-slate-700/40 border-slate-600/40 text-slate-400'
+              : facError
+                ? 'bg-red-400/10 border-red-400/20 text-red-400'
+                : 'bg-blue-500/10 border-blue-500/20 text-blue-400'
+          }`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${
+              facLoading || portLoading ? 'bg-slate-400 animate-pulse' :
+              facError ? 'bg-red-400' : 'bg-blue-400'
+            }`} />
+            {facLoading || portLoading ? 'Railway bağlanıyor…' : facError ? 'API bağlanamadı' : `Railway · ${toplamTesis} tesis`}
+          </div>
+          <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-lg">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-emerald-400 text-sm font-medium">Canlı · {new Date().toLocaleDateString('tr-TR')}</span>
+          </div>
         </div>
       </div>
 
-      {/* KPI */}
+      {/* KPI KARTLARI */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {[
-          { label: 'İlçe URI Skoru', val: `${ilceUri}/100`, alt: 'ORTA RİSK — İyileştirme gerekli', renk: 'text-amber-400' },
-          { label: 'Riskli Mahalle', val: `${kritik}/${MAHALLELER.length}`, alt: 'Kritik + Yüksek risk', renk: 'text-red-400' },
-          { label: 'Toplam Nüfus', val: `${(toplamNufus/1000).toFixed(0)}K`, alt: 'Risk altındaki kişi sayısı', renk: 'text-white' },
-          { label: 'NATECH Tesisi', val: '1 OSB', alt: 'Yakuplu · D katsayısı 2.4', renk: 'text-orange-400' },
-        ].map(k => (
-          <div key={k.label} className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5">
-            <p className="text-slate-500 text-xs uppercase tracking-widest mb-2">{k.label}</p>
-            <p className={`text-3xl font-bold ${k.renk}`}>{k.val}</p>
-            <p className="text-slate-500 text-xs mt-2">{k.alt}</p>
-          </div>
-        ))}
+        {/* 1 — URI Skoru */}
+        <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5">
+          <p className="text-slate-500 text-xs uppercase tracking-widest mb-2">İlçe URI Skoru</p>
+          {portLoading ? (
+            <div className="h-9 w-24 bg-slate-700/50 rounded animate-pulse" />
+          ) : (
+            <p className="text-3xl font-bold text-amber-400">{ilceUri}<span className="text-lg text-slate-600">/100</span></p>
+          )}
+          <p className="text-slate-500 text-xs mt-2">
+            {portfolio ? 'Railway · HFER-720 ortalaması' : 'Mahalle analizi (statik)'}
+          </p>
+        </div>
+
+        {/* 2 — Kritik Tesis */}
+        <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5">
+          <p className="text-slate-500 text-xs uppercase tracking-widest mb-2">Kritik Tesis</p>
+          {portLoading ? (
+            <div className="h-9 w-16 bg-slate-700/50 rounded animate-pulse" />
+          ) : (
+            <p className="text-3xl font-bold text-red-400">
+              {portfolio ? kritikTesis : kritikStatic}
+              <span className="text-lg text-slate-600">/{portfolio ? toplamTesis : MAHALLELER.length}</span>
+            </p>
+          )}
+          <p className="text-slate-500 text-xs mt-2">
+            {portfolio ? 'CRITICAL sınıfı · Railway' : 'Kritik + Yüksek riskli mahalle'}
+          </p>
+        </div>
+
+        {/* 3 — Personel */}
+        <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5">
+          <p className="text-slate-500 text-xs uppercase tracking-widest mb-2">
+            {facilities ? 'Toplam Personel' : 'Toplam Nüfus'}
+          </p>
+          {facLoading ? (
+            <div className="h-9 w-20 bg-slate-700/50 rounded animate-pulse" />
+          ) : (
+            <p className="text-3xl font-bold text-white">
+              {facilities
+                ? toplamPersonel.toLocaleString('tr-TR')
+                : `${(toplamNufus / 1000).toFixed(0)}K`}
+            </p>
+          )}
+          <p className="text-slate-500 text-xs mt-2">
+            {facilities ? `${toplamTesis} tesis toplamı · Railway` : 'Risk altındaki kişi sayısı'}
+          </p>
+        </div>
+
+        {/* 4 — NATECH */}
+        <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5">
+          <p className="text-slate-500 text-xs uppercase tracking-widest mb-2">NATECH Tesisi</p>
+          <p className="text-3xl font-bold text-orange-400">1 OSB</p>
+          <p className="text-slate-500 text-xs mt-2">Yakuplu · D katsayısı 2.4</p>
+        </div>
       </div>
 
       {/* TABS */}
       <div className="flex gap-1 mb-6 border-b border-slate-800">
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${tab === t.key ? 'border-[#E8C97A] text-[#E8C97A]' : 'border-transparent text-slate-500 hover:text-slate-300'}`}>
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              tab === t.key
+                ? 'border-[#E8C97A] text-[#E8C97A]'
+                : 'border-transparent text-slate-500 hover:text-slate-300'
+            }`}>
             {t.label}
+            {t.key === 'tesis' && toplamTesis > 0 && (
+              <span className="ml-1.5 text-[10px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded-full">
+                {toplamTesis}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -155,9 +293,9 @@ export default function BeylikduzuKomuta() {
               <Activity className="w-4 h-4 text-[#E8C97A]" /> HFE Bileşen Analizi
             </h3>
             {[
-              { label: 'H — Tehlike Yoğunluğu', val: ortH, renk: 'bg-red-500', not: 'Düşük = iyi' },
-              { label: 'F — Kırılganlık', val: ortF, renk: 'bg-orange-500', not: 'Düşük = iyi' },
-              { label: 'E — Kapasite', val: ortE, renk: 'bg-emerald-500', not: 'Yüksek = iyi' },
+              { label: 'H — Tehlike Yoğunluğu', val: ortH, renk: 'bg-red-500',     not: 'Düşük = iyi' },
+              { label: 'F — Kırılganlık',        val: ortF, renk: 'bg-orange-500',  not: 'Düşük = iyi' },
+              { label: 'E — Kapasite',            val: ortE, renk: 'bg-emerald-500', not: 'Yüksek = iyi' },
             ].map(item => (
               <div key={item.label} className="mb-5">
                 <div className="flex justify-between text-sm mb-1.5">
@@ -169,10 +307,26 @@ export default function BeylikduzuKomuta() {
                 </div>
               </div>
             ))}
+
+            {/* Portfolio risk dağılımı — Railway */}
+            {portfolio && (
+              <div className="mt-4 p-3 bg-blue-500/5 border border-blue-500/15 rounded-lg">
+                <p className="text-xs text-blue-400 font-medium mb-2">Railway · Risk Sınıf Dağılımı</p>
+                <div className="flex gap-3 flex-wrap">
+                  {(Object.entries(portfolio.by_class) as [RiskClass, number][]).map(([cls, cnt]) => (
+                    <div key={cls} className="text-center">
+                      <p className="text-sm font-bold" style={{ color: RISK_CLASS_COLOR[cls] }}>{cnt}</p>
+                      <p className="text-[10px] text-slate-500">{RISK_CLASS_TR[cls]}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="mt-4 p-3 bg-[#E8C97A]/5 border border-[#E8C97A]/15 rounded-lg">
               <p className="text-xs text-slate-400">
                 <span className="text-[#E8C97A] font-medium">HFER-720:</span> URI = NormCurve(H × F × X × D / (1 + k·C²))
-                <br/>Yakuplu OSB için NATECH D katsayısı = 2.4 · İTÜ AYM validasyonlu
+                <br />Yakuplu OSB için NATECH D katsayısı = 2.4 · İTÜ AYM validasyonlu
               </p>
             </div>
           </div>
@@ -182,10 +336,10 @@ export default function BeylikduzuKomuta() {
               <AlertTriangle className="w-4 h-4 text-[#E8C97A]" /> Öncelikli Aksiyon Planı
             </h3>
             {[
-              { baslik: 'Yakuplu OSB — NATECH Planı', acil: true, icerik: 'RAPID-N protokolü uygulanmalı. Komşu tesis bağımlılık haritası ve domino zinciri analizi gerekli.', badge: 'Acil' },
-              { baslik: 'Kavaklı — Sel Erken Uyarı', acil: true, icerik: 'Meteoroloji API entegrasyonu + SMS/siren sistemi. İBB ıslah sonrası izleme kritik.', badge: 'Acil' },
-              { baslik: 'Gürpınar — KAF Hattı Planı', acil: false, icerik: 'Zemin sıvılaşma etüdü. KİPTAŞ dönüşümü hızlandırılmalı. Heyelan risk haritası çıkarılmalı.', badge: 'Planla' },
-              { baslik: 'İlçe ISO 22301 İş Sürekliliği', acil: false, icerik: 'Belediye kritik hizmetleri için iş sürekliliği planı. Uluslararası fon başvurusu için zorunlu.', badge: 'Planla' },
+              { baslik: 'Yakuplu OSB — NATECH Planı',      acil: true,  icerik: 'RAPID-N protokolü uygulanmalı. Komşu tesis bağımlılık haritası ve domino zinciri analizi gerekli.', badge: 'Acil' },
+              { baslik: 'Kavaklı — Sel Erken Uyarı',       acil: true,  icerik: 'Meteoroloji API entegrasyonu + SMS/siren sistemi. İBB ıslah sonrası izleme kritik.',              badge: 'Acil' },
+              { baslik: 'Gürpınar — KAF Hattı Planı',      acil: false, icerik: 'Zemin sıvılaşma etüdü. KİPTAŞ dönüşümü hızlandırılmalı. Heyelan risk haritası çıkarılmalı.',     badge: 'Planla' },
+              { baslik: 'İlçe ISO 22301 İş Sürekliliği',   acil: false, icerik: 'Belediye kritik hizmetleri için iş sürekliliği planı. Uluslararası fon başvurusu için zorunlu.',  badge: 'Planla' },
             ].map((item, i) => (
               <div key={i} className="flex gap-3 mb-3 p-3 bg-slate-900/40 rounded-lg border border-slate-700/30">
                 <div className={`w-1 rounded-full flex-shrink-0 my-0.5 ${item.acil ? 'bg-red-400' : 'bg-amber-400'}`} />
@@ -200,17 +354,16 @@ export default function BeylikduzuKomuta() {
             ))}
           </div>
 
-          {/* Beylikdüzü mevcut kapasite kutusu */}
           <div className="lg:col-span-2 bg-slate-800/40 border border-slate-700/40 rounded-xl p-6">
             <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
               <Users className="w-4 h-4 text-[#E8C97A]" /> Mevcut Belediye Kapasitesi (NEFES Birliği)
             </h3>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: 'Gönüllü', val: '992', ikon: '👥' },
-                { label: 'Müdahale Aracı', val: '169', ikon: '🚒' },
-                { label: 'Müdahale İstasyonu', val: '10', ikon: '📦' },
-                { label: 'Haneye Ulaşıldı', val: '75.498', ikon: '🏠' },
+                { label: 'Gönüllü',           val: '992',    ikon: '👥' },
+                { label: 'Müdahale Aracı',    val: '169',    ikon: '🚒' },
+                { label: 'Müdahale İstasyonu', val: '10',    ikon: '📦' },
+                { label: 'Haneye Ulaşıldı',   val: '75.498', ikon: '🏠' },
               ].map(k => (
                 <div key={k.label} className="bg-slate-900/40 rounded-lg p-4 text-center">
                   <p className="text-2xl mb-1">{k.ikon}</p>
@@ -221,8 +374,8 @@ export default function BeylikduzuKomuta() {
             </div>
             <div className="mt-4 p-3 bg-blue-500/5 border border-blue-500/15 rounded-lg">
               <p className="text-xs text-slate-400">
-                <span className="text-blue-400 font-medium">OMNI × Beylikdüzü Sinerji:</span> Mevcut operasyonel kapasite güçlü. 
-                OMNI bu kapasiteye kantitatif risk skoru, NATECH analizi ve uluslararası standart uyumu ekliyor. 
+                <span className="text-blue-400 font-medium">OMNI × Beylikdüzü Sinerji:</span>{' '}
+                Mevcut operasyonel kapasite güçlü. OMNI bu kapasiteye kantitatif risk skoru, NATECH analizi ve uluslararası standart uyumu ekliyor.
                 EU Horizon / UNDP fon başvuruları için sayısal kanıt altyapısı kuruluyor.
               </p>
             </div>
@@ -236,18 +389,22 @@ export default function BeylikduzuKomuta() {
           <div className="space-y-2">
             {MAHALLELER.map(m => (
               <button key={m.ad} onClick={() => setSecili(m)}
-                className={`w-full text-left p-4 rounded-xl border transition-all ${secili.ad === m.ad ? 'bg-slate-700/60 border-[#E8C97A]/40' : 'bg-slate-800/30 border-slate-700/30 hover:bg-slate-800/50'}`}>
+                className={`w-full text-left p-4 rounded-xl border transition-all ${
+                  secili.ad === m.ad
+                    ? 'bg-slate-700/60 border-[#E8C97A]/40'
+                    : 'bg-slate-800/30 border-slate-700/30 hover:bg-slate-800/50'
+                }`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <MapPin className="w-3.5 h-3.5 text-slate-500" />
                     <span className="text-white text-sm font-medium">{m.ad}</span>
                     {m.natech && <span className="text-xs bg-orange-400/10 border border-orange-400/20 text-orange-400 px-1.5 py-0.5 rounded">NATECH</span>}
                   </div>
-                  <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${RENKLER[m.risk]}`}>{m.risk}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${MAHALLE_RENKLER[m.risk]}`}>{m.risk}</span>
                 </div>
                 <div className="flex gap-4 mt-1.5 ml-5">
                   <span className="text-xs text-slate-500">URI: <span className="text-white font-mono font-medium">{m.uri}</span></span>
-                  <span className="text-xs text-slate-500">{(m.nufus/1000).toFixed(0)}K kişi</span>
+                  <span className="text-xs text-slate-500">{(m.nufus / 1000).toFixed(0)}K kişi</span>
                 </div>
               </button>
             ))}
@@ -259,15 +416,15 @@ export default function BeylikduzuKomuta() {
                 <h3 className="text-xl font-bold text-white">{secili.ad} Mahallesi</h3>
                 <div className="flex items-center gap-2">
                   {secili.natech && <span className="text-xs bg-orange-400/10 border border-orange-400/30 text-orange-400 px-2 py-1 rounded-full">⚠ NATECH D={secili.natech_d}</span>}
-                  <span className={`text-sm px-3 py-1 rounded-full border font-medium ${RENKLER[secili.risk]}`}>{secili.risk}</span>
+                  <span className={`text-sm px-3 py-1 rounded-full border font-medium ${MAHALLE_RENKLER[secili.risk]}`}>{secili.risk}</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3 mb-5">
                 {[
-                  { label: 'H Tehlike', val: secili.h, renk: 'text-red-400' },
-                  { label: 'F Kırılganlık', val: secili.f, renk: 'text-orange-400' },
-                  { label: 'E Kapasite', val: secili.e, renk: 'text-emerald-400' },
+                  { label: 'H Tehlike',     val: secili.h, renk: 'text-red-400'     },
+                  { label: 'F Kırılganlık', val: secili.f, renk: 'text-orange-400'  },
+                  { label: 'E Kapasite',    val: secili.e, renk: 'text-emerald-400' },
                 ].map(item => (
                   <div key={item.label} className="bg-slate-900/50 rounded-lg p-3 text-center">
                     <p className={`text-2xl font-bold ${item.renk}`}>{item.val}</p>
@@ -287,10 +444,10 @@ export default function BeylikduzuKomuta() {
 
               <div className="grid grid-cols-4 gap-2 mb-4">
                 {[
-                  { label: 'Okul', val: secili.tesisler.okul, ikon: '🏫' },
-                  { label: 'Hastane', val: secili.tesisler.hastane, ikon: '🏥' },
-                  { label: 'OSB', val: secili.tesisler.osb, ikon: '🏭' },
-                  { label: 'Altyapı', val: secili.tesisler.altyapi, ikon: '⚡' },
+                  { label: 'Okul',     val: secili.tesisler.okul,     ikon: '🏫' },
+                  { label: 'Hastane',  val: secili.tesisler.hastane,  ikon: '🏥' },
+                  { label: 'OSB',      val: secili.tesisler.osb,      ikon: '🏭' },
+                  { label: 'Altyapı',  val: secili.tesisler.altyapi,  ikon: '⚡' },
                 ].map(t => (
                   <div key={t.label} className="bg-slate-900/50 rounded-lg p-2 text-center">
                     <p className="text-lg">{t.ikon}</p>
@@ -320,58 +477,158 @@ export default function BeylikduzuKomuta() {
         </div>
       )}
 
-      {/* ===== TESİS AĞI ===== */}
+      {/* ===== TESİS AĞI — RAILWAY VERİSİ ===== */}
       {tab === 'tesis' && (
         <div className="space-y-6">
+
+          {/* KPI üst satırı */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { label: 'Toplam Okul', val: MAHALLELER.reduce((a,m)=>a+m.tesisler.okul,0), ikon: '🏫', renk: 'text-blue-400' },
-              { label: 'Hastane/Klinik', val: MAHALLELER.reduce((a,m)=>a+m.tesisler.hastane,0), ikon: '🏥', renk: 'text-red-400' },
-              { label: 'OSB/Sanayi', val: MAHALLELER.reduce((a,m)=>a+m.tesisler.osb,0), ikon: '🏭', renk: 'text-orange-400' },
-              { label: 'Kritik Altyapı', val: MAHALLELER.reduce((a,m)=>a+m.tesisler.altyapi,0), ikon: '⚡', renk: 'text-amber-400' },
-            ].map(item => (
-              <div key={item.label} className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5 text-center">
-                <p className="text-3xl mb-2">{item.ikon}</p>
-                <p className={`text-4xl font-bold ${item.renk}`}>{item.val}</p>
-                <p className="text-xs text-slate-500 mt-2">{item.label}</p>
+            {facLoading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5 text-center animate-pulse">
+                  <div className="h-8 w-8 bg-slate-700/50 rounded mx-auto mb-2" />
+                  <div className="h-9 w-12 bg-slate-700/50 rounded mx-auto" />
+                </div>
+              ))
+            ) : facilities ? (
+              <>
+                <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5 text-center">
+                  <p className="text-3xl mb-2">🏛️</p>
+                  <p className="text-4xl font-bold text-blue-400">{facilities.length}</p>
+                  <p className="text-xs text-slate-500 mt-2">Toplam Tesis</p>
+                </div>
+                <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5 text-center">
+                  <p className="text-3xl mb-2">👥</p>
+                  <p className="text-4xl font-bold text-white">{toplamPersonel.toLocaleString('tr-TR')}</p>
+                  <p className="text-xs text-slate-500 mt-2">Toplam Personel</p>
+                </div>
+                <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5 text-center">
+                  <p className="text-3xl mb-2">🔴</p>
+                  <p className="text-4xl font-bold text-red-400">
+                    {facilities.filter(f => (f.seismic_zone ?? 0) >= 2 && (f.building_age ?? 0) > 20).length}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-2">Deprem Riski Yüksek</p>
+                </div>
+                <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5 text-center">
+                  <p className="text-3xl mb-2">✅</p>
+                  <p className="text-4xl font-bold text-emerald-400">{facilities.filter(f => f.is_active).length}</p>
+                  <p className="text-xs text-slate-500 mt-2">Aktif Tesis</p>
+                </div>
+              </>
+            ) : (
+              <div className="col-span-4">
+                {facError ? <ApiError msg={facError} /> : <Spinner />}
               </div>
-            ))}
+            )}
           </div>
 
+          {/* Tesis tablosu */}
           <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl overflow-hidden">
             <div className="p-4 border-b border-slate-700/40 flex items-center justify-between">
               <h3 className="text-white font-semibold flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-[#E8C97A]" /> Kritik Tesis Listesi
+                <Building2 className="w-4 h-4 text-[#E8C97A]" /> Tesis Listesi
               </h3>
-              <span className="text-xs text-slate-500">NFPA · AFAD · ISO 22301 Uyum Durumu</span>
+              <div className="flex items-center gap-2">
+                {facilities && (
+                  <span className="text-xs bg-blue-500/10 border border-blue-500/20 text-blue-400 px-2 py-1 rounded-full">
+                    Railway · Canlı Veri
+                  </span>
+                )}
+                <span className="text-xs text-slate-500">NFPA · AFAD · ISO 22301 Uyum</span>
+              </div>
             </div>
-            <div className="divide-y divide-slate-700/30">
-              {[
-                { ad: 'Yakuplu OSB', tip: 'Sanayi Bölgesi', mahalle: 'Yakuplu', risk: 'KRİTİK', natech: true, standart: 'NFPA 704 Sınıf 3', durum: 'NATECH Planı Yok' },
-                { ad: 'Adnan Kahveci Devlet H.', tip: 'Hastane', mahalle: 'Adnan Kahveci', risk: 'ORTA', natech: false, standart: 'NFPA 101 Yaşam', durum: 'BCP Gerekli' },
-                { ad: 'Büyükşehir Elektrik TM', tip: 'Kritik Altyapı', mahalle: 'Büyükşehir', risk: 'YÜKSEK', natech: false, standart: 'NFPA 70E', durum: 'İzleme Aktif' },
-                { ad: 'Gürpınar Su Deposu', tip: 'Altyapı', mahalle: 'Gürpınar', risk: 'YÜKSEK', natech: false, standart: '—', durum: 'Risk Etüdü Yok' },
-                { ad: 'Cumhuriyet AFAD Deposu', tip: 'Müdahale', mahalle: 'Cumhuriyet', risk: 'DÜŞÜK', natech: false, standart: 'AFAD Standart', durum: 'Operasyonel ✓' },
-                { ad: 'Kavaklı İlköğretim', tip: 'Okul', mahalle: 'Kavaklı', risk: 'YÜKSEK', natech: false, standart: 'MEB Deprem', durum: 'Taşıma Planı Yok' },
-              ].map((t, i) => (
-                <div key={i} className="flex flex-wrap items-center justify-between p-4 hover:bg-slate-700/20 transition-colors gap-2">
-                  <div className="flex items-center gap-3">
-                    <Building2 className="w-4 h-4 text-slate-500 flex-shrink-0" />
-                    <div>
-                      <p className="text-sm text-white font-medium">{t.ad}</p>
-                      <p className="text-xs text-slate-500">{t.tip} · {t.mahalle}</p>
+
+            {facLoading && (
+              <div className="p-8 flex justify-center">
+                <Spinner />
+              </div>
+            )}
+
+            {facError && (
+              <div className="p-6">
+                <ApiError msg={facError} />
+                <p className="text-xs text-slate-500 mt-2">
+                  Railway API bağlantısı kurulamadı. Tenant ID: {TENANT_ID}
+                </p>
+              </div>
+            )}
+
+            {facilities && facilities.length === 0 && (
+              <div className="p-8 text-center text-slate-500 text-sm">
+                Bu tenant için tesis bulunamadı.
+              </div>
+            )}
+
+            {facilities && facilities.length > 0 && (
+              <div className="divide-y divide-slate-700/30">
+                {facilities.map((f: OmniFacility) => {
+                  const badge = facilityRiskBadge(f)
+                  return (
+                    <div key={f.id} className="flex flex-wrap items-center justify-between p-4 hover:bg-slate-700/20 transition-colors gap-2">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Building2 className="w-4 h-4 text-slate-500 flex-shrink-0" />
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm text-white font-medium truncate">{f.name}</p>
+                            <span className="text-[10px] font-mono text-slate-500 bg-slate-700/50 px-1.5 py-0.5 rounded flex-shrink-0">
+                              {f.code}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            {f.building_age != null && `${f.building_age} yıl · `}
+                            {f.employee_count != null && `${f.employee_count} personel`}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 flex-wrap flex-shrink-0">
+                        {f.seismic_zone != null && (
+                          <span className="text-xs text-slate-400 bg-slate-700/40 px-2 py-0.5 rounded hidden lg:inline">
+                            Deprem Zonu: {f.seismic_zone}
+                          </span>
+                        )}
+                        <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${badge.cls}`}>
+                          {badge.label}
+                        </span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${f.is_active ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30' : 'text-slate-500 bg-slate-500/10 border-slate-500/30'}`}>
+                          {f.is_active ? 'Aktif' : 'Pasif'}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {t.natech && <span className="text-xs bg-orange-400/10 border border-orange-400/30 text-orange-400 px-2 py-0.5 rounded-full">NATECH</span>}
-                    <span className="text-xs text-slate-500 hidden lg:inline">{t.standart}</span>
-                    <span className="text-xs text-slate-400 bg-slate-700/40 px-2 py-0.5 rounded">{t.durum}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${RENKLER[t.risk]}`}>{t.risk}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
+
+          {/* Portföy özeti */}
+          {portfolio && (
+            <div className="bg-blue-500/5 border border-blue-500/15 rounded-xl p-5">
+              <p className="text-xs text-blue-400 font-medium uppercase tracking-widest mb-3">Railway · Portföy Risk Özeti</p>
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-white">{portfolio.total}</p>
+                  <p className="text-xs text-slate-500 mt-1">Toplam Assessment</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-amber-400">{portfolio.avg_uri?.toFixed(1) ?? '—'}</p>
+                  <p className="text-xs text-slate-500 mt-1">Ort. URI</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-red-400">{portfolio.min_uri?.toFixed(1) ?? '—'}</p>
+                  <p className="text-xs text-slate-500 mt-1">Min URI</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-emerald-400">{portfolio.max_uri?.toFixed(1) ?? '—'}</p>
+                  <p className="text-xs text-slate-500 mt-1">Maks URI</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-red-400">{portfolio.critical_count}</p>
+                  <p className="text-xs text-slate-500 mt-1">Kritik Tesis</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -387,10 +644,14 @@ export default function BeylikduzuKomuta() {
                 {[
                   { key: 'deprem', label: '🌍 Deprem' },
                   { key: 'yangin', label: '🔥 Yangın' },
-                  { key: 'sel', label: '🌊 Sel' },
+                  { key: 'sel',    label: '🌊 Sel'    },
                 ].map(s => (
                   <button key={s.key} onClick={() => setSenaryo(s.key)}
-                    className={`py-2.5 rounded-lg text-sm font-medium border transition-all ${senaryo === s.key ? 'bg-[#E8C97A]/10 border-[#E8C97A]/40 text-[#E8C97A]' : 'bg-slate-700/30 border-slate-600/30 text-slate-400 hover:text-slate-200'}`}>
+                    className={`py-2.5 rounded-lg text-sm font-medium border transition-all ${
+                      senaryo === s.key
+                        ? 'bg-[#E8C97A]/10 border-[#E8C97A]/40 text-[#E8C97A]'
+                        : 'bg-slate-700/30 border-slate-600/30 text-slate-400 hover:text-slate-200'
+                    }`}>
                     {s.label}
                   </button>
                 ))}
@@ -415,28 +676,20 @@ export default function BeylikduzuKomuta() {
             <div className="p-4 bg-slate-900/50 rounded-lg border border-slate-700/30">
               <p className="text-xs text-slate-500 uppercase tracking-widest mb-3">RAPID-N Protokolü</p>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Etkilenen tesis</span>
-                  <span className="text-white font-mono">Yakuplu OSB</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">NATECH D katsayısı</span>
-                  <span className="text-orange-400 font-mono">2.4</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Domino zinciri</span>
-                  <span className="text-white font-mono">3 komşu tesis</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Tahliye süresi</span>
-                  <span className="text-white font-mono">~45 dk</span>
-                </div>
+                <div className="flex justify-between"><span className="text-slate-400">Etkilenen tesis</span><span className="text-white font-mono">Yakuplu OSB</span></div>
+                <div className="flex justify-between"><span className="text-slate-400">NATECH D katsayısı</span><span className="text-orange-400 font-mono">2.4</span></div>
+                <div className="flex justify-between"><span className="text-slate-400">Domino zinciri</span><span className="text-white font-mono">3 komşu tesis</span></div>
+                <div className="flex justify-between"><span className="text-slate-400">Tahliye süresi</span><span className="text-white font-mono">~45 dk</span></div>
               </div>
             </div>
           </div>
 
           <div className="space-y-4">
-            <div className={`rounded-xl p-6 border ${natechEtki > 60 ? 'bg-red-900/20 border-red-500/30' : natechEtki > 30 ? 'bg-orange-900/20 border-orange-500/30' : 'bg-amber-900/20 border-amber-500/30'}`}>
+            <div className={`rounded-xl p-6 border ${
+              natechEtki > 60 ? 'bg-red-900/20 border-red-500/30' :
+              natechEtki > 30 ? 'bg-orange-900/20 border-orange-500/30' :
+              'bg-amber-900/20 border-amber-500/30'
+            }`}>
               <p className="text-xs uppercase tracking-widest text-slate-400 mb-2">NATECH Kümülatif Etki Skoru</p>
               <p className={`text-6xl font-bold mb-2 ${natechEtki > 60 ? 'text-red-400' : natechEtki > 30 ? 'text-orange-400' : 'text-amber-400'}`}>
                 {natechEtki}<span className="text-2xl text-slate-500">/100</span>
@@ -452,10 +705,10 @@ export default function BeylikduzuKomuta() {
               <p className="text-xs text-slate-500 uppercase tracking-widest mb-4">Etki Projeksiyonu</p>
               <div className="space-y-3">
                 {[
-                  { label: 'Risk altındaki nüfus', val: `~${(etkilenenNufus/1000).toFixed(0)}K kişi`, renk: 'text-red-400' },
-                  { label: 'Tahliye gerektiren bölge', val: 'Yakuplu + Kavaklı', renk: 'text-orange-400' },
-                  { label: 'Etkilenen okul sayısı', val: `${Math.ceil(natechEtki/20)} okul`, renk: 'text-amber-400' },
-                  { label: 'Acil müdahale süresi', val: senaryo === 'deprem' ? '72 saat' : '48 saat', renk: 'text-white' },
+                  { label: 'Risk altındaki nüfus',     val: `~${(etkilenenNufus / 1000).toFixed(0)}K kişi`, renk: 'text-red-400' },
+                  { label: 'Tahliye gerektiren bölge',  val: 'Yakuplu + Kavaklı',                            renk: 'text-orange-400' },
+                  { label: 'Etkilenen okul sayısı',     val: `${Math.ceil(natechEtki / 20)} okul`,           renk: 'text-amber-400' },
+                  { label: 'Acil müdahale süresi',      val: senaryo === 'deprem' ? '72 saat' : '48 saat',   renk: 'text-white' },
                 ].map(item => (
                   <div key={item.label} className="flex justify-between items-center py-2 border-b border-slate-700/30">
                     <span className="text-sm text-slate-400">{item.label}</span>
@@ -482,18 +735,19 @@ export default function BeylikduzuKomuta() {
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {[
-              { no: 'SF-1', baslik: 'Afet Riskini Anlama', puan: 72, durum: 'Aktif', omni: 'HFER-720 URI skoru + mahalle bazlı risk haritası', renk: 'emerald' },
-              { no: 'SF-2', baslik: 'Risk Yönetişimini Güçlendirme', puan: 48, durum: 'Kısmi', omni: 'Belediye ISO 22301 BCP planlaması + OMNI dashboard entegrasyonu', renk: 'amber' },
-              { no: 'SF-3', baslik: 'Dayanıklılığa Yatırım', puan: 35, durum: 'Planlandı', omni: 'Tesis ağı dayanıklılık skoru + NATECH D katsayısı hesaplama', renk: 'amber' },
-              { no: 'SF-4', baslik: 'Etkin Müdahale ve Yeniden Yapılanma', puan: 21, durum: 'Eksik', omni: 'EOC dashboard + NEFES Birliği protokolü entegrasyonu', renk: 'red' },
+              { no: 'SF-1', baslik: 'Afet Riskini Anlama',                puan: 72, durum: 'Aktif',    omni: 'HFER-720 URI skoru + mahalle bazlı risk haritası',            renk: 'emerald' },
+              { no: 'SF-2', baslik: 'Risk Yönetişimini Güçlendirme',      puan: 48, durum: 'Kısmi',    omni: 'Belediye ISO 22301 BCP planlaması + OMNI dashboard',          renk: 'amber'   },
+              { no: 'SF-3', baslik: 'Dayanıklılığa Yatırım',              puan: 35, durum: 'Planlandı', omni: 'Tesis ağı dayanıklılık skoru + NATECH D katsayısı',          renk: 'amber'   },
+              { no: 'SF-4', baslik: 'Etkin Müdahale ve Yeniden Yapılanma', puan: 21, durum: 'Eksik',   omni: 'EOC dashboard + NEFES Birliği protokolü entegrasyonu',        renk: 'red'     },
             ].map(s => (
               <div key={s.no} className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-mono text-slate-500 bg-slate-700/40 px-2 py-1 rounded">{s.no}</span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full border font-medium
-                    ${s.renk === 'emerald' ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30' :
-                      s.renk === 'amber'   ? 'text-amber-400 bg-amber-400/10 border-amber-400/30' :
-                      'text-red-400 bg-red-400/10 border-red-400/30'}`}>{s.durum}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${
+                    s.renk === 'emerald' ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30' :
+                    s.renk === 'amber'   ? 'text-amber-400 bg-amber-400/10 border-amber-400/30' :
+                    'text-red-400 bg-red-400/10 border-red-400/30'
+                  }`}>{s.durum}</span>
                 </div>
                 <p className="text-white font-semibold mb-3">{s.baslik}</p>
                 <div className="h-1.5 bg-slate-700 rounded-full mb-3">
@@ -509,18 +763,19 @@ export default function BeylikduzuKomuta() {
             <h3 className="text-white font-semibold mb-4">Uluslararası Fon Fırsatları</h3>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {[
-                { fon: 'EU Horizon Europe', konu: 'Şehir Dayanıklılığı (2024–2027)', gereklilik: 'Sendai uyum raporu + kantitatif risk skoru', durum: 'Uygun' },
-                { fon: 'UNDP DRRM', konu: 'Afet Risk Azaltma Fonu', gereklilik: 'RAPID-N analizi + tesis ağı haritası', durum: 'Değerlendirme' },
-                { fon: 'Dünya Bankası GFDRR', konu: 'Küresel Afet Risk Finansmanı', gereklilik: 'ISO 22301 BCP + URI endeksi', durum: 'Potansiyel' },
+                { fon: 'EU Horizon Europe',   konu: 'Şehir Dayanıklılığı (2024–2027)',   gereklilik: 'Sendai uyum raporu + kantitatif risk skoru', durum: 'Uygun'          },
+                { fon: 'UNDP DRRM',           konu: 'Afet Risk Azaltma Fonu',            gereklilik: 'RAPID-N analizi + tesis ağı haritası',       durum: 'Değerlendirme'  },
+                { fon: 'Dünya Bankası GFDRR', konu: 'Küresel Afet Risk Finansmanı',      gereklilik: 'ISO 22301 BCP + URI endeksi',                 durum: 'Potansiyel'     },
               ].map(f => (
                 <div key={f.fon} className="bg-slate-900/40 rounded-lg p-4 border border-slate-700/30">
                   <p className="text-white font-medium text-sm mb-1">{f.fon}</p>
                   <p className="text-xs text-slate-400 mb-2">{f.konu}</p>
                   <p className="text-xs text-slate-500 mb-3"><span className="text-slate-400">Gereklilik:</span> {f.gereklilik}</p>
-                  <span className={`text-xs px-2 py-0.5 rounded-full border font-medium
-                    ${f.durum === 'Uygun' ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30' :
-                      f.durum === 'Değerlendirme' ? 'text-amber-400 bg-amber-400/10 border-amber-400/30' :
-                      'text-blue-400 bg-blue-400/10 border-blue-400/30'}`}>{f.durum}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${
+                    f.durum === 'Uygun'         ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30' :
+                    f.durum === 'Değerlendirme' ? 'text-amber-400 bg-amber-400/10 border-amber-400/30' :
+                    'text-blue-400 bg-blue-400/10 border-blue-400/30'
+                  }`}>{f.durum}</span>
                 </div>
               ))}
             </div>
