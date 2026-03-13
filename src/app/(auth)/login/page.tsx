@@ -104,7 +104,26 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-xs text-slate-600 mb-4 uppercase tracking-widest">Demo Hesaplar · Şifre: 1234</p>
+          {/* ── Hızlı Demo Giriş ── */}
+          <p className="text-xs text-slate-600 mb-3 uppercase tracking-widest">Hızlı Demo Giriş</p>
+          <div className="grid grid-cols-2 gap-2 mb-6">
+            {[
+              { label: 'Beylikdüzü Uzmanı',  email: 'uzman@beylikduzu.bel.tr', renk: '#9B8EC4' },
+              { label: 'Beylikdüzü Yönetim', email: 'board@beylikduzu.bel.tr', renk: '#9B8EC4' },
+              { label: 'Akbank Board',        email: 'board@akbank.com',        renk: '#E8C97A' },
+              { label: 'Akbank Şube',         email: 'sube@akbank.com',         renk: '#E8C97A' },
+              { label: 'Medical Park',        email: 'board@medicalpark.com',   renk: '#7B9FD4' },
+              { label: 'Grand Hotel',         email: 'otel@grandhotel.com',     renk: '#6ABFB8' },
+            ].map(d => (
+              <button key={d.email} onClick={() => girisYap(d.email, '1234')}
+                className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-700/50 bg-slate-800/20 hover:bg-slate-800/50 transition-colors text-left group">
+                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: d.renk }} />
+                <span className="text-xs text-slate-300 group-hover:text-white transition-colors leading-tight">{d.label}</span>
+              </button>
+            ))}
+          </div>
+
+          <p className="text-xs text-slate-600 mb-4 uppercase tracking-widest">Tüm Demo Hesaplar · Şifre: 1234</p>
           <div className="space-y-2">
             {GRUPLAR.map(grup => (
               <div key={grup.id} className="border border-slate-800/40 rounded-xl overflow-hidden">

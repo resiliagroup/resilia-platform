@@ -215,6 +215,12 @@ export default function BeylikduzuKomuta() {
               <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: GOLD }} />
               Canlı · {new Date().toLocaleDateString('tr-TR')}
             </div>
+            <a href="/form/basvuru"
+              style={{ background: GOLD, color: '#0A1628' }}
+              className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap">
+              <Zap className="w-3.5 h-3.5" />
+              Risk Formu Doldurun
+            </a>
           </div>
         </div>
       </div>
