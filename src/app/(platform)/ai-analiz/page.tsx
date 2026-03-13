@@ -57,7 +57,7 @@ export default function OmniRiskDashboard() {
   };
 
   const radarOptions = {
-    scales: { r: { min: 0, max: 100, ticks: { stepSize: 20, display: false }, pointLabels: { font: { size: 14, family: 'Inter', weight: 'bold' }, color: '#334155' } } },
+    scales: { r: { min: 0, max: 100, ticks: { stepSize: 20, display: false }, pointLabels: { font: { size: 14, family: 'Inter', weight: 'bold' as const }, color: '#334155' } } },
     plugins: { legend: { display: false } },
     maintainAspectRatio: false,
   };
