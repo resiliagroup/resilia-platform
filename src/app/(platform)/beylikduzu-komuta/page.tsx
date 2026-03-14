@@ -1,9 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import {
   Shield, MapPin, Building2, AlertTriangle, Activity,
-  Users, Loader2, WifiOff, TrendingUp, Zap,
+  Users, Loader2, WifiOff, TrendingUp, Zap, ClipboardList,
 } from 'lucide-react'
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
@@ -17,6 +17,48 @@ import {
   type OmniFacility,
   type RiskClass,
 } from '@/lib/api'
+import { supabase } from '@/lib/supabase'
+
+// ─── Form başvuru tipi ────────────────────────────────────────
+interface FormBasvuru {
+  id: string
+  birim_kodu: string
+  sektor: string
+  dayaniklilik_skoru: number
+  h_skoru: number
+  f_skoru: number
+  e_skoru: number
+  durum: string
+  dolduran_email: string | null
+  gonderilme: string | null
+  puanlar: {
+    _basvuru?: {
+      isletme_adi?: string
+      yetkili?: string
+      tel?: string
+      email?: string
+      mahalle?: string
+    }
+  } | null
+}
+
+const SEKTOR_ETIKET: Record<string, string> = {
+  bankacilik: 'Bankacılık',
+  saglik:     'Sağlık',
+  konaklama:  'Konaklama',
+  uretim:     'Sanayi & Üretim',
+  hizmet:     'Hizmet',
+  belediye:   'Kamu & Belediye',
+  meb:        'Eğitim',
+  odalar:     'Oda',
+}
+
+function uriRenkHesapla(skor: number) {
+  if (skor < 40) return { bg: 'bg-red-50',     border: 'border-red-200',     text: 'text-red-600',     label: 'KRİTİK'     }
+  if (skor < 60) return { bg: 'bg-orange-50',  border: 'border-orange-200',  text: 'text-orange-600',  label: 'YÜKSEK'     }
+  if (skor < 75) return { bg: 'bg-amber-50',   border: 'border-amber-200',   text: 'text-amber-600',   label: 'ORTA'       }
+  return               { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-600', label: 'DAYANIKLI'  }
+}
 
 const CBSHarita = dynamic(() => import('./CBSHarita'), {
   ssr: false,
@@ -83,7 +125,7 @@ function URIGauge({ value, renk }: { value: number; renk: string }) {
           startAngle={180} endAngle={0}
           innerRadius={60} outerRadius={85}
           paddingAngle={0} dataKey="value" stroke="none"
-          isAnimationActive
+          isAnimationActive={false}
         >
           {data.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
         </Pie>
@@ -146,9 +188,23 @@ export default function BeylikduzuKomuta() {
   const [secili, setSecili]   = useState(MAHALLELER[0])
   const [senaryo, setSenaryo] = useState('deprem')
   const [siddet, setSiddet]   = useState(6.5)
+  const [basvurular, setBasvurular] = useState<FormBasvuru[]>([])
+  const [basvuruLoading, setBasvuruLoading] = useState(true)
 
   const { data: facilities, loading: facLoading, error: facError } = useOmniFacilities(TENANT_ID)
   const { data: portfolio,  loading: portLoading                  } = usePortfolioSummary(TENANT_ID)
+
+  useEffect(() => {
+    supabase
+      .from('form_cevaplari')
+      .select('id,birim_kodu,sektor,dayaniklilik_skoru,h_skoru,f_skoru,e_skoru,durum,dolduran_email,gonderilme,puanlar')
+      .eq('durum', 'gonderildi')
+      .order('gonderilme', { ascending: false })
+      .then(({ data }) => {
+        setBasvurular((data as FormBasvuru[]) ?? [])
+        setBasvuruLoading(false)
+      })
+  }, [])
 
   const ilceUriStatic  = Math.round(MAHALLELER.reduce((a, m) => a + m.uri, 0) / MAHALLELER.length)
   const kritikStatic   = MAHALLELER.filter(m => m.risk === 'KRİTİK' || m.risk === 'YÜKSEK').length
@@ -161,6 +217,10 @@ export default function BeylikduzuKomuta() {
   const toplamTesis   = portfolio?.total ?? facilities?.length ?? 0
   const kritikTesis   = portfolio?.critical_count ?? 0
   const toplamPersonel = facilities?.reduce((a, f) => a + (f.employee_count ?? 0), 0) ?? 0
+
+  // Bu ay başvuru sayısı
+  const ayBasiISO = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
+  const buAyBasvuru = basvurular.filter(b => (b.gonderilme ?? '') >= ayBasiISO).length
 
   const natechEtki    = senaryo === 'deprem' ? Math.min(100, Math.round((siddet - 5) * 28 * 1.4)) : senaryo === 'yangin' ? 45 : 38
   const etkilenenNufus = Math.round(toplamNufus * (natechEtki / 100) * 0.6)
@@ -228,7 +288,7 @@ export default function BeylikduzuKomuta() {
       <div className="max-w-7xl mx-auto px-8 py-6">
 
         {/* ── KPI KARTLARI ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
           {/* URI */}
           <Card className="p-5">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">İlçe URI Skoru</p>
@@ -264,6 +324,16 @@ export default function BeylikduzuKomuta() {
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">NATECH Tesisi</p>
             <p className="text-3xl font-bold text-orange-500 mt-1">1 OSB</p>
             <p className="text-xs text-gray-400 mt-2">Yakuplu · D katsayısı 2.4</p>
+          </Card>
+
+          {/* Bu Ay Başvuru */}
+          <Card className="p-5">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Bu Ay Başvuru</p>
+            {basvuruLoading
+              ? <div className="h-9 w-16 bg-gray-100 rounded animate-pulse mt-1" />
+              : <p className="text-3xl font-bold mt-1" style={{ color: GOLD }}>{buAyBasvuru}<span className="text-lg text-gray-300">/{basvurular.length}</span></p>
+            }
+            <p className="text-xs text-gray-400 mt-2">Toplam gönderildi</p>
           </Card>
         </div>
 
@@ -336,14 +406,16 @@ export default function BeylikduzuKomuta() {
               <Card className="p-6">
                 <SectionTitle icon={TrendingUp} title="Risk Sınıf Dağılımı" />
                 <div className="flex flex-col items-center">
-                  <ResponsiveContainer width="100%" height={160}>
-                    <PieChart>
-                      <Pie data={riskDonutData} cx="50%" cy="50%" innerRadius={45} outerRadius={72} dataKey="value" paddingAngle={3} stroke="none">
-                        {riskDonutData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
-                      </Pie>
-                      <Tooltip formatter={(v) => [`${v} tesis`]} contentStyle={{ borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 12 }} />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  <div style={{ height: 300 }}>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie data={riskDonutData} cx="50%" cy="50%" innerRadius={65} outerRadius={100} dataKey="value" paddingAngle={3} stroke="none" isAnimationActive={false}>
+                          {riskDonutData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
+                        </Pie>
+                        <Tooltip formatter={(v) => [`${v} tesis`]} contentStyle={{ borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 12 }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
                   <div className="flex flex-wrap justify-center gap-x-3 gap-y-1.5 mt-1">
                     {riskDonutData.map(d => (
                       <div key={d.name} className="flex items-center gap-1.5 text-xs text-gray-500">
@@ -412,20 +484,22 @@ export default function BeylikduzuKomuta() {
             {/* URI Bar Chart */}
             <Card className="p-6">
               <SectionTitle icon={Activity} title="Mahalle Bazlı URI Dayanıklılık Skoru" />
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={mahalleBarData} margin={{ top: 4, right: 16, left: 0, bottom: 4 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
-                  <XAxis dataKey="ad" tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
-                  <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
-                  <Tooltip
-                    formatter={(v) => [`${v}`, 'URI Skoru']}
-                    contentStyle={{ borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
-                  />
-                  <Bar dataKey="URI" radius={[4, 4, 0, 0]}>
-                    {mahalleBarData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              <div style={{ height: 300 }}>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={mahalleBarData} margin={{ top: 4, right: 16, left: 0, bottom: 4 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
+                    <XAxis dataKey="ad" tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
+                    <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
+                    <Tooltip
+                      formatter={(v) => [`${v}`, 'URI Skoru']}
+                      contentStyle={{ borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
+                    />
+                    <Bar dataKey="URI" radius={[4, 4, 0, 0]} isAnimationActive={false}>
+                      {mahalleBarData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </Card>
 
             {/* Liste + Detay */}
@@ -634,6 +708,89 @@ export default function BeylikduzuKomuta() {
                 </div>
               </Card>
             )}
+
+            {/* ── FORM BAŞVURULARI ── */}
+            <Card>
+              <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 className="text-gray-900 font-semibold flex items-center gap-2 text-sm">
+                  <ClipboardList className="w-4 h-4" style={{ color: GOLD }} />
+                  Risk Formu Başvuruları
+                </h3>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-400">Supabase · En yeni üstte</span>
+                  {basvurular.length > 0 && (
+                    <span className="text-xs bg-amber-50 border border-amber-200 text-amber-600 px-2 py-1 rounded-full">
+                      {basvurular.length} kayıt
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {basvuruLoading && <div className="p-8 flex justify-center"><Spinner /></div>}
+
+              {!basvuruLoading && basvurular.length === 0 && (
+                <div className="p-10 flex flex-col items-center gap-3 text-center">
+                  <ClipboardList className="w-8 h-8 text-gray-200" />
+                  <p className="text-gray-400 text-sm">Henüz başvuru yok.</p>
+                  <a href="/form/basvuru"
+                    style={{ color: GOLD, borderColor: `${GOLD}50` }}
+                    className="text-xs border rounded-lg px-4 py-2 hover:opacity-80 transition-opacity">
+                    İlk başvuruyu oluştur →
+                  </a>
+                </div>
+              )}
+
+              {!basvuruLoading && basvurular.length > 0 && (
+                <div className="divide-y divide-gray-50">
+                  {/* Tablo başlıkları */}
+                  <div className="hidden lg:grid grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] px-4 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                    <span>Tesis / İşletme</span>
+                    <span>Sektör</span>
+                    <span>URI Skoru</span>
+                    <span>Risk Sınıfı</span>
+                    <span>Tarih</span>
+                    <span />
+                  </div>
+                  {basvurular.map(b => {
+                    const isletme = b.puanlar?._basvuru
+                    const ad      = isletme?.isletme_adi ?? b.birim_kodu
+                    const mahalle = isletme?.mahalle
+                    const skor    = Math.round(b.dayaniklilik_skoru ?? 0)
+                    const badge   = uriRenkHesapla(skor)
+                    const tarih   = b.gonderilme
+                      ? new Date(b.gonderilme).toLocaleDateString('tr-TR', { day:'2-digit', month:'short', year:'numeric' })
+                      : '—'
+                    return (
+                      <div key={b.id} className="flex flex-wrap lg:grid lg:grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] items-center px-4 py-3 hover:bg-gray-50 transition-colors gap-2">
+                        <div className="min-w-0">
+                          <p className="text-sm text-gray-900 font-medium truncate">{ad}</p>
+                          {mahalle && <p className="text-xs text-gray-400 mt-0.5">{mahalle}</p>}
+                          {!mahalle && b.dolduran_email && (
+                            <p className="text-xs text-gray-400 mt-0.5">{b.dolduran_email}</p>
+                          )}
+                        </div>
+                        <span className="text-xs text-gray-500">
+                          {SEKTOR_ETIKET[b.sektor] ?? b.sektor}
+                        </span>
+                        <span className="text-lg font-bold font-mono" style={{ color: skor < 40 ? '#EF4444' : skor < 60 ? '#F97316' : skor < 75 ? '#F59E0B' : '#22C55E' }}>
+                          {skor}
+                          <span className="text-xs text-gray-300 font-normal">/100</span>
+                        </span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${badge.bg} ${badge.border} ${badge.text}`}>
+                          {badge.label}
+                        </span>
+                        <span className="text-xs text-gray-400">{tarih}</span>
+                        <div className="flex gap-1.5">
+                          <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded font-mono">
+                            H:{Math.round(b.h_skoru ?? 0)} F:{Math.round(b.f_skoru ?? 0)} E:{Math.round(b.e_skoru ?? 0)}
+                          </span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </Card>
           </div>
         )}
 

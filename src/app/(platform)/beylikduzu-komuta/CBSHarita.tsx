@@ -189,178 +189,141 @@ function HeatmapLayer({ facilities, tehlike }: { facilities: FacilityRow[]; tehl
 /* ══════════════════════════════════════════════════════════════
    F-N EĞRİSİ
 ══════════════════════════════════════════════════════════════ */
-interface FNPoint { name: string; N: number; cumF: number }
+function FNCurve({ facilities }: { facilities: FacilityRow[] }) {
+  // Chart dimensions
+  const W = 700, H = 340
+  const ml = 70, mr = 20, mt = 20, mb = 48
+  const pw = W - ml - mr
+  const ph = H - mt - mb
 
-function buildFNCurves(facilities: FacilityRow[]) {
-  return TEHLIKE_TURLERI.map(tt => {
-    const raw = facilities
+  // Log-log scale helpers
+  const xLogMin = 0, xLogMax = 4    // N: 1–10000
+  const yLogMin = -7, yLogMax = -2  // F: 1e-7–1e-2
+  const xS = (N: number) => ml + (Math.log10(Math.max(1, N)) - xLogMin) / (xLogMax - xLogMin) * pw
+  const yS = (F: number) => mt + ph - (Math.log10(Math.max(1e-8, F)) - yLogMin) / (yLogMax - yLogMin) * ph
+
+  // ALARP zone pixel coords
+  const yTop    = yS(1e-2)   // top of chart (intolerable)
+  const yAlarp  = yS(1e-4)   // intolerable/ALARP boundary
+  const yAccept = yS(1e-6)   // ALARP/acceptable boundary
+  const yBot    = yS(1e-7)   // bottom of chart
+
+  // Axis ticks
+  const xTicks = [1, 10, 100, 1000, 10000]
+  const yTicks: [number, string][] = [[1e-2,'10⁻²'],[1e-3,'10⁻³'],[1e-4,'10⁻⁴'],[1e-5,'10⁻⁵'],[1e-6,'10⁻⁶'],[1e-7,'10⁻⁷']]
+
+  // Build curves from facilities
+  const curves = useMemo(() => TEHLIKE_TURLERI.map(tt => {
+    const pts = facilities
       .filter(f => f.geom?.coordinates)
       .map(f => {
         const score = getScore(f, tt)
-        const xSc   = (f.extra_data?.X_score as number | undefined) ?? 2
-        return { name: f.name, N: Math.max(1, Math.round(f.employee_count * xSc)), F: score * 0.001 }
+        const xSc = (f.extra_data?.X_score as number | undefined) ?? 2
+        return { N: Math.max(1, Math.round(f.employee_count * xSc)), F: score * 0.001 }
       })
       .filter(p => p.F > 0)
       .sort((a, b) => b.N - a.N)
 
     let cum = 0
-    const pts: FNPoint[] = raw.map(p => ({ name: p.name, N: p.N, cumF: (cum += p.F) }))
-    return { tt, pts, color: TEHLIKE_META[tt].renk, label: TEHLIKE_META[tt].lbl }
-  })
-}
-
-function FNCurve({ facilities }: { facilities: FacilityRow[] }) {
-  const [aktivCurve, setAktivCurve] = useState<TehlikeTur | 'hepsi'>('hepsi')
-  const [tooltip, setTooltip]       = useState<{ x: number; y: number; html: string } | null>(null)
-  const [curves, setCurves]         = useState<ReturnType<typeof buildFNCurves>>([])
-
-  useEffect(() => {
-    setCurves(buildFNCurves(facilities))
-  }, [facilities])
-
-  const W = 800, H = 400
-  const m = { t: 28, r: 28, b: 52, l: 76 }
-  const pw = W - m.l - m.r
-  const ph = H - m.t - m.b
-
-  const xLogMin = 0, xLogMax = 4    // log10(1..10000)
-  const yLogMin = -7, yLogMax = -2  // log10(1e-7..1e-2)
-
-  const xS = (N: number) => m.l + (Math.log10(Math.max(1, N)) - xLogMin) / (xLogMax - xLogMin) * pw
-  const yS = (F: number) => m.t + ph - (Math.log10(Math.max(1e-8, F)) - yLogMin) / (yLogMax - yLogMin) * ph
-
-  const xTicks = [1, 10, 100, 1000, 10000]
-  const yTicks = [1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7]
-
-  // ALARP zones y-coords
-  const yZones = { intolTop: yS(1e-2), intolBot: yS(1e-4), alarpBot: yS(1e-6), acceptBot: yS(1e-7) }
+    const cumPts = pts.map(p => ({ N: p.N, cumF: (cum += p.F) }))
+    return { tt, cumPts, color: TEHLIKE_META[tt].renk, label: TEHLIKE_META[tt].lbl }
+  }), [facilities])
 
   return (
-    <div style={{ background: '#0F172A', border: '1px solid #334155', borderRadius: 14, padding: '20px 24px', marginTop: 4 }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+    <div style={{ height: 420, background: '#0F172A', borderRadius: 8, padding: 24,
+                  border: '1px solid #1E293B', fontFamily: "'DM Sans',sans-serif" }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
         <div>
           <p style={{ margin: 0, color: '#E8C97A', fontSize: 11, fontWeight: 700,
                       letterSpacing: 1.5, textTransform: 'uppercase', fontFamily: "'DM Mono',monospace" }}>
             F-N Risk Eğrisi
           </p>
-          <p style={{ margin: '3px 0 0', color: '#475569', fontSize: 11, fontFamily: "'DM Sans',sans-serif" }}>
-            Kümülatif yıllık frekans — etkilenen nüfus
+          <p style={{ margin: '3px 0 0', color: '#475569', fontSize: 11 }}>
+            Kümülatif yıllık frekans — etkilenen nüfus (log-log)
           </p>
         </div>
-        {/* Curve filter */}
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-          {(['hepsi', ...TEHLIKE_TURLERI] as (TehlikeTur | 'hepsi')[]).map(tt => {
-            const c = tt === 'hepsi' ? '#94A3B8' : TEHLIKE_META[tt].renk
-            const a = aktivCurve === tt
-            return (
-              <button key={tt} onClick={() => setAktivCurve(tt)} style={{
-                padding: '3px 10px', borderRadius: 20, border: `1px solid ${a ? c : '#334155'}`,
-                background: a ? c + '25' : 'transparent', color: a ? c : '#475569',
-                fontSize: 10, fontWeight: 600, cursor: 'pointer',
-                fontFamily: "'DM Sans',sans-serif",
-                boxShadow: a ? `0 0 8px ${c}45` : 'none',
-                display: 'flex', alignItems: 'center', gap: 4,
-              }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: c, flexShrink: 0 }}/>
-                {tt === 'hepsi' ? 'Tümü' : TEHLIKE_META[tt].lbl}
-              </button>
-            )
-          })}
+        {/* Legend */}
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          {curves.filter(c => c.cumPts.length > 0).map(c => (
+            <div key={c.tt} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <div style={{ width: 20, height: 2, background: c.color, borderRadius: 2 }}/>
+              <span style={{ fontSize: 10, color: '#64748B' }}>{c.label}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      <div style={{ position: 'relative', height: 420, overflowX: 'auto' }}>
-        <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="100%" style={{ display: 'block', overflow: 'visible' }}>
-          {/* ALARP Zones */}
-          <rect x={m.l} y={yZones.intolTop}  width={pw} height={yZones.intolBot - yZones.intolTop}  fill="rgba(239,68,68,.09)"/>
-          <rect x={m.l} y={yZones.intolBot}  width={pw} height={yZones.alarpBot - yZones.intolBot}  fill="rgba(245,158,11,.09)"/>
-          <rect x={m.l} y={yZones.alarpBot}  width={pw} height={yZones.acceptBot - yZones.alarpBot} fill="rgba(34,197,94,.07)"/>
+      {/* SVG Chart */}
+      <svg width="100%" height={380} viewBox={`0 0 ${W} ${H}`} style={{ display: 'block', overflow: 'visible' }}>
+        {/* ALARP zones */}
+        <rect x={ml} y={yTop}    width={pw} height={yAlarp  - yTop}    fill="rgba(239,68,68,0.15)"/>
+        <rect x={ml} y={yAlarp}  width={pw} height={yAccept - yAlarp}  fill="rgba(245,158,11,0.15)"/>
+        <rect x={ml} y={yAccept} width={pw} height={yBot    - yAccept} fill="rgba(34,197,94,0.15)"/>
 
-          {/* Zone labels */}
-          {[
-            { y: yZones.intolTop + 14,                          lbl: 'KABULEDİLEMEZ', c: 'rgba(239,68,68,.55)'  },
-            { y: (yZones.intolBot + yZones.alarpBot) / 2 + 4,   lbl: 'ALARP',          c: 'rgba(245,158,11,.6)' },
-            { y: yZones.alarpBot  + 14,                          lbl: 'KABULEDİLEBİLİR',c:'rgba(34,197,94,.55)' },
-          ].map(z => (
-            <text key={z.lbl} x={m.l + pw - 4} y={z.y} textAnchor="end" fill={z.c}
-                  fontSize={9} fontFamily="DM Sans,sans-serif" fontWeight={700} letterSpacing={0.5}>
-              {z.lbl}
+        {/* Zone labels */}
+        <text x={ml + pw - 6} y={yTop   + 13} textAnchor="end" fill="rgba(239,68,68,0.7)"   fontSize={9} fontWeight={700} fontFamily="DM Sans,sans-serif">KABULEDİLEMEZ</text>
+        <text x={ml + pw - 6} y={(yAlarp + yAccept) / 2 + 4} textAnchor="end" fill="rgba(245,158,11,0.7)" fontSize={9} fontWeight={700} fontFamily="DM Sans,sans-serif">ALARP</text>
+        <text x={ml + pw - 6} y={yAccept + 13} textAnchor="end" fill="rgba(34,197,94,0.7)"  fontSize={9} fontWeight={700} fontFamily="DM Sans,sans-serif">KABULEDİLEBİLİR</text>
+
+        {/* Grid lines */}
+        {xTicks.map(N => <line key={N} x1={xS(N)} y1={mt} x2={xS(N)} y2={mt + ph} stroke="#1E293B" strokeWidth={1}/>)}
+        {yTicks.map(([F]) => <line key={F} x1={ml} y1={yS(F)} x2={ml + pw} y2={yS(F)} stroke="#1E293B" strokeWidth={1}/>)}
+
+        {/* Axes */}
+        <line x1={ml} y1={mt}      x2={ml}      y2={mt + ph} stroke="#334155" strokeWidth={1.5}/>
+        <line x1={ml} y1={mt + ph} x2={ml + pw} y2={mt + ph} stroke="#334155" strokeWidth={1.5}/>
+
+        {/* X axis ticks + labels */}
+        {xTicks.map(N => (
+          <g key={N}>
+            <line x1={xS(N)} y1={mt + ph} x2={xS(N)} y2={mt + ph + 5} stroke="#475569" strokeWidth={1}/>
+            <text x={xS(N)} y={mt + ph + 18} textAnchor="middle" fill="#64748B" fontSize={10} fontFamily="DM Mono,monospace">
+              {N >= 1000 ? `${N/1000}k` : N}
             </text>
-          ))}
+          </g>
+        ))}
 
-          {/* Grid */}
-          {xTicks.map(N => <line key={N} x1={xS(N)} y1={m.t} x2={xS(N)} y2={m.t+ph} stroke="#1E293B" strokeWidth={1}/>)}
-          {yTicks.map(F => <line key={F} x1={m.l}   y1={yS(F)} x2={m.l+pw} y2={yS(F)} stroke="#1E293B" strokeWidth={1}/>)}
+        {/* Y axis ticks + labels */}
+        {yTicks.map(([F, lbl]) => (
+          <g key={F}>
+            <line x1={ml - 5} y1={yS(F)} x2={ml} y2={yS(F)} stroke="#475569" strokeWidth={1}/>
+            <text x={ml - 8} y={yS(F) + 4} textAnchor="end" fill="#64748B" fontSize={9} fontFamily="DM Mono,monospace">{lbl}</text>
+          </g>
+        ))}
 
-          {/* Axes */}
-          <line x1={m.l} y1={m.t}    x2={m.l}    y2={m.t+ph} stroke="#334155" strokeWidth={1.5}/>
-          <line x1={m.l} y1={m.t+ph} x2={m.l+pw} y2={m.t+ph} stroke="#334155" strokeWidth={1.5}/>
+        {/* Axis labels */}
+        <text x={ml + pw / 2} y={H - 6} textAnchor="middle" fill="#8FA3B8" fontSize={11} fontFamily="DM Sans,sans-serif">
+          Etkilenen Nüfus (N)
+        </text>
+        <text x={13} y={mt + ph / 2} textAnchor="middle" fill="#8FA3B8" fontSize={11} fontFamily="DM Sans,sans-serif"
+              transform={`rotate(-90 13 ${mt + ph / 2})`}>
+          Yıllık Frekans (F)
+        </text>
 
-          {/* X ticks */}
-          {xTicks.map(N => (
-            <g key={N}>
-              <line x1={xS(N)} y1={m.t+ph} x2={xS(N)} y2={m.t+ph+5} stroke="#475569" strokeWidth={1}/>
-              <text x={xS(N)} y={m.t+ph+18} textAnchor="middle" fill="#64748B"
-                    fontSize={10} fontFamily="DM Mono,monospace">{N >= 1000 ? `${N/1000}k` : N}</text>
+        {/* Curves */}
+        {curves.map(({ tt, cumPts, color }) => {
+          if (cumPts.length < 2) return null
+          const points = cumPts.map(p => `${xS(p.N).toFixed(1)},${yS(p.cumF).toFixed(1)}`).join(' ')
+          return (
+            <g key={tt}>
+              <polyline points={points} fill="none" stroke={color} strokeWidth={2}
+                        strokeLinejoin="round" strokeLinecap="round" opacity={0.85}/>
+              {/* endpoint dot */}
+              <circle cx={xS(cumPts[cumPts.length-1].N)} cy={yS(cumPts[cumPts.length-1].cumF)}
+                      r={3.5} fill={color} opacity={0.9}/>
             </g>
-          ))}
+          )
+        })}
 
-          {/* Y ticks */}
-          {yTicks.map(F => (
-            <g key={F}>
-              <line x1={m.l-5} y1={yS(F)} x2={m.l} y2={yS(F)} stroke="#475569" strokeWidth={1}/>
-              <text x={m.l-8} y={yS(F)+4} textAnchor="end" fill="#64748B"
-                    fontSize={9} fontFamily="DM Mono,monospace">
-                {`10⁻${Math.abs(Math.log10(F)).toFixed(0)}`}
-              </text>
-            </g>
-          ))}
-
-          {/* Axis labels */}
-          <text x={m.l+pw/2} y={H-6} textAnchor="middle" fill="#8FA3B8"
-                fontSize={11} fontFamily="DM Sans,sans-serif">Etkilenen Nüfus (N)</text>
-          <text x={14} y={m.t+ph/2} textAnchor="middle" fill="#8FA3B8"
-                fontSize={11} fontFamily="DM Sans,sans-serif"
-                transform={`rotate(-90 14 ${m.t+ph/2})`}>Yıllık Frekans (F)</text>
-
-          {/* Curves */}
-          {curves.map(({ tt, pts, color }) => {
-            const visible = aktivCurve === 'hepsi' || aktivCurve === tt
-            if (!visible || pts.length < 2) return null
-            const d = pts.map((p, i) => `${i===0?'M':'L'}${xS(p.N).toFixed(1)},${yS(p.cumF).toFixed(1)}`).join(' ')
-            // Sample every 8th point for hover circles
-            const sampled = pts.filter((_, i) => i % 8 === 0)
-            return (
-              <g key={tt}>
-                <path d={d} fill="none" stroke={color} strokeWidth={2}
-                      strokeLinejoin="round" strokeLinecap="round" opacity={0.85}/>
-                {sampled.map((p, i) => (
-                  <circle key={i} cx={xS(p.N)} cy={yS(p.cumF)} r={3.5} fill={color}
-                          fillOpacity={0.8} style={{ cursor: 'pointer' }}
-                          onMouseEnter={e => setTooltip({
-                            x: e.clientX, y: e.clientY,
-                            html: `${TEHLIKE_META[tt].lbl}\n${p.name}\nN = ${p.N.toLocaleString('tr-TR')}\nF = ${p.cumF.toExponential(2)}`,
-                          })}
-                          onMouseLeave={() => setTooltip(null)}/>
-                ))}
-              </g>
-            )
-          })}
-        </svg>
-
-        {/* Tooltip */}
-        {tooltip && (
-          <div style={{
-            position: 'fixed', left: tooltip.x + 14, top: tooltip.y - 8, zIndex: 9999,
-            background: '#1E293B', border: '1px solid #334155', borderRadius: 8,
-            padding: '8px 12px', fontSize: 11, color: '#E2E8F0',
-            pointerEvents: 'none', whiteSpace: 'pre-line', lineHeight: 1.6,
-            boxShadow: '0 4px 20px rgba(0,0,0,.6)', fontFamily: "'DM Sans',sans-serif",
-          }}>
-            {tooltip.html}
-          </div>
+        {/* No data hint */}
+        {facilities.length === 0 && (
+          <text x={ml + pw / 2} y={mt + ph / 2} textAnchor="middle" fill="#334155"
+                fontSize={13} fontFamily="DM Sans,sans-serif">
+            Veri yükleniyor…
+          </text>
         )}
-      </div>
+      </svg>
     </div>
   )
 }
