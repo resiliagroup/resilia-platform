@@ -1,41 +1,67 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { oturumAc, rolHedefi, DEMO_KULLANICILAR } from '@/lib/auth'
-import { Shield } from 'lucide-react'
+import { oturumAc, rolHedefi } from '@/lib/auth'
 
-const GRUPLAR = [
-  {
-    id: 'bankacilik', label: 'Bankacılık & Finans', icon: '🏦', renk: '#E8C97A', kenar: '#E8C97A33',
-    hesaplar: DEMO_KULLANICILAR.filter(k => k.sektor === 'bankacilik'),
-  },
-  {
-    id: 'uretim', label: 'Sanayi & Üretim', icon: '🏭', renk: '#6ABFB8', kenar: '#6ABFB833',
-    hesaplar: DEMO_KULLANICILAR.filter(k => k.sektor === 'uretim'),
-  },
-  {
-    id: 'saglik', label: 'Sağlık', icon: '🏥', renk: '#7B9FD4', kenar: '#7B9FD433',
-    hesaplar: DEMO_KULLANICILAR.filter(k => k.sektor === 'saglik'),
-  },
-  {
-    id: 'kamu', label: 'Kamu & Eğitim', icon: '🏛️', renk: '#9B8EC4', kenar: '#9B8EC433',
-    hesaplar: DEMO_KULLANICILAR.filter(k => k.sektor === 'belediye' || k.sektor === 'meb'),
-  },
-]
+const N = '#0A1628'
+const G = '#E8C97A'
+const T = '#6ABFB8'
+
+/* ── Hexagon logo SVG ─────────────────────────────────────────── */
+function OmniLogo({ size = 52 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 52 52" fill="none">
+      {/* hexagon */}
+      <polygon points="26,4 46,15 46,37 26,48 6,37 6,15"
+               fill="none" stroke={T} strokeWidth="1.8"/>
+      <polygon points="26,12 38,19 38,33 26,40 14,33 14,19"
+               fill={T} fillOpacity="0.12" stroke={T} strokeWidth="1" strokeOpacity="0.5"/>
+      {/* center mark */}
+      <circle cx="26" cy="26" r="4" fill={G}/>
+      <line x1="26" y1="18" x2="26" y2="22" stroke={G} strokeWidth="1.5" strokeLinecap="round"/>
+      <line x1="26" y1="30" x2="26" y2="34" stroke={G} strokeWidth="1.5" strokeLinecap="round"/>
+      <line x1="18" y1="22" x2="22" y2="24" stroke={G} strokeWidth="1.5" strokeLinecap="round"/>
+      <line x1="30" y1="28" x2="34" y2="30" stroke={G} strokeWidth="1.5" strokeLinecap="round"/>
+      <line x1="18" y1="30" x2="22" y2="28" stroke={G} strokeWidth="1.5" strokeLinecap="round"/>
+      <line x1="30" y1="24" x2="34" y2="22" stroke={G} strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  )
+}
+
+/* ── Standard logos (text SVG placeholders) ───────────────────── */
+function StandardLogos() {
+  const logos = [
+    { name: 'UNDRR', sub: 'MCR2030' },
+    { name: 'ISO', sub: '22301' },
+    { name: 'Sendai', sub: '2015–2030' },
+    { name: 'AFAD', sub: 'Uyumlu' },
+  ]
+  return (
+    <div style={{ display: 'flex', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}>
+      {logos.map(l => (
+        <div key={l.name} style={{ textAlign: 'center', opacity: 0.5 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#8FA3B8', letterSpacing: 1,
+                        fontFamily: 'DM Sans,sans-serif', lineHeight: 1.2 }}>{l.name}</div>
+          <div style={{ fontSize: 10, color: '#5B7080', fontFamily: 'DM Sans,sans-serif' }}>{l.sub}</div>
+        </div>
+      ))}
+    </div>
+  )
+}
 
 export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [sifre, setSifre] = useState('')
-  const [acikGrup, setAcikGrup] = useState<string | null>(null)
-  const [hata, setHata] = useState('')
+  const [hata,  setHata]  = useState('')
   const [yukleniyor, setYukleniyor] = useState(false)
 
-  const girisYap = (emailGir: string, sifreGir: string) => {
+  const girisYap = (e: React.FormEvent) => {
+    e.preventDefault()
     setYukleniyor(true)
     setHata('')
     try {
-      const kullanici = oturumAc(emailGir, sifreGir)
+      const kullanici = oturumAc(email, sifre)
       router.push(rolHedefi(kullanici.rol, kullanici.tenant))
     } catch {
       setHata('E-posta veya şifre hatalı.')
@@ -44,119 +70,187 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1628] flex">
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+        .inp{width:100%;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;
+             padding:13px 16px;font-size:14px;color:#0A1628;font-family:'DM Sans',sans-serif;
+             outline:none;transition:border-color .18s,box-shadow .18s}
+        .inp::placeholder{color:#94A3B8}
+        .inp:focus{border-color:${T};box-shadow:0 0 0 3px ${T}22}
+        .btn-login{width:100%;background:${N};color:#fff;font-weight:600;font-size:15px;
+                   padding:14px;border-radius:10px;border:none;cursor:pointer;
+                   font-family:'DM Sans',sans-serif;transition:background .18s,transform .1s}
+        .btn-login:hover:not(:disabled){background:#142340;transform:translateY(-1px)}
+        .btn-login:disabled{opacity:0.6;cursor:not-allowed}
+      `}</style>
 
-      <div className="hidden lg:flex w-1/2 flex-col justify-between p-12 border-r border-slate-800/40">
-        <div className="flex items-center gap-3">
-          <div className="bg-[#E8C97A]/10 p-2.5 rounded-xl border border-[#E8C97A]/20">
-            <Shield className="w-6 h-6 text-[#E8C97A]" />
-          </div>
-          <div>
-            <p className="text-white font-bold tracking-widest text-lg">OMNI</p>
-            <p className="text-slate-500 text-xs tracking-widest uppercase">Resilience Platform</p>
-          </div>
-        </div>
-        <div>
-          <p className="text-4xl font-light text-white leading-tight mb-6">
-            Kurumsal dayanıklılığı<br />
-            <span className="text-[#E8C97A]">tek platformda</span> yönetin.
-          </p>
-          <div className="grid grid-cols-3 gap-4">
-            {[{ label: 'Aktif Tesis', value: '600+' }, { label: 'Sektör', value: '8' }, { label: 'İl', value: '81' }].map(item => (
-              <div key={item.label} className="bg-slate-800/30 rounded-xl p-4 border border-slate-700/30">
-                <p className="text-2xl font-bold text-[#E8C97A]">{item.value}</p>
-                <p className="text-xs text-slate-500 mt-1">{item.label}</p>
+      <div style={{ minHeight: '100vh', display: 'flex' }}>
+
+        {/* ── LEFT: Navy panel ────────────────────────────────── */}
+        <div style={{
+          width: '48%', minHeight: '100vh', background: N,
+          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+          padding: '52px 56px', borderRight: '1px solid #142340',
+        }} className="hidden-mobile">
+
+          {/* Logo row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <OmniLogo size={52}/>
+            <div>
+              <div style={{ color: '#F1F5F9', fontSize: 20, fontWeight: 700, letterSpacing: 0.5 }}>
+                omni<span style={{ color: T }}>versel</span>
               </div>
-            ))}
-          </div>
-          <p className="text-slate-600 text-xs mt-8">İTÜ AYM iş birliğiyle · HFER-720 v2.0 · © 2026 OMNI</p>
-        </div>
-      </div>
-
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-md">
-
-          <div className="lg:hidden flex items-center gap-3 mb-8">
-            <div className="bg-[#E8C97A]/10 p-2 rounded-lg border border-[#E8C97A]/20">
-              <Shield className="w-5 h-5 text-[#E8C97A]" />
+              <div style={{ color: '#5B7080', fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', marginTop: 2 }}>
+                Resilience Platform
+              </div>
             </div>
-            <p className="text-white font-bold tracking-widest">OMNI</p>
           </div>
 
-          <h1 className="text-2xl font-semibold text-white mb-2">Platforma Giriş</h1>
-          <p className="text-slate-500 text-sm mb-8">Kurumsal hesabınızla devam edin.</p>
+          {/* Center content */}
+          <div>
+            <p style={{ color: '#94A3B8', fontSize: 11, fontWeight: 700, letterSpacing: 3,
+                        textTransform: 'uppercase', marginBottom: 20 }}>
+              Urban Resilience Intelligence Platform
+            </p>
+            <h2 style={{ color: '#F1F5F9', fontSize: 36, fontWeight: 300, lineHeight: 1.25, marginBottom: 48 }}>
+              Kurumsal dayanıklılığı<br/>
+              <span style={{ color: G, fontWeight: 700 }}>somut veriye</span><br/>
+              dönüştürün.
+            </h2>
 
-          <form onSubmit={e => { e.preventDefault(); girisYap(email, sifre) }} className="space-y-4 mb-8">
-            <input
-              type="email" placeholder="E-posta" value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-[#E8C97A]/50 transition-colors"
-            />
-            <input
-              type="password" placeholder="Şifre" value={sifre}
-              onChange={e => setSifre(e.target.value)}
-              className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-[#E8C97A]/50 transition-colors"
-            />
-            {hata && <p className="text-red-400 text-xs">{hata}</p>}
-            <button type="submit" disabled={yukleniyor}
-              className="w-full bg-[#E8C97A] hover:bg-[#d4b56a] text-[#0A1628] font-semibold rounded-xl py-3 text-sm transition-colors disabled:opacity-50">
-              {yukleniyor ? 'Giriş yapılıyor...' : 'Giriş Yap →'}
-            </button>
-          </form>
-
-          {/* ── Hızlı Demo Giriş ── */}
-          <p className="text-xs text-slate-600 mb-3 uppercase tracking-widest">Hızlı Demo Giriş</p>
-          <div className="grid grid-cols-2 gap-2 mb-6">
-            {[
-              { label: 'Beylikdüzü Uzmanı',  email: 'uzman@beylikduzu.bel.tr', renk: '#9B8EC4' },
-              { label: 'Beylikdüzü Yönetim', email: 'board@beylikduzu.bel.tr', renk: '#9B8EC4' },
-              { label: 'Akbank Board',        email: 'board@akbank.com',        renk: '#E8C97A' },
-              { label: 'Akbank Şube',         email: 'sube@akbank.com',         renk: '#E8C97A' },
-              { label: 'Medical Park',        email: 'board@medicalpark.com',   renk: '#7B9FD4' },
-              { label: 'Grand Hotel',         email: 'otel@grandhotel.com',     renk: '#6ABFB8' },
-            ].map(d => (
-              <button key={d.email} onClick={() => girisYap(d.email, '1234')}
-                className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-700/50 bg-slate-800/20 hover:bg-slate-800/50 transition-colors text-left group">
-                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: d.renk }} />
-                <span className="text-xs text-slate-300 group-hover:text-white transition-colors leading-tight">{d.label}</span>
-              </button>
-            ))}
-          </div>
-
-          <p className="text-xs text-slate-600 mb-4 uppercase tracking-widest">Tüm Demo Hesaplar · Şifre: 1234</p>
-          <div className="space-y-2">
-            {GRUPLAR.map(grup => (
-              <div key={grup.id} className="border border-slate-800/40 rounded-xl overflow-hidden">
-                <button onClick={() => setAcikGrup(acikGrup === grup.id ? null : grup.id)}
-                  className="w-full flex items-center justify-between px-4 py-3 bg-slate-800/20 hover:bg-slate-800/40 transition-colors text-left">
-                  <span className="text-sm text-slate-300 flex items-center gap-2">
-                    <span>{grup.icon}</span> {grup.label}
-                  </span>
-                  <span className="text-slate-600 text-xs">{acikGrup === grup.id ? '▲' : '▼'}</span>
-                </button>
-                {acikGrup === grup.id && (
-                  <div className="divide-y divide-slate-800/40">
-                    {grup.hesaplar.map(h => (
-                      <button key={h.email} onClick={() => girisYap(h.email, '1234')}
-                        className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-800/30 transition-colors text-left">
-                        <div>
-                          <p className="text-xs text-white">{h.ad_soyad}</p>
-                          <p className="text-xs text-slate-500">{h.tenant}</p>
-                        </div>
-                        <span className="text-xs px-2 py-0.5 rounded-full border"
-                          style={{ color: grup.renk, borderColor: grup.kenar }}>
-                          {h.rol}
-                        </span>
-                      </button>
-                    ))}
+            {/* 3 bullet points */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {[
+                {
+                  kod:  'HFER-720',
+                  baslik: '720 Parametre Motoru',
+                  aciklama: 'Her tesisin tehlike, kırılganlık ve risk skoru anlık hesaplanır.',
+                  renk: G,
+                },
+                {
+                  kod:  'Sendai Uyumlu',
+                  baslik: 'Uluslararası Çerçeve',
+                  aciklama: 'Sendai 2015–2030 ve ISO 22301 standartlarıyla tam entegrasyon.',
+                  renk: T,
+                },
+                {
+                  kod:  'ISO 22301',
+                  baslik: 'BCM Sürekliliği',
+                  aciklama: 'İş sürekliliği planları otomatik güncellenir, denetim hazır tutulur.',
+                  renk: '#7B9FD4',
+                },
+              ].map(b => (
+                <div key={b.kod} style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                  <div style={{ width: 40, height: 40, borderRadius: 10, border: `1px solid ${b.renk}33`,
+                                background: `${b.renk}11`, display: 'flex', alignItems: 'center',
+                                justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ fontSize: 9, fontWeight: 800, color: b.renk, letterSpacing: 0.5,
+                                   fontFamily: 'DM Sans,sans-serif', textAlign: 'center', lineHeight: 1.2 }}>
+                      {b.kod}
+                    </span>
                   </div>
-                )}
-              </div>
-            ))}
+                  <div>
+                    <div style={{ color: '#E2E8F0', fontSize: 14, fontWeight: 600, marginBottom: 3 }}>{b.baslik}</div>
+                    <div style={{ color: '#5B7080', fontSize: 13, lineHeight: 1.6 }}>{b.aciklama}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
+          {/* Bottom: standard logos */}
+          <div>
+            <div style={{ height: 1, background: '#142340', marginBottom: 24 }}/>
+            <StandardLogos/>
+            <p style={{ color: '#2D4055', fontSize: 11, marginTop: 20 }}>
+              İTÜ AYM iş birliğiyle · © {new Date().getFullYear()} Omniversel Teknoloji A.Ş.
+            </p>
+          </div>
         </div>
+
+        {/* ── RIGHT: Login form ────────────────────────────────── */}
+        <div style={{
+          flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: '#FFFFFF', padding: '48px 32px',
+        }}>
+          <div style={{ width: '100%', maxWidth: 380 }}>
+
+            {/* Mobile logo (hidden on desktop) */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 40 }}>
+              <OmniLogo size={36}/>
+              <span style={{ color: N, fontSize: 18, fontWeight: 700 }}>
+                omni<span style={{ color: T }}>versel</span>
+              </span>
+            </div>
+
+            <h1 style={{ color: N, fontSize: 26, fontWeight: 700, marginBottom: 6 }}>
+              Platforma Giriş
+            </h1>
+            <p style={{ color: '#94A3B8', fontSize: 14, marginBottom: 36 }}>
+              Kurumsal hesabınızla devam edin.
+            </p>
+
+            <form onSubmit={girisYap} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <input
+                className="inp"
+                type="email"
+                placeholder="E-posta adresi"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+              />
+              <input
+                className="inp"
+                type="password"
+                placeholder="Şifre"
+                value={sifre}
+                onChange={e => setSifre(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
+
+              {hata && (
+                <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8,
+                               padding: '10px 14px', color: '#DC2626', fontSize: 13 }}>
+                  {hata}
+                </div>
+              )}
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: -4 }}>
+                <a href="#" style={{ fontSize: 13, color: T, fontWeight: 500,
+                                     textDecoration: 'none', fontFamily: 'DM Sans,sans-serif' }}
+                   onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                   onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}>
+                  Sifremi Unuttum
+                </a>
+              </div>
+
+              <button type="submit" className="btn-login" disabled={yukleniyor} style={{ marginTop: 6 }}>
+                {yukleniyor ? 'Giriş yapılıyor…' : 'Giriş Yap'}
+              </button>
+            </form>
+
+            <div style={{ marginTop: 28, padding: '14px 18px', background: '#F8FAFC',
+                          border: '1px solid #E2E8F0', borderRadius: 10 }}>
+              <p style={{ fontSize: 12, color: '#94A3B8', lineHeight: 1.6 }}>
+                Platforma erişim için
+                {' '}
+                <a href="mailto:demo@omniversel.com"
+                   style={{ color: T, fontWeight: 600, textDecoration: 'none' }}>
+                  demo@omniversel.com
+                </a>
+                {' '}adresine yazın.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
       </div>
-    </div>
+    </>
   )
 }

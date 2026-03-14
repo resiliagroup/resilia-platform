@@ -98,58 +98,63 @@ function IconCrisis({ size = 64 }: { size?: number }) {
   )
 }
 
-/* ── BCM Cycle SVG ────────────────────────────────────────────── */
+/* ── BCM Cycle SVG — 7 segment ────────────────────────────────── */
 function BcmCycle() {
+  // 7 segments, 360/7 ≈ 51.43° apart, starting at -90°
+  const STEP = 360 / 7
   const segments = [
-    { label: 'Önleme',   color: T,       angle: -90 },
-    { label: 'Hazırlık', color: '#5BA3DC', angle: -30 },
-    { label: 'Müdahale', color: '#E8A87C', angle:  30 },
-    { label: 'İyileşme', color: '#E8C97A', angle:  90 },
-    { label: 'İzleme',   color: '#A78BFA', angle: 150 },
-    { label: 'Yönetim',  color: '#34D399', angle: 210 },
-  ]
+    { label: 'Önleme',          color: '#E8C97A' },
+    { label: 'Hazırlıklı Olma', color: '#7B9FD4' },
+    { label: 'Zarar Azaltma',   color: '#6ABFB8' },
+    { label: 'Müdahale',        color: '#f87171' },
+    { label: 'İyileştirme',     color: '#fb923c' },
+    { label: 'İzleme',          color: '#a78bfa' },
+    { label: 'Yönetişim',       color: '#34d399' },
+  ].map((s, i) => ({ ...s, angle: -90 + i * STEP }))
+
   const toXY = (deg: number, r: number) => ({
     x: 200 + r * Math.cos((deg * Math.PI) / 180),
     y: 200 + r * Math.sin((deg * Math.PI) / 180),
   })
+  const HALF = STEP / 2 - 5   // ≈20.7° half-span, ~10° gap between segments
 
   return (
     <svg viewBox="0 0 400 400" style={{ width: '100%', maxWidth: 420 }}>
       {/* outer dashed ring */}
-      <circle cx="200" cy="200" r="165" fill="none" stroke="#E2E8F0" strokeWidth="1" strokeDasharray="6 6"/>
+      <circle cx="200" cy="200" r="168" fill="none" stroke="#E2E8F0" strokeWidth="1" strokeDasharray="6 6"/>
       {/* segment arcs */}
       {segments.map((seg, i) => {
-        const start = seg.angle - 25
-        const end   = seg.angle + 25
-        const s = toXY(start, 130), e = toXY(end, 130)
+        const a0 = seg.angle - HALF, a1 = seg.angle + HALF
+        const si = toXY(a0, 112), ei = toXY(a1, 112)
+        const so = toXY(a0, 132), eo = toXY(a1, 132)
         return (
           <path key={i}
-            d={`M ${toXY(start,110).x} ${toXY(start,110).y} A 110 110 0 0 1 ${toXY(end,110).x} ${toXY(end,110).y}
-                L ${e.x} ${e.y} A 130 130 0 0 0 ${s.x} ${s.y} Z`}
-            fill={seg.color} fillOpacity="0.18" stroke={seg.color} strokeWidth="1.5"/>
+            d={`M ${si.x.toFixed(2)} ${si.y.toFixed(2)} A 112 112 0 0 1 ${ei.x.toFixed(2)} ${ei.y.toFixed(2)}
+                L ${eo.x.toFixed(2)} ${eo.y.toFixed(2)} A 132 132 0 0 0 ${so.x.toFixed(2)} ${so.y.toFixed(2)} Z`}
+            fill={seg.color} fillOpacity="0.2" stroke={seg.color} strokeWidth="1.5"/>
         )
       })}
-      {/* connector lines + dots */}
+      {/* connector lines + dots + labels */}
       {segments.map((seg, i) => {
-        const inner = toXY(seg.angle, 110)
-        const outer = toXY(seg.angle, 148)
-        const label = toXY(seg.angle, 170)
+        const inner = toXY(seg.angle, 112)
+        const dot   = toXY(seg.angle, 148)
+        const lbl   = toXY(seg.angle, 172)
         return (
           <g key={i}>
-            <line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y}
+            <line x1={inner.x} y1={inner.y} x2={dot.x} y2={dot.y}
                   stroke={seg.color} strokeWidth="1.5" strokeDasharray="3 3"/>
-            <circle cx={outer.x} cy={outer.y} r="4" fill={seg.color}/>
-            <text x={label.x} y={label.y} textAnchor="middle" dominantBaseline="middle"
-                  fill={N} fontSize="11" fontFamily="DM Sans,sans-serif" fontWeight="600">{seg.label}</text>
+            <circle cx={dot.x} cy={dot.y} r="4" fill={seg.color}/>
+            <text x={lbl.x} y={lbl.y} textAnchor="middle" dominantBaseline="middle"
+                  fill={N} fontSize="10.5" fontFamily="DM Sans,sans-serif" fontWeight="600">{seg.label}</text>
           </g>
         )
       })}
       {/* center circle */}
-      <circle cx="200" cy="200" r="76" fill={N}/>
-      <circle cx="200" cy="200" r="70" fill="none" stroke={T} strokeWidth="1.5"/>
-      <text x="200" y="193" textAnchor="middle" fill={G} fontSize="14"
+      <circle cx="200" cy="200" r="78" fill={N}/>
+      <circle cx="200" cy="200" r="72" fill="none" stroke={T} strokeWidth="1.5"/>
+      <text x="200" y="194" textAnchor="middle" fill={G} fontSize="14"
             fontFamily="DM Sans,sans-serif" fontWeight="700" letterSpacing="1">HFER-720</text>
-      <text x="200" y="210" textAnchor="middle" fill="#8FA3B8" fontSize="9"
+      <text x="200" y="211" textAnchor="middle" fill="#8FA3B8" fontSize="9"
             fontFamily="DM Sans,sans-serif">BCM MOTOR</text>
     </svg>
   )
@@ -473,18 +478,19 @@ export default function Page() {
             <SectionLabel text="BCM Döngüsü" />
             <SectionTitle>Kesintisiz Dayanıklılık<br/>Döngüsü</SectionTitle>
             <p style={{ color: MG, fontSize: 16, lineHeight: 1.8, marginBottom: 36 }}>
-              HFER-720 motoru, altı aşamalı BCM döngüsünü sürekli besler.
-              Önlemeden yönetime kadar her aşama platformda izlenir,
+              HFER-720 motoru, yedi aşamalı BCM döngüsünü sürekli besler.
+              Önlemeden yönetişime kadar her aşama platformda izlenir,
               güncellenir ve raporlanır.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
-                { phase: 'Önleme',   desc: 'Tehlike tespiti ve proaktif risk azaltma',       color: T },
-                { phase: 'Hazırlık', desc: 'Plan geliştirme, eğitim, tatbikat yönetimi',     color: '#5BA3DC' },
-                { phase: 'Müdahale', desc: 'Gerçek zamanlı kriz komuta merkezi',             color: '#E8A87C' },
-                { phase: 'İyileşme', desc: 'Operasyon restorasyonu ve RTO/RPO takibi',       color: G },
-                { phase: 'İzleme',   desc: 'KPI kontrol paneli ve uyum denetimi',           color: '#A78BFA' },
-                { phase: 'Yönetim',  desc: 'Üst yönetim raporlama ve strateji güncelleme',  color: '#34D399' },
+                { phase: 'Önleme',          desc: 'Tehlike tespiti ve proaktif risk azaltma',         color: '#E8C97A' },
+                { phase: 'Hazırlıklı Olma', desc: 'Plan geliştirme, eğitim, tatbikat yönetimi',       color: '#7B9FD4' },
+                { phase: 'Zarar Azaltma',   desc: 'Kayıp minimizasyonu ve güçlendirme yatırımları',   color: '#6ABFB8' },
+                { phase: 'Müdahale',        desc: 'Gerçek zamanlı kriz komuta merkezi',               color: '#f87171' },
+                { phase: 'İyileştirme',     desc: 'Operasyon restorasyonu ve RTO/RPO takibi',         color: '#fb923c' },
+                { phase: 'İzleme',          desc: 'KPI kontrol paneli ve uyum denetimi',             color: '#a78bfa' },
+                { phase: 'Yönetişim',       desc: 'Üst yönetim raporlama ve strateji güncelleme',    color: '#34d399' },
               ].map(item => (
                 <div key={item.phase} style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
                   <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color,
@@ -657,7 +663,7 @@ export default function Page() {
               © {new Date().getFullYear()} Omniversel Teknoloji A.Ş. Tüm hakları saklıdır.
             </span>
             <span style={{ color: '#607899', fontSize: 13 }}>
-              bc-consulting.at iş birliğiyle geliştirilmiştir.
+              İTÜ AYM iş birliğiyle · Sendai 2015–2030 uyumlu
             </span>
           </div>
         </div>
