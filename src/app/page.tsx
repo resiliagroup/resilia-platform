@@ -189,24 +189,28 @@ const products = [
   {
     code: 'omniRISK',
     color: T,
+    href: '/products/omnirisk',
     desc: 'ISO 31000 uyumlu risk sicili, tehlike haritası ve HFER skoru ile kurumsal risk tablonuzu gerçek zamanlı izleyin.',
     icon: <IconRisk size={52}/>,
   },
   {
     code: 'omniIMPACT',
     color: G,
+    href: '/products/omniimpact',
     desc: 'İş Etki Analizi modülü; süreç bağımlılıklarını, RTO/RPO hedeflerini ve kritiklik matrisini otomatik üretir.',
     icon: <IconImpact size={52}/>,
   },
   {
     code: 'omniPLAN',
     color: '#5BA3DC',
+    href: '/products/omniplan',
     desc: 'ISO 22301 uyumlu İş Sürekliliği Planlarını yapay zeka yardımıyla dakikalar içinde taslaktan onaya taşıyın.',
     icon: <IconPlan size={52}/>,
   },
   {
     code: 'omniCRISIS',
     color: '#E8A87C',
+    href: '/products/omnicrisis',
     desc: 'Kriz anında görev atamaları, anlık iletişim protokolleri ve komuta merkezi panosu tek ekranda.',
     icon: <IconCrisis size={52}/>,
   },
@@ -389,18 +393,18 @@ export default function Page() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20,
                         animation: 'fadeIn .9s ease .2s both' }}>
             {[
-              { icon: <IconRisk size={56}/>,   label: 'Risk Yönetimi',  sub: 'omniRISK', c: T },
-              { icon: <IconImpact size={56}/>, label: 'Etki Analizi',   sub: 'omniIMPACT', c: G },
-              { icon: <IconPlan size={56}/>,   label: 'Kurtarma Planı', sub: 'omniPLAN', c: '#5BA3DC' },
-              { icon: <IconCrisis size={56}/>, label: 'Kriz Yönetimi', sub: 'omniCRISIS', c: '#E8A87C' },
+              { icon: <IconRisk size={56}/>,   label: 'Risk Yönetimi',  sub: 'omniRISK',   c: T,          href: '/products/omnirisk' },
+              { icon: <IconImpact size={56}/>, label: 'Etki Analizi',   sub: 'omniIMPACT', c: G,          href: '/products/omniimpact' },
+              { icon: <IconPlan size={56}/>,   label: 'Kurtarma Planı', sub: 'omniPLAN',   c: '#5BA3DC',  href: '/products/omniplan' },
+              { icon: <IconCrisis size={56}/>, label: 'Kriz Yönetimi',  sub: 'omniCRISIS', c: '#E8A87C',  href: '/products/omnicrisis' },
             ].map((item, i) => (
-              <div key={i} className="card" style={{ textAlign: 'center', padding: '32px 20px' }}>
+              <Link key={i} href={item.href} className="card" style={{ textAlign: 'center', padding: '32px 20px', display: 'block' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
                   {item.icon}
                 </div>
                 <div style={{ color: N, fontWeight: 700, fontSize: 15, marginBottom: 4 }}>{item.label}</div>
                 <div style={{ color: item.c, fontSize: 12, fontWeight: 600, letterSpacing: 1 }}>{item.sub}</div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -442,13 +446,123 @@ export default function Page() {
                 <span className="product-tag"
                       style={{ background: `${p.color}18`, color: p.color }}>{p.code}</span>
                 <p style={{ color: MG, fontSize: 14, lineHeight: 1.75 }}>{p.desc}</p>
-                <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 6,
+                <Link href={p.href} style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 6,
                                color: p.color, fontSize: 13, fontWeight: 600 }}>
                   <span>Detayları İncele</span>
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <path d="M3 7h8M7 3l4 4-4 4" stroke={p.color} strokeWidth="1.5"
                           strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ SECTORS ══ */}
+      <section id="sectors-detail" style={{ padding: '100px 48px', background: BG }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 64 }}>
+            <SectionLabel text="Sektörel Çözümler" />
+            <SectionTitle>Her Sektör İçin Özelleştirilmiş</SectionTitle>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+            {[
+              {
+                title: 'Bankacılık & Finans',
+                desc: 'Sermaye yeterliliği, operasyonel risk ve BCM planları Basel III ve ISO 22301 uyumlu olarak yönetilir. Kredi kesintisi senaryoları HFER-720 ile modellenir.',
+                standards: 'ISO 22301 · Basel III',
+                iconPath: 'M1 9 L3 5 L5 7 L7 3 L9 7',
+                iconBg: '#6ABFB8',
+              },
+              {
+                title: 'Sağlık & Hastane',
+                desc: 'Kritik tıbbi hizmetlerin sürekliliği, tıbbi cihaz bağımlılığı ve tahliye planları Sendai SF-3 çerçevesinde hazırlanır.',
+                standards: 'ISO 22301 · Sendai SF-3',
+                iconPath: 'M5 1 L5 9 M1 5 L9 5',
+                iconBg: '#f87171',
+              },
+              {
+                title: 'Sanayi & Üretim',
+                desc: 'NATECH senaryoları, tedarik zinciri kesintisi ve iş sürekliliği RAPID-N metodolojisi ile değerlendirilir.',
+                standards: 'RAPID-N · ISO 31000',
+                iconPath: 'M3 5 A2 2 0 1 0 3 4.9 M5 1 L5 3 M5 7 L5 9 M1 5 L3 5 M7 5 L9 5',
+                iconBg: '#E8C97A',
+              },
+              {
+                title: 'Eğitim Kurumları',
+                desc: 'Okul tahliye planları, deprem tatbikatları ve veli iletişim protokolleri AFAD direktifleriyle entegre çalışır.',
+                standards: 'AFAD · Sendai SF-2',
+                iconPath: 'M1 2 L9 2 L9 8 L1 8 Z M1 5 L9 5 M4 2 L4 8',
+                iconBg: '#7B9FD4',
+              },
+              {
+                title: 'Kritik Altyapı',
+                desc: 'Enerji, su, ulaşım altyapısının kademeli bozulma analizi ve domino etkisi modellemesi N-1 kriterleriyle yapılır.',
+                standards: 'CIP Standartları · ISO 22301',
+                iconPath: 'M5 1 L6.5 4 L9 4 L7 6 L8 9 L5 7.5 L2 9 L3 6 L1 4 L3.5 4 Z',
+                iconBg: '#fb923c',
+              },
+              {
+                title: 'Kamu & Belediye',
+                desc: 'İlçe bazlı risk haritası, tesis ağı analizi ve halk iletişim planı Sendai 2015–2030 ve URI endeksiyle desteklenir.',
+                standards: 'Sendai · HFER-720',
+                iconPath: 'M1 9 L1 5 L5 2 L9 5 L9 9 Z M3.5 9 L3.5 6.5 L6.5 6.5 L6.5 9',
+                iconBg: '#6ABFB8',
+              },
+              {
+                title: 'Turizm & Konaklama',
+                desc: 'Otel tahliye planları, misafir güvenliği protokolleri ve sezon bazlı kriz senaryoları hazırlanır.',
+                standards: 'ISO 22301 · NFPA 101',
+                iconPath: 'M1 9 L1 4 L5 1 L9 4 L9 9 Z M3 9 L3 6 L7 6 L7 9 M4 3.5 L6 3.5',
+                iconBg: '#a78bfa',
+              },
+              {
+                title: 'Lojistik & Tedarik Zinciri',
+                desc: 'Kritik tedarikçi analizi, alternatif rota planlaması ve stok kesintisi senaryoları modellenir.',
+                standards: 'ISO 28000 · ISO 22301',
+                iconPath: 'M1 6 L7 6 L7 4 L9 6 L7 8 L7 6 M1 4 L5 4 M1 8 L4 8',
+                iconBg: '#34d399',
+              },
+            ].map((sector, i) => (
+              <div key={i}
+                   style={{
+                     background: BG, border: '1px solid #E8EDF3', borderRadius: 16,
+                     padding: '32px', cursor: 'default',
+                     transition: 'box-shadow .2s, transform .2s',
+                   }}
+                   onMouseEnter={e => {
+                     (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 32px rgba(10,22,40,.09)'
+                     ;(e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)'
+                   }}
+                   onMouseLeave={e => {
+                     (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'
+                     ;(e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'
+                   }}
+              >
+                {/* Icon */}
+                <div style={{ marginBottom: 20 }}>
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <circle cx="24" cy="24" r="24" fill={`${sector.iconBg}18`}/>
+                    <g transform="translate(19,19)">
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d={sector.iconPath} stroke={sector.iconBg} strokeWidth="1.5"
+                              strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </g>
+                  </svg>
+                </div>
+                <div style={{ color: N, fontWeight: 700, fontSize: 15, marginBottom: 10 }}>{sector.title}</div>
+                <p style={{ color: MG, fontSize: 13, lineHeight: 1.75, marginBottom: 20 }}>{sector.desc}</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {sector.standards.split(' · ').map(std => (
+                    <span key={std} style={{
+                      background: `${sector.iconBg}14`, color: sector.iconBg,
+                      fontSize: 11, fontWeight: 600, padding: '3px 10px',
+                      borderRadius: 12, border: `1px solid ${sector.iconBg}30`,
+                    }}>{std}</span>
+                  ))}
                 </div>
               </div>
             ))}
