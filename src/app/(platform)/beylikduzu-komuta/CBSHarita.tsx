@@ -187,141 +187,177 @@ function HeatmapLayer({ facilities, tehlike }: { facilities: FacilityRow[]; tehl
 }
 
 /* ══════════════════════════════════════════════════════════════
-   F-N EĞRİSİ
+   RISK CONTOUR KATMANI — F-N modunda harita canvas overlay
 ══════════════════════════════════════════════════════════════ */
-function FNCurve({ facilities }: { facilities: FacilityRow[] }) {
-  // Chart dimensions
-  const W = 700, H = 340
-  const ml = 70, mr = 20, mt = 20, mb = 48
-  const pw = W - ml - mr
-  const ph = H - mt - mb
+function RiskContourLayer({ facilities, tehlike }: { facilities: FacilityRow[]; tehlike: TehlikeTur }) {
+  const map = useMap()
 
-  // Log-log scale helpers
-  const xLogMin = 0, xLogMax = 4    // N: 1–10000
-  const yLogMin = -7, yLogMax = -2  // F: 1e-7–1e-2
-  const xS = (N: number) => ml + (Math.log10(Math.max(1, N)) - xLogMin) / (xLogMax - xLogMin) * pw
-  const yS = (F: number) => mt + ph - (Math.log10(Math.max(1e-8, F)) - yLogMin) / (yLogMax - yLogMin) * ph
+  useEffect(() => {
+    const container = map.getContainer()
+    const canvas = document.createElement('canvas')
+    canvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:450;'
+    container.appendChild(canvas)
 
-  // ALARP zone pixel coords
-  const yTop    = yS(1e-2)   // top of chart (intolerable)
-  const yAlarp  = yS(1e-4)   // intolerable/ALARP boundary
-  const yAccept = yS(1e-6)   // ALARP/acceptable boundary
-  const yBot    = yS(1e-7)   // bottom of chart
+    const meta = TEHLIKE_META[tehlike]
+    const hex  = meta.renk.replace('#', '')
+    const cr   = parseInt(hex.slice(0, 2), 16)
+    const cg   = parseInt(hex.slice(2, 4), 16)
+    const cb   = parseInt(hex.slice(4, 6), 16)
 
-  // Axis ticks
-  const xTicks = [1, 10, 100, 1000, 10000]
-  const yTicks: [number, string][] = [[1e-2,'10⁻²'],[1e-3,'10⁻³'],[1e-4,'10⁻⁴'],[1e-5,'10⁻⁵'],[1e-6,'10⁻⁶'],[1e-7,'10⁻⁷']]
+    function draw() {
+      const w = container.clientWidth, h = container.clientHeight
+      canvas.width = w; canvas.height = h
+      const ctx = canvas.getContext('2d')!
+      ctx.clearRect(0, 0, w, h)
 
-  // Build curves from facilities
-  const curves = useMemo(() => TEHLIKE_TURLERI.map(tt => {
+      for (const f of facilities) {
+        if (!f.geom?.coordinates) continue
+        const hScore = Math.max(0, (f.extra_data?.H_score as number | undefined) ?? 0)
+        if (hScore < 0.5) continue
+        const score = getScore(f, tehlike)
+        const t     = Math.min(score / 5, 1)
+        const [lng, lat] = f.geom.coordinates
+        const pt    = map.latLngToContainerPoint([lat, lng])
+        const baseR = hScore * 80
+
+        // Inner radial fill
+        const grad = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, baseR * 0.4)
+        grad.addColorStop(0,   `rgba(${cr},${cg},${cb},${0.18 + t * 0.12})`)
+        grad.addColorStop(1,   `rgba(${cr},${cg},${cb},0)`)
+        ctx.fillStyle = grad
+        ctx.beginPath(); ctx.arc(pt.x, pt.y, baseR * 0.4, 0, Math.PI * 2); ctx.fill()
+
+        // Concentric dashed contour rings: 25 / 50 / 75 / 100 % radius
+        const rings: [number, number, number][] = [
+          [1.00, 0.25 + t * 0.35, 1.0],
+          [0.75, 0.35 + t * 0.35, 1.3],
+          [0.50, 0.50 + t * 0.30, 1.6],
+          [0.25, 0.70 + t * 0.20, 2.0],
+        ]
+        for (const [frac, alpha, lw] of rings) {
+          ctx.beginPath()
+          ctx.arc(pt.x, pt.y, baseR * frac, 0, Math.PI * 2)
+          ctx.strokeStyle = `rgba(${cr},${cg},${cb},${alpha})`
+          ctx.lineWidth   = lw
+          ctx.setLineDash([5, 5])
+          ctx.stroke()
+          ctx.setLineDash([])
+        }
+      }
+    }
+
+    draw()
+    map.on('moveend zoomend', draw)
+    return () => { map.off('moveend zoomend', draw); canvas.remove() }
+  }, [map, facilities, tehlike])
+
+  return null
+}
+
+/* ══════════════════════════════════════════════════════════════
+   F-N MİNİ CHART — harita üzerinde sağ alt köşe overlay
+══════════════════════════════════════════════════════════════ */
+function buildFNCurves(facilities: FacilityRow[]) {
+  return TEHLIKE_TURLERI.map(tt => {
     const pts = facilities
       .filter(f => f.geom?.coordinates)
       .map(f => {
         const score = getScore(f, tt)
-        const xSc = (f.extra_data?.X_score as number | undefined) ?? 2
+        const xSc   = (f.extra_data?.X_score as number | undefined) ?? 2
         return { N: Math.max(1, Math.round(f.employee_count * xSc)), F: score * 0.001 }
       })
       .filter(p => p.F > 0)
       .sort((a, b) => b.N - a.N)
-
     let cum = 0
     const cumPts = pts.map(p => ({ N: p.N, cumF: (cum += p.F) }))
     return { tt, cumPts, color: TEHLIKE_META[tt].renk, label: TEHLIKE_META[tt].lbl }
-  }), [facilities])
+  })
+}
+
+function FNMiniChart({ facilities }: { facilities: FacilityRow[] }) {
+  const [hovered, setHovered] = useState(false)
+  const W  = hovered ? 300 : 200
+  const H  = hovered ? 240 : 160
+  const ml = 40, mr = 8, mt = 16, mb = 26
+  const pw = W - ml - mr
+  const ph = H - mt - mb
+
+  const xS = (N: number) => ml + (Math.log10(Math.max(1, N)) / 4) * pw
+  const yS = (F: number) => mt + ph - ((Math.log10(Math.max(1e-8, F)) + 7) / 5) * ph
+
+  const yTop    = yS(1e-2)
+  const yAlarp  = yS(1e-4)
+  const yAccept = yS(1e-6)
+  const yBot    = yS(1e-7)
+
+  const curves = useMemo(() => buildFNCurves(facilities), [facilities])
 
   return (
-    <div style={{ height: 420, background: '#0F172A', borderRadius: 8, padding: 24,
-                  border: '1px solid #1E293B', fontFamily: "'DM Sans',sans-serif" }}>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-        <div>
-          <p style={{ margin: 0, color: '#E8C97A', fontSize: 11, fontWeight: 700,
-                      letterSpacing: 1.5, textTransform: 'uppercase', fontFamily: "'DM Mono',monospace" }}>
-            F-N Risk Eğrisi
-          </p>
-          <p style={{ margin: '3px 0 0', color: '#475569', fontSize: 11 }}>
-            Kümülatif yıllık frekans — etkilenen nüfus (log-log)
-          </p>
-        </div>
-        {/* Legend */}
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-          {curves.filter(c => c.cumPts.length > 0).map(c => (
-            <div key={c.tt} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <div style={{ width: 20, height: 2, background: c.color, borderRadius: 2 }}/>
-              <span style={{ fontSize: 10, color: '#64748B' }}>{c.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* SVG Chart */}
-      <svg width="100%" height={380} viewBox={`0 0 ${W} ${H}`} style={{ display: 'block', overflow: 'visible' }}>
-        {/* ALARP zones */}
-        <rect x={ml} y={yTop}    width={pw} height={yAlarp  - yTop}    fill="rgba(239,68,68,0.15)"/>
-        <rect x={ml} y={yAlarp}  width={pw} height={yAccept - yAlarp}  fill="rgba(245,158,11,0.15)"/>
-        <rect x={ml} y={yAccept} width={pw} height={yBot    - yAccept} fill="rgba(34,197,94,0.15)"/>
-
-        {/* Zone labels */}
-        <text x={ml + pw - 6} y={yTop   + 13} textAnchor="end" fill="rgba(239,68,68,0.7)"   fontSize={9} fontWeight={700} fontFamily="DM Sans,sans-serif">KABULEDİLEMEZ</text>
-        <text x={ml + pw - 6} y={(yAlarp + yAccept) / 2 + 4} textAnchor="end" fill="rgba(245,158,11,0.7)" fontSize={9} fontWeight={700} fontFamily="DM Sans,sans-serif">ALARP</text>
-        <text x={ml + pw - 6} y={yAccept + 13} textAnchor="end" fill="rgba(34,197,94,0.7)"  fontSize={9} fontWeight={700} fontFamily="DM Sans,sans-serif">KABULEDİLEBİLİR</text>
-
-        {/* Grid lines */}
-        {xTicks.map(N => <line key={N} x1={xS(N)} y1={mt} x2={xS(N)} y2={mt + ph} stroke="#1E293B" strokeWidth={1}/>)}
-        {yTicks.map(([F]) => <line key={F} x1={ml} y1={yS(F)} x2={ml + pw} y2={yS(F)} stroke="#1E293B" strokeWidth={1}/>)}
-
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: 'absolute', bottom: 60, right: 8, zIndex: 800,
+        width: W, height: H,
+        background: 'rgba(15,23,42,0.93)', border: '1px solid #334155',
+        borderRadius: 10, overflow: 'hidden',
+        transition: 'width .22s ease, height .22s ease',
+        boxShadow: '0 4px 24px rgba(0,0,0,.55)',
+        pointerEvents: 'auto',
+        cursor: 'default',
+      }}
+    >
+      <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ display: 'block' }}>
+        {/* ALARP bands */}
+        <rect x={ml} y={yTop}    width={pw} height={Math.max(0, yAlarp  - yTop)}    fill="rgba(239,68,68,0.15)"/>
+        <rect x={ml} y={yAlarp}  width={pw} height={Math.max(0, yAccept - yAlarp)}  fill="rgba(245,158,11,0.15)"/>
+        <rect x={ml} y={yAccept} width={pw} height={Math.max(0, yBot    - yAccept)} fill="rgba(34,197,94,0.15)"/>
         {/* Axes */}
-        <line x1={ml} y1={mt}      x2={ml}      y2={mt + ph} stroke="#334155" strokeWidth={1.5}/>
-        <line x1={ml} y1={mt + ph} x2={ml + pw} y2={mt + ph} stroke="#334155" strokeWidth={1.5}/>
-
-        {/* X axis ticks + labels */}
-        {xTicks.map(N => (
+        <line x1={ml} y1={mt}      x2={ml}      y2={mt+ph} stroke="#334155" strokeWidth={1}/>
+        <line x1={ml} y1={mt + ph} x2={ml + pw} y2={mt+ph} stroke="#334155" strokeWidth={1}/>
+        {/* X ticks */}
+        {[1, 100, 10000].map(N => (
           <g key={N}>
-            <line x1={xS(N)} y1={mt + ph} x2={xS(N)} y2={mt + ph + 5} stroke="#475569" strokeWidth={1}/>
-            <text x={xS(N)} y={mt + ph + 18} textAnchor="middle" fill="#64748B" fontSize={10} fontFamily="DM Mono,monospace">
+            <line x1={xS(N)} y1={mt+ph} x2={xS(N)} y2={mt+ph+3} stroke="#475569" strokeWidth={1}/>
+            <text x={xS(N)} y={mt+ph+11} textAnchor="middle" fill="#475569" fontSize={7} fontFamily="DM Mono">
               {N >= 1000 ? `${N/1000}k` : N}
             </text>
           </g>
         ))}
-
-        {/* Y axis ticks + labels */}
-        {yTicks.map(([F, lbl]) => (
-          <g key={F}>
-            <line x1={ml - 5} y1={yS(F)} x2={ml} y2={yS(F)} stroke="#475569" strokeWidth={1}/>
-            <text x={ml - 8} y={yS(F) + 4} textAnchor="end" fill="#64748B" fontSize={9} fontFamily="DM Mono,monospace">{lbl}</text>
+        {/* Y ticks */}
+        {([[1e-2,'10⁻²'],[1e-4,'10⁻⁴'],[1e-6,'10⁻⁶']] as [number,string][]).map(([F, lbl]) => (
+          <g key={String(F)}>
+            <line x1={ml-3} y1={yS(F)} x2={ml} y2={yS(F)} stroke="#475569" strokeWidth={1}/>
+            <text x={ml-5} y={yS(F)+3} textAnchor="end" fill="#475569" fontSize={7} fontFamily="DM Mono">{lbl}</text>
           </g>
         ))}
-
-        {/* Axis labels */}
-        <text x={ml + pw / 2} y={H - 6} textAnchor="middle" fill="#8FA3B8" fontSize={11} fontFamily="DM Sans,sans-serif">
-          Etkilenen Nüfus (N)
-        </text>
-        <text x={13} y={mt + ph / 2} textAnchor="middle" fill="#8FA3B8" fontSize={11} fontFamily="DM Sans,sans-serif"
-              transform={`rotate(-90 13 ${mt + ph / 2})`}>
-          Yıllık Frekans (F)
-        </text>
-
         {/* Curves */}
         {curves.map(({ tt, cumPts, color }) => {
           if (cumPts.length < 2) return null
-          const points = cumPts.map(p => `${xS(p.N).toFixed(1)},${yS(p.cumF).toFixed(1)}`).join(' ')
+          const pts = cumPts.map(p => `${xS(p.N).toFixed(1)},${yS(p.cumF).toFixed(1)}`).join(' ')
           return (
-            <g key={tt}>
-              <polyline points={points} fill="none" stroke={color} strokeWidth={2}
-                        strokeLinejoin="round" strokeLinecap="round" opacity={0.85}/>
-              {/* endpoint dot */}
-              <circle cx={xS(cumPts[cumPts.length-1].N)} cy={yS(cumPts[cumPts.length-1].cumF)}
-                      r={3.5} fill={color} opacity={0.9}/>
-            </g>
+            <polyline key={tt} points={pts} fill="none" stroke={color}
+                      strokeWidth={hovered ? 1.8 : 1.4} opacity={0.85} strokeLinejoin="round"/>
           )
         })}
-
-        {/* No data hint */}
-        {facilities.length === 0 && (
-          <text x={ml + pw / 2} y={mt + ph / 2} textAnchor="middle" fill="#334155"
-                fontSize={13} fontFamily="DM Sans,sans-serif">
-            Veri yükleniyor…
-          </text>
+        {/* Title */}
+        <text x={ml + pw/2} y={mt - 4} textAnchor="middle" fill="#E8C97A"
+              fontSize={8} fontWeight={700} fontFamily="DM Mono" letterSpacing={1}>
+          F-N EĞRİSİ
+        </text>
+        {/* Extra labels + legend on hover */}
+        {hovered && (
+          <>
+            <text x={ml + pw/2} y={H - 5} textAnchor="middle" fill="#64748B" fontSize={8} fontFamily="DM Sans">Nüfus (N)</text>
+            <text x={9} y={mt + ph/2} textAnchor="middle" fill="#64748B" fontSize={8} fontFamily="DM Sans"
+                  transform={`rotate(-90 9 ${mt + ph/2})`}>Frekans</text>
+            {curves.filter(c => c.cumPts.length > 0).map((c, i) => (
+              <g key={c.tt} transform={`translate(${ml + 6},${mt + 8 + i * 13})`}>
+                <line x1={0} y1={5} x2={14} y2={5} stroke={c.color} strokeWidth={2}/>
+                <text x={17} y={8} fill="#64748B" fontSize={8} fontFamily="DM Sans">{c.label}</text>
+              </g>
+            ))}
+          </>
         )}
       </svg>
     </div>
@@ -782,8 +818,8 @@ export default function CBSHarita() {
         </div>
       </div>
 
-      {/* Tehlike seçici hexagonlar (sadece ısı haritası modunda) */}
-      {mapMod === 'isi' && (
+      {/* Tehlike seçici hexagonlar (ısı haritası + F-N modunda) */}
+      {(mapMod === 'isi' || mapMod === 'fn') && (
         <div style={{ background:'#0F172A', border:'1px solid #1E293B', borderRadius:12,
                       padding:'16px 20px', display:'flex', alignItems:'center', gap:20 }}>
           <div>
@@ -841,6 +877,9 @@ export default function CBSHarita() {
             {mapMod === 'isi' && (
               <HeatmapLayer facilities={gösterilen} tehlike={tehlike}/>
             )}
+            {mapMod === 'fn' && (
+              <RiskContourLayer facilities={gösterilen} tehlike={tehlike}/>
+            )}
             {(mapMod === 'tesis' || mapMod === 'fn') && gösterilen.map(f => {
               const c      = f.geom!.coordinates
               const sm     = SEKTOR_META[f.sector] ?? SEKTOR_META.OTHER
@@ -855,17 +894,14 @@ export default function CBSHarita() {
               )
             })}
           </MapContainer>
+          {/* F-N mini chart overlay */}
+          {mapMod === 'fn' && <FNMiniChart facilities={facilities}/>}
         </div>
 
         {/* Sağ panel */}
         <MahallePanel ozetler={mahalleOzetleri} yukleniyor={yukleniyor}
                       secilen={secilenNb} onSec={onSec}/>
       </div>
-
-      {/* F-N Eğrisi paneli */}
-      {mapMod === 'fn' && (
-        <FNCurve facilities={facilities}/>
-      )}
 
       {/* Lejant */}
       <div style={{ display:'flex', flexWrap:'wrap', gap:'8px 20px', paddingLeft:4 }}>
