@@ -3,541 +3,662 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 
-/* ─── palette ───────────────────────────────────────────────── */
-const N  = '#0A1628'   // navy
-const G  = '#E8C97A'   // gold
-const G2 = '#C9A84C'   // gold dark
-const W  = '#F0EDE8'   // warm white
-const S  = '#8FA3C0'   // slate blue
+/* ─── tokens ─────────────────────────────────────────────────── */
+const N  = '#0A1628'  // navy
+const T  = '#6ABFB8'  // teal
+const G  = '#E8C97A'  // gold
+const GR = '#F7F8FA'  // light gray
+const MG = '#8FA3B8'  // muted gray text
+const BG = '#FFFFFF'  // white
 
-/* ─── counter hook ──────────────────────────────────────────── */
-function useCounter(target: number, duration = 1800, trigger: boolean) {
-  const [val, setVal] = useState(0)
-  useEffect(() => {
-    if (!trigger) return
-    let start: number | null = null
-    const step = (ts: number) => {
-      if (!start) start = ts
-      const p = Math.min((ts - start) / duration, 1)
-      setVal(Math.floor(p * target))
-      if (p < 1) requestAnimationFrame(step)
-    }
-    requestAnimationFrame(step)
-  }, [trigger, target, duration])
-  return val
-}
-
-/* ─── intersection observer hook ───────────────────────────── */
-function useInView(threshold = 0.3) {
+/* ─── useInView ──────────────────────────────────────────────── */
+function useInView(threshold = 0.2) {
   const ref = useRef<HTMLDivElement>(null)
-  const [inView, setInView] = useState(false)
+  const [v, setV] = useState(false)
   useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true) }, { threshold })
-    obs.observe(el)
-    return () => obs.disconnect()
+    const el = ref.current; if (!el) return
+    const o = new IntersectionObserver(([e]) => { if (e.isIntersecting) setV(true) }, { threshold })
+    o.observe(el)
+    return () => o.disconnect()
   }, [threshold])
-  return { ref, inView }
+  return { ref, inView: v }
 }
 
-/* ─── animated risk gauge SVG ───────────────────────────────── */
-function RiskGauge() {
-  const [angle, setAngle] = useState(0)
+/* ─── useCounter ─────────────────────────────────────────────── */
+function useCounter(target: number, dur = 1800, go: boolean) {
+  const [n, setN] = useState(0)
   useEffect(() => {
-    const t = setTimeout(() => setAngle(112), 600)
-    return () => clearTimeout(t)
-  }, [])
+    if (!go) return
+    let s: number | null = null
+    const tick = (t: number) => {
+      if (!s) s = t
+      const p = Math.min((t - s) / dur, 1)
+      setN(Math.floor(p * target))
+      if (p < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }, [go, target, dur])
+  return n
+}
 
-  const r = 90, cx = 120, cy = 120
-  const toXY = (deg: number) => ({
-    x: cx + r * Math.cos((deg - 180) * Math.PI / 180),
-    y: cy + r * Math.sin((deg - 180) * Math.PI / 180),
-  })
-  const arcPath = (startDeg: number, endDeg: number) => {
-    const s = toXY(startDeg), e = toXY(endDeg)
-    const lg = endDeg - startDeg > 180 ? 1 : 0
-    return `M ${s.x} ${s.y} A ${r} ${r} 0 ${lg} 1 ${e.x} ${e.y}`
-  }
-  const needleRad = ((angle - 180) * Math.PI) / 180
-  const nx = cx + (r - 10) * Math.cos(needleRad)
-  const ny = cy + (r - 10) * Math.sin(needleRad)
-  const score = Math.round((angle / 180) * 100)
-  const riskLabel = score < 40 ? 'DÜŞÜK' : score < 70 ? 'ORTA' : 'YÜKSEK'
-  const riskColor = score < 40 ? '#22c55e' : score < 70 ? G : '#ef4444'
+/* ═══════════════════════════════════════════════════════════════
+   INLINE SVG ICONS
+═══════════════════════════════════════════════════════════════ */
 
+/* Gauge / tachometer ─ Risk Yönetimi */
+function IconRisk({ size = 64 }: { size?: number }) {
   return (
-    <svg viewBox="0 0 240 160" style={{ width: '100%', maxWidth: 320 }}>
-      <defs>
-        <linearGradient id="arc-g" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%"   stopColor="#22c55e" />
-          <stop offset="50%"  stopColor={G} />
-          <stop offset="100%" stopColor="#ef4444" />
-        </linearGradient>
-      </defs>
-      {/* track */}
-      <path d={arcPath(0, 180)} fill="none" stroke="#1e3a5f" strokeWidth="14" strokeLinecap="round" />
-      {/* coloured arc */}
-      <path d={arcPath(0, angle)} fill="none" stroke="url(#arc-g)" strokeWidth="14" strokeLinecap="round"
-            style={{ transition: 'stroke-dasharray 1.2s ease' }} />
-      {/* needle */}
-      <line x1={cx} y1={cy} x2={nx} y2={ny}
-            stroke={G} strokeWidth="3" strokeLinecap="round"
-            style={{ transition: 'all 1.4s cubic-bezier(.34,1.56,.64,1)' }} />
-      <circle cx={cx} cy={cy} r="6" fill={G} />
-      {/* labels */}
-      <text x={cx} y={cy + 28} textAnchor="middle" fill={riskColor}
-            style={{ fontSize: 18, fontWeight: 700, transition: 'fill 1s' }}>{score}</text>
-      <text x={cx} y={cy + 44} textAnchor="middle" fill={S} style={{ fontSize: 9 }}>RİSK SKORU</text>
-      <text x={cx} y={cy + 58} textAnchor="middle" fill={riskColor}
-            style={{ fontSize: 8, fontWeight: 700, letterSpacing: 2 }}>{riskLabel}</text>
-      <text x={16}  y={cy + 16} fill="#22c55e" style={{ fontSize: 8 }}>0</text>
-      <text x={214} y={cy + 16} fill="#ef4444"  style={{ fontSize: 8 }}>100</text>
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
+      <circle cx="32" cy="32" r="30" fill={GR} stroke={T} strokeWidth="1.5"/>
+      <path d="M12 42 A22 22 0 0 1 52 42" stroke="#E2E8F0" strokeWidth="5" strokeLinecap="round"/>
+      <path d="M12 42 A22 22 0 0 1 37 15" stroke={T} strokeWidth="5" strokeLinecap="round"/>
+      <line x1="32" y1="32" x2="22" y2="20" stroke={N} strokeWidth="2.5" strokeLinecap="round"/>
+      <circle cx="32" cy="32" r="4" fill={N}/>
+      <circle cx="32" cy="32" r="2" fill={BG}/>
+      <text x="32" y="52" textAnchor="middle" fill={N} fontSize="7" fontFamily="DM Sans,sans-serif" fontWeight="600">RISK</text>
     </svg>
   )
 }
 
-/* ─── mini dashboard preview ────────────────────────────────── */
-function MiniDashboard() {
-  const bars = [62, 45, 78, 55, 88, 40, 70]
-  const labels = ['PAZ','PZT','SAL','ÇAR','PER','CUM','CMT']
+/* Bar chart rising ─ Etki Analizi */
+function IconImpact({ size = 64 }: { size?: number }) {
   return (
-    <div style={{ background: '#0d1f3c', borderRadius: 16, padding: '20px 24px',
-                  border: `1px solid #1e3a5f`, width: '100%', maxWidth: 480 }}>
-      {/* top row */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div>
-          <div style={{ color: S, fontSize: 10, letterSpacing: 1 }}>TOPLAM RİSK İNDEKSİ</div>
-          <div style={{ color: G, fontSize: 28, fontWeight: 700, lineHeight: 1.1 }}>72.4</div>
-          <div style={{ color: '#22c55e', fontSize: 11 }}>↑ 3.2 geçen haftadan</div>
-        </div>
-        <RiskGauge />
-      </div>
-      {/* bar chart */}
-      <div style={{ display: 'flex', gap: 6, alignItems: 'flex-end', height: 56 }}>
-        {bars.map((h, i) => (
-          <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-            <div style={{ width: '100%', height: `${h}%`, background: i === 4 ? G : '#1e3a5f',
-                          borderRadius: 3, transition: `height 1s ${i * 0.08}s ease` }} />
-            <span style={{ color: S, fontSize: 8 }}>{labels[i]}</span>
-          </div>
-        ))}
-      </div>
-      {/* pill tags */}
-      <div style={{ display: 'flex', gap: 8, marginTop: 14, flexWrap: 'wrap' }}>
-        {['ISO 22301 ✓', 'BCM Uyumlu', 'AI Analiz'].map(t => (
-          <span key={t} style={{ background: '#152a4e', color: G, fontSize: 10,
-                                  padding: '3px 10px', borderRadius: 20, border: `1px solid ${G2}` }}>{t}</span>
-        ))}
-      </div>
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
+      <circle cx="32" cy="32" r="30" fill={GR} stroke={G} strokeWidth="1.5"/>
+      <rect x="12" y="38" width="8"  height="12" rx="2" fill={G} opacity="0.4"/>
+      <rect x="22" y="30" width="8"  height="20" rx="2" fill={G} opacity="0.65"/>
+      <rect x="32" y="22" width="8"  height="28" rx="2" fill={G}/>
+      <rect x="42" y="16" width="8"  height="34" rx="2" fill={N}/>
+      <polyline points="16,36 26,28 36,20 46,14" stroke={T} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="46" cy="14" r="2.5" fill={T}/>
+    </svg>
+  )
+}
+
+/* Shield + check ─ Kurtarma Planı */
+function IconPlan({ size = 64 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
+      <circle cx="32" cy="32" r="30" fill={GR} stroke={T} strokeWidth="1.5"/>
+      <path d="M32 14 L46 19 L46 34 C46 42 32 50 32 50 C32 50 18 42 18 34 L18 19 Z"
+            fill={T} fillOpacity="0.15" stroke={T} strokeWidth="2" strokeLinejoin="round"/>
+      <polyline points="25,32 30,37 40,26" stroke={N} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  )
+}
+
+/* Lightning / alert ─ Kriz Yönetimi */
+function IconCrisis({ size = 64 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
+      <circle cx="32" cy="32" r="30" fill={GR} stroke="#E8A87C" strokeWidth="1.5"/>
+      <polygon points="32,13 38,28 35,28 41,51 26,33 30,33" fill="#E8A87C" stroke={N} strokeWidth="1.2" strokeLinejoin="round"/>
+      <circle cx="32" cy="32" r="21" fill="none" stroke="#E8A87C" strokeWidth="1" strokeDasharray="3 4"/>
+    </svg>
+  )
+}
+
+/* ── BCM Cycle SVG ────────────────────────────────────────────── */
+function BcmCycle() {
+  const segments = [
+    { label: 'Önleme',   color: T,       angle: -90 },
+    { label: 'Hazırlık', color: '#5BA3DC', angle: -30 },
+    { label: 'Müdahale', color: '#E8A87C', angle:  30 },
+    { label: 'İyileşme', color: '#E8C97A', angle:  90 },
+    { label: 'İzleme',   color: '#A78BFA', angle: 150 },
+    { label: 'Yönetim',  color: '#34D399', angle: 210 },
+  ]
+  const toXY = (deg: number, r: number) => ({
+    x: 200 + r * Math.cos((deg * Math.PI) / 180),
+    y: 200 + r * Math.sin((deg * Math.PI) / 180),
+  })
+
+  return (
+    <svg viewBox="0 0 400 400" style={{ width: '100%', maxWidth: 420 }}>
+      {/* outer dashed ring */}
+      <circle cx="200" cy="200" r="165" fill="none" stroke="#E2E8F0" strokeWidth="1" strokeDasharray="6 6"/>
+      {/* segment arcs */}
+      {segments.map((seg, i) => {
+        const start = seg.angle - 25
+        const end   = seg.angle + 25
+        const s = toXY(start, 130), e = toXY(end, 130)
+        return (
+          <path key={i}
+            d={`M ${toXY(start,110).x} ${toXY(start,110).y} A 110 110 0 0 1 ${toXY(end,110).x} ${toXY(end,110).y}
+                L ${e.x} ${e.y} A 130 130 0 0 0 ${s.x} ${s.y} Z`}
+            fill={seg.color} fillOpacity="0.18" stroke={seg.color} strokeWidth="1.5"/>
+        )
+      })}
+      {/* connector lines + dots */}
+      {segments.map((seg, i) => {
+        const inner = toXY(seg.angle, 110)
+        const outer = toXY(seg.angle, 148)
+        const label = toXY(seg.angle, 170)
+        return (
+          <g key={i}>
+            <line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y}
+                  stroke={seg.color} strokeWidth="1.5" strokeDasharray="3 3"/>
+            <circle cx={outer.x} cy={outer.y} r="4" fill={seg.color}/>
+            <text x={label.x} y={label.y} textAnchor="middle" dominantBaseline="middle"
+                  fill={N} fontSize="11" fontFamily="DM Sans,sans-serif" fontWeight="600">{seg.label}</text>
+          </g>
+        )
+      })}
+      {/* center circle */}
+      <circle cx="200" cy="200" r="76" fill={N}/>
+      <circle cx="200" cy="200" r="70" fill="none" stroke={T} strokeWidth="1.5"/>
+      <text x="200" y="193" textAnchor="middle" fill={G} fontSize="14"
+            fontFamily="DM Sans,sans-serif" fontWeight="700" letterSpacing="1">HFER-720</text>
+      <text x="200" y="210" textAnchor="middle" fill="#8FA3B8" fontSize="9"
+            fontFamily="DM Sans,sans-serif">BCM MOTOR</text>
+    </svg>
+  )
+}
+
+/* ── Logo band ──────────────────────────────────────────────── */
+function LogoBand() {
+  const logos = [
+    { name: 'Akbank',                width: 90 },
+    { name: 'Medical Park',          width: 110 },
+    { name: 'Rixos',                 width: 70 },
+    { name: 'İş Bankası',            width: 100 },
+    { name: 'Beylikdüzü Belediyesi', width: 140 },
+  ]
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center',
+                  gap: 56, flexWrap: 'wrap' }}>
+      {logos.map(l => (
+        <svg key={l.name} width={l.width} height={36} viewBox={`0 0 ${l.width} 36`}>
+          <text x={l.width / 2} y="22" textAnchor="middle" fill="#B0BEC5"
+                fontSize="13" fontFamily="DM Sans,sans-serif" fontWeight="600"
+                letterSpacing="0.5">{l.name}</text>
+          <line x1="10" y1="28" x2={l.width - 10} y2="28" stroke="#D0D9E2" strokeWidth="1"/>
+        </svg>
+      ))}
     </div>
   )
 }
 
-/* ─── stat card ─────────────────────────────────────────────── */
-function StatCard({ target, suffix, label, trigger }: { target: number; suffix: string; label: string; trigger: boolean }) {
-  const val = useCounter(target, 2000, trigger)
+/* ── Product cards ──────────────────────────────────────────── */
+const products = [
+  {
+    code: 'omniRISK',
+    color: T,
+    desc: 'ISO 31000 uyumlu risk sicili, tehlike haritası ve HFER skoru ile kurumsal risk tablonuzu gerçek zamanlı izleyin.',
+    icon: <IconRisk size={52}/>,
+  },
+  {
+    code: 'omniIMPACT',
+    color: G,
+    desc: 'İş Etki Analizi modülü; süreç bağımlılıklarını, RTO/RPO hedeflerini ve kritiklik matrisini otomatik üretir.',
+    icon: <IconImpact size={52}/>,
+  },
+  {
+    code: 'omniPLAN',
+    color: '#5BA3DC',
+    desc: 'ISO 22301 uyumlu İş Sürekliliği Planlarını yapay zeka yardımıyla dakikalar içinde taslaktan onaya taşıyın.',
+    icon: <IconPlan size={52}/>,
+  },
+  {
+    code: 'omniCRISIS',
+    color: '#E8A87C',
+    desc: 'Kriz anında görev atamaları, anlık iletişim protokolleri ve komuta merkezi panosu tek ekranda.',
+    icon: <IconCrisis size={52}/>,
+  },
+]
+
+/* ── Testimonials ────────────────────────────────────────────── */
+const testimonials = [
+  {
+    quote: 'HFER-720 motor sayesinde risk sicilimizi üç günde tamamladık. Denetimden tam puan aldık.',
+    name:  'Mehmet Aydın',
+    role:  'Risk Direktörü, Finans Sektörü',
+  },
+  {
+    quote: 'Tesis bazlı BCP planlarımız artık otomatik güncelleniyor. Saha ekibimizin yükü %60 azaldı.',
+    name:  'Ayşe Kılıç',
+    role:  'BCM Müdürü, Sağlık Grubu',
+  },
+  {
+    quote: 'omniCRISIS modülü pandemi sürecinde krize müdahalemizi kökten değiştirdi. Olmazsa olmaz.',
+    name:  'Burak Demir',
+    role:  'İcra Kurulu, Belediye Grubu',
+  },
+]
+
+/* ── Stat item ───────────────────────────────────────────────── */
+function StatItem({ target, suffix, label, go }: { target: number; suffix: string; label: string; go: boolean }) {
+  const n = useCounter(target, 1600, go)
   return (
-    <div style={{ textAlign: 'center', padding: '0 32px' }}>
-      <div style={{ color: G, fontSize: 52, fontWeight: 700, lineHeight: 1, fontFamily: "'Cormorant Garamond', serif" }}>
-        {val}{suffix}
+    <div style={{ textAlign: 'center' }}>
+      <div style={{ fontSize: 'clamp(40px, 5vw, 60px)', fontWeight: 700, color: N, lineHeight: 1 }}>
+        {n}{suffix}
       </div>
-      <div style={{ color: S, fontSize: 13, letterSpacing: 2, marginTop: 6, textTransform: 'uppercase' }}>{label}</div>
+      <div style={{ color: MG, fontSize: 14, marginTop: 8, fontWeight: 500 }}>{label}</div>
     </div>
   )
 }
 
-/* ─── sector card ───────────────────────────────────────────── */
-const sectors = [
-  { icon: '🏦', name: 'Bankacılık',  desc: 'Operasyonel risk modelleme ve BDDK uyumu' },
-  { icon: '🏥', name: 'Sağlık',      desc: 'Tesis sürekliliği ve pandemi hazırlık planları' },
-  { icon: '🏭', name: 'Sanayi',      desc: 'Tedarik zinciri dayanıklılığı ve NATECH analizi' },
-  { icon: '🎓', name: 'Eğitim',      desc: 'Kampüs güvenliği ve kriz iletişim protokolleri' },
-  { icon: '⚡', name: 'Altyapı',     desc: 'Kritik altyapı güvenliği ve servis sürekliliği' },
-  { icon: '🏛️', name: 'Kamu',        desc: 'İlçe bazlı risk haritası ve E-Devlet entegrasyonu' },
-]
-
-/* ─── steps ─────────────────────────────────────────────────── */
-const steps = [
-  { n: '01', title: 'Kayıt',   desc: 'Kurumunuzu tanımlayın, sektör profilinizi oluşturun.' },
-  { n: '02', title: 'Ölçüm',  desc: 'HFER-720 algoritması 720 parametreyi analiz eder.' },
-  { n: '03', title: 'Harita', desc: 'İlçe bazlı risk dağılımını interaktif haritada görün.' },
-  { n: '04', title: 'Plan',   desc: 'ISO 22301 uyumlu BCP raporunuzu otomatik üretin.' },
-]
-
-/* ─────────────────────────────────────────────────────────────
-   MAIN PAGE
-───────────────────────────────────────────────────────────── */
-export default function LandingPage() {
-  const [scrolled, setScrolled] = useState(false)
-  const statsSection  = useInView(0.3)
-  const stepsSection  = useInView(0.2)
-  const formulaSection = useInView(0.3)
+/* ═══════════════════════════════════════════════════════════════
+   PAGE
+═══════════════════════════════════════════════════════════════ */
+export default function Page() {
+  const [scrolled, setScrolled]   = useState(false)
+  const [menuOpen, setMenuOpen]   = useState(false)
+  const statsSection   = useInView(0.3)
+  const productsSection = useInView(0.15)
+  const bcmSection     = useInView(0.2)
+  const testiSection   = useInView(0.15)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
+    const fn = () => setScrolled(window.scrollY > 32)
+    window.addEventListener('scroll', fn)
+    return () => window.removeEventListener('scroll', fn)
   }, [])
+
+  /* shared section heading */
+  const SectionLabel = ({ text }: { text: string }) => (
+    <p style={{ color: T, fontSize: 12, fontWeight: 700, letterSpacing: 3,
+                textTransform: 'uppercase', marginBottom: 12 }}>{text}</p>
+  )
+  const SectionTitle = ({ children }: { children: React.ReactNode }) => (
+    <h2 style={{ color: N, fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 700,
+                 lineHeight: 1.15, marginBottom: 20 }}>{children}</h2>
+  )
 
   return (
     <>
-      {/* Google Fonts */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
-        body { background: ${N}; color: ${W}; font-family: 'DM Sans', sans-serif; }
-        .serif { font-family: 'Cormorant Garamond', serif; }
-        a { text-decoration: none; color: inherit; }
-        .gold-btn {
-          display: inline-block;
-          background: ${G};
-          color: ${N};
-          font-weight: 700;
-          padding: 14px 36px;
-          border-radius: 6px;
-          font-size: 15px;
-          letter-spacing: 0.5px;
-          transition: background 0.2s, transform 0.15s;
-          cursor: pointer;
-          border: none;
-        }
-        .gold-btn:hover { background: ${G2}; transform: translateY(-1px); }
-        .ghost-btn {
-          display: inline-block;
-          border: 1.5px solid ${G};
-          color: ${G};
-          font-weight: 600;
-          padding: 13px 32px;
-          border-radius: 6px;
-          font-size: 15px;
-          transition: background 0.2s;
-          cursor: pointer;
-        }
-        .ghost-btn:hover { background: rgba(232,201,122,0.08); }
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-        .fade-up { animation: fadeUp 0.7s ease both; }
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+        *{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth}
+        body{background:${BG};color:${N};font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+        a{text-decoration:none;color:inherit}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+        .nav-link{color:${MG};font-size:14px;font-weight:500;transition:color .18s;cursor:pointer}
+        .nav-link:hover{color:${N}}
+        .btn-navy{display:inline-block;background:${N};color:#fff;font-weight:600;font-size:14px;
+          padding:11px 26px;border-radius:6px;transition:background .18s,transform .12s;cursor:pointer;border:none;font-family:'DM Sans',sans-serif}
+        .btn-navy:hover{background:#142340;transform:translateY(-1px)}
+        .btn-outline{display:inline-block;border:1.5px solid ${N};color:${N};font-weight:600;font-size:14px;
+          padding:10px 26px;border-radius:6px;transition:background .18s;cursor:pointer;font-family:'DM Sans',sans-serif}
+        .btn-outline:hover{background:${GR}}
+        .card{background:${BG};border-radius:16px;border:1px solid #E8EDF3;padding:36px 32px;
+          transition:box-shadow .2s,transform .2s}
+        .card:hover{box-shadow:0 8px 32px rgba(10,22,40,.09);transform:translateY(-3px)}
+        .product-tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1.5px;
+          text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:18px}
       `}</style>
 
-      {/* ── NAV ── */}
-      <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+      {/* ══ NAV ══════════════════════════════════════════════════ */}
+      <header style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
+        height: 68,
+        background: BG,
+        borderBottom: scrolled ? '1px solid #E8EDF3' : '1px solid transparent',
+        boxShadow: scrolled ? '0 2px 16px rgba(10,22,40,.06)' : 'none',
+        transition: 'box-shadow .25s, border-color .25s',
+        display: 'flex', alignItems: 'center',
         padding: '0 48px',
-        background: scrolled ? 'rgba(10,22,40,0.95)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(12px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(232,201,122,0.12)' : 'none',
-        transition: 'all 0.3s ease',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        height: 72,
       }}>
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <svg width="36" height="36" viewBox="0 0 36 36">
-            <polygon points="18,2 34,28 2,28" fill="none" stroke={G} strokeWidth="2.5" />
-            <polygon points="18,10 28,26 8,26" fill={G} opacity="0.2" />
-            <circle cx="18" cy="20" r="3" fill={G} />
-          </svg>
-          <span className="serif" style={{ color: G, fontSize: 22, fontWeight: 700, letterSpacing: 2 }}>
-            OMNIVERSEL
-          </span>
-        </div>
-
-        {/* Menu */}
-        <div style={{ display: 'flex', gap: 36, alignItems: 'center' }}>
-          {[['Özellikler','#features'],['Nasıl Çalışır','#how'],['Sektörler','#sectors'],['Formül','#formula']].map(([lbl, href]) => (
-            <a key={lbl} href={href} style={{ color: S, fontSize: 14, fontWeight: 500, transition: 'color 0.2s' }}
-               onMouseEnter={e => (e.currentTarget.style.color = G)}
-               onMouseLeave={e => (e.currentTarget.style.color = S)}>{lbl}</a>
-          ))}
-          <Link href="/login" className="gold-btn" style={{ padding: '9px 26px', fontSize: 14 }}>Giriş Yap</Link>
-        </div>
-      </nav>
-
-      {/* ── HERO ── */}
-      <section style={{ minHeight: '100vh', display: 'flex', alignItems: 'center',
-                        padding: '120px 64px 80px', maxWidth: 1280, margin: '0 auto', gap: 64 }}>
-        {/* left */}
-        <div style={{ flex: 1 }} className="fade-up">
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 24,
-                        background: 'rgba(232,201,122,0.08)', border: `1px solid ${G2}`,
-                        borderRadius: 20, padding: '6px 16px' }}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22c55e',
-                           boxShadow: '0 0 6px #22c55e', display: 'inline-block' }} />
-            <span style={{ color: G, fontSize: 12, letterSpacing: 1 }}>HFER-720 Motor Aktif</span>
+        <div style={{ maxWidth: 1200, width: '100%', margin: '0 auto',
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          {/* Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <rect width="32" height="32" rx="8" fill={N}/>
+              <polygon points="16,7 25,22 7,22" fill="none" stroke={T} strokeWidth="2"/>
+              <polygon points="16,12 21,20 11,20" fill={T} fillOpacity="0.4"/>
+              <circle cx="16" cy="18" r="2" fill={G}/>
+            </svg>
+            <span style={{ color: N, fontSize: 18, fontWeight: 700, letterSpacing: 0.5 }}>
+              omni<span style={{ color: T }}>versel</span>
+            </span>
           </div>
 
-          <h1 className="serif" style={{ fontSize: 'clamp(42px, 5vw, 72px)', fontWeight: 700,
-                                         lineHeight: 1.08, marginBottom: 28, color: W }}>
-            Kurumsal Dayanıklılık<br />
-            <span style={{ color: G }}>Yapay Zeka</span> ile<br />
-            Yeniden Tanımlandı
-          </h1>
-
-          <p style={{ color: S, fontSize: 17, lineHeight: 1.75, maxWidth: 480, marginBottom: 40 }}>
-            Omniversel, ISO 22301 uyumlu risk modelleme, 39 ilçe bazlı harita
-            analizi ve 720 parametreli HFER algoritmasıyla kurumunuzun her
-            kriz senaryosuna hazır olmasını sağlar.
-          </p>
-
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-            <Link href="/login" className="gold-btn">Ücretsiz Başlayın</Link>
-            <a href="#how" className="ghost-btn">Nasıl Çalışır?</a>
-          </div>
-
-          {/* trust badges */}
-          <div style={{ display: 'flex', gap: 24, marginTop: 48, flexWrap: 'wrap' }}>
-            {['ISO 22301','BCM Uyumlu','AFAD Entegrasyonu'].map(b => (
-              <div key={b} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <svg width="16" height="16" viewBox="0 0 16 16">
-                  <circle cx="8" cy="8" r="7" fill="none" stroke={G} strokeWidth="1.5"/>
-                  <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke={G} strokeWidth="1.5" fill="none" strokeLinecap="round"/>
-                </svg>
-                <span style={{ color: S, fontSize: 13 }}>{b}</span>
-              </div>
+          {/* Desktop nav */}
+          <nav style={{ display: 'flex', gap: 36, alignItems: 'center' }}>
+            {[['Ürünler','#products'],['BCM Döngüsü','#bcm'],['Sektörler','#sectors'],['Hakkımızda','#about']].map(([l,h]) => (
+              <a key={l} href={h} className="nav-link">{l}</a>
             ))}
-          </div>
+            <Link href="/login" className="btn-navy">Demo Talep</Link>
+          </nav>
         </div>
+      </header>
 
-        {/* right */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'center',
-                      animation: 'float 5s ease-in-out infinite' }}>
-          <MiniDashboard />
-          {/* floating metric chips */}
-          <div style={{ display: 'flex', gap: 12 }}>
-            {[{v:'99.7%',l:'Uptime'},{v:'<2s',l:'Yanıt Süresi'},{v:'256-bit',l:'Şifreleme'}].map(c => (
-              <div key={c.l} style={{ background: '#0d1f3c', border: `1px solid #1e3a5f`,
-                                      borderRadius: 10, padding: '10px 18px', textAlign: 'center' }}>
-                <div style={{ color: G, fontSize: 18, fontWeight: 700 }}>{c.v}</div>
-                <div style={{ color: S, fontSize: 10, letterSpacing: 1 }}>{c.l}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── STATS BAND ── */}
-      <div ref={statsSection.ref} id="features"
-           style={{ background: '#0d1f3c', borderTop: `1px solid #1e3a5f`, borderBottom: `1px solid #1e3a5f`,
-                    padding: '56px 64px' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex',
-                      justifyContent: 'space-around', flexWrap: 'wrap', gap: 40 }}>
-          <StatCard target={720} suffix="+"  label="Analiz Parametresi" trigger={statsSection.inView} />
-          <div style={{ width: 1, background: '#1e3a5f', alignSelf: 'stretch' }} />
-          <StatCard target={39}  suffix=""   label="İlçe Kapsamı"       trigger={statsSection.inView} />
-          <div style={{ width: 1, background: '#1e3a5f', alignSelf: 'stretch' }} />
-          <StatCard target={6}   suffix=""   label="Sektör Desteği"     trigger={statsSection.inView} />
-          <div style={{ width: 1, background: '#1e3a5f', alignSelf: 'stretch' }} />
-          <StatCard target={98}  suffix="%"  label="BCM Uyum Oranı"     trigger={statsSection.inView} />
-        </div>
-      </div>
-
-      {/* ── HOW IT WORKS ── */}
-      <section id="how" ref={stepsSection.ref} style={{ padding: '100px 64px', maxWidth: 1280, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 72 }}>
-          <p style={{ color: G, fontSize: 12, letterSpacing: 3, marginBottom: 16 }}>SÜREÇ</p>
-          <h2 className="serif" style={{ fontSize: 'clamp(32px, 4vw, 54px)', fontWeight: 700, color: W }}>
-            Nasıl Çalışır?
-          </h2>
-          <p style={{ color: S, marginTop: 16, fontSize: 16 }}>Dört adımda kurumsal dayanıklılık</p>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
-          {steps.map((s, i) => (
-            <div key={i} style={{
-              background: '#0d1f3c', borderRadius: 16, padding: 32,
-              border: `1px solid #1e3a5f`,
-              opacity: stepsSection.inView ? 1 : 0,
-              transform: stepsSection.inView ? 'translateY(0)' : 'translateY(30px)',
-              transition: `all 0.6s ease ${i * 0.12}s`,
-            }}>
-              <div className="serif" style={{ color: G, fontSize: 48, fontWeight: 700,
-                                              opacity: 0.25, lineHeight: 1, marginBottom: 16 }}>{s.n}</div>
-              {/* connector arrow */}
-              {i < 3 && (
-                <div style={{ position: 'absolute', right: -12, top: '50%',
-                               transform: 'translateY(-50%)', color: G, fontSize: 20, zIndex: 2 }}>›</div>
-              )}
-              <h3 style={{ color: W, fontSize: 20, fontWeight: 600, marginBottom: 12 }}>{s.title}</h3>
-              <p style={{ color: S, fontSize: 14, lineHeight: 1.7 }}>{s.desc}</p>
+      {/* ══ HERO ═════════════════════════════════════════════════ */}
+      <section style={{ paddingTop: 120, paddingBottom: 96,
+                        padding: '140px 48px 100px', background: BG }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto',
+                      display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+          {/* left */}
+          <div style={{ animation: 'fadeUp .7s ease both' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8,
+                          background: `${T}14`, border: `1px solid ${T}40`,
+                          borderRadius: 20, padding: '5px 14px', marginBottom: 28 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: T,
+                              display: 'inline-block', boxShadow: `0 0 5px ${T}` }}/>
+              <span style={{ color: T, fontSize: 12, fontWeight: 600, letterSpacing: 1 }}>
+                HFER-720 Motor Aktif · ISO 22301
+              </span>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* ── FORMULA ── */}
-      <section id="formula" ref={formulaSection.ref}
-               style={{ padding: '100px 64px', background: '#060f1d' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ color: G, fontSize: 12, letterSpacing: 3, marginBottom: 16 }}>ALGORITMA</p>
-          <h2 className="serif" style={{ fontSize: 'clamp(32px, 4vw, 54px)', fontWeight: 700, color: W, marginBottom: 16 }}>
-            HFER-720 Formülü
-          </h2>
-          <p style={{ color: S, fontSize: 15, marginBottom: 56, lineHeight: 1.7 }}>
-            Tehlike, Frekans, Maruziyet ve Dinamik değişkenleri birleştiren
-            patent bekleyen yapay zeka destekli risk motoru.
-          </p>
+            <h1 style={{ fontSize: 'clamp(40px, 5vw, 68px)', fontWeight: 700,
+                         lineHeight: 1.08, color: N, marginBottom: 24 }}>
+              Dayanıklılık.<br />
+              <span style={{ color: T }}>Ölçülebilir.</span>
+            </h1>
 
-          {/* Formula box */}
-          <div style={{
-            background: '#0d1f3c', border: `2px solid ${G}`,
-            borderRadius: 20, padding: '48px 64px', marginBottom: 48,
-            opacity: formulaSection.inView ? 1 : 0,
-            transition: 'opacity 0.9s ease',
-          }}>
-            <div className="serif" style={{ fontSize: 'clamp(28px, 5vw, 64px)', color: G,
-                                             fontWeight: 600, letterSpacing: 2 }}>
-              HFER =
+            <p style={{ color: MG, fontSize: 18, lineHeight: 1.75,
+                        maxWidth: 500, marginBottom: 40, fontWeight: 400 }}>
+              720 parametre, 39 ilçe haritası ve yapay zeka destekli BCM döngüsüyle
+              kurumunuzun kriz hazırlığını somut verilere dönüştürün.
+            </p>
+
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 52 }}>
+              <Link href="/login" className="btn-navy" style={{ fontSize: 15, padding: '13px 32px' }}>
+                Ücretsiz Demo
+              </Link>
+              <a href="#products" className="btn-outline" style={{ fontSize: 15, padding: '12px 32px' }}>
+                Ürünleri Keşfet
+              </a>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center',
-                          gap: 0, margin: '16px 0' }}>
-              <div style={{ textAlign: 'center' }}>
-                <div className="serif" style={{ fontSize: 'clamp(22px, 3.5vw, 48px)', color: W,
-                                                fontWeight: 600, borderBottom: `2px solid ${G}`,
-                                                paddingBottom: 12, marginBottom: 12, letterSpacing: 2 }}>
-                  H × F × X × D
+
+            {/* mini trust row */}
+            <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
+              {[
+                { v: '720+', l: 'Parametre' },
+                { v: '39',   l: 'İlçe' },
+                { v: '%98',  l: 'Uptime' },
+              ].map(s => (
+                <div key={s.l}>
+                  <div style={{ color: N, fontSize: 24, fontWeight: 700 }}>{s.v}</div>
+                  <div style={{ color: MG, fontSize: 12, fontWeight: 500, marginTop: 2 }}>{s.l}</div>
                 </div>
-                <div className="serif" style={{ fontSize: 'clamp(18px, 3vw, 40px)', color: W,
-                                                fontWeight: 600, letterSpacing: 2 }}>
-                  1 + k · C²
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
-          {/* Legend */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+          {/* right: 2×2 icon grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20,
+                        animation: 'fadeIn .9s ease .2s both' }}>
             {[
-              { sym: 'H', lbl: 'Hazard (Tehlike)', desc: 'Doğal ve insan kaynaklı tehlike skoru' },
-              { sym: 'F', lbl: 'Frequency (Frekans)', desc: 'Olayın tarihsel gerçekleşme sıklığı' },
-              { sym: 'X', lbl: 'Exposure (Maruziyet)', desc: 'Etkilenen varlık ve nüfus büyüklüğü' },
-              { sym: 'D', lbl: 'Dynamics (Dinamik)', desc: 'Değişken çevresel koşul faktörleri' },
-              { sym: 'k', lbl: 'Kalibrasyoncu', desc: 'Sektöre özel ağırlıklandırma katsayısı' },
-              { sym: 'C', lbl: 'Kapasite', desc: 'Kurumsal hazırlık ve kapasite endeksi' },
-            ].map(l => (
-              <div key={l.sym} style={{ background: '#0d1f3c', borderRadius: 12,
-                                        padding: '20px 24px', border: '1px solid #1e3a5f', textAlign: 'left' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                  <span className="serif" style={{ color: G, fontSize: 24, fontWeight: 700 }}>{l.sym}</span>
-                  <span style={{ color: W, fontSize: 13, fontWeight: 600 }}>{l.lbl}</span>
+              { icon: <IconRisk size={56}/>,   label: 'Risk Yönetimi',  sub: 'omniRISK', c: T },
+              { icon: <IconImpact size={56}/>, label: 'Etki Analizi',   sub: 'omniIMPACT', c: G },
+              { icon: <IconPlan size={56}/>,   label: 'Kurtarma Planı', sub: 'omniPLAN', c: '#5BA3DC' },
+              { icon: <IconCrisis size={56}/>, label: 'Kriz Yönetimi', sub: 'omniCRISIS', c: '#E8A87C' },
+            ].map((item, i) => (
+              <div key={i} className="card" style={{ textAlign: 'center', padding: '32px 20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+                  {item.icon}
                 </div>
-                <p style={{ color: S, fontSize: 12, lineHeight: 1.6 }}>{l.desc}</p>
+                <div style={{ color: N, fontWeight: 700, fontSize: 15, marginBottom: 4 }}>{item.label}</div>
+                <div style={{ color: item.c, fontSize: 12, fontWeight: 600, letterSpacing: 1 }}>{item.sub}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── SECTORS ── */}
-      <section id="sectors" style={{ padding: '100px 64px', maxWidth: 1280, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 72 }}>
-          <p style={{ color: G, fontSize: 12, letterSpacing: 3, marginBottom: 16 }}>SEKTÖRLER</p>
-          <h2 className="serif" style={{ fontSize: 'clamp(32px, 4vw, 54px)', fontWeight: 700, color: W }}>
-            Her Sektör İçin Özelleştirilmiş Çözümler
-          </h2>
+      {/* ══ LOGO BAND ════════════════════════════════════════════ */}
+      <section style={{ background: GR, padding: '48px 48px', borderTop: '1px solid #E8EDF3',
+                        borderBottom: '1px solid #E8EDF3' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <p style={{ textAlign: 'center', color: '#B0BEC5', fontSize: 12,
+                      letterSpacing: 3, textTransform: 'uppercase', marginBottom: 36 }}>
+            Güvenilen Kurumlar
+          </p>
+          <LogoBand />
         </div>
+      </section>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
-          {sectors.map((s, i) => (
+      {/* ══ PRODUCTS ═════════════════════════════════════════════ */}
+      <section id="products" ref={productsSection.ref} style={{ padding: '100px 48px', background: BG }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 64 }}>
+            <SectionLabel text="Modüler Platform" />
+            <SectionTitle>Her Süreç İçin Doğru Modül</SectionTitle>
+            <p style={{ color: MG, fontSize: 16, maxWidth: 540, margin: '0 auto' }}>
+              Dört entegre modül, BCM döngünüzün her aşamasını kapsar.
+              İhtiyacınıza göre tekil veya bütünleşik kullanabilirsiniz.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+            {products.map((p, i) => (
+              <div key={i} className="card"
+                   style={{
+                     opacity: productsSection.inView ? 1 : 0,
+                     transform: productsSection.inView ? 'translateY(0)' : 'translateY(24px)',
+                     transition: `opacity .55s ease ${i*.1}s, transform .55s ease ${i*.1}s`,
+                   }}>
+                <div style={{ marginBottom: 20 }}>{p.icon}</div>
+                <span className="product-tag"
+                      style={{ background: `${p.color}18`, color: p.color }}>{p.code}</span>
+                <p style={{ color: MG, fontSize: 14, lineHeight: 1.75 }}>{p.desc}</p>
+                <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 6,
+                               color: p.color, fontSize: 13, fontWeight: 600 }}>
+                  <span>Detayları İncele</span>
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M3 7h8M7 3l4 4-4 4" stroke={p.color} strokeWidth="1.5"
+                          strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ BCM CYCLE ════════════════════════════════════════════ */}
+      <section id="bcm" ref={bcmSection.ref} style={{ padding: '100px 48px', background: GR }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto',
+                      display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+          {/* left */}
+          <div style={{
+            opacity: bcmSection.inView ? 1 : 0,
+            transform: bcmSection.inView ? 'scale(1)' : 'scale(0.93)',
+            transition: 'all .8s ease',
+          }}>
+            <BcmCycle />
+          </div>
+
+          {/* right */}
+          <div style={{
+            opacity: bcmSection.inView ? 1 : 0,
+            transform: bcmSection.inView ? 'translateX(0)' : 'translateX(30px)',
+            transition: 'all .7s ease .15s',
+          }}>
+            <SectionLabel text="BCM Döngüsü" />
+            <SectionTitle>Kesintisiz Dayanıklılık<br/>Döngüsü</SectionTitle>
+            <p style={{ color: MG, fontSize: 16, lineHeight: 1.8, marginBottom: 36 }}>
+              HFER-720 motoru, altı aşamalı BCM döngüsünü sürekli besler.
+              Önlemeden yönetime kadar her aşama platformda izlenir,
+              güncellenir ve raporlanır.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {[
+                { phase: 'Önleme',   desc: 'Tehlike tespiti ve proaktif risk azaltma',       color: T },
+                { phase: 'Hazırlık', desc: 'Plan geliştirme, eğitim, tatbikat yönetimi',     color: '#5BA3DC' },
+                { phase: 'Müdahale', desc: 'Gerçek zamanlı kriz komuta merkezi',             color: '#E8A87C' },
+                { phase: 'İyileşme', desc: 'Operasyon restorasyonu ve RTO/RPO takibi',       color: G },
+                { phase: 'İzleme',   desc: 'KPI kontrol paneli ve uyum denetimi',           color: '#A78BFA' },
+                { phase: 'Yönetim',  desc: 'Üst yönetim raporlama ve strateji güncelleme',  color: '#34D399' },
+              ].map(item => (
+                <div key={item.phase} style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color,
+                                 flexShrink: 0, marginTop: 5 }}/>
+                  <div>
+                    <span style={{ color: N, fontWeight: 600, fontSize: 14 }}>{item.phase}: </span>
+                    <span style={{ color: MG, fontSize: 14 }}>{item.desc}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ STATS ════════════════════════════════════════════════ */}
+      <section id="sectors" ref={statsSection.ref}
+               style={{ padding: '80px 48px', background: N }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto',
+                      display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
+                      gap: 40, textAlign: 'center' }}>
+          {[
+            { target: 720,  suffix: '+',  label: 'Analiz Parametresi' },
+            { target: 39,   suffix: '',   label: 'İlçe Kapsamı' },
+            { target: 6,    suffix: '',   label: 'Sektör Desteği' },
+            { target: 98,   suffix: '%',  label: 'Platform Uptime' },
+          ].map((s, i) => (
             <div key={i} style={{
-              background: '#0d1f3c', borderRadius: 16, padding: 32,
-              border: '1px solid #1e3a5f', cursor: 'pointer',
-              transition: 'border-color 0.2s, transform 0.2s',
-            }}
-              onMouseEnter={e => {
-                const el = e.currentTarget as HTMLDivElement
-                el.style.borderColor = G
-                el.style.transform = 'translateY(-4px)'
-              }}
-              onMouseLeave={e => {
-                const el = e.currentTarget as HTMLDivElement
-                el.style.borderColor = '#1e3a5f'
-                el.style.transform = 'translateY(0)'
-              }}>
-              <div style={{ fontSize: 36, marginBottom: 16 }}>{s.icon}</div>
-              <h3 style={{ color: W, fontSize: 20, fontWeight: 600, marginBottom: 10 }}>{s.name}</h3>
-              <p style={{ color: S, fontSize: 14, lineHeight: 1.7, marginBottom: 20 }}>{s.desc}</p>
-              <span style={{ color: G, fontSize: 13, fontWeight: 600 }}>Detaylı İncele →</span>
+              opacity: statsSection.inView ? 1 : 0,
+              transform: statsSection.inView ? 'translateY(0)' : 'translateY(20px)',
+              transition: `all .6s ease ${i * .1}s`,
+            }}>
+              <div style={{ fontSize: 'clamp(40px, 5vw, 60px)', fontWeight: 700,
+                             color: G, lineHeight: 1 }}>
+                <StatItem target={s.target} suffix={s.suffix} label={s.label} go={statsSection.inView} />
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── CTA ── */}
-      <section style={{ padding: '100px 64px', background: 'linear-gradient(135deg, #0d1f3c 0%, #0A1628 100%)',
-                        borderTop: `1px solid #1e3a5f` }}>
-        <div style={{ maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ color: G, fontSize: 12, letterSpacing: 3, marginBottom: 20 }}>BAŞLAYIN</p>
-          <h2 className="serif" style={{ fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 700,
-                                          color: W, marginBottom: 24, lineHeight: 1.1 }}>
-            Kurumunuzun Dayanıklılığını<br />
-            <span style={{ color: G }}>Bugün Ölçün</span>
-          </h2>
-          <p style={{ color: S, fontSize: 17, lineHeight: 1.75, marginBottom: 48 }}>
-            14 günlük ücretsiz deneme. Kredi kartı gerekmez. ISO 22301 uyumlu
-            raporunuzu ilk gün alın.
-          </p>
-          <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/login" className="gold-btn" style={{ fontSize: 16, padding: '16px 48px' }}>
-              Ücretsiz Demo Talep Et
-            </Link>
-            <a href="mailto:info@omniversel.com" className="ghost-btn" style={{ fontSize: 16 }}>
-              Bize Yazın
-            </a>
+      {/* ══ TESTIMONIALS ═════════════════════════════════════════ */}
+      <section id="about" ref={testiSection.ref} style={{ padding: '100px 48px', background: BG }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 64 }}>
+            <SectionLabel text="Müşteri Yorumları" />
+            <SectionTitle>Liderler Ne Diyor?</SectionTitle>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+            {testimonials.map((t, i) => (
+              <div key={i} className="card"
+                   style={{
+                     opacity: testiSection.inView ? 1 : 0,
+                     transform: testiSection.inView ? 'translateY(0)' : 'translateY(24px)',
+                     transition: `all .6s ease ${i * .12}s`,
+                   }}>
+                {/* quote mark */}
+                <svg width="28" height="22" viewBox="0 0 28 22" style={{ marginBottom: 18 }}>
+                  <text x="0" y="22" fontSize="36" fill={T} opacity="0.35">&ldquo;</text>
+                </svg>
+                <p style={{ color: N, fontSize: 15, lineHeight: 1.8, fontStyle: 'italic',
+                             marginBottom: 24, fontWeight: 400 }}>{t.quote}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12,
+                               borderTop: '1px solid #E8EDF3', paddingTop: 20 }}>
+                  {/* avatar placeholder */}
+                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: `${T}20`,
+                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                 flexShrink: 0 }}>
+                    <span style={{ color: T, fontWeight: 700, fontSize: 14 }}>
+                      {t.name.split(' ').map(w => w[0]).join('')}
+                    </span>
+                  </div>
+                  <div>
+                    <div style={{ color: N, fontWeight: 600, fontSize: 14 }}>{t.name}</div>
+                    <div style={{ color: MG, fontSize: 12, marginTop: 2 }}>{t.role}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
-      <footer style={{ background: '#060f1d', borderTop: `1px solid #1e3a5f`, padding: '56px 64px 32px' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 48, marginBottom: 48 }}>
+      {/* ══ CTA ══════════════════════════════════════════════════ */}
+      <section style={{ padding: '80px 48px', background: GR }}>
+        <div style={{ maxWidth: 760, margin: '0 auto' }}>
+          <div style={{ background: BG, borderRadius: 24, padding: '64px 56px',
+                        boxShadow: '0 8px 48px rgba(10,22,40,.08)',
+                        border: '1px solid #E8EDF3', textAlign: 'center' }}>
+            <SectionLabel text="Başlayın" />
+            <h2 style={{ color: N, fontSize: 'clamp(30px, 4vw, 48px)', fontWeight: 700,
+                          lineHeight: 1.12, marginBottom: 20 }}>
+              İlk Adımı Atın
+            </h2>
+            <p style={{ color: MG, fontSize: 16, lineHeight: 1.75,
+                         maxWidth: 480, margin: '0 auto 40px' }}>
+              14 günlük ücretsiz deneme. Kurulum yok, kredi kartı gerekmez.
+              BCM danışmanımız sizi arar, platform üzerinde birlikte ilerleriz.
+            </p>
+            <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link href="/login" className="btn-navy"
+                    style={{ fontSize: 15, padding: '14px 40px' }}>
+                Ücretsiz Başlayın
+              </Link>
+              <a href="mailto:info@omniversel.com" className="btn-outline"
+                 style={{ fontSize: 15, padding: '13px 32px' }}>
+                Bize Yazın
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ FOOTER ═══════════════════════════════════════════════ */}
+      <footer style={{ background: N, padding: '64px 48px 36px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 48, marginBottom: 56 }}>
             {/* brand */}
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-                <svg width="28" height="28" viewBox="0 0 36 36">
-                  <polygon points="18,2 34,28 2,28" fill="none" stroke={G} strokeWidth="2.5" />
-                  <circle cx="18" cy="20" r="3" fill={G} />
+                <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+                  <rect width="32" height="32" rx="8" fill={T} fillOpacity="0.2"/>
+                  <polygon points="16,7 25,22 7,22" fill="none" stroke={T} strokeWidth="2"/>
+                  <circle cx="16" cy="18" r="2" fill={G}/>
                 </svg>
-                <span className="serif" style={{ color: G, fontSize: 18, fontWeight: 700, letterSpacing: 2 }}>OMNIVERSEL</span>
+                <span style={{ color: BG, fontSize: 17, fontWeight: 700 }}>
+                  omni<span style={{ color: T }}>versel</span>
+                </span>
               </div>
-              <p style={{ color: S, fontSize: 14, lineHeight: 1.8, maxWidth: 280 }}>
-                Yapay zeka destekli kurumsal dayanıklılık platformu. İTÜ AYM iş birliğiyle geliştirilmiştir.
+              <p style={{ color: '#607899', fontSize: 14, lineHeight: 1.8, maxWidth: 260 }}>
+                Yapay zeka destekli kurumsal dayanıklılık platformu.
+                ISO 22301 · BCM · AFAD uyumlu.
               </p>
+              <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
+                {['ISO 22301', 'BCM', 'KVKK'].map(b => (
+                  <span key={b} style={{ background: '#142340', color: T,
+                                         fontSize: 11, fontWeight: 600, letterSpacing: 1,
+                                         padding: '4px 10px', borderRadius: 4 }}>{b}</span>
+                ))}
+              </div>
             </div>
-            {/* links */}
+
+            {/* columns */}
             {[
-              { title: 'Platform', links: ['Özellikler','Sektörler','Formül','Fiyatlar'] },
-              { title: 'Şirket',   links: ['Hakkımızda','Blog','Kariyer','İletişim'] },
-              { title: 'Yasal',    links: ['Gizlilik','KVKK','Kullanım Şartları','Güvenlik'] },
+              { title: 'Platform',  links: ['omniRISK','omniIMPACT','omniPLAN','omniCRISIS','Fiyatlar'] },
+              { title: 'Şirket',    links: ['Hakkımızda','Blog','Kariyer','Basın','İletişim'] },
+              { title: 'Destek',    links: ['Dokümantasyon','SSS','Güvenlik','KVKK','Kullanım Şartları'] },
             ].map(col => (
               <div key={col.title}>
-                <div style={{ color: W, fontSize: 14, fontWeight: 600, marginBottom: 20, letterSpacing: 0.5 }}>
+                <div style={{ color: '#E2EAF3', fontSize: 13, fontWeight: 700,
+                               letterSpacing: 1, textTransform: 'uppercase', marginBottom: 20 }}>
                   {col.title}
                 </div>
                 {col.links.map(l => (
                   <div key={l} style={{ marginBottom: 12 }}>
-                    <a href="#" style={{ color: S, fontSize: 14, transition: 'color 0.2s' }}
-                       onMouseEnter={e => (e.currentTarget.style.color = G)}
-                       onMouseLeave={e => (e.currentTarget.style.color = S)}>{l}</a>
+                    <a href="#" style={{ color: '#607899', fontSize: 14, transition: 'color .18s' }}
+                       onMouseEnter={e => (e.currentTarget.style.color = BG)}
+                       onMouseLeave={e => (e.currentTarget.style.color = '#607899')}>{l}</a>
                   </div>
                 ))}
               </div>
             ))}
           </div>
 
-          <div style={{ borderTop: `1px solid #1e3a5f`, paddingTop: 28,
-                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                        flexWrap: 'wrap', gap: 16 }}>
-            <span style={{ color: S, fontSize: 13 }}>
-              © {new Date().getFullYear()} Omniversel. Tüm hakları saklıdır.
+          {/* bottom bar */}
+          <div style={{ borderTop: '1px solid #142340', paddingTop: 28,
+                        display: 'flex', justifyContent: 'space-between',
+                        alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+            <span style={{ color: '#607899', fontSize: 13 }}>
+              © {new Date().getFullYear()} Omniversel Teknoloji A.Ş. Tüm hakları saklıdır.
             </span>
-            <div style={{ display: 'flex', gap: 24 }}>
-              {['ISO 22301:2019','BCM','AFAD'].map(b => (
-                <span key={b} style={{ color: G2, fontSize: 12, letterSpacing: 1 }}>{b}</span>
-              ))}
-            </div>
+            <span style={{ color: '#607899', fontSize: 13 }}>
+              bc-consulting.at iş birliğiyle geliştirilmiştir.
+            </span>
           </div>
         </div>
       </footer>
