@@ -137,6 +137,13 @@ function HeatmapLayer({ facilities, tehlike }: { facilities: FacilityRow[]; tehl
       'position:absolute;top:0;left:0;pointer-events:none;z-index:450;'
     container.appendChild(canvas)
 
+    function zoomRadius(): number {
+      const z = map.getZoom()
+      if (z >= 15) return 40
+      if (z >= 14) return 25
+      return 15
+    }
+
     function draw() {
       const w = container.clientWidth
       const h = container.clientHeight
@@ -145,21 +152,21 @@ function HeatmapLayer({ facilities, tehlike }: { facilities: FacilityRow[]; tehl
       const ctx = canvas.getContext('2d')!
       ctx.clearRect(0, 0, w, h)
 
+      const radius = zoomRadius()
+
       for (const f of facilities) {
         if (!f.geom?.coordinates) continue
         const score = getScore(f, tehlike)
         if (score < 0.3) continue
         const [lng, lat] = f.geom.coordinates
         const pt = map.latLngToContainerPoint([lat, lng])
-        const radius = 28 + score * 14
         const t = Math.min(score / 5, 1)
-        const alpha = 0.15 + t * 0.45
         // green→yellow→red
         const r = Math.round(t < 0.5 ? t * 2 * 255 : 255)
         const g = Math.round(t < 0.5 ? 255 : (1 - t) * 2 * 255)
         const grad = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, radius)
-        grad.addColorStop(0,   `rgba(${r},${g},0,${alpha})`)
-        grad.addColorStop(0.5, `rgba(${r},${g},0,${alpha * 0.55})`)
+        grad.addColorStop(0,   `rgba(${r},${g},0,0.6)`)
+        grad.addColorStop(0.6, `rgba(${r},${g},0,0.25)`)
         grad.addColorStop(1,   `rgba(${r},${g},0,0)`)
         ctx.fillStyle = grad
         ctx.beginPath()
@@ -205,10 +212,13 @@ function buildFNCurves(facilities: FacilityRow[]) {
 function FNCurve({ facilities }: { facilities: FacilityRow[] }) {
   const [aktivCurve, setAktivCurve] = useState<TehlikeTur | 'hepsi'>('hepsi')
   const [tooltip, setTooltip]       = useState<{ x: number; y: number; html: string } | null>(null)
+  const [curves, setCurves]         = useState<ReturnType<typeof buildFNCurves>>([])
 
-  const curves = useMemo(() => buildFNCurves(facilities), [facilities])
+  useEffect(() => {
+    setCurves(buildFNCurves(facilities))
+  }, [facilities])
 
-  const W = 680, H = 380
+  const W = 800, H = 400
   const m = { t: 28, r: 28, b: 52, l: 76 }
   const pw = W - m.l - m.r
   const ph = H - m.t - m.b
@@ -259,8 +269,8 @@ function FNCurve({ facilities }: { facilities: FacilityRow[] }) {
         </div>
       </div>
 
-      <div style={{ position: 'relative', overflowX: 'auto' }}>
-        <svg width={W} height={H} style={{ display: 'block', maxWidth: '100%', overflow: 'visible' }}>
+      <div style={{ position: 'relative', height: 420, overflowX: 'auto' }}>
+        <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="100%" style={{ display: 'block', overflow: 'visible' }}>
           {/* ALARP Zones */}
           <rect x={m.l} y={yZones.intolTop}  width={pw} height={yZones.intolBot - yZones.intolTop}  fill="rgba(239,68,68,.09)"/>
           <rect x={m.l} y={yZones.intolBot}  width={pw} height={yZones.alarpBot - yZones.intolBot}  fill="rgba(245,158,11,.09)"/>
@@ -890,7 +900,7 @@ export default function CBSHarita() {
       </div>
 
       {/* F-N Eğrisi paneli */}
-      {mapMod === 'fn' && !yukleniyor && facilities.length > 0 && (
+      {mapMod === 'fn' && (
         <FNCurve facilities={facilities}/>
       )}
 
