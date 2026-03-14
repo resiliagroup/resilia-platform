@@ -5,10 +5,10 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { createClient } from '@supabase/supabase-js'
 
-/* ─── Supabase client (beylikdüzü projesi) ───────────────────── */
+/* ─── Supabase client — service role (RLS bypass) ───────────── */
 const sb = createClient(
   'https://gqguwgbopgnpwzjwcexl.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzOTk4MzMsImV4cCI6MjA4ODk3NTgzM30.ZIFmmiGsB1rUAojvSG8uTfcknZi6LoXgrgApCL-e550',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzM5OTgzMywiZXhwIjoyMDg4OTc1ODMzfQ.Ku-JRx8JFH5a3SIj7sGP_Dy_nM89NMMW34gPyxVO_qI',
 )
 const TENANT_ID = '11111111-0000-0000-0000-000000000001'
 
@@ -428,10 +428,11 @@ export default function CBSHarita() {
         `)
         .eq('tenant_id', TENANT_ID)
         .eq('is_active', true)
-        .limit(1500)
+        .limit(1000)
 
       if (iptal) return
       if (error) { setHata(error.message); setYukleniyor(false); return }
+      console.log('[CBSHarita] Supabase yanıtı:', { adet: data?.length ?? 0, tenant_id: TENANT_ID, hata: error })
       setFacilities((data ?? []) as FacilityRow[])
       setYukleniyor(false)
     }
