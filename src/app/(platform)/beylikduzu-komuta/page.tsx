@@ -252,6 +252,367 @@ const MAHALLE_CONTEXT: Record<string, { nufus: number; natech: boolean; not: str
 }
 
 /* ══════════════════════════════════════════════════════════════
+   SENDAI UYUM SEKMESİ
+══════════════════════════════════════════════════════════════ */
+const SF_RENK: Record<string, { border: string; bg: string; text: string; bar: string; badge: string; badgeBg: string; badgeBorder: string }> = {
+  Aktif:     { border:'#10B981', bg:'#F0FDF4', text:'#059669', bar:'#10B981', badge:'#059669', badgeBg:'#D1FAE5', badgeBorder:'#6EE7B7' },
+  Kısmi:     { border:'#F59E0B', bg:'#FFFBEB', text:'#D97706', bar:'#F59E0B', badge:'#D97706', badgeBg:'#FEF3C7', badgeBorder:'#FCD34D' },
+  Planlandı: { border:'#F97316', bg:'#FFF7ED', text:'#EA580C', bar:'#F97316', badge:'#EA580C', badgeBg:'#FFEDD5', badgeBorder:'#FDBA74' },
+  Eksik:     { border:'#EF4444', bg:'#FEF2F2', text:'#DC2626', bar:'#EF4444', badge:'#DC2626', badgeBg:'#FEE2E2', badgeBorder:'#FCA5A5' },
+}
+
+const GOSTERGE_IKONU: Record<string, string> = { '✓': '✓', '⚠': '⚠', '✗': '✗' }
+const GOSTERGE_RENK:  Record<string, string>  = { '✓': '#10B981', '⚠': '#F59E0B', '✗': '#EF4444' }
+
+function SfKarti({ no, baslik, ilerleme, durum, gostergeler, omni }: {
+  no: string; baslik: string; ilerleme: number; durum: string
+  gostergeler: { metin: string; ikon: '✓' | '⚠' | '✗' }[]
+  omni: string
+}) {
+  const r = SF_RENK[durum] ?? SF_RENK.Eksik
+  return (
+    <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderLeft: `4px solid ${r.border}`,
+                  borderRadius: 12, padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {/* Başlık satırı */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontFamily: 'DM Mono,monospace', fontSize: 11, fontWeight: 700, letterSpacing: 1,
+                         background: r.bg, color: r.text, border: `1px solid ${r.border}44`,
+                         padding: '3px 8px', borderRadius: 6 }}>{no}</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{baslik}</span>
+        </div>
+        <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20,
+                       color: r.badge, background: r.badgeBg, border: `1px solid ${r.badgeBorder}` }}>{durum}</span>
+      </div>
+
+      {/* Progress */}
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+          <span style={{ fontSize: 11, color: '#6B7280' }}>İlerleme</span>
+          <span style={{ fontSize: 11, fontWeight: 700, fontFamily: 'DM Mono,monospace', color: r.text }}>{ilerleme}%</span>
+        </div>
+        <svg width="100%" height="8" style={{ display: 'block', borderRadius: 4, overflow: 'hidden' }}>
+          <rect x="0" y="0" width="100%" height="8" rx="4" fill="#F3F4F6"/>
+          <rect x="0" y="0" width={`${ilerleme}%`} height="8" rx="4" fill={r.bar}/>
+        </svg>
+      </div>
+
+      {/* Göstergeler */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+        {gostergeler.map((g, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: GOSTERGE_RENK[g.ikon], flexShrink: 0, width: 14 }}>
+              {GOSTERGE_IKONU[g.ikon]}
+            </span>
+            <span style={{ fontSize: 12, color: '#374151' }}>{g.metin}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* OMNI katkısı */}
+      <div style={{ background: '#FFFBF0', border: '1px solid #FDE68A', borderRadius: 8, padding: '8px 12px' }}>
+        <span style={{ fontSize: 10, fontWeight: 700, color: '#92400E', letterSpacing: 0.5, textTransform: 'uppercase' }}>
+          OMNI Katkısı ·{' '}
+        </span>
+        <span style={{ fontSize: 11, color: '#78350F' }}>{omni}</span>
+      </div>
+    </div>
+  )
+}
+
+const FON_DURUM_STYLE: Record<string, { color: string; bg: string; border: string }> = {
+  'Uygun':         { color: '#059669', bg: '#D1FAE5', border: '#6EE7B7' },
+  'Değerlendirme': { color: '#D97706', bg: '#FEF3C7', border: '#FCD34D' },
+  'Aktif süreç':   { color: '#2563EB', bg: '#DBEAFE', border: '#93C5FD' },
+  'Planlama':      { color: '#7C3AED', bg: '#EDE9FE', border: '#C4B5FD' },
+  'Potansiyel':    { color: '#0891B2', bg: '#CFFAFE', border: '#67E8F9' },
+  'Teknik destek': { color: '#D97706', bg: '#FEF3C7', border: '#FCD34D' },
+}
+
+function FonKarti({ isim, tur, butce, durum, aciklama, gereklilikler, tarih, logoHarf }: {
+  isim: string; tur: string; butce: string; durum: string; aciklama: string
+  gereklilikler: string[]; tarih: string; logoHarf: string
+}) {
+  const ds = FON_DURUM_STYLE[durum] ?? FON_DURUM_STYLE['Potansiyel']
+  return (
+    <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, padding: 18,
+                  display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+        {/* Logo placeholder */}
+        <div style={{ width: 40, height: 40, borderRadius: 10, background: '#F1F5F9', border: '1px solid #E2E8F0',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <svg width="40" height="40" viewBox="0 0 40 40">
+            <rect width="40" height="40" rx="10" fill="#F1F5F9"/>
+            <text x="20" y="26" textAnchor="middle" fontSize="14" fontWeight="800" fill="#64748B"
+                  fontFamily="DM Mono,monospace">{logoHarf}</text>
+          </svg>
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{isim}</span>
+            <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
+                           color: ds.color, background: ds.bg, border: `1px solid ${ds.border}`, whiteSpace: 'nowrap' }}>{durum}</span>
+          </div>
+          <span style={{ fontSize: 11, color: '#6B7280' }}>{tur}</span>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <span style={{ fontSize: 11, fontWeight: 700, fontFamily: 'DM Mono,monospace', color: '#1D4ED8',
+                       background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '3px 9px', borderRadius: 6 }}>{butce}</span>
+        <span style={{ fontSize: 11, color: '#9CA3AF' }}>{aciklama}</span>
+      </div>
+
+      <div>
+        <p style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 4 }}>Gereklilikler</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          {gereklilikler.map((g, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#CBD5E1', flexShrink: 0 }}/>
+              <span style={{ fontSize: 11, color: '#4B5563' }}>{g}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ borderTop: '1px solid #F3F4F6', paddingTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: 10, color: '#9CA3AF' }}>Tahmini başvuru</span>
+        <span style={{ fontSize: 11, fontWeight: 600, fontFamily: 'DM Mono,monospace', color: '#374151' }}>{tarih}</span>
+      </div>
+    </div>
+  )
+}
+
+function SendaiTab() {
+  const omniUyumSkoru = 47
+  const SF_DATA = [
+    {
+      no: 'SF-1', baslik: 'Afet Riskini Anlama', ilerleme: 68, durum: 'Aktif',
+      gostergeler: [
+        { metin: 'URI skoru hazır — HFER-720 hesaplama aktif',        ikon: '✓' as const },
+        { metin: 'Mahalle haritası — 6 mahalle analizi tamamlandı',   ikon: '✓' as const },
+        { metin: 'CBS entegrasyon — ısı haritası kısmi, F-N eksik',   ikon: '⚠' as const },
+      ],
+      omni: 'HFER-720 URI skoru + mahalle bazlı risk haritası + CBS tesis katmanı',
+    },
+    {
+      no: 'SF-2', baslik: 'Risk Yönetişimini Güçlendirme', ilerleme: 34, durum: 'Kısmi',
+      gostergeler: [
+        { metin: 'ISO 22301 — belediye taslak aşamasında',            ikon: '⚠' as const },
+        { metin: 'BCP planı — henüz tamamlanmadı',                    ikon: '✗' as const },
+        { metin: 'OMNI Dashboard — aktif ve canlı veri',              ikon: '✓' as const },
+      ],
+      omni: 'ISO 22301 BCP planlaması danışmanlığı + yönetişim dashboard entegrasyonu',
+    },
+    {
+      no: 'SF-3', baslik: 'Dayanıklılığa Yatırım', ilerleme: 21, durum: 'Planlandı',
+      gostergeler: [
+        { metin: 'Tesis skoru — 782 tesis H_score hesaplı',           ikon: '✓' as const },
+        { metin: 'Yatırım planı — taslak hazırlık aşaması',           ikon: '⚠' as const },
+        { metin: 'NATECH yatırımı — henüz planlanmadı',               ikon: '✗' as const },
+      ],
+      omni: 'Tesis dayanıklılık skoru + NATECH D katsayısı + öncelikli yatırım haritası',
+    },
+    {
+      no: 'SF-4', baslik: 'Etkin Müdahale ve Yeniden Yapılanma', ilerleme: 12, durum: 'Eksik',
+      gostergeler: [
+        { metin: 'EOC kurulum — protokol hazırlanmadı',               ikon: '✗' as const },
+        { metin: 'Tatbikat planı — takvim oluşturulmadı',             ikon: '✗' as const },
+        { metin: 'NEFES protokolü — entegrasyon kısmi',               ikon: '⚠' as const },
+      ],
+      omni: 'EOC dashboard + NEFES Birliği protokol entegrasyonu + tatbikat modülü',
+    },
+  ]
+
+  const ULUSLAR_FON = [
+    {
+      isim: 'AB Horizon Europe Cluster 3', tur: 'Sivil Güvenlik — Afet Dayanıklılığı',
+      butce: '€5–15M', durum: 'Uygun', logoHarf: 'HE',
+      aciklama: 'Konsorsiyum başvurusu, Q3 2026',
+      gereklilikler: ['Sendai uyum raporu + kantitatif risk skoru', 'Minimum 3 AB üye ülkesi ortağı', 'OMNI / HFER-720 veri entegrasyonu', 'Belediye ortak kurum statüsü'],
+      tarih: 'Q3 2026',
+    },
+    {
+      isim: 'AB IPA III', tur: 'Katılım Öncesi Fon — Kentsel Dayanıklılık',
+      butce: '€2–8M', durum: 'Değerlendirme', logoHarf: 'IPA',
+      aciklama: 'Belediye direkt başvuru',
+      gereklilikler: ['Ulusal uyum belgesi', 'CBS entegrasyonu', 'Afet risk haritası'],
+      tarih: 'Q1 2027',
+    },
+    {
+      isim: 'UNDRR MCR2030', tur: 'Afet Riskini Azaltan Şehirler',
+      butce: 'Mikro hibeler', durum: 'Aktif süreç', logoHarf: 'UN',
+      aciklama: 'Dirençlilik Merkezi statüsü',
+      gereklilikler: ['Sendai izleme verileri', 'Belediye taahhüt mektubu', 'OMNI platform kanıtı'],
+      tarih: 'Süregelen',
+    },
+    {
+      isim: 'URBACT IV', tur: 'Avrupa Şehir Ağları Programı',
+      butce: '€850K', durum: 'Planlama', logoHarf: 'UR',
+      aciklama: '3–4 Avrupa şehri konsorsiyumu',
+      gereklilikler: ['Ortak Avrupa şehirleri', 'Eylem planı taslağı', 'Kentsel dayanıklılık teması'],
+      tarih: 'Q2 2027',
+    },
+    {
+      isim: 'Dünya Bankası GFDRR', tur: 'Küresel Afet Risk Finansmanı',
+      butce: '$2–10M', durum: 'Potansiyel', logoHarf: 'WB',
+      aciklama: 'İLBANK üzerinden başvuru',
+      gereklilikler: ['ISO 22301 BCP belgesi', 'URI endeksi hesaplı', 'İLBANK aracılığı'],
+      tarih: 'Q4 2026',
+    },
+    {
+      isim: 'JICA Deprem İşbirliği', tur: 'Japon Uluslararası İşbirliği',
+      butce: 'Teknik kredi', durum: 'Teknik destek', logoHarf: 'JI',
+      aciklama: 'İTÜ ortaklığı gerekli',
+      gereklilikler: ['İTÜ AYM resmi ortaklığı', 'Deprem tesis risk analizi', 'Japonya–Türkiye çerçeve anlaşması'],
+      tarih: '2027',
+    },
+    {
+      isim: 'EBRD Yeşil Şehirler', tur: 'İklim & NATECH Uyumu',
+      butce: 'Proje bazlı', durum: 'Değerlendirme', logoHarf: 'EB',
+      aciklama: 'İstanbul EBRD şehri statüsü',
+      gereklilikler: ['NATECH risk profili', 'İklim uyum eylem planı', 'Yeşil altyapı bileşeni'],
+      tarih: 'Q2 2026',
+    },
+  ]
+
+  const ULUSAL_FON = [
+    {
+      isim: 'İSTKA MDP', tur: 'Mekânsal Dönüşüm Projesi',
+      butce: '10–20M TL', durum: 'Uygun', logoHarf: 'İK',
+      aciklama: 'Beylikdüzü başvuru sahibi, 3–6 ay',
+      gereklilikler: ['Kentsel dönüşüm planı', 'Tesis ağı analizi (OMNI)', 'Belediye meclis kararı'],
+      tarih: 'Q2 2026',
+    },
+    {
+      isim: 'TÜBİTAK 1001 / TEYDEB', tur: 'Ar-Ge Proje Desteği',
+      butce: '2–5M TL', durum: 'Planlama', logoHarf: 'TB',
+      aciklama: 'İTÜ ortaklığı, 12–18 ay',
+      gereklilikler: ['İTÜ AYM yürütücü kurum', 'HFER-720 Ar-Ge planı', 'Akademik yayın taahhüdü'],
+      tarih: 'Q3 2026',
+    },
+    {
+      isim: 'AFAD UDAP', tur: 'Ulusal Deprem Araştırma Programı',
+      butce: 'Doğrudan destek', durum: 'Uygun', logoHarf: 'AF',
+      aciklama: 'NATECH modelleme, doğrudan uyum',
+      gereklilikler: ['NATECH tesis listesi hazır (782 tesis)', 'Afet modelleme altyapısı', 'AFAD veri paylaşım protokolü'],
+      tarih: 'Q1 2026',
+    },
+  ]
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, fontFamily: 'DM Sans,sans-serif' }}>
+
+      {/* OMNI UYUM SKORU — üstte büyük */}
+      <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 16, padding: '24px 28px',
+                    display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+          <span style={{ fontSize: 64, fontWeight: 900, fontFamily: 'DM Mono,monospace', lineHeight: 1,
+                         background: 'linear-gradient(135deg,#F97316,#EF4444)', WebkitBackgroundClip: 'text',
+                         WebkitTextFillColor: 'transparent' }}>{omniUyumSkoru}</span>
+          <span style={{ fontSize: 13, color: '#9CA3AF', fontFamily: 'DM Mono,monospace' }}>/ 100</span>
+        </div>
+        <div style={{ flex: 1, minWidth: 220 }}>
+          <p style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: '0 0 4px' }}>OMNI Sendai Uyum Skoru</p>
+          <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 12px' }}>4 Sendai Çerçeve önceliğinin ağırlıklı ortalaması</p>
+          <svg width="100%" height="10" style={{ display: 'block' }}>
+            <rect x="0" y="0" width="100%" height="10" rx="5" fill="#F3F4F6"/>
+            <rect x="0" y="0" width={`${omniUyumSkoru}%`} height="10" rx="5" fill="url(#omniGrad)"/>
+            <defs>
+              <linearGradient id="omniGrad" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0%" stopColor="#F97316"/>
+                <stop offset="100%" stopColor="#EF4444"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6 }}>
+            <span style={{ fontSize: 10, color: '#9CA3AF' }}>Mevcut: %{omniUyumSkoru}</span>
+            <span style={{ fontSize: 10, color: '#10B981', fontWeight: 600 }}>Hedef 2026 sonu: %75</span>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {[{ no:'SF-1', pct: 68, renk:'#10B981' }, { no:'SF-2', pct: 34, renk:'#F59E0B' },
+            { no:'SF-3', pct: 21, renk:'#F97316' }, { no:'SF-4', pct: 12, renk:'#EF4444' }].map(s => (
+            <div key={s.no} style={{ textAlign: 'center', width: 52 }}>
+              <svg width="52" height="52" viewBox="0 0 52 52">
+                <circle cx="26" cy="26" r="20" fill="none" stroke="#F3F4F6" strokeWidth="5"/>
+                <circle cx="26" cy="26" r="20" fill="none" stroke={s.renk} strokeWidth="5"
+                        strokeDasharray={`${(s.pct / 100) * 125.7} 125.7`}
+                        strokeDashoffset="31.4" strokeLinecap="round" transform="rotate(-90 26 26)"/>
+                <text x="26" y="31" textAnchor="middle" fontSize="11" fontWeight="700"
+                      fill={s.renk} fontFamily="DM Mono,monospace">{s.pct}</text>
+              </svg>
+              <span style={{ fontSize: 10, color: '#6B7280', fontFamily: 'DM Mono,monospace' }}>{s.no}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* SENDAI ÇERÇEVE SKORKART */}
+      <div>
+        <p style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 12 }}>
+          Sendai Çerçeve Skorkartı — 4 Öncelik
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
+          {SF_DATA.map(sf => <SfKarti key={sf.no} {...sf}/>)}
+        </div>
+      </div>
+
+      {/* ULUSLARARASI FON FIRSATLARI */}
+      <div>
+        <p style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 12 }}>
+          Uluslararası Fon Fırsatları
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
+          {ULUSLAR_FON.map(f => <FonKarti key={f.isim} {...f}/>)}
+        </div>
+      </div>
+
+      {/* ULUSAL FON FIRSATLARI */}
+      <div>
+        <p style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 12 }}>
+          Ulusal Fon Fırsatları
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+          {ULUSAL_FON.map(f => <FonKarti key={f.isim} {...f}/>)}
+        </div>
+      </div>
+
+      {/* KONSORSİYUM STRATEJİSİ */}
+      <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 16, padding: '20px 24px' }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 16 }}>
+          Konsorsiyum Stratejisi
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 16 }}>
+          {[
+            { isim: 'Beylikdüzü Belediyesi', rol: 'Pilot alan + Sahip', ikon: '🏛', renk: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE' },
+            { isim: 'İTÜ AYM',               rol: 'Akademik Partner',   ikon: '🎓', renk: '#8B5CF6', bg: '#F5F3FF', border: '#DDD6FE' },
+            { isim: 'Omniversel',             rol: 'Teknoloji Sağlayıcı',ikon: '⚙', renk: '#059669', bg: '#F0FDF4', border: '#BBF7D0' },
+          ].map(k => (
+            <div key={k.isim} style={{ background: k.bg, border: `1px solid ${k.border}`, borderRadius: 12,
+                                       padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center', textAlign: 'center' }}>
+              <span style={{ fontSize: 28 }}>{k.ikon}</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: k.renk }}>{k.isim}</span>
+              <span style={{ fontSize: 11, color: '#6B7280' }}>{k.rol}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: 'linear-gradient(135deg,#FFFBEB,#FFF7ED)', border: '1px solid #FCD34D',
+                      borderRadius: 10, padding: '12px 18px', textAlign: 'center' }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#92400E', letterSpacing: 0.3 }}>
+            &ldquo;Nakit istemiyoruz, konsorsiyum istiyoruz.&rdquo;
+          </span>
+          <p style={{ margin: '4px 0 0', fontSize: 11, color: '#B45309' }}>
+            Fon başvurularında üç paydaş birlikte hareket eder — her biri kendi uzmanlığını taahhüt eder.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  )
+}
+
+/* ══════════════════════════════════════════════════════════════
    ANA BİLEŞEN
 ══════════════════════════════════════════════════════════════ */
 export default function BeylikduzuKomuta() {
@@ -852,56 +1213,7 @@ export default function BeylikduzuKomuta() {
         {/* ════════════════════════════════════════════════════
             SENDAİ UYUM
         ════════════════════════════════════════════════════ */}
-        {tab === 'sendai' && (
-          <div className="space-y-5">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {[
-                { no: 'SF-1', baslik: 'Afet Riskini Anlama',                 puan: 72, durum: 'Aktif',     omni: 'HFER-720 URI skoru + mahalle bazlı risk haritası',     renk: 'emerald' },
-                { no: 'SF-2', baslik: 'Risk Yönetişimini Güçlendirme',       puan: 48, durum: 'Kısmi',     omni: 'Belediye ISO 22301 BCP planlaması + OMNI dashboard',   renk: 'amber'   },
-                { no: 'SF-3', baslik: 'Dayanıklılığa Yatırım',               puan: 35, durum: 'Planlandı', omni: 'Tesis ağı dayanıklılık skoru + NATECH D katsayısı',    renk: 'amber'   },
-                { no: 'SF-4', baslik: 'Etkin Müdahale ve Yeniden Yapılanma', puan: 21, durum: 'Eksik',     omni: 'EOC dashboard + NEFES Birliği protokolü entegrasyonu', renk: 'red'     },
-              ].map(s => (
-                <Card key={s.no} className="p-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-mono text-gray-400 bg-gray-100 px-2 py-1 rounded">{s.no}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${
-                      s.renk === 'emerald' ? 'text-emerald-600 bg-emerald-50 border-emerald-200' :
-                      s.renk === 'amber'   ? 'text-amber-600 bg-amber-50 border-amber-200' :
-                      'text-red-600 bg-red-50 border-red-200'
-                    }`}>{s.durum}</span>
-                  </div>
-                  <p className="text-gray-900 font-semibold mb-3 text-sm">{s.baslik}</p>
-                  <div className="h-1.5 bg-gray-100 rounded-full mb-3">
-                    <div className={`h-1.5 rounded-full ${s.renk === 'emerald' ? 'bg-emerald-500' : s.renk === 'amber' ? 'bg-amber-500' : 'bg-red-500'}`}
-                      style={{ width: `${s.puan}%` }}/>
-                  </div>
-                  <p className="text-xs text-gray-500"><span style={{ color: GOLD }} className="font-medium">OMNI katkısı:</span> {s.omni}</p>
-                </Card>
-              ))}
-            </div>
-            <Card className="p-6">
-              <h3 className="text-gray-900 font-semibold mb-4 text-sm">Uluslararası Fon Fırsatları</h3>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                {[
-                  { fon: 'EU Horizon Europe',   konu: 'Şehir Dayanıklılığı (2024–2027)',  gereklilik: 'Sendai uyum raporu + kantitatif risk skoru', durum: 'Uygun'         },
-                  { fon: 'UNDP DRRM',           konu: 'Afet Risk Azaltma Fonu',           gereklilik: 'RAPID-N analizi + tesis ağı haritası',       durum: 'Değerlendirme' },
-                  { fon: 'Dünya Bankası GFDRR', konu: 'Küresel Afet Risk Finansmanı',     gereklilik: 'ISO 22301 BCP + URI endeksi',                 durum: 'Potansiyel'    },
-                ].map(f => (
-                  <div key={f.fon} className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                    <p className="text-gray-900 font-medium text-sm mb-1">{f.fon}</p>
-                    <p className="text-xs text-gray-400 mb-2">{f.konu}</p>
-                    <p className="text-xs text-gray-400 mb-3"><span className="text-gray-600">Gereklilik:</span> {f.gereklilik}</p>
-                    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${
-                      f.durum === 'Uygun'         ? 'text-emerald-600 bg-emerald-50 border-emerald-200' :
-                      f.durum === 'Değerlendirme' ? 'text-amber-600 bg-amber-50 border-amber-200' :
-                      'text-blue-600 bg-blue-50 border-blue-200'
-                    }`}>{f.durum}</span>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </div>
-        )}
+        {tab === 'sendai' && <SendaiTab />}
 
         {/* FOOTER */}
         <div className="mt-10 pt-5 border-t border-gray-200 flex flex-wrap items-center justify-between gap-2">
