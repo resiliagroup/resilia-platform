@@ -17,7 +17,7 @@ const TENANT_ID = '11111111-0000-0000-0000-000000000001'
 /* ══════════════════════════════════════════════════════════════
    TİPLER
 ══════════════════════════════════════════════════════════════ */
-type MapMod    = 'tesis' | 'isi' | 'fn'
+type MapMod    = 'tesis' | 'isi'
 type TehlikeTur = 'deprem' | 'sel' | 'sicaklik' | 'firtina' | 'toplumsal' | 'natech'
 type Sektor    = 'MUNICIPALITY' | 'HOSPITAL' | 'EDUCATION' | 'INDUSTRIAL' | 'BANK' | 'HOTEL' | 'OTHER'
 
@@ -189,191 +189,7 @@ function HeatmapLayer({ facilities, tehlike }: { facilities: FacilityRow[]; tehl
 /* ══════════════════════════════════════════════════════════════
    RISK CONTOUR KATMANI — F-N modunda harita canvas overlay
 ══════════════════════════════════════════════════════════════ */
-function RiskContourLayer({ facilities, tehlike }: { facilities: FacilityRow[]; tehlike: TehlikeTur }) {
-  const map = useMap()
 
-  useEffect(() => {
-    const container = map.getContainer()
-    const canvas = document.createElement('canvas')
-    canvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:450;'
-    container.appendChild(canvas)
-
-    const meta = TEHLIKE_META[tehlike]
-    const hex  = meta.renk.replace('#', '')
-    const cr   = parseInt(hex.slice(0, 2), 16)
-    const cg   = parseInt(hex.slice(2, 4), 16)
-    const cb   = parseInt(hex.slice(4, 6), 16)
-
-    function zoomRadius(): number {
-      const z = map.getZoom()
-      if (z >= 15) return 55
-      if (z >= 14) return 35
-      return 20
-    }
-
-    function draw() {
-      const w = container.clientWidth, h = container.clientHeight
-      canvas.width = w; canvas.height = h
-      const ctx = canvas.getContext('2d')!
-      ctx.clearRect(0, 0, w, h)
-
-      const baseR = zoomRadius()
-
-      for (const f of facilities) {
-        if (!f.geom?.coordinates) continue
-        const hScore = (f.extra_data?.H_score as number | undefined) ?? 0
-        if (hScore <= 3.5) continue  // only high-risk facilities
-        const score = getScore(f, tehlike)
-        if (score < 0.1) continue
-        const [lng, lat] = f.geom.coordinates
-        const pt = map.latLngToContainerPoint([lat, lng])
-
-        // Outer ring
-        ctx.beginPath()
-        ctx.arc(pt.x, pt.y, baseR, 0, Math.PI * 2)
-        ctx.strokeStyle = `rgba(${cr},${cg},${cb},0.15)`
-        ctx.lineWidth   = 1.5
-        ctx.setLineDash([5, 5])
-        ctx.stroke()
-        ctx.setLineDash([])
-
-        // Inner ring
-        ctx.beginPath()
-        ctx.arc(pt.x, pt.y, baseR * 0.5, 0, Math.PI * 2)
-        ctx.strokeStyle = `rgba(${cr},${cg},${cb},0.15)`
-        ctx.lineWidth   = 1.2
-        ctx.setLineDash([3, 4])
-        ctx.stroke()
-        ctx.setLineDash([])
-
-        // Center fill
-        const grad = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, baseR * 0.5)
-        grad.addColorStop(0, `rgba(${cr},${cg},${cb},0.12)`)
-        grad.addColorStop(1, `rgba(${cr},${cg},${cb},0)`)
-        ctx.fillStyle = grad
-        ctx.beginPath()
-        ctx.arc(pt.x, pt.y, baseR * 0.5, 0, Math.PI * 2)
-        ctx.fill()
-      }
-    }
-
-    draw()
-    map.on('moveend zoomend', draw)
-    return () => { map.off('moveend zoomend', draw); canvas.remove() }
-  }, [map, facilities, tehlike])
-
-  return null
-}
-
-/* ══════════════════════════════════════════════════════════════
-   F-N MİNİ CHART — harita üzerinde sağ alt köşe overlay
-══════════════════════════════════════════════════════════════ */
-function buildFNCurves(facilities: FacilityRow[]) {
-  return TEHLIKE_TURLERI.map(tt => {
-    const pts = facilities
-      .filter(f => f.geom?.coordinates)
-      .map(f => {
-        const score = getScore(f, tt)
-        const xSc   = (f.extra_data?.X_score as number | undefined) ?? 2
-        return { N: Math.max(1, Math.round(f.employee_count * xSc)), F: score * 0.001 }
-      })
-      .filter(p => p.F > 0)
-      .sort((a, b) => b.N - a.N)
-    let cum = 0
-    const cumPts = pts.map(p => ({ N: p.N, cumF: (cum += p.F) }))
-    return { tt, cumPts, color: TEHLIKE_META[tt].renk, label: TEHLIKE_META[tt].lbl }
-  })
-}
-
-function FNMiniChart({ facilities }: { facilities: FacilityRow[] }) {
-  const [hovered, setHovered] = useState(false)
-  const W  = hovered ? 300 : 200
-  const H  = hovered ? 240 : 160
-  const ml = 40, mr = 8, mt = 16, mb = 26
-  const pw = W - ml - mr
-  const ph = H - mt - mb
-
-  const xS = (N: number) => ml + (Math.log10(Math.max(1, N)) / 4) * pw
-  const yS = (F: number) => mt + ph - ((Math.log10(Math.max(1e-8, F)) + 7) / 5) * ph
-
-  const yTop    = yS(1e-2)
-  const yAlarp  = yS(1e-4)
-  const yAccept = yS(1e-6)
-  const yBot    = yS(1e-7)
-
-  const curves = useMemo(() => buildFNCurves(facilities), [facilities])
-
-  return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        position: 'absolute', bottom: 60, right: 8, zIndex: 800,
-        width: W, height: H,
-        background: 'rgba(15,23,42,0.93)', border: '1px solid #334155',
-        borderRadius: 10, overflow: 'hidden',
-        transition: 'width .22s ease, height .22s ease',
-        boxShadow: '0 4px 24px rgba(0,0,0,.55)',
-        pointerEvents: 'auto',
-        cursor: 'default',
-      }}
-    >
-      <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ display: 'block' }}>
-        {/* ALARP bands */}
-        <rect x={ml} y={yTop}    width={pw} height={Math.max(0, yAlarp  - yTop)}    fill="rgba(239,68,68,0.15)"/>
-        <rect x={ml} y={yAlarp}  width={pw} height={Math.max(0, yAccept - yAlarp)}  fill="rgba(245,158,11,0.15)"/>
-        <rect x={ml} y={yAccept} width={pw} height={Math.max(0, yBot    - yAccept)} fill="rgba(34,197,94,0.15)"/>
-        {/* Axes */}
-        <line x1={ml} y1={mt}      x2={ml}      y2={mt+ph} stroke="#334155" strokeWidth={1}/>
-        <line x1={ml} y1={mt + ph} x2={ml + pw} y2={mt+ph} stroke="#334155" strokeWidth={1}/>
-        {/* X ticks */}
-        {[1, 100, 10000].map(N => (
-          <g key={N}>
-            <line x1={xS(N)} y1={mt+ph} x2={xS(N)} y2={mt+ph+3} stroke="#475569" strokeWidth={1}/>
-            <text x={xS(N)} y={mt+ph+11} textAnchor="middle" fill="#475569" fontSize={7} fontFamily="DM Mono">
-              {N >= 1000 ? `${N/1000}k` : N}
-            </text>
-          </g>
-        ))}
-        {/* Y ticks */}
-        {([[1e-2,'10⁻²'],[1e-4,'10⁻⁴'],[1e-6,'10⁻⁶']] as [number,string][]).map(([F, lbl]) => (
-          <g key={String(F)}>
-            <line x1={ml-3} y1={yS(F)} x2={ml} y2={yS(F)} stroke="#475569" strokeWidth={1}/>
-            <text x={ml-5} y={yS(F)+3} textAnchor="end" fill="#475569" fontSize={7} fontFamily="DM Mono">{lbl}</text>
-          </g>
-        ))}
-        {/* Curves */}
-        {curves.map(({ tt, cumPts, color }) => {
-          if (cumPts.length < 2) return null
-          const pts = cumPts.map(p => `${xS(p.N).toFixed(1)},${yS(p.cumF).toFixed(1)}`).join(' ')
-          return (
-            <polyline key={tt} points={pts} fill="none" stroke={color}
-                      strokeWidth={hovered ? 1.8 : 1.4} opacity={0.85} strokeLinejoin="round"/>
-          )
-        })}
-        {/* Title */}
-        <text x={ml + pw/2} y={mt - 4} textAnchor="middle" fill="#E8C97A"
-              fontSize={8} fontWeight={700} fontFamily="DM Mono" letterSpacing={1}>
-          F-N EĞRİSİ
-        </text>
-        {/* Extra labels + legend on hover */}
-        {hovered && (
-          <>
-            <text x={ml + pw/2} y={H - 5} textAnchor="middle" fill="#64748B" fontSize={8} fontFamily="DM Sans">Nüfus (N)</text>
-            <text x={9} y={mt + ph/2} textAnchor="middle" fill="#64748B" fontSize={8} fontFamily="DM Sans"
-                  transform={`rotate(-90 9 ${mt + ph/2})`}>Frekans</text>
-            {curves.filter(c => c.cumPts.length > 0).map((c, i) => (
-              <g key={c.tt} transform={`translate(${ml + 6},${mt + 8 + i * 13})`}>
-                <line x1={0} y1={5} x2={14} y2={5} stroke={c.color} strokeWidth={2}/>
-                <text x={17} y={8} fill="#64748B" fontSize={8} fontFamily="DM Sans">{c.label}</text>
-              </g>
-            ))}
-          </>
-        )}
-      </svg>
-    </div>
-  )
-}
 
 /* ══════════════════════════════════════════════════════════════
    POPUP
@@ -695,7 +511,6 @@ function ModeToggle({ mod, onSet }:{ mod:MapMod; onSet:(m:MapMod)=>void }) {
   const opts: {k:MapMod; lbl:string}[] = [
     { k:'tesis', lbl:'Tesis' },
     { k:'isi',   lbl:'Isı Haritası' },
-    { k:'fn',    lbl:'F-N Eğrisi' },
   ]
   return (
     <div style={{ display:'inline-flex', background:'#0F172A', border:'1px solid #334155',
@@ -829,8 +644,8 @@ export default function CBSHarita() {
         </div>
       </div>
 
-      {/* Tehlike seçici hexagonlar (ısı haritası + F-N modunda) */}
-      {(mapMod === 'isi' || mapMod === 'fn') && (
+      {/* Tehlike seçici hexagonlar (ısı haritası modunda) */}
+      {mapMod === 'isi' && (
         <div style={{ background:'#0F172A', border:'1px solid #1E293B', borderRadius:12,
                       padding:'16px 20px', display:'flex', alignItems:'center', gap:20 }}>
           <div>
@@ -888,10 +703,7 @@ export default function CBSHarita() {
             {mapMod === 'isi' && (
               <HeatmapLayer facilities={gösterilen} tehlike={tehlike}/>
             )}
-            {mapMod === 'fn' && (
-              <RiskContourLayer facilities={gösterilen} tehlike={tehlike}/>
-            )}
-            {(mapMod === 'tesis' || mapMod === 'fn') && gösterilen.map(f => {
+            {mapMod === 'tesis' && gösterilen.map(f => {
               const c      = f.geom!.coordinates
               const sm     = SEKTOR_META[f.sector] ?? SEKTOR_META.OTHER
               const hs     = (f.extra_data?.H_score as number|undefined) ?? 0
@@ -905,8 +717,6 @@ export default function CBSHarita() {
               )
             })}
           </MapContainer>
-          {/* F-N mini chart overlay */}
-          {mapMod === 'fn' && <FNMiniChart facilities={facilities}/>}
         </div>
 
         {/* Sağ panel */}

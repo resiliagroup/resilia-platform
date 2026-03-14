@@ -1,65 +1,232 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import dynamic from 'next/dynamic'
-import {
-  Shield, MapPin, Building2, AlertTriangle, Activity,
-  Users, Loader2, WifiOff, TrendingUp, Zap, ClipboardList,
-} from 'lucide-react'
-import {
-  PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend,
-} from 'recharts'
-import {
-  useOmniFacilities,
-  usePortfolioSummary,
-  RISK_CLASS_TR,
-  RISK_CLASS_COLOR,
-  type OmniFacility,
-  type RiskClass,
-} from '@/lib/api'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
+import { Loader2, WifiOff, AlertTriangle } from 'lucide-react'
 
-// ─── Form başvuru tipi ────────────────────────────────────────
-interface FormBasvuru {
-  id: string
-  birim_kodu: string
-  sektor: string
-  dayaniklilik_skoru: number
-  h_skoru: number
-  f_skoru: number
-  e_skoru: number
-  durum: string
-  dolduran_email: string | null
-  gonderilme: string | null
-  puanlar: {
-    _basvuru?: {
-      isletme_adi?: string
-      yetkili?: string
-      tel?: string
-      email?: string
-      mahalle?: string
-    }
-  } | null
+/* ══════════════════════════════════════════════════════════════
+   SUPABASE — Beylikdüzü projesi (anon key)
+══════════════════════════════════════════════════════════════ */
+const sbBD = createClient(
+  'https://gqguwgbopgnpwzjwcexl.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzOTk4MzMsImV4cCI6MjA4ODk3NTgzM30.ZIFmmiGsB1rUAojvSG8uTfcknZi6LoXgrgApCL-e550',
+)
+const TENANT_BD = '11111111-0000-0000-0000-000000000001'
+const NAVY = '#0A1628'
+const GOLD = '#E8C97A'
+
+/* ══════════════════════════════════════════════════════════════
+   TİPLER
+══════════════════════════════════════════════════════════════ */
+type Sektor = 'MUNICIPALITY' | 'HOSPITAL' | 'EDUCATION' | 'INDUSTRIAL' | 'BANK' | 'HOTEL' | 'OTHER'
+
+interface ExtraData {
+  neighborhood?: string
+  H_score?:      number
+  X_score?:      number
+  hazmat_flag?:  boolean
+  natech_risk?:  number
+  sub_sector?:   string
+  risk_deprem?:  number
+  risk_sel?:     number
+  [k: string]:   unknown
 }
 
-const SEKTOR_ETIKET: Record<string, string> = {
-  bankacilik: 'Bankacılık',
-  saglik:     'Sağlık',
-  konaklama:  'Konaklama',
-  uretim:     'Sanayi & Üretim',
-  hizmet:     'Hizmet',
-  belediye:   'Kamu & Belediye',
-  meb:        'Eğitim',
-  odalar:     'Oda',
+interface Facility {
+  id:             string
+  name:           string
+  sector:         Sektor
+  employee_count: number
+  building_age:   number
+  operates_24h:   boolean
+  extra_data:     ExtraData | null
 }
 
-function uriRenkHesapla(skor: number) {
-  if (skor < 40) return { bg: 'bg-red-50',     border: 'border-red-200',     text: 'text-red-600',     label: 'KRİTİK'     }
-  if (skor < 60) return { bg: 'bg-orange-50',  border: 'border-orange-200',  text: 'text-orange-600',  label: 'YÜKSEK'     }
-  if (skor < 75) return { bg: 'bg-amber-50',   border: 'border-amber-200',   text: 'text-amber-600',   label: 'ORTA'       }
-  return               { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-600', label: 'DAYANIKLI'  }
+const SEKTOR_META: Record<Sektor, { label: string; renk: string }> = {
+  MUNICIPALITY: { label: 'Kamu',   renk: '#5BA3DC' },
+  HOSPITAL:     { label: 'Sağlık', renk: '#EF4444' },
+  EDUCATION:    { label: 'Eğitim', renk: '#F59E0B' },
+  INDUSTRIAL:   { label: 'Sanayi', renk: '#F97316' },
+  BANK:         { label: 'Finans', renk: '#10B981' },
+  HOTEL:        { label: 'Turizm', renk: '#A78BFA' },
+  OTHER:        { label: 'Diğer',  renk: '#94A3B8' },
 }
 
+const TABS = [
+  { key: 'ozet',    label: 'İlçe Özeti'    },
+  { key: 'mahalle', label: 'Mahalle'        },
+  { key: 'tesis',   label: 'Tesis Ağı'     },
+  { key: 'harita',  label: 'CBS Harita'    },
+  { key: 'natech',  label: 'NATECH'        },
+  { key: 'sendai',  label: 'Sendai Uyum'   },
+] as const
+type Tab = typeof TABS[number]['key']
+
+/* ══════════════════════════════════════════════════════════════
+   INLINE SVG İKONLAR
+══════════════════════════════════════════════════════════════ */
+function IcoShield()   { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> }
+function IcoRadar()    { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg> }
+function IcoPin()      { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> }
+function IcoBuilding() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 21V9"/></svg> }
+function IcoGrid()     { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> }
+function IcoBook()     { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> }
+
+const TAB_ICONS: Record<Tab, React.ReactNode> = {
+  ozet:    <IcoBuilding/>,
+  mahalle: <IcoPin/>,
+  tesis:   <IcoGrid/>,
+  harita:  <IcoPin/>,
+  natech:  <IcoRadar/>,
+  sendai:  <IcoShield/>,
+}
+
+/* ══════════════════════════════════════════════════════════════
+   YARDIMCI BİLEŞENLER
+══════════════════════════════════════════════════════════════ */
+function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return <div className={`bg-white border border-gray-200 rounded-xl shadow-sm ${className}`}>{children}</div>
+}
+
+function Spinner() {
+  return (
+    <div className="flex items-center gap-2 text-gray-400 text-sm">
+      <Loader2 className="w-4 h-4 animate-spin" />
+      <span>Yükleniyor…</span>
+    </div>
+  )
+}
+
+function SectionTitle({ icon, title }: { icon: React.ReactNode; title: string }) {
+  return (
+    <h3 className="text-gray-900 font-semibold mb-4 flex items-center gap-2 text-sm">
+      <span style={{ color: GOLD }}>{icon}</span>
+      {title}
+    </h3>
+  )
+}
+
+/* ── SVG Gauge (yarım daire, Recharts-free) */
+function URIGauge({ value, renk }: { value: number; renk: string }) {
+  const r = 72, cx = 100, cy = 98
+  const totalLen = Math.PI * r
+  const valLen   = (value / 100) * totalLen
+  return (
+    <div style={{ position: 'relative', width: 200, height: 110 }}>
+      <svg viewBox="0 0 200 110" width={200} height={110}>
+        <path d={`M ${cx - r},${cy} A ${r},${r} 0 0 1 ${cx + r},${cy}`}
+              fill="none" stroke="#F3F4F6" strokeWidth={18} strokeLinecap="round"/>
+        <path d={`M ${cx - r},${cy} A ${r},${r} 0 0 1 ${cx + r},${cy}`}
+              fill="none" stroke={renk} strokeWidth={18} strokeLinecap="round"
+              strokeDasharray={`${valLen.toFixed(1)} ${totalLen.toFixed(1)}`}/>
+        <text x={cx} y={cy - 10} textAnchor="middle" fontSize={30} fontWeight={800} fill={renk}>{value}</text>
+        <text x={cx} y={cy + 6}  textAnchor="middle" fontSize={10} fill="#9CA3AF">/ 100</text>
+      </svg>
+    </div>
+  )
+}
+
+/* ── SVG Donut */
+function SvgDonut({ slices, centerLbl }: {
+  slices: { name: string; value: number; fill: string }[]
+  centerLbl: string
+}) {
+  const total = slices.reduce((s, d) => s + d.value, 0) || 1
+  const cx = 100, cy = 100, ro = 80, ri = 50
+  let angle = -Math.PI / 2
+  const gap = 0.04
+  type DonutSlice = { name: string; value: number; fill: string; path: string }
+  const paths = slices.map(d => {
+    const sweep = (d.value / total) * Math.PI * 2 - gap
+    if (sweep <= 0) { angle += (d.value / total) * Math.PI * 2; return null }
+    const a1 = angle + gap / 2, a2 = a1 + sweep
+    const x1o = cx + ro * Math.cos(a1), y1o = cy + ro * Math.sin(a1)
+    const x2o = cx + ro * Math.cos(a2), y2o = cy + ro * Math.sin(a2)
+    const x1i = cx + ri * Math.cos(a2), y1i = cy + ri * Math.sin(a2)
+    const x2i = cx + ri * Math.cos(a1), y2i = cy + ri * Math.sin(a1)
+    const large = sweep > Math.PI ? 1 : 0
+    const path = `M${x1o.toFixed(1)},${y1o.toFixed(1)} A${ro},${ro} 0 ${large} 1 ${x2o.toFixed(1)},${y2o.toFixed(1)} L${x1i.toFixed(1)},${y1i.toFixed(1)} A${ri},${ri} 0 ${large} 0 ${x2i.toFixed(1)},${y2i.toFixed(1)} Z`
+    angle += (d.value / total) * Math.PI * 2
+    return { ...d, path }
+  }).filter(Boolean) as DonutSlice[]
+
+  return (
+    <div className="flex flex-col items-center">
+      <svg viewBox="0 0 200 200" width={200} height={200}>
+        {paths.map(s => <path key={s.name} d={s.path} fill={s.fill} opacity={0.9}/>)}
+        <text x={cx} y={cy - 8}  textAnchor="middle" fontSize={22} fontWeight={700} fill="#111827">{centerLbl}</text>
+        <text x={cx} y={cy + 12} textAnchor="middle" fontSize={11} fill="#9CA3AF">tesis</text>
+      </svg>
+      <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 mt-1">
+        {paths.map(s => (
+          <div key={s.name} className="flex items-center gap-1.5 text-xs text-gray-500">
+            <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: s.fill }}/>
+            {s.name} ({s.value})
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ── SVG Bar Chart (mahalle bazlı) */
+function SvgBarChart({ data }: { data: { label: string; value: number; fill: string }[] }) {
+  if (!data.length) return null
+  const W = 560, H = 200, ml = 36, mr = 16, mt = 20, mb = 44
+  const pw = W - ml - mr, ph = H - mt - mb
+  const maxVal = Math.max(...data.map(d => d.value), 1)
+  const slotW  = pw / data.length
+  const barW   = Math.min(slotW * 0.55, 40)
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: 'block' }}>
+      {/* Y grid */}
+      {[0, 1, 2, 3, 4, 5].map(v => {
+        const y = mt + ph - (v / 5) * ph
+        return (
+          <g key={v}>
+            <line x1={ml} y1={y} x2={ml + pw} y2={y} stroke="#F3F4F6" strokeWidth={1}/>
+            <text x={ml - 4} y={y + 4} textAnchor="end" fontSize={9} fill="#D1D5DB">{v}</text>
+          </g>
+        )
+      })}
+      {/* Axes */}
+      <line x1={ml} y1={mt} x2={ml} y2={mt + ph} stroke="#E5E7EB" strokeWidth={1}/>
+      <line x1={ml} y1={mt + ph} x2={ml + pw} y2={mt + ph} stroke="#E5E7EB" strokeWidth={1}/>
+      {/* Bars */}
+      {data.map((d, i) => {
+        const cx   = ml + (i + 0.5) * slotW
+        const barH = (d.value / maxVal) * ph
+        const x    = cx - barW / 2
+        const y    = mt + ph - barH
+        return (
+          <g key={d.label}>
+            <rect x={x} y={y} width={barW} height={barH} rx={3} fill={d.fill} opacity={0.85}/>
+            <text x={cx} y={y - 4} textAnchor="middle" fontSize={9} fill={d.fill} fontWeight={700}>
+              {d.value.toFixed(1)}
+            </text>
+            <text x={cx} y={mt + ph + 14} textAnchor="middle" fontSize={9} fill="#9CA3AF">
+              {d.label.length > 8 ? d.label.slice(0, 7) + '…' : d.label}
+            </text>
+          </g>
+        )
+      })}
+    </svg>
+  )
+}
+
+/* ── Riske göre renk */
+const hRenk = (h = 0) => h >= 4 ? '#EF4444' : h >= 3 ? '#F97316' : h >= 2 ? '#F59E0B' : '#22C55E'
+const hLabel = (h = 0) => h >= 4 ? 'KRİTİK' : h >= 3 ? 'YÜKSEK' : h >= 2 ? 'ORTA' : 'İYİ'
+const hBadgeCls = (h = 0) =>
+  h >= 4 ? 'text-red-600 bg-red-50 border-red-200' :
+  h >= 3 ? 'text-orange-600 bg-orange-50 border-orange-200' :
+  h >= 2 ? 'text-amber-600 bg-amber-50 border-amber-200' :
+           'text-emerald-600 bg-emerald-50 border-emerald-200'
+
+/* ══════════════════════════════════════════════════════════════
+   DYNAMIC IMPORT — CBS HARİTA
+══════════════════════════════════════════════════════════════ */
 const CBSHarita = dynamic(() => import('./CBSHarita'), {
   ssr: false,
   loading: () => (
@@ -72,188 +239,142 @@ const CBSHarita = dynamic(() => import('./CBSHarita'), {
   ),
 })
 
-// ─────────────────────────────────────────────────────────────
-const TENANT_ID = '11111111-1111-1111-1111-111111111111'
-const NAVY      = '#0A1628'
-const GOLD      = '#E8C97A'
-
-const MAHALLELER = [
-  { ad: 'Yakuplu',       nufus: 89420,  alan_km2: 8.2,  h: 82, f: 74, e: 38, uri: 28, risk: 'KRİTİK', tehlikeler: ['Deprem (MS-6.5+)', 'Endüstriyel Kaza (OSB)', 'Sel'],       tesisler: { okul: 12, hastane: 1, osb: 1, altyapi: 3 }, sendai: 'SF-3: Altyapı dayanıklılığı', natech: true,  natech_d: 2.4, not: 'Yakuplu OSB varlığı NATECH riskini kritik düzeye taşıyor. Domino etkisi modellemesi gerekli.' },
-  { ad: 'Kavaklı',       nufus: 42180,  alan_km2: 6.1,  h: 76, f: 68, e: 44, uri: 34, risk: 'YÜKSEK', tehlikeler: ['Sel / Taşkın', 'Deprem', 'Altyapı Çökmesi'],              tesisler: { okul: 8,  hastane: 0, osb: 0, altyapi: 2 }, sendai: 'SF-4: Erken uyarı sistemi',   natech: false, natech_d: 1.0, not: 'Dere yatağına yakın konut alanları. İBB yağmursuyu ıslahı tamamlandı — artık risk izleme aşamasında.' },
-  { ad: 'Gürpınar',      nufus: 38650,  alan_km2: 12.4, h: 88, f: 58, e: 62, uri: 38, risk: 'YÜKSEK', tehlikeler: ['Deprem (KAF Hattı)', 'Heyelan', 'Yangın'],                 tesisler: { okul: 6,  hastane: 0, osb: 0, altyapi: 4 }, sendai: 'SF-1: Risk yönetişimi',       natech: false, natech_d: 1.0, not: 'KAF hattına yakınlık birincil tehlike. KİPTAŞ kentsel dönüşüm projesi devam ediyor.' },
-  { ad: 'Adnan Kahveci', nufus: 124300, alan_km2: 4.8,  h: 42, f: 48, e: 88, uri: 71, risk: 'ORTA',   tehlikeler: ['Deprem', 'Kalabalık Yönetimi', 'Altyapı Yükü'],           tesisler: { okul: 22, hastane: 2, osb: 0, altyapi: 6 }, sendai: 'SF-2: Kapasite geliştirme',   natech: false, natech_d: 1.0, not: 'En kalabalık mahalle. Güçlü altyapı kapasitesi. Müdahale istasyonu koordinasyon merkezi olabilir.' },
-  { ad: 'Büyükşehir',    nufus: 31200,  alan_km2: 5.9,  h: 55, f: 62, e: 58, uri: 52, risk: 'ORTA',   tehlikeler: ['Deprem', 'Sel', 'Ulaşım Altyapısı'],                       tesisler: { okul: 9,  hastane: 1, osb: 0, altyapi: 3 }, sendai: 'SF-1: Afet risk azaltma',    natech: false, natech_d: 1.0, not: 'Karma kullanım alanı. Orta düzey risk profili.' },
-  { ad: 'Cumhuriyet',    nufus: 28400,  alan_km2: 3.2,  h: 48, f: 55, e: 72, uri: 62, risk: 'ORTA',   tehlikeler: ['Deprem', 'Yangın', 'Altyapı'],                             tesisler: { okul: 7,  hastane: 0, osb: 0, altyapi: 2 }, sendai: 'SF-1: Afet risk azaltma',    natech: false, natech_d: 1.0, not: 'Nispeten düşük risk. AFAD deposu burada — stratejik konum avantajı.' },
-]
-
-const RISK_BADGE: Record<string, string> = {
-  'KRİTİK': 'text-red-600 bg-red-50 border-red-200',
-  'YÜKSEK': 'text-orange-600 bg-orange-50 border-orange-200',
-  'ORTA':   'text-amber-600 bg-amber-50 border-amber-200',
-  'DÜŞÜK':  'text-emerald-600 bg-emerald-50 border-emerald-200',
+/* ══════════════════════════════════════════════════════════════
+   STATIK VERİ — Mahalle bağlamı + Sendai
+══════════════════════════════════════════════════════════════ */
+const MAHALLE_CONTEXT: Record<string, { nufus: number; natech: boolean; not: string; sendai: string }> = {
+  'Yakuplu':       { nufus: 89420,  natech: true,  sendai: 'SF-3', not: 'Yakuplu OSB varlığı NATECH riskini kritik düzeye taşıyor. Domino etkisi modellemesi gerekli.' },
+  'Kavaklı':       { nufus: 42180,  natech: false, sendai: 'SF-4', not: 'Dere yatağına yakın konut alanları. İBB yağmursuyu ıslahı tamamlandı.' },
+  'Gürpınar':      { nufus: 38650,  natech: false, sendai: 'SF-1', not: 'KAF hattına yakınlık birincil tehlike. KİPTAŞ dönüşümü devam ediyor.' },
+  'Adnan Kahveci': { nufus: 124300, natech: false, sendai: 'SF-2', not: 'En kalabalık mahalle. Müdahale istasyonu koordinasyon merkezi olabilir.' },
+  'Büyükşehir':    { nufus: 31200,  natech: false, sendai: 'SF-1', not: 'Karma kullanım alanı. Orta düzey risk profili.' },
+  'Cumhuriyet':    { nufus: 28400,  natech: false, sendai: 'SF-1', not: 'AFAD deposu burada — stratejik konum avantajı.' },
 }
 
-const RISK_CLASS_BADGE: Record<RiskClass, string> = {
-  CRITICAL:  'text-red-600 bg-red-50 border-red-200',
-  HIGH:      'text-orange-600 bg-orange-50 border-orange-200',
-  MEDIUM:    'text-amber-600 bg-amber-50 border-amber-200',
-  RESILIENT: 'text-emerald-600 bg-emerald-50 border-emerald-200',
-  EXEMPLARY: 'text-indigo-600 bg-indigo-50 border-indigo-200',
-}
-
-const TABS = [
-  { key: 'ozet',    label: 'İlçe Özeti'       },
-  { key: 'mahalle', label: 'Mahalle Analizi'   },
-  { key: 'tesis',   label: 'Tesis Ağı'         },
-  { key: 'harita',  label: 'CBS Harita'        },
-  { key: 'natech',  label: 'NATECH Senaryo'    },
-  { key: 'sendai',  label: 'Sendai Uyum'       },
-] as const
-type Tab = typeof TABS[number]['key']
-
-// ─── Gauge chart (yarım daire) ────────────────────────────────
-function URIGauge({ value, renk }: { value: number; renk: string }) {
-  const data = [
-    { value, fill: renk },
-    { value: 100 - value, fill: '#F3F4F6' },
-  ]
-  return (
-    <div style={{ position: 'relative', width: 200, height: 110 }}>
-      <PieChart width={200} height={130}>
-        <Pie
-          data={data} cx={100} cy={110}
-          startAngle={180} endAngle={0}
-          innerRadius={60} outerRadius={85}
-          paddingAngle={0} dataKey="value" stroke="none"
-          isAnimationActive={false}
-        >
-          {data.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
-        </Pie>
-      </PieChart>
-      <div style={{
-        position: 'absolute', bottom: 8, left: 0, right: 0,
-        display: 'flex', flexDirection: 'column', alignItems: 'center',
-      }}>
-        <span style={{ fontSize: 32, fontWeight: 800, color: renk, lineHeight: 1 }}>{value}</span>
-        <span style={{ fontSize: 10, color: '#6B7280', marginTop: 2 }}>/ 100</span>
-      </div>
-    </div>
-  )
-}
-
-// ─── Yardımcı ─────────────────────────────────────────────────
-function Spinner() {
-  return (
-    <div className="flex items-center gap-2 text-gray-400 text-sm">
-      <Loader2 className="w-4 h-4 animate-spin" />
-      <span>Yükleniyor…</span>
-    </div>
-  )
-}
-function ApiError({ msg }: { msg: string }) {
-  return (
-    <div className="flex items-center gap-2 text-red-500 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-      <WifiOff className="w-4 h-4 flex-shrink-0" />
-      <span>API hatası: {msg}</span>
-    </div>
-  )
-}
-function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div className={`bg-white border border-gray-200 rounded-xl shadow-sm ${className}`}>
-      {children}
-    </div>
-  )
-}
-function SectionTitle({ icon: Icon, title }: { icon: React.ElementType; title: string }) {
-  return (
-    <h3 className="text-gray-900 font-semibold mb-5 flex items-center gap-2 text-sm">
-      <Icon className="w-4 h-4" style={{ color: GOLD }} />
-      {title}
-    </h3>
-  )
-}
-
-function facilityRiskBadge(f: OmniFacility) {
-  const age = f.building_age ?? 20
-  const sz  = f.seismic_zone ?? 2
-  if (sz === 1 && age > 35) return { label: 'YÜKSEK', cls: RISK_BADGE['YÜKSEK'] }
-  if (sz <= 2 && age > 20)  return { label: 'ORTA',   cls: RISK_BADGE['ORTA']   }
-  return { label: 'DÜŞÜK', cls: RISK_BADGE['DÜŞÜK'] }
-}
-
-// ─────────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════════════════════
+   ANA BİLEŞEN
+══════════════════════════════════════════════════════════════ */
 export default function BeylikduzuKomuta() {
-  const [tab, setTab]         = useState<Tab>('ozet')
-  const [secili, setSecili]   = useState(MAHALLELER[0])
+  const [tab,        setTab]        = useState<Tab>('ozet')
+  const [facilities, setFacilities] = useState<Facility[]>([])
+  const [loading,    setLoading]    = useState(true)
+  const [hata,       setHata]       = useState<string | null>(null)
+
+  /* Tesis Ağı UI */
+  const [search,       setSearch]       = useState('')
+  const [sektorFiltre, setSektorFiltre] = useState<Sektor | 'hepsi'>('hepsi')
+  const [sayfa,        setSayfa]        = useState(0)
+  const PAGE_SIZE = 20
+
+  /* NATECH senaryo */
   const [senaryo, setSenaryo] = useState('deprem')
-  const [siddet, setSiddet]   = useState(6.5)
-  const [basvurular, setBasvurular] = useState<FormBasvuru[]>([])
-  const [basvuruLoading, setBasvuruLoading] = useState(true)
+  const [siddet,  setSiddet]  = useState(6.5)
 
-  const { data: facilities, loading: facLoading, error: facError } = useOmniFacilities(TENANT_ID)
-  const { data: portfolio,  loading: portLoading                  } = usePortfolioSummary(TENANT_ID)
-
+  /* ── Supabase veri çekme */
   useEffect(() => {
-    supabase
-      .from('form_cevaplari')
-      .select('id,birim_kodu,sektor,dayaniklilik_skoru,h_skoru,f_skoru,e_skoru,durum,dolduran_email,gonderilme,puanlar')
-      .eq('durum', 'gonderildi')
-      .order('gonderilme', { ascending: false })
-      .then(({ data }) => {
-        setBasvurular((data as FormBasvuru[]) ?? [])
-        setBasvuruLoading(false)
-      })
+    let iptal = false
+    async function cek() {
+      setLoading(true); setHata(null)
+      const { data, error } = await sbBD
+        .from('facilities')
+        .select('id,name,sector,employee_count,building_age,operates_24h,extra_data')
+        .eq('tenant_id', TENANT_BD)
+        .eq('is_active', true)
+        .limit(1000)
+      if (iptal) return
+      if (error) { setHata(error.message); setLoading(false); return }
+      setFacilities((data ?? []) as Facility[])
+      setLoading(false)
+    }
+    cek()
+    return () => { iptal = true }
   }, [])
 
-  const ilceUriStatic  = Math.round(MAHALLELER.reduce((a, m) => a + m.uri, 0) / MAHALLELER.length)
-  const kritikStatic   = MAHALLELER.filter(m => m.risk === 'KRİTİK' || m.risk === 'YÜKSEK').length
-  const toplamNufus    = MAHALLELER.reduce((a, m) => a + m.nufus, 0)
-  const ortH           = Math.round(MAHALLELER.reduce((a, m) => a + m.h, 0) / MAHALLELER.length)
-  const ortF           = Math.round(MAHALLELER.reduce((a, m) => a + m.f, 0) / MAHALLELER.length)
-  const ortE           = Math.round(MAHALLELER.reduce((a, m) => a + m.e, 0) / MAHALLELER.length)
+  /* ── KPI hesaplama */
+  const kpi = useMemo(() => {
+    const toplam  = facilities.length
+    const kritik  = facilities.filter(f => (f.extra_data?.H_score ?? 0) >= 4).length
+    const hazmat  = facilities.filter(f => f.extra_data?.hazmat_flag).length
+    const h24     = facilities.filter(f => f.operates_24h).length
+    const avgH    = toplam ? facilities.reduce((s, f) => s + (f.extra_data?.H_score ?? 0), 0) / toplam : 2.5
+    const uri     = Math.max(0, Math.min(100, Math.round(100 - avgH * 20)))
+    const uriRenk = uri < 40 ? '#EF4444' : uri < 60 ? '#F97316' : uri < 75 ? '#F59E0B' : '#22C55E'
+    return { toplam, kritik, hazmat, h24, uri, uriRenk }
+  }, [facilities])
 
-  const ilceUri       = portfolio ? Math.round(portfolio.avg_uri ?? ilceUriStatic) : ilceUriStatic
-  const toplamTesis   = portfolio?.total ?? facilities?.length ?? 0
-  const kritikTesis   = portfolio?.critical_count ?? 0
-  const toplamPersonel = facilities?.reduce((a, f) => a + (f.employee_count ?? 0), 0) ?? 0
+  /* ── Donut dilimleri (canlı veriden) */
+  const donutSlices = useMemo(() => {
+    if (!facilities.length) return [
+      { name: 'KRİTİK',    value: 25, fill: '#EF4444' },
+      { name: 'YÜKSEK',    value: 35, fill: '#F97316' },
+      { name: 'ORTA',      value: 28, fill: '#F59E0B' },
+      { name: 'DİRENÇLİ', value: 12, fill: '#22C55E' },
+    ]
+    const kritik   = facilities.filter(f => (f.extra_data?.H_score ?? 0) >= 4).length
+    const yuksek   = facilities.filter(f => { const h = f.extra_data?.H_score ?? 0; return h >= 3 && h < 4 }).length
+    const orta     = facilities.filter(f => { const h = f.extra_data?.H_score ?? 0; return h >= 2 && h < 3 }).length
+    const direncli = Math.max(0, facilities.length - kritik - yuksek - orta)
+    return [
+      { name: 'KRİTİK',    value: kritik,   fill: '#EF4444' },
+      { name: 'YÜKSEK',    value: yuksek,   fill: '#F97316' },
+      { name: 'ORTA',      value: orta,     fill: '#F59E0B' },
+      { name: 'DİRENÇLİ', value: direncli, fill: '#22C55E' },
+    ].filter(s => s.value > 0)
+  }, [facilities])
 
-  // Bu ay başvuru sayısı
-  const ayBasiISO = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
-  const buAyBasvuru = basvurular.filter(b => (b.gonderilme ?? '') >= ayBasiISO).length
+  /* ── Mahalle özet verisi */
+  const mahalleData = useMemo(() => {
+    const map = new Map<string, { list: Facility[] }>()
+    for (const f of facilities) {
+      const nb = f.extra_data?.neighborhood ?? 'Belirsiz'
+      if (!map.has(nb)) map.set(nb, { list: [] })
+      map.get(nb)!.list.push(f)
+    }
+    return [...map.entries()].map(([nb, { list }]) => {
+      const avgH = list.length ? list.reduce((s, f) => s + (f.extra_data?.H_score ?? 0), 0) / list.length : 0
+      const sektorSay: Partial<Record<Sektor, number>> = {}
+      for (const f of list) sektorSay[f.sector] = (sektorSay[f.sector] ?? 0) + 1
+      const topSector = (Object.entries(sektorSay) as [Sektor, number][])
+        .sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'OTHER'
+      return { nb, sayi: list.length, avgH: parseFloat(avgH.toFixed(1)), topSector }
+    }).sort((a, b) => b.avgH - a.avgH).slice(0, 12)
+  }, [facilities])
 
-  const natechEtki    = senaryo === 'deprem' ? Math.min(100, Math.round((siddet - 5) * 28 * 1.4)) : senaryo === 'yangin' ? 45 : 38
-  const etkilenenNufus = Math.round(toplamNufus * (natechEtki / 100) * 0.6)
+  const [secilenMahalle, setSecilenMahalle] = useState<string | null>(null)
 
-  // Risk sınıfı renk
-  const uriRenk = ilceUri < 40 ? '#EF4444' : ilceUri < 60 ? '#F97316' : ilceUri < 75 ? '#F59E0B' : '#22C55E'
+  /* ── Tesis Ağı filtre + sayfalama */
+  const filteredFacilities = useMemo(() => {
+    const q = search.toLowerCase()
+    return facilities.filter(f =>
+      (sektorFiltre === 'hepsi' || f.sector === sektorFiltre) &&
+      (q === '' || f.name.toLowerCase().includes(q) || (f.extra_data?.neighborhood ?? '').toLowerCase().includes(q))
+    )
+  }, [facilities, search, sektorFiltre])
 
-  // Recharts: mahalle URI bar data
-  const mahalleBarData = MAHALLELER.map(m => ({
-    ad: m.ad, URI: m.uri,
-    fill: m.uri < 40 ? '#EF4444' : m.uri < 60 ? '#F97316' : m.uri < 75 ? '#F59E0B' : '#22C55E',
-  }))
+  const pagedFacilities = filteredFacilities.slice(sayfa * PAGE_SIZE, (sayfa + 1) * PAGE_SIZE)
+  const totalPages      = Math.ceil(filteredFacilities.length / PAGE_SIZE)
 
-  // Recharts: risk sınıfı donut (portfolio veya statik)
-  const riskDonutData = portfolio
-    ? (Object.entries(portfolio.by_class) as [RiskClass, number][])
-        .filter(([, cnt]) => cnt > 0)
-        .map(([cls, cnt]) => ({ name: RISK_CLASS_TR[cls], value: cnt, fill: RISK_CLASS_COLOR[cls] }))
-    : [
-        { name: 'Kritik',   value: 2, fill: '#EF4444' },
-        { name: 'Yüksek',  value: 2, fill: '#F97316' },
-        { name: 'Orta',    value: 2, fill: '#F59E0B' },
-      ]
+  /* ── NATECH tesisleri */
+  const natechFacilities = useMemo(() =>
+    facilities.filter(f => f.extra_data?.hazmat_flag).sort((a, b) =>
+      ((b.extra_data?.natech_risk ?? 0) - (a.extra_data?.natech_risk ?? 0))),
+    [facilities])
 
+  const toplamNufus = 354150
+  const natechEtki  = senaryo === 'deprem' ? Math.min(100, Math.round((siddet - 5) * 28 * 1.4)) : senaryo === 'yangin' ? 45 : 38
+
+  /* ══════════════════════════════════════════════════════════
+     RENDER
+  ══════════════════════════════════════════════════════════ */
   return (
     <div className="min-h-screen" style={{ background: '#F8F9FA', fontFamily: "'DM Sans', sans-serif" }}>
 
-      {/* ── HEADER ── */}
+      {/* ── HEADER */}
       <div style={{ background: NAVY }} className="px-8 py-5">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div style={{ background: `${GOLD}20`, border: `1px solid ${GOLD}40` }} className="p-2.5 rounded-xl">
-              <Shield className="w-6 h-6" style={{ color: GOLD }} />
+              <IcoShield/>
             </div>
             <div>
               <h1 className="text-xl font-bold text-white">Beylikdüzü Belediyesi</h1>
@@ -263,129 +384,89 @@ export default function BeylikduzuKomuta() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            {/* Supabase bağlantı göstergesi */}
             <div style={{
-              background: facLoading || portLoading ? 'rgba(148,163,184,.1)' : facError ? 'rgba(239,68,68,.1)' : 'rgba(34,197,94,.1)',
-              border: `1px solid ${facLoading || portLoading ? 'rgba(148,163,184,.2)' : facError ? 'rgba(239,68,68,.2)' : 'rgba(34,197,94,.25)'}`,
-              color: facLoading || portLoading ? '#94A3B8' : facError ? '#F87171' : '#4ADE80',
+              background: loading ? 'rgba(148,163,184,.1)' : hata ? 'rgba(239,68,68,.1)' : 'rgba(34,197,94,.1)',
+              border: `1px solid ${loading ? 'rgba(148,163,184,.2)' : hata ? 'rgba(239,68,68,.2)' : 'rgba(34,197,94,.25)'}`,
+              color: loading ? '#94A3B8' : hata ? '#F87171' : '#4ADE80',
             }} className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg">
-              <span className={`w-1.5 h-1.5 rounded-full ${facLoading || portLoading ? 'bg-slate-400 animate-pulse' : facError ? 'bg-red-400' : 'bg-emerald-400'}`} />
-              {facLoading || portLoading ? 'Bağlanıyor…' : facError ? 'API bağlanamadı' : `Railway · ${toplamTesis} tesis`}
+              <span className={`w-1.5 h-1.5 rounded-full ${loading ? 'bg-slate-400 animate-pulse' : hata ? 'bg-red-400' : 'bg-emerald-400'}`}/>
+              {loading ? 'Bağlanıyor…' : hata ? 'Supabase hatası' : `Supabase · ${kpi.toplam} tesis`}
             </div>
-            <div className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg" style={{ background: `${GOLD}15`, border: `1px solid ${GOLD}30`, color: GOLD }}>
-              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: GOLD }} />
+            <div className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg"
+                 style={{ background: `${GOLD}15`, border: `1px solid ${GOLD}30`, color: GOLD }}>
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: GOLD }}/>
               Canlı · {new Date().toLocaleDateString('tr-TR')}
             </div>
-            <a href="/form/basvuru"
-              style={{ background: GOLD, color: '#0A1628' }}
-              className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap">
-              <Zap className="w-3.5 h-3.5" />
-              Risk Formu Doldurun
-            </a>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-8 py-6">
 
-        {/* ── KPI KARTLARI ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-          {/* URI */}
-          <Card className="p-5">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">İlçe URI Skoru</p>
-            {portLoading
-              ? <div className="h-9 w-24 bg-gray-100 rounded animate-pulse mt-1" />
-              : <p className="text-3xl font-bold mt-1" style={{ color: uriRenk }}>{ilceUri}<span className="text-lg text-gray-300">/100</span></p>
-            }
-            <p className="text-xs text-gray-400 mt-2">{portfolio ? 'Railway · HFER-720' : 'Mahalle analizi'}</p>
-          </Card>
-
-          {/* Kritik */}
-          <Card className="p-5">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Kritik Tesis</p>
-            {portLoading
-              ? <div className="h-9 w-16 bg-gray-100 rounded animate-pulse mt-1" />
-              : <p className="text-3xl font-bold text-red-500 mt-1">{portfolio ? kritikTesis : kritikStatic}<span className="text-lg text-gray-300">/{portfolio ? toplamTesis : MAHALLELER.length}</span></p>
-            }
-            <p className="text-xs text-gray-400 mt-2">{portfolio ? 'CRITICAL sınıfı · Railway' : 'Kritik + Yüksek riskli'}</p>
-          </Card>
-
-          {/* Personel/Nüfus */}
-          <Card className="p-5">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">{facilities ? 'Toplam Personel' : 'Toplam Nüfus'}</p>
-            {facLoading
-              ? <div className="h-9 w-20 bg-gray-100 rounded animate-pulse mt-1" />
-              : <p className="text-3xl font-bold text-gray-900 mt-1">{facilities ? toplamPersonel.toLocaleString('tr-TR') : `${(toplamNufus / 1000).toFixed(0)}K`}</p>
-            }
-            <p className="text-xs text-gray-400 mt-2">{facilities ? `${toplamTesis} tesis · Railway` : 'Risk altındaki nüfus'}</p>
-          </Card>
-
-          {/* NATECH */}
-          <Card className="p-5">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">NATECH Tesisi</p>
-            <p className="text-3xl font-bold text-orange-500 mt-1">1 OSB</p>
-            <p className="text-xs text-gray-400 mt-2">Yakuplu · D katsayısı 2.4</p>
-          </Card>
-
-          {/* Bu Ay Başvuru */}
-          <Card className="p-5">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Bu Ay Başvuru</p>
-            {basvuruLoading
-              ? <div className="h-9 w-16 bg-gray-100 rounded animate-pulse mt-1" />
-              : <p className="text-3xl font-bold mt-1" style={{ color: GOLD }}>{buAyBasvuru}<span className="text-lg text-gray-300">/{basvurular.length}</span></p>
-            }
-            <p className="text-xs text-gray-400 mt-2">Toplam gönderildi</p>
-          </Card>
+        {/* ── KPI KARTLARI */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          {[
+            { lbl: 'Toplam Tesis',   val: kpi.toplam, renk: '#60A5FA', sub: 'Supabase · canlı'          },
+            { lbl: 'Kritik (H ≥ 4)', val: kpi.kritik, renk: '#EF4444', sub: 'Yüksek risk tesisi'        },
+            { lbl: 'Hazmat Tesisi',  val: kpi.hazmat, renk: '#F97316', sub: 'NATECH riski taşıyor'      },
+            { lbl: '24h Operasyon',  val: kpi.h24,    renk: '#F59E0B', sub: 'Sürekli çalışan tesis'     },
+          ].map(k => (
+            <Card key={k.lbl} className="p-5">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">{k.lbl}</p>
+              {loading
+                ? <div className="h-9 w-20 bg-gray-100 rounded animate-pulse mt-1"/>
+                : <p className="text-3xl font-bold mt-1 font-mono" style={{ color: k.renk }}>{k.val.toLocaleString('tr-TR')}</p>
+              }
+              <p className="text-xs text-gray-400 mt-2">{k.sub}</p>
+            </Card>
+          ))}
         </div>
 
-        {/* ── TABS ── */}
+        {/* ── TABS */}
         <div className="flex gap-0 mb-6 border-b border-gray-200">
           {TABS.map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
-              className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${
-                tab === t.key
-                  ? 'border-[#E8C97A] text-[#0A1628]'
-                  : 'border-transparent text-gray-400 hover:text-gray-700'
+              className={`flex items-center gap-1.5 px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${
+                tab === t.key ? 'border-[#E8C97A] text-[#0A1628]' : 'border-transparent text-gray-400 hover:text-gray-700'
               }`}>
+              <span className={tab === t.key ? '' : 'opacity-50'}>{TAB_ICONS[t.key]}</span>
               {t.label}
-              {t.key === 'tesis' && toplamTesis > 0 && (
-                <span className="ml-1.5 text-[10px] bg-blue-50 text-blue-600 border border-blue-200 px-1.5 py-0.5 rounded-full">
-                  {toplamTesis}
+              {t.key === 'tesis' && kpi.toplam > 0 && (
+                <span className="ml-0.5 text-[10px] bg-blue-50 text-blue-600 border border-blue-200 px-1.5 py-0.5 rounded-full">
+                  {kpi.toplam}
                 </span>
               )}
             </button>
           ))}
         </div>
 
-        {/* ══════════════════════════════════════════════════════
+        {/* ════════════════════════════════════════════════════
             İLÇE ÖZETİ
-        ══════════════════════════════════════════════════════ */}
+        ════════════════════════════════════════════════════ */}
         {tab === 'ozet' && (
           <div className="space-y-5">
-
-            {/* Üst satır: Gauge + HFE bileşen + Donut */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
               {/* URI Gauge */}
               <Card className="p-6 flex flex-col items-center justify-center">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">İlçe URI Skoru</p>
-                <URIGauge value={ilceUri} renk={uriRenk} />
+                {loading ? <div className="h-24 w-36 bg-gray-100 rounded animate-pulse"/> : <URIGauge value={kpi.uri} renk={kpi.uriRenk}/>}
                 <div className="mt-3 text-center">
-                  <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${
-                    ilceUri < 40 ? RISK_BADGE['KRİTİK'] : ilceUri < 60 ? RISK_BADGE['YÜKSEK'] : ilceUri < 75 ? RISK_BADGE['ORTA'] : RISK_BADGE['DÜŞÜK']
-                  }`}>
-                    {ilceUri < 40 ? 'KRİTİK' : ilceUri < 60 ? 'YÜKSEK' : ilceUri < 75 ? 'ORTA' : 'İYİ'}
+                  <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${hBadgeCls(kpi.uri < 40 ? 5 : kpi.uri < 60 ? 3.5 : kpi.uri < 75 ? 2.5 : 1)}`}>
+                    {kpi.uri < 40 ? 'KRİTİK' : kpi.uri < 60 ? 'YÜKSEK' : kpi.uri < 75 ? 'ORTA' : 'İYİ'}
                   </span>
                 </div>
-                <p className="text-xs text-gray-400 mt-3 text-center">HFER-720 · İTÜ AYM validasyonlu</p>
+                <p className="text-xs text-gray-400 mt-3 text-center">HFER-720 · H skoru ortalamasından</p>
               </Card>
 
               {/* HFE Bileşenler */}
               <Card className="p-6">
-                <SectionTitle icon={Activity} title="HFE Bileşen Analizi" />
+                <SectionTitle icon={<IcoRadar/>} title="HFE Bileşen Analizi"/>
                 {[
-                  { label: 'H — Tehlike Yoğunluğu', val: ortH, renk: '#EF4444', not: 'Düşük = iyi' },
-                  { label: 'F — Kırılganlık',        val: ortF, renk: '#F97316', not: 'Düşük = iyi' },
-                  { label: 'E — Kapasite',            val: ortE, renk: '#22C55E', not: 'Yüksek = iyi' },
+                  { label: 'H — Tehlike Yoğunluğu', val: loading ? 0 : parseFloat((facilities.reduce((s, f) => s + (f.extra_data?.H_score ?? 0), 0) / Math.max(facilities.length, 1) * 20).toFixed(0)), renk: '#EF4444', not: 'Düşük = iyi' },
+                  { label: 'F — Kırılganlık',        val: 62, renk: '#F97316', not: 'Statik' },
+                  { label: 'E — Kapasite',            val: 58, renk: '#22C55E', not: 'Statik' },
                 ].map(item => (
                   <div key={item.label} className="mb-4">
                     <div className="flex justify-between text-xs mb-1.5">
@@ -393,7 +474,7 @@ export default function BeylikduzuKomuta() {
                       <span className="text-gray-800 font-mono font-semibold">{item.val} <span className="text-gray-300">({item.not})</span></span>
                     </div>
                     <div className="h-1.5 bg-gray-100 rounded-full">
-                      <div className="h-1.5 rounded-full transition-all" style={{ width: `${item.val}%`, background: item.renk }} />
+                      <div className="h-1.5 rounded-full transition-all" style={{ width: `${item.val}%`, background: item.renk }}/>
                     </div>
                   </div>
                 ))}
@@ -402,65 +483,28 @@ export default function BeylikduzuKomuta() {
                 </div>
               </Card>
 
-              {/* Risk Dağılımı Donut */}
+              {/* Risk Sınıfı Donut */}
               <Card className="p-6">
-                <SectionTitle icon={TrendingUp} title="Risk Sınıf Dağılımı" />
-                {(() => {
-                  const slices = [
-                    { name: 'KRİTİK',   value: 25, fill: '#EF4444' },
-                    { name: 'YÜKSEK',   value: 35, fill: '#F97316' },
-                    { name: 'ORTA',     value: 28, fill: '#F59E0B' },
-                    { name: 'DİRENÇLİ',value: 12, fill: '#22C55E' },
-                  ]
-                  const cx = 100, cy = 100, ro = 80, ri = 50
-                  const total = slices.reduce((s, d) => s + d.value, 0)
-                  let angle = -Math.PI / 2
-                  const gap  = 0.03  // radians gap between slices
-                  const paths = slices.map(d => {
-                    const sweep = (d.value / total) * Math.PI * 2 - gap
-                    const a1 = angle + gap / 2, a2 = a1 + sweep
-                    const x1o = cx + ro * Math.cos(a1), y1o = cy + ro * Math.sin(a1)
-                    const x2o = cx + ro * Math.cos(a2), y2o = cy + ro * Math.sin(a2)
-                    const x1i = cx + ri * Math.cos(a2), y1i = cy + ri * Math.sin(a2)
-                    const x2i = cx + ri * Math.cos(a1), y2i = cy + ri * Math.sin(a1)
-                    const large = sweep > Math.PI ? 1 : 0
-                    const path = `M${x1o.toFixed(2)},${y1o.toFixed(2)} A${ro},${ro} 0 ${large} 1 ${x2o.toFixed(2)},${y2o.toFixed(2)} L${x1i.toFixed(2)},${y1i.toFixed(2)} A${ri},${ri} 0 ${large} 0 ${x2i.toFixed(2)},${y2i.toFixed(2)} Z`
-                    angle += (d.value / total) * Math.PI * 2
-                    return { ...d, path }
-                  })
-                  return (
-                    <div className="flex flex-col items-center">
-                      <svg viewBox="0 0 200 200" width={200} height={200}>
-                        {paths.map(s => <path key={s.name} d={s.path} fill={s.fill} opacity={0.9}/>)}
-                        <text x={cx} y={cy - 6} textAnchor="middle" fontSize={22} fontWeight={700} fill="#111827">100</text>
-                        <text x={cx} y={cy + 14} textAnchor="middle" fontSize={11} fill="#9CA3AF">tesis</text>
-                      </svg>
-                      <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 mt-2">
-                        {paths.map(s => (
-                          <div key={s.name} className="flex items-center gap-1.5 text-xs text-gray-500">
-                            <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: s.fill }}/>
-                            {s.name} ({s.value}%)
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                })()}
+                <SectionTitle icon={<IcoShield/>} title="Risk Sınıf Dağılımı"/>
+                {loading
+                  ? <div className="h-48 bg-gray-50 rounded-lg animate-pulse"/>
+                  : <SvgDonut slices={donutSlices} centerLbl={String(kpi.toplam || '—')}/>
+                }
               </Card>
             </div>
 
-            {/* Alt satır: Aksiyon planı + Kapasite */}
+            {/* Aksiyon Planı + Kapasite */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               <Card className="p-6">
-                <SectionTitle icon={AlertTriangle} title="Öncelikli Aksiyon Planı" />
+                <SectionTitle icon={<AlertTriangle className="w-4 h-4"/>} title="Öncelikli Aksiyon Planı"/>
                 {[
-                  { baslik: 'Yakuplu OSB — NATECH Planı',     acil: true,  icerik: 'RAPID-N protokolü uygulanmalı. Komşu tesis bağımlılık haritası ve domino zinciri analizi gerekli.', badge: 'Acil' },
-                  { baslik: 'Kavaklı — Sel Erken Uyarı',      acil: true,  icerik: 'Meteoroloji API entegrasyonu + SMS/siren sistemi. İBB ıslah sonrası izleme kritik.',              badge: 'Acil' },
-                  { baslik: 'Gürpınar — KAF Hattı Planı',     acil: false, icerik: 'Zemin sıvılaşma etüdü. KİPTAŞ dönüşümü hızlandırılmalı. Heyelan risk haritası çıkarılmalı.',     badge: 'Planla' },
-                  { baslik: 'İlçe ISO 22301 İş Sürekliliği',  acil: false, icerik: 'Belediye kritik hizmetleri için iş sürekliliği planı. Uluslararası fon başvurusu için zorunlu.',  badge: 'Planla' },
+                  { baslik: 'Yakuplu OSB — NATECH Planı',    acil: true,  icerik: 'RAPID-N protokolü uygulanmalı. Komşu tesis bağımlılık haritası ve domino zinciri analizi gerekli.', badge: 'Acil'   },
+                  { baslik: 'Kavaklı — Sel Erken Uyarı',     acil: true,  icerik: 'Meteoroloji API entegrasyonu + SMS/siren sistemi. İBB ıslah sonrası izleme kritik.',              badge: 'Acil'   },
+                  { baslik: 'Gürpınar — KAF Hattı Planı',    acil: false, icerik: 'Zemin sıvılaşma etüdü. KİPTAŞ dönüşümü hızlandırılmalı. Heyelan risk haritası çıkarılmalı.',     badge: 'Planla' },
+                  { baslik: 'İlçe ISO 22301 İş Sürekliliği', acil: false, icerik: 'Belediye kritik hizmetleri için iş sürekliliği planı. Uluslararası fon başvurusu için zorunlu.',  badge: 'Planla' },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-3 mb-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-                    <div className={`w-1 rounded-full flex-shrink-0 my-0.5 ${item.acil ? 'bg-red-400' : 'bg-amber-400'}`} />
+                    <div className={`w-1 rounded-full flex-shrink-0 my-0.5 ${item.acil ? 'bg-red-400' : 'bg-amber-400'}`}/>
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-0.5">
                         <p className="text-sm font-medium text-gray-800">{item.baslik}</p>
@@ -473,7 +517,7 @@ export default function BeylikduzuKomuta() {
               </Card>
 
               <Card className="p-6">
-                <SectionTitle icon={Users} title="NEFES Birliği Kapasitesi" />
+                <SectionTitle icon={<IcoGrid/>} title="NEFES Birliği Kapasitesi"/>
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   {[
                     { label: 'Gönüllü',            val: '992',    ikon: '👥' },
@@ -497,432 +541,324 @@ export default function BeylikduzuKomuta() {
           </div>
         )}
 
-        {/* ══════════════════════════════════════════════════════
+        {/* ════════════════════════════════════════════════════
             MAHALLE ANALİZİ
-        ══════════════════════════════════════════════════════ */}
+        ════════════════════════════════════════════════════ */}
         {tab === 'mahalle' && (
           <div className="space-y-5">
-            {/* URI Bar Chart */}
             <Card className="p-6">
-              <SectionTitle icon={Activity} title="Mahalle Bazlı URI Dayanıklılık Skoru" />
-              <div style={{ height: 300 }}>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={mahalleBarData} margin={{ top: 4, right: 16, left: 0, bottom: 4 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
-                    <XAxis dataKey="ad" tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
-                    <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
-                    <Tooltip
-                      formatter={(v) => [`${v}`, 'URI Skoru']}
-                      contentStyle={{ borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
-                    />
-                    <Bar dataKey="URI" radius={[4, 4, 0, 0]} isAnimationActive={false}>
-                      {mahalleBarData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <SectionTitle icon={<IcoPin/>} title="Mahalle Bazlı Ortalama H Skoru (Supabase)"/>
+              {loading ? (
+                <div className="h-48 bg-gray-50 rounded-lg animate-pulse"/>
+              ) : mahalleData.length === 0 ? (
+                <p className="text-sm text-gray-400 text-center py-8">Mahalle verisi yüklenemedi.</p>
+              ) : (
+                <SvgBarChart
+                  data={mahalleData.map(m => ({
+                    label: m.nb,
+                    value: m.avgH,
+                    fill:  hRenk(m.avgH),
+                  }))}
+                />
+              )}
             </Card>
 
-            {/* Liste + Detay */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-              <div className="space-y-2">
-                {MAHALLELER.map(m => (
-                  <button key={m.ad} onClick={() => setSecili(m)}
-                    className={`w-full text-left p-4 rounded-xl border transition-all ${
-                      secili.ad === m.ad
-                        ? 'bg-white border-gray-300 shadow-md'
-                        : 'bg-white border-gray-200 hover:border-gray-300 shadow-sm'
-                    }`}>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-3.5 h-3.5 text-gray-400" />
-                        <span className="text-gray-900 text-sm font-medium">{m.ad}</span>
-                        {m.natech && <span className="text-xs bg-orange-50 border border-orange-200 text-orange-600 px-1.5 py-0.5 rounded">NATECH</span>}
-                      </div>
-                      <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${RISK_BADGE[m.risk]}`}>{m.risk}</span>
-                    </div>
-                    <div className="flex gap-4 mt-1.5 ml-5">
-                      <span className="text-xs text-gray-400">URI: <span className="text-gray-800 font-mono font-semibold">{m.uri}</span></span>
-                      <span className="text-xs text-gray-400">{(m.nufus / 1000).toFixed(0)}K kişi</span>
-                    </div>
-                  </button>
-                ))}
+            <Card>
+              <div className="p-4 border-b border-gray-100">
+                <h3 className="text-sm font-semibold text-gray-900">Mahalle Risk Tablosu</h3>
               </div>
-
-              <div className="lg:col-span-2 space-y-4">
-                <Card className="p-6">
-                  <div className="flex items-center justify-between mb-5">
-                    <h3 className="text-xl font-bold text-gray-900">{secili.ad} Mahallesi</h3>
-                    <div className="flex items-center gap-2">
-                      {secili.natech && <span className="text-xs bg-orange-50 border border-orange-200 text-orange-600 px-2 py-1 rounded-full">⚠ NATECH D={secili.natech_d}</span>}
-                      <span className={`text-sm px-3 py-1 rounded-full border font-medium ${RISK_BADGE[secili.risk]}`}>{secili.risk}</span>
+              <div className="divide-y divide-gray-50">
+                {/* Başlık */}
+                <div className="hidden lg:grid grid-cols-[2fr_1fr_1fr_1fr_auto] px-4 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                  <span>Mahalle</span><span>Tesis</span><span>Ort. H</span><span>Risk</span><span>Sektör</span>
+                </div>
+                {loading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="px-4 py-3 animate-pulse">
+                      <div className="h-4 bg-gray-100 rounded w-1/3"/>
                     </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-3 mb-5">
-                    {[
-                      { label: 'H Tehlike',     val: secili.h, renk: '#EF4444' },
-                      { label: 'F Kırılganlık', val: secili.f, renk: '#F97316' },
-                      { label: 'E Kapasite',    val: secili.e, renk: '#22C55E' },
-                    ].map(item => (
-                      <div key={item.label} className="bg-gray-50 rounded-lg p-3 text-center border border-gray-100">
-                        <p className="text-2xl font-bold" style={{ color: item.renk }}>{item.val}</p>
-                        <p className="text-xs text-gray-400 mt-1">{item.label}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mb-4">
-                    <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">Tespit Edilen Tehlikeler</p>
-                    <div className="flex flex-wrap gap-2">
-                      {secili.tehlikeler.map(t => (
-                        <span key={t} className="text-xs bg-gray-100 border border-gray-200 text-gray-600 px-3 py-1 rounded-full">{t}</span>
-                      ))}
+                  ))
+                ) : mahalleData.map(m => {
+                  const aktif = secilenMahalle === m.nb
+                  const ctx   = MAHALLE_CONTEXT[m.nb]
+                  return (
+                    <div key={m.nb}>
+                      <button onClick={() => setSecilenMahalle(aktif ? null : m.nb)}
+                        className={`w-full text-left grid grid-cols-[2fr_1fr_1fr_1fr_auto] items-center px-4 py-3 hover:bg-gray-50 transition-colors ${aktif ? 'bg-blue-50' : ''}`}>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-gray-900">{m.nb}</span>
+                          {ctx?.natech && <span className="text-[10px] bg-orange-50 border border-orange-200 text-orange-600 px-1.5 py-0.5 rounded">NATECH</span>}
+                        </div>
+                        <span className="text-sm text-gray-600 font-mono">{m.sayi}</span>
+                        <span className="text-sm font-mono font-semibold" style={{ color: hRenk(m.avgH) }}>{m.avgH}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full border font-medium w-fit ${hBadgeCls(m.avgH)}`}>{hLabel(m.avgH)}</span>
+                        <span className="text-xs text-gray-400">{SEKTOR_META[m.topSector]?.label ?? m.topSector}</span>
+                      </button>
+                      {aktif && ctx && (
+                        <div className="px-4 pb-3 bg-blue-50 border-t border-blue-100">
+                          <div className="grid grid-cols-2 gap-3 mt-2">
+                            <div className="text-xs text-gray-600">
+                              <span className="font-medium text-gray-800">Nüfus:</span>{' '}
+                              {ctx.nufus.toLocaleString('tr-TR')} kişi
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              <span className="font-medium text-gray-800">Sendai:</span> {ctx.sendai}
+                            </div>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-2 leading-relaxed">{ctx.not}</p>
+                        </div>
+                      )}
                     </div>
-                  </div>
-
-                  <div className="grid grid-cols-4 gap-2 mb-4">
-                    {[
-                      { label: 'Okul',    val: secili.tesisler.okul,    ikon: '🏫' },
-                      { label: 'Hastane', val: secili.tesisler.hastane, ikon: '🏥' },
-                      { label: 'OSB',     val: secili.tesisler.osb,     ikon: '🏭' },
-                      { label: 'Altyapı', val: secili.tesisler.altyapi, ikon: '⚡' },
-                    ].map(t => (
-                      <div key={t.label} className="bg-gray-50 rounded-lg p-2 text-center border border-gray-100">
-                        <p className="text-lg">{t.ikon}</p>
-                        <p className="text-lg font-bold text-gray-900">{t.val}</p>
-                        <p className="text-xs text-gray-400">{t.label}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 rounded-lg" style={{ background: `${GOLD}08`, border: `1px solid ${GOLD}20` }}>
-                      <p className="text-xs font-medium mb-1" style={{ color: GOLD }}>{secili.sendai}</p>
-                      <p className="text-xs text-gray-400">Sendai Öncelik Alanı</p>
-                    </div>
-                    <div className="p-3 bg-gray-50 border border-gray-100 rounded-lg">
-                      <p className="text-xs text-gray-800 font-mono font-semibold mb-1">URI = {secili.uri}/100</p>
-                      <p className="text-xs text-gray-400">Dayanıklılık Endeksi</p>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-4">
-                  <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">OMNI Analiz Notu</p>
-                  <p className="text-sm text-gray-600 leading-relaxed">{secili.not}</p>
-                </Card>
+                  )
+                })}
               </div>
-            </div>
+            </Card>
           </div>
         )}
 
-        {/* ══════════════════════════════════════════════════════
+        {/* ════════════════════════════════════════════════════
             TESİS AĞI
-        ══════════════════════════════════════════════════════ */}
+        ════════════════════════════════════════════════════ */}
         {tab === 'tesis' && (
           <div className="space-y-5">
+            {/* KPI mini row */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {facLoading ? (
-                Array.from({ length: 4 }).map((_, i) => (
-                  <Card key={i} className="p-5 text-center animate-pulse">
-                    <div className="h-8 w-8 bg-gray-100 rounded mx-auto mb-2" />
-                    <div className="h-9 w-12 bg-gray-100 rounded mx-auto" />
-                  </Card>
-                ))
-              ) : facilities ? (
-                <>
-                  <Card className="p-5 text-center">
-                    <p className="text-3xl mb-2">🏛️</p>
-                    <p className="text-4xl font-bold text-blue-600">{facilities.length}</p>
-                    <p className="text-xs text-gray-400 mt-2">Toplam Tesis</p>
-                  </Card>
-                  <Card className="p-5 text-center">
-                    <p className="text-3xl mb-2">👥</p>
-                    <p className="text-4xl font-bold text-gray-900">{toplamPersonel.toLocaleString('tr-TR')}</p>
-                    <p className="text-xs text-gray-400 mt-2">Toplam Personel</p>
-                  </Card>
-                  <Card className="p-5 text-center">
-                    <p className="text-3xl mb-2">🔴</p>
-                    <p className="text-4xl font-bold text-red-500">
-                      {facilities.filter(f => (f.seismic_zone ?? 0) >= 2 && (f.building_age ?? 0) > 20).length}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-2">Deprem Riski Yüksek</p>
-                  </Card>
-                  <Card className="p-5 text-center">
-                    <p className="text-3xl mb-2">✅</p>
-                    <p className="text-4xl font-bold text-emerald-600">{facilities.filter(f => f.is_active).length}</p>
-                    <p className="text-xs text-gray-400 mt-2">Aktif Tesis</p>
-                  </Card>
-                </>
-              ) : (
-                <div className="col-span-4 p-4">{facError ? <ApiError msg={facError} /> : <Spinner />}</div>
-              )}
+              {[
+                { lbl: 'Toplam',    val: facilities.length,                               renk: '#60A5FA' },
+                { lbl: 'Kritik',    val: kpi.kritik,                                      renk: '#EF4444' },
+                { lbl: 'Hazmat',    val: kpi.hazmat,                                      renk: '#F97316' },
+                { lbl: 'Çalışan',   val: facilities.reduce((s, f) => s + (f.employee_count ?? 0), 0), renk: '#10B981' },
+              ].map(k => (
+                <Card key={k.lbl} className="p-4 text-center">
+                  <p className="text-2xl font-bold font-mono mt-1" style={{ color: k.renk }}>
+                    {k.val.toLocaleString('tr-TR')}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">{k.lbl}</p>
+                </Card>
+              ))}
             </div>
 
             <Card>
-              <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-                <h3 className="text-gray-900 font-semibold flex items-center gap-2 text-sm">
-                  <Building2 className="w-4 h-4" style={{ color: GOLD }} /> Tesis Listesi
-                </h3>
-                <div className="flex items-center gap-2">
-                  {facilities && <span className="text-xs bg-blue-50 border border-blue-200 text-blue-600 px-2 py-1 rounded-full">Railway · Canlı</span>}
-                  <span className="text-xs text-gray-400">NFPA · AFAD · ISO 22301</span>
-                </div>
-              </div>
-
-              {facLoading && <div className="p-8 flex justify-center"><Spinner /></div>}
-              {facError && <div className="p-6"><ApiError msg={facError} /></div>}
-              {facilities?.length === 0 && <div className="p-8 text-center text-gray-400 text-sm">Bu tenant için tesis bulunamadı.</div>}
-
-              {facilities && facilities.length > 0 && (
-                <div className="divide-y divide-gray-50">
-                  {facilities.map((f: OmniFacility) => {
-                    const badge = facilityRiskBadge(f)
+              {/* Arama + Filtre toolbar */}
+              <div className="p-4 border-b border-gray-100 flex flex-wrap items-center gap-3">
+                <input
+                  type="text" placeholder="Tesis veya mahalle ara…" value={search}
+                  onChange={e => { setSearch(e.target.value); setSayfa(0) }}
+                  className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-amber-300 flex-1 min-w-[180px]"
+                />
+                <div className="flex gap-2 flex-wrap">
+                  {(['hepsi', 'MUNICIPALITY', 'HOSPITAL', 'EDUCATION', 'INDUSTRIAL', 'BANK', 'HOTEL'] as const).map(s => {
+                    const a = sektorFiltre === s
+                    const m = s === 'hepsi' ? null : SEKTOR_META[s]
                     return (
-                      <div key={f.id} className="flex flex-wrap items-center justify-between p-4 hover:bg-gray-50 transition-colors gap-2">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <Building2 className="w-4 h-4 text-gray-300 flex-shrink-0" />
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <p className="text-sm text-gray-900 font-medium truncate">{f.name}</p>
-                              <span className="text-[10px] font-mono text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded flex-shrink-0">{f.code}</span>
-                            </div>
-                            <p className="text-xs text-gray-400 mt-0.5">
-                              {f.building_age != null && `${f.building_age} yıl · `}
-                              {f.employee_count != null && `${f.employee_count} personel`}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                          {f.seismic_zone != null && (
-                            <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded hidden lg:inline">Zon: {f.seismic_zone}</span>
-                          )}
-                          <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${badge.cls}`}>{badge.label}</span>
-                          <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${f.is_active ? 'text-emerald-600 bg-emerald-50 border-emerald-200' : 'text-gray-400 bg-gray-50 border-gray-200'}`}>
-                            {f.is_active ? 'Aktif' : 'Pasif'}
-                          </span>
-                        </div>
-                      </div>
+                      <button key={s} onClick={() => { setSektorFiltre(s); setSayfa(0) }}
+                        className={`text-xs px-2.5 py-1 rounded-full border transition-all ${a ? 'font-semibold' : 'text-gray-400 border-gray-200 hover:text-gray-700'}`}
+                        style={a ? { borderColor: m?.renk ?? '#94A3B8', background: (m?.renk ?? '#94A3B8') + '18', color: m?.renk ?? '#94A3B8' } : {}}>
+                        {s === 'hepsi' ? 'Tümü' : m?.label}
+                      </button>
                     )
                   })}
                 </div>
-              )}
-            </Card>
+                <span className="text-xs text-gray-400 ml-auto">{filteredFacilities.length} sonuç</span>
+              </div>
 
-            {portfolio && (
-              <Card className="p-5">
-                <p className="text-xs font-semibold text-blue-600 uppercase tracking-widest mb-3">Railway · Portföy Özeti</p>
-                <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-                  {[
-                    { label: 'Toplam',   val: portfolio.total,              renk: 'text-gray-900' },
-                    { label: 'Ort. URI', val: portfolio.avg_uri?.toFixed(1) ?? '—', renk: 'text-amber-600' },
-                    { label: 'Min URI',  val: portfolio.min_uri?.toFixed(1) ?? '—', renk: 'text-red-500' },
-                    { label: 'Maks URI', val: portfolio.max_uri?.toFixed(1) ?? '—', renk: 'text-emerald-600' },
-                    { label: 'Kritik',   val: portfolio.critical_count,     renk: 'text-red-500' },
-                  ].map(k => (
-                    <div key={k.label} className="text-center">
-                      <p className={`text-2xl font-bold ${k.renk}`}>{k.val}</p>
-                      <p className="text-xs text-gray-400 mt-1">{k.label}</p>
+              {/* Tablo başlığı */}
+              <div className="hidden lg:grid grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] px-4 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-widest border-b border-gray-50">
+                <span>Tesis Adı</span><span>Mahalle</span><span>Sektör</span><span>H Skoru</span><span>Çalışan</span><span>Durum</span>
+              </div>
+
+              {loading && <div className="p-8 flex justify-center"><Spinner/></div>}
+              {hata    && <div className="p-6 flex items-center gap-2 text-red-500 text-sm"><WifiOff className="w-4 h-4"/>{hata}</div>}
+
+              {!loading && pagedFacilities.length === 0 && (
+                <div className="p-8 text-center text-gray-400 text-sm">Eşleşen tesis bulunamadı.</div>
+              )}
+
+              <div className="divide-y divide-gray-50">
+                {pagedFacilities.map(f => {
+                  const h      = f.extra_data?.H_score ?? 0
+                  const sm     = SEKTOR_META[f.sector] ?? SEKTOR_META.OTHER
+                  const hazmat = f.extra_data?.hazmat_flag
+                  return (
+                    <div key={f.id} className="grid lg:grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] items-center px-4 py-3 hover:bg-gray-50 transition-colors gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-sm font-medium text-gray-900 truncate">{f.name}</span>
+                        {hazmat && <span className="text-[10px] bg-orange-50 border border-orange-200 text-orange-600 px-1.5 py-0.5 rounded flex-shrink-0">⚠ NATECH</span>}
+                      </div>
+                      <span className="text-xs text-gray-500">{f.extra_data?.neighborhood ?? '—'}</span>
+                      <span className="text-xs font-medium" style={{ color: sm.renk }}>{sm.label}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full border font-medium w-fit ${hBadgeCls(h)}`}>
+                        {h.toFixed(1)} {hLabel(h)}
+                      </span>
+                      <span className="text-xs text-gray-500 font-mono">{f.employee_count?.toLocaleString('tr-TR') ?? '—'}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full border ${f.operates_24h ? 'text-emerald-600 bg-emerald-50 border-emerald-200' : 'text-gray-400 bg-gray-50 border-gray-200'}`}>
+                        {f.operates_24h ? '24h' : 'Normal'}
+                      </span>
                     </div>
-                  ))}
-                </div>
-              </Card>
-            )}
-
-            {/* ── FORM BAŞVURULARI ── */}
-            <Card>
-              <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-                <h3 className="text-gray-900 font-semibold flex items-center gap-2 text-sm">
-                  <ClipboardList className="w-4 h-4" style={{ color: GOLD }} />
-                  Risk Formu Başvuruları
-                </h3>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-400">Supabase · En yeni üstte</span>
-                  {basvurular.length > 0 && (
-                    <span className="text-xs bg-amber-50 border border-amber-200 text-amber-600 px-2 py-1 rounded-full">
-                      {basvurular.length} kayıt
-                    </span>
-                  )}
-                </div>
+                  )
+                })}
               </div>
 
-              {basvuruLoading && <div className="p-8 flex justify-center"><Spinner /></div>}
-
-              {!basvuruLoading && basvurular.length === 0 && (
-                <div className="p-10 flex flex-col items-center gap-3 text-center">
-                  <ClipboardList className="w-8 h-8 text-gray-200" />
-                  <p className="text-gray-400 text-sm">Henüz başvuru yok.</p>
-                  <a href="/form/basvuru"
-                    style={{ color: GOLD, borderColor: `${GOLD}50` }}
-                    className="text-xs border rounded-lg px-4 py-2 hover:opacity-80 transition-opacity">
-                    İlk başvuruyu oluştur →
-                  </a>
-                </div>
-              )}
-
-              {!basvuruLoading && basvurular.length > 0 && (
-                <div className="divide-y divide-gray-50">
-                  {/* Tablo başlıkları */}
-                  <div className="hidden lg:grid grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] px-4 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
-                    <span>Tesis / İşletme</span>
-                    <span>Sektör</span>
-                    <span>URI Skoru</span>
-                    <span>Risk Sınıfı</span>
-                    <span>Tarih</span>
-                    <span />
-                  </div>
-                  {basvurular.map(b => {
-                    const isletme = b.puanlar?._basvuru
-                    const ad      = isletme?.isletme_adi ?? b.birim_kodu
-                    const mahalle = isletme?.mahalle
-                    const skor    = Math.round(b.dayaniklilik_skoru ?? 0)
-                    const badge   = uriRenkHesapla(skor)
-                    const tarih   = b.gonderilme
-                      ? new Date(b.gonderilme).toLocaleDateString('tr-TR', { day:'2-digit', month:'short', year:'numeric' })
-                      : '—'
-                    return (
-                      <div key={b.id} className="flex flex-wrap lg:grid lg:grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] items-center px-4 py-3 hover:bg-gray-50 transition-colors gap-2">
-                        <div className="min-w-0">
-                          <p className="text-sm text-gray-900 font-medium truncate">{ad}</p>
-                          {mahalle && <p className="text-xs text-gray-400 mt-0.5">{mahalle}</p>}
-                          {!mahalle && b.dolduran_email && (
-                            <p className="text-xs text-gray-400 mt-0.5">{b.dolduran_email}</p>
-                          )}
-                        </div>
-                        <span className="text-xs text-gray-500">
-                          {SEKTOR_ETIKET[b.sektor] ?? b.sektor}
-                        </span>
-                        <span className="text-lg font-bold font-mono" style={{ color: skor < 40 ? '#EF4444' : skor < 60 ? '#F97316' : skor < 75 ? '#F59E0B' : '#22C55E' }}>
-                          {skor}
-                          <span className="text-xs text-gray-300 font-normal">/100</span>
-                        </span>
-                        <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${badge.bg} ${badge.border} ${badge.text}`}>
-                          {badge.label}
-                        </span>
-                        <span className="text-xs text-gray-400">{tarih}</span>
-                        <div className="flex gap-1.5">
-                          <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded font-mono">
-                            H:{Math.round(b.h_skoru ?? 0)} F:{Math.round(b.f_skoru ?? 0)} E:{Math.round(b.e_skoru ?? 0)}
-                          </span>
-                        </div>
-                      </div>
-                    )
-                  })}
+              {/* Sayfalama */}
+              {totalPages > 1 && (
+                <div className="p-4 border-t border-gray-100 flex items-center justify-between">
+                  <button disabled={sayfa === 0} onClick={() => setSayfa(p => p - 1)}
+                    className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 disabled:opacity-40 hover:bg-gray-50 transition-colors">
+                    ← Önceki
+                  </button>
+                  <span className="text-xs text-gray-400">
+                    {sayfa + 1} / {totalPages} · {filteredFacilities.length} tesis
+                  </span>
+                  <button disabled={sayfa >= totalPages - 1} onClick={() => setSayfa(p => p + 1)}
+                    className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 disabled:opacity-40 hover:bg-gray-50 transition-colors">
+                    Sonraki →
+                  </button>
                 </div>
               )}
             </Card>
           </div>
         )}
 
-        {/* ══════════════════════════════════════════════════════
+        {/* ════════════════════════════════════════════════════
             CBS HARİTA
-        ══════════════════════════════════════════════════════ */}
-        {tab === 'harita' && <CBSHarita />}
+        ════════════════════════════════════════════════════ */}
+        {tab === 'harita' && <CBSHarita/>}
 
-        {/* ══════════════════════════════════════════════════════
+        {/* ════════════════════════════════════════════════════
             NATECH SENARYO
-        ══════════════════════════════════════════════════════ */}
+        ════════════════════════════════════════════════════ */}
         {tab === 'natech' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            <Card className="p-6">
-              <SectionTitle icon={Zap} title="Senaryo Parametreleri" />
-
-              <div className="mb-5">
-                <p className="text-xs text-gray-400 uppercase tracking-widest mb-3">Afet Türü</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {[{ key: 'deprem', label: '🌍 Deprem' }, { key: 'yangin', label: '🔥 Yangın' }, { key: 'sel', label: '🌊 Sel' }].map(s => (
-                    <button key={s.key} onClick={() => setSenaryo(s.key)}
-                      className={`py-2.5 rounded-lg text-sm font-medium border transition-all ${
-                        senaryo === s.key ? 'text-[#0A1628] bg-white shadow-sm' : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-800'
-                      }`}
-                      style={senaryo === s.key ? { borderColor: GOLD } : {}}>
-                      {s.label}
-                    </button>
-                  ))}
-                </div>
+          <div className="space-y-5">
+            {/* Hazmat tesisleri listesi */}
+            <Card>
+              <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                  <span style={{ color: GOLD }}>⚠</span> Hazmat / NATECH Tesisleri
+                </h3>
+                <span className="text-xs bg-orange-50 border border-orange-200 text-orange-600 px-2 py-1 rounded-full">
+                  {natechFacilities.length} tesis
+                </span>
               </div>
-
-              {senaryo === 'deprem' && (
-                <div className="mb-5">
-                  <div className="flex justify-between mb-2">
-                    <p className="text-xs text-gray-400 uppercase tracking-widest">Deprem Şiddeti (Mw)</p>
-                    <p className="font-mono font-bold text-sm" style={{ color: GOLD }}>{siddet.toFixed(1)}</p>
-                  </div>
-                  <input type="range" min="5.0" max="8.0" step="0.1" value={siddet}
-                    onChange={e => setSiddet(parseFloat(e.target.value))}
-                    className="w-full accent-yellow-400" />
-                  <div className="flex justify-between text-xs text-gray-300 mt-1"><span>Mw 5.0</span><span>Mw 8.0</span></div>
-                </div>
+              {loading && <div className="p-6 flex justify-center"><Spinner/></div>}
+              {!loading && natechFacilities.length === 0 && (
+                <p className="p-6 text-center text-sm text-gray-400">Hazmat tesisi bulunamadı.</p>
               )}
-
-              <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
-                <p className="text-xs text-gray-400 uppercase tracking-widest mb-3">RAPID-N Protokolü</p>
-                <div className="space-y-2 text-sm">
-                  {[
-                    { label: 'Etkilenen tesis',  val: 'Yakuplu OSB' },
-                    { label: 'NATECH D katsayısı', val: '2.4', renk: '#F97316' },
-                    { label: 'Domino zinciri',   val: '3 komşu tesis' },
-                    { label: 'Tahliye süresi',   val: '~45 dk' },
-                  ].map(item => (
-                    <div key={item.label} className="flex justify-between">
-                      <span className="text-gray-500">{item.label}</span>
-                      <span className="font-mono font-medium text-gray-800" style={item.renk ? { color: item.renk } : {}}>{item.val}</span>
-                    </div>
-                  ))}
+              <div className="divide-y divide-gray-50">
+                <div className="hidden lg:grid grid-cols-[2fr_1fr_1fr_1fr_1fr] px-4 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                  <span>Tesis</span><span>Mahalle</span><span>Sektör</span><span>NATECH Riski</span><span>H Skoru</span>
                 </div>
+                {natechFacilities.map(f => {
+                  const nr = (f.extra_data?.natech_risk as number | undefined) ?? 0
+                  const h  = f.extra_data?.H_score ?? 0
+                  const sm = SEKTOR_META[f.sector] ?? SEKTOR_META.OTHER
+                  return (
+                    <div key={f.id} className="grid lg:grid-cols-[2fr_1fr_1fr_1fr_1fr] items-center px-4 py-3 hover:bg-orange-50 transition-colors gap-2">
+                      <span className="text-sm font-medium text-gray-900">{f.name}</span>
+                      <span className="text-xs text-gray-500">{f.extra_data?.neighborhood ?? '—'}</span>
+                      <span className="text-xs font-medium" style={{ color: sm.renk }}>{sm.label}</span>
+                      <div className="flex items-center gap-2">
+                        <div className="h-1.5 flex-1 bg-gray-100 rounded-full max-w-[60px]">
+                          <div className="h-1.5 rounded-full bg-orange-500" style={{ width: `${Math.min(nr / 5 * 100, 100)}%` }}/>
+                        </div>
+                        <span className="text-xs font-mono font-semibold text-orange-600">{nr.toFixed(1)}</span>
+                      </div>
+                      <span className={`text-xs px-2 py-0.5 rounded-full border font-medium w-fit ${hBadgeCls(h)}`}>{h.toFixed(1)}</span>
+                    </div>
+                  )
+                })}
               </div>
             </Card>
 
-            <div className="space-y-4">
-              <Card className={`p-6 ${natechEtki > 60 ? 'border-red-200' : natechEtki > 30 ? 'border-orange-200' : 'border-amber-200'}`}>
-                <p className="text-xs uppercase tracking-widest text-gray-400 mb-2">NATECH Kümülatif Etki Skoru</p>
-                <p className={`text-6xl font-bold mb-2 ${natechEtki > 60 ? 'text-red-500' : natechEtki > 30 ? 'text-orange-500' : 'text-amber-500'}`}>
-                  {natechEtki}<span className="text-2xl text-gray-200">/100</span>
-                </p>
-                <p className="text-gray-600 text-sm">
-                  {natechEtki > 60 ? 'KRİTİK — Acil tahliye ve müdahale protokolü devreye alınmalı' :
-                   natechEtki > 30 ? 'YÜKSEK — Önleyici önlemler ve erken uyarı aktif edilmeli' :
-                   'ORTA — İzleme ve hazırlık seviyesi yükseltilmeli'}
-                </p>
-              </Card>
-
-              <Card className="p-5">
-                <p className="text-xs text-gray-400 uppercase tracking-widest mb-4">Etki Projeksiyonu</p>
-                <div className="space-y-3">
-                  {[
-                    { label: 'Risk altındaki nüfus',    val: `~${(etkilenenNufus / 1000).toFixed(0)}K kişi`, renk: 'text-red-500' },
-                    { label: 'Tahliye gerektiren bölge', val: 'Yakuplu + Kavaklı',                           renk: 'text-orange-500' },
-                    { label: 'Etkilenen okul sayısı',   val: `${Math.ceil(natechEtki / 20)} okul`,          renk: 'text-amber-600' },
-                    { label: 'Acil müdahale süresi',    val: senaryo === 'deprem' ? '72 saat' : '48 saat',  renk: 'text-gray-800' },
-                  ].map(item => (
-                    <div key={item.label} className="flex justify-between items-center py-2 border-b border-gray-100">
-                      <span className="text-sm text-gray-500">{item.label}</span>
-                      <span className={`text-sm font-medium ${item.renk}`}>{item.val}</span>
+            {/* Senaryo paneli */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              <Card className="p-6">
+                <SectionTitle icon={<IcoRadar/>} title="Senaryo Parametreleri"/>
+                <div className="mb-5">
+                  <p className="text-xs text-gray-400 uppercase tracking-widest mb-3">Afet Türü</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[{ key: 'deprem', label: '🌍 Deprem' }, { key: 'yangin', label: '🔥 Yangın' }, { key: 'sel', label: '🌊 Sel' }].map(s => (
+                      <button key={s.key} onClick={() => setSenaryo(s.key)}
+                        className={`py-2.5 rounded-lg text-sm font-medium border transition-all ${senaryo === s.key ? 'text-[#0A1628] bg-white shadow-sm' : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-800'}`}
+                        style={senaryo === s.key ? { borderColor: GOLD } : {}}>
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {senaryo === 'deprem' && (
+                  <div className="mb-5">
+                    <div className="flex justify-between mb-2">
+                      <p className="text-xs text-gray-400 uppercase tracking-widest">Deprem Şiddeti (Mw)</p>
+                      <p className="font-mono font-bold text-sm" style={{ color: GOLD }}>{siddet.toFixed(1)}</p>
                     </div>
-                  ))}
+                    <input type="range" min="5.0" max="8.0" step="0.1" value={siddet}
+                      onChange={e => setSiddet(parseFloat(e.target.value))}
+                      className="w-full accent-yellow-400"/>
+                    <div className="flex justify-between text-xs text-gray-300 mt-1"><span>Mw 5.0</span><span>Mw 8.0</span></div>
+                  </div>
+                )}
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
+                  <p className="text-xs text-gray-400 uppercase tracking-widest mb-3">RAPID-N Protokolü</p>
+                  <div className="space-y-2 text-sm">
+                    {[
+                      { label: 'Etkilenen tesis',    val: `${natechFacilities.length} Hazmat tesisi` },
+                      { label: 'NATECH D katsayısı', val: '2.4', renk: '#F97316' },
+                      { label: 'Domino zinciri',     val: '3 komşu tesis' },
+                      { label: 'Tahliye süresi',     val: '~45 dk' },
+                    ].map(item => (
+                      <div key={item.label} className="flex justify-between">
+                        <span className="text-gray-500">{item.label}</span>
+                        <span className="font-mono font-medium text-gray-800" style={item.renk ? { color: item.renk } : {}}>{item.val}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </Card>
 
-              <div className="p-4 rounded-xl text-xs text-gray-500" style={{ background: `${GOLD}08`, border: `1px solid ${GOLD}25` }}>
-                <p className="font-medium mb-1" style={{ color: GOLD }}>OMNI × RAPID-N Entegrasyonu</p>
-                <p className="leading-relaxed">RAPID-N protokolü ile Yakuplu OSB için kimyasal yayılım modeli, rüzgar yönü ve nüfus yoğunluğu birleştirilerek gerçek zamanlı tahliye koridoru oluşturulabilir.</p>
+              <div className="space-y-4">
+                <Card className={`p-6 ${natechEtki > 60 ? 'border-red-200' : natechEtki > 30 ? 'border-orange-200' : 'border-amber-200'}`}>
+                  <p className="text-xs uppercase tracking-widest text-gray-400 mb-2">NATECH Kümülatif Etki Skoru</p>
+                  <p className={`text-6xl font-bold mb-2 ${natechEtki > 60 ? 'text-red-500' : natechEtki > 30 ? 'text-orange-500' : 'text-amber-500'}`}>
+                    {natechEtki}<span className="text-2xl text-gray-200">/100</span>
+                  </p>
+                  <p className="text-gray-600 text-sm">
+                    {natechEtki > 60 ? 'KRİTİK — Acil tahliye ve müdahale protokolü devreye alınmalı' :
+                     natechEtki > 30 ? 'YÜKSEK — Önleyici önlemler ve erken uyarı aktif edilmeli' :
+                     'ORTA — İzleme ve hazırlık seviyesi yükseltilmeli'}
+                  </p>
+                </Card>
+                <Card className="p-5">
+                  <p className="text-xs text-gray-400 uppercase tracking-widest mb-4">Etki Projeksiyonu</p>
+                  <div className="space-y-3">
+                    {[
+                      { label: 'Risk altındaki nüfus',    val: `~${Math.round(toplamNufus * (natechEtki / 100) * 0.6 / 1000)}K kişi`, renk: 'text-red-500'   },
+                      { label: 'Tahliye gerektiren bölge', val: 'Yakuplu + Kavaklı',                                                   renk: 'text-orange-500' },
+                      { label: 'Etkilenen tesis',         val: `${Math.ceil(natechEtki / 20 * natechFacilities.length / 5)} tesis`,    renk: 'text-amber-600'  },
+                      { label: 'Acil müdahale süresi',    val: senaryo === 'deprem' ? '72 saat' : '48 saat',                          renk: 'text-gray-800'   },
+                    ].map(item => (
+                      <div key={item.label} className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-sm text-gray-500">{item.label}</span>
+                        <span className={`text-sm font-medium ${item.renk}`}>{item.val}</span>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
               </div>
             </div>
           </div>
         )}
 
-        {/* ══════════════════════════════════════════════════════
+        {/* ════════════════════════════════════════════════════
             SENDAİ UYUM
-        ══════════════════════════════════════════════════════ */}
+        ════════════════════════════════════════════════════ */}
         {tab === 'sendai' && (
           <div className="space-y-5">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {[
-                { no: 'SF-1', baslik: 'Afet Riskini Anlama',                 puan: 72, durum: 'Aktif',     omni: 'HFER-720 URI skoru + mahalle bazlı risk haritası',           renk: 'emerald' },
-                { no: 'SF-2', baslik: 'Risk Yönetişimini Güçlendirme',       puan: 48, durum: 'Kısmi',     omni: 'Belediye ISO 22301 BCP planlaması + OMNI dashboard',         renk: 'amber'   },
-                { no: 'SF-3', baslik: 'Dayanıklılığa Yatırım',               puan: 35, durum: 'Planlandı', omni: 'Tesis ağı dayanıklılık skoru + NATECH D katsayısı',          renk: 'amber'   },
-                { no: 'SF-4', baslik: 'Etkin Müdahale ve Yeniden Yapılanma', puan: 21, durum: 'Eksik',     omni: 'EOC dashboard + NEFES Birliği protokolü entegrasyonu',       renk: 'red'     },
+                { no: 'SF-1', baslik: 'Afet Riskini Anlama',                 puan: 72, durum: 'Aktif',     omni: 'HFER-720 URI skoru + mahalle bazlı risk haritası',     renk: 'emerald' },
+                { no: 'SF-2', baslik: 'Risk Yönetişimini Güçlendirme',       puan: 48, durum: 'Kısmi',     omni: 'Belediye ISO 22301 BCP planlaması + OMNI dashboard',   renk: 'amber'   },
+                { no: 'SF-3', baslik: 'Dayanıklılığa Yatırım',               puan: 35, durum: 'Planlandı', omni: 'Tesis ağı dayanıklılık skoru + NATECH D katsayısı',    renk: 'amber'   },
+                { no: 'SF-4', baslik: 'Etkin Müdahale ve Yeniden Yapılanma', puan: 21, durum: 'Eksik',     omni: 'EOC dashboard + NEFES Birliği protokolü entegrasyonu', renk: 'red'     },
               ].map(s => (
                 <Card key={s.no} className="p-5">
                   <div className="flex items-center justify-between mb-3">
@@ -936,13 +872,12 @@ export default function BeylikduzuKomuta() {
                   <p className="text-gray-900 font-semibold mb-3 text-sm">{s.baslik}</p>
                   <div className="h-1.5 bg-gray-100 rounded-full mb-3">
                     <div className={`h-1.5 rounded-full ${s.renk === 'emerald' ? 'bg-emerald-500' : s.renk === 'amber' ? 'bg-amber-500' : 'bg-red-500'}`}
-                      style={{ width: `${s.puan}%` }} />
+                      style={{ width: `${s.puan}%` }}/>
                   </div>
                   <p className="text-xs text-gray-500"><span style={{ color: GOLD }} className="font-medium">OMNI katkısı:</span> {s.omni}</p>
                 </Card>
               ))}
             </div>
-
             <Card className="p-6">
               <h3 className="text-gray-900 font-semibold mb-4 text-sm">Uluslararası Fon Fırsatları</h3>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -970,7 +905,7 @@ export default function BeylikduzuKomuta() {
         {/* FOOTER */}
         <div className="mt-10 pt-5 border-t border-gray-200 flex flex-wrap items-center justify-between gap-2">
           <p className="text-xs text-gray-300">OMNI Resilience Platform · HFER-720 v2.0 · İTÜ AYM · © 2026</p>
-          <p className="text-xs text-gray-300">Sendai 2015–2030 · ISO 22301 · AFAD · RAPID-N · NFPA</p>
+          <p className="text-xs text-gray-300">Sendai 2015–2030 · ISO 22301 · AFAD · RAPID-N</p>
         </div>
       </div>
     </div>
