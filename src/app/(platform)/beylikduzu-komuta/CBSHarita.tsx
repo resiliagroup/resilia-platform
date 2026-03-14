@@ -204,45 +204,56 @@ function RiskContourLayer({ facilities, tehlike }: { facilities: FacilityRow[]; 
     const cg   = parseInt(hex.slice(2, 4), 16)
     const cb   = parseInt(hex.slice(4, 6), 16)
 
+    function zoomRadius(): number {
+      const z = map.getZoom()
+      if (z >= 15) return 55
+      if (z >= 14) return 35
+      return 20
+    }
+
     function draw() {
       const w = container.clientWidth, h = container.clientHeight
       canvas.width = w; canvas.height = h
       const ctx = canvas.getContext('2d')!
       ctx.clearRect(0, 0, w, h)
 
+      const baseR = zoomRadius()
+
       for (const f of facilities) {
         if (!f.geom?.coordinates) continue
-        const hScore = Math.max(0, (f.extra_data?.H_score as number | undefined) ?? 0)
-        if (hScore < 0.5) continue
+        const hScore = (f.extra_data?.H_score as number | undefined) ?? 0
+        if (hScore <= 3.5) continue  // only high-risk facilities
         const score = getScore(f, tehlike)
-        const t     = Math.min(score / 5, 1)
+        if (score < 0.1) continue
         const [lng, lat] = f.geom.coordinates
-        const pt    = map.latLngToContainerPoint([lat, lng])
-        const baseR = hScore * 80
+        const pt = map.latLngToContainerPoint([lat, lng])
 
-        // Inner radial fill
-        const grad = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, baseR * 0.4)
-        grad.addColorStop(0,   `rgba(${cr},${cg},${cb},${0.18 + t * 0.12})`)
-        grad.addColorStop(1,   `rgba(${cr},${cg},${cb},0)`)
+        // Outer ring
+        ctx.beginPath()
+        ctx.arc(pt.x, pt.y, baseR, 0, Math.PI * 2)
+        ctx.strokeStyle = `rgba(${cr},${cg},${cb},0.15)`
+        ctx.lineWidth   = 1.5
+        ctx.setLineDash([5, 5])
+        ctx.stroke()
+        ctx.setLineDash([])
+
+        // Inner ring
+        ctx.beginPath()
+        ctx.arc(pt.x, pt.y, baseR * 0.5, 0, Math.PI * 2)
+        ctx.strokeStyle = `rgba(${cr},${cg},${cb},0.15)`
+        ctx.lineWidth   = 1.2
+        ctx.setLineDash([3, 4])
+        ctx.stroke()
+        ctx.setLineDash([])
+
+        // Center fill
+        const grad = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, baseR * 0.5)
+        grad.addColorStop(0, `rgba(${cr},${cg},${cb},0.12)`)
+        grad.addColorStop(1, `rgba(${cr},${cg},${cb},0)`)
         ctx.fillStyle = grad
-        ctx.beginPath(); ctx.arc(pt.x, pt.y, baseR * 0.4, 0, Math.PI * 2); ctx.fill()
-
-        // Concentric dashed contour rings: 25 / 50 / 75 / 100 % radius
-        const rings: [number, number, number][] = [
-          [1.00, 0.25 + t * 0.35, 1.0],
-          [0.75, 0.35 + t * 0.35, 1.3],
-          [0.50, 0.50 + t * 0.30, 1.6],
-          [0.25, 0.70 + t * 0.20, 2.0],
-        ]
-        for (const [frac, alpha, lw] of rings) {
-          ctx.beginPath()
-          ctx.arc(pt.x, pt.y, baseR * frac, 0, Math.PI * 2)
-          ctx.strokeStyle = `rgba(${cr},${cg},${cb},${alpha})`
-          ctx.lineWidth   = lw
-          ctx.setLineDash([5, 5])
-          ctx.stroke()
-          ctx.setLineDash([])
-        }
+        ctx.beginPath()
+        ctx.arc(pt.x, pt.y, baseR * 0.5, 0, Math.PI * 2)
+        ctx.fill()
       }
     }
 

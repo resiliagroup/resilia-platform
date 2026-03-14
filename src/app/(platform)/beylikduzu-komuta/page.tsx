@@ -405,26 +405,47 @@ export default function BeylikduzuKomuta() {
               {/* Risk Dağılımı Donut */}
               <Card className="p-6">
                 <SectionTitle icon={TrendingUp} title="Risk Sınıf Dağılımı" />
-                <div className="flex flex-col items-center">
-                  <div style={{ height: 300 }}>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <PieChart>
-                        <Pie data={riskDonutData} cx="50%" cy="50%" innerRadius={65} outerRadius={100} dataKey="value" paddingAngle={3} stroke="none" isAnimationActive={false}>
-                          {riskDonutData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
-                        </Pie>
-                        <Tooltip formatter={(v) => [`${v} tesis`]} contentStyle={{ borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 12 }} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <div className="flex flex-wrap justify-center gap-x-3 gap-y-1.5 mt-1">
-                    {riskDonutData.map(d => (
-                      <div key={d.name} className="flex items-center gap-1.5 text-xs text-gray-500">
-                        <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: d.fill }} />
-                        {d.name} ({d.value})
+                {(() => {
+                  const slices = [
+                    { name: 'KRİTİK',   value: 25, fill: '#EF4444' },
+                    { name: 'YÜKSEK',   value: 35, fill: '#F97316' },
+                    { name: 'ORTA',     value: 28, fill: '#F59E0B' },
+                    { name: 'DİRENÇLİ',value: 12, fill: '#22C55E' },
+                  ]
+                  const cx = 100, cy = 100, ro = 80, ri = 50
+                  const total = slices.reduce((s, d) => s + d.value, 0)
+                  let angle = -Math.PI / 2
+                  const gap  = 0.03  // radians gap between slices
+                  const paths = slices.map(d => {
+                    const sweep = (d.value / total) * Math.PI * 2 - gap
+                    const a1 = angle + gap / 2, a2 = a1 + sweep
+                    const x1o = cx + ro * Math.cos(a1), y1o = cy + ro * Math.sin(a1)
+                    const x2o = cx + ro * Math.cos(a2), y2o = cy + ro * Math.sin(a2)
+                    const x1i = cx + ri * Math.cos(a2), y1i = cy + ri * Math.sin(a2)
+                    const x2i = cx + ri * Math.cos(a1), y2i = cy + ri * Math.sin(a1)
+                    const large = sweep > Math.PI ? 1 : 0
+                    const path = `M${x1o.toFixed(2)},${y1o.toFixed(2)} A${ro},${ro} 0 ${large} 1 ${x2o.toFixed(2)},${y2o.toFixed(2)} L${x1i.toFixed(2)},${y1i.toFixed(2)} A${ri},${ri} 0 ${large} 0 ${x2i.toFixed(2)},${y2i.toFixed(2)} Z`
+                    angle += (d.value / total) * Math.PI * 2
+                    return { ...d, path }
+                  })
+                  return (
+                    <div className="flex flex-col items-center">
+                      <svg viewBox="0 0 200 200" width={200} height={200}>
+                        {paths.map(s => <path key={s.name} d={s.path} fill={s.fill} opacity={0.9}/>)}
+                        <text x={cx} y={cy - 6} textAnchor="middle" fontSize={22} fontWeight={700} fill="#111827">100</text>
+                        <text x={cx} y={cy + 14} textAnchor="middle" fontSize={11} fill="#9CA3AF">tesis</text>
+                      </svg>
+                      <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 mt-2">
+                        {paths.map(s => (
+                          <div key={s.name} className="flex items-center gap-1.5 text-xs text-gray-500">
+                            <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: s.fill }}/>
+                            {s.name} ({s.value}%)
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
+                  )
+                })()}
               </Card>
             </div>
 
