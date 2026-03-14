@@ -5,11 +5,11 @@ import { createClient } from '@supabase/supabase-js'
 import { Loader2, WifiOff, AlertTriangle } from 'lucide-react'
 
 /* ══════════════════════════════════════════════════════════════
-   SUPABASE — Beylikdüzü projesi (anon key)
+   SUPABASE — Beylikdüzü projesi (service role key)
 ══════════════════════════════════════════════════════════════ */
 const sbBD = createClient(
   'https://gqguwgbopgnpwzjwcexl.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzOTk4MzMsImV4cCI6MjA4ODk3NTgzM30.ZIFmmiGsB1rUAojvSG8uTfcknZi6LoXgrgApCL-e550',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzM5OTgzMywiZXhwIjoyMDg4OTc1ODMzfQ.Ku-JRx8JFH5a3SIj7sGP_Dy_nM89NMMW34gPyxVO_qI',
 )
 const TENANT_BD = '11111111-0000-0000-0000-000000000001'
 const NAVY = '#0A1628'
@@ -282,7 +282,8 @@ export default function BeylikduzuKomuta() {
         .eq('is_active', true)
         .limit(1000)
       if (iptal) return
-      if (error) { setHata(error.message); setLoading(false); return }
+      if (error) { console.error('[page] Supabase hata:', error.message); setHata(error.message); setLoading(false); return }
+      console.log('[page] Supabase yanıtı:', { adet: data?.length ?? 0, tenant_id: TENANT_BD, hata: error })
       setFacilities((data ?? []) as Facility[])
       setLoading(false)
     }
