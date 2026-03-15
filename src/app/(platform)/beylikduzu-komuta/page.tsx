@@ -224,6 +224,249 @@ const hBadgeCls = (h = 0) =>
   h >= 2 ? 'text-amber-600 bg-amber-50 border-amber-200' :
            'text-emerald-600 bg-emerald-50 border-emerald-200'
 
+/* ── C skoru yardımcısı (Supabase'de yoksa türetilir) */
+function cScore(f: Facility): number {
+  const raw = (f.extra_data as Record<string, unknown>)?.C_score as number | undefined
+  if (raw !== undefined) return parseFloat(String(raw))
+  return Math.max(0.5, Math.min(4.8,
+    3.0
+    - (f.building_age > 30 ? 1 : f.building_age > 20 ? 0.5 : 0)
+    + (f.sector === 'HOSPITAL' ? 0.5 : f.sector === 'MUNICIPALITY' ? 0.3 : 0)
+  ))
+}
+
+/* ── SVG Scatter Plot: Tehlike vs Kapasite */
+function ScatterPlot({ facilities }: { facilities: Facility[] }) {
+  const [tip, setTip] = useState<{ sx: number; sy: number; name: string; h: number; c: number } | null>(null)
+  const W = 440, H = 300
+  const ml = 44, mr = 16, mt = 32, mb = 44
+  const pw = W - ml - mr, ph = H - mt - mb
+
+  const pts = facilities.map(f => {
+    const h = f.extra_data?.H_score ?? 0
+    const c = cScore(f)
+    return {
+      f, h: parseFloat(h.toFixed(2)), c: parseFloat(c.toFixed(2)),
+      sx: ml + (c / 5) * pw,
+      sy: mt + ph - (h / 5) * ph,
+      renk: SEKTOR_META[f.sector]?.renk ?? '#94A3B8',
+    }
+  })
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ maxWidth: W, display: 'block' }}>
+        {/* Kritik bölge: H>3.5 ve C<2.5 — sol üst */}
+        <rect x={ml} y={mt} width={(2.5/5)*pw} height={(1.5/5)*ph} fill="#FEE2E218" stroke="#EF444430" strokeWidth={1} rx={3}/>
+        {/* Güvenli bölge: H<2.5 ve C>3.5 — sağ alt */}
+        <rect x={ml+(3.5/5)*pw} y={mt+(2.5/5)*ph} width={(1.5/5)*pw} height={(2.5/5)*ph} fill="#DCFCE718" stroke="#22C55E30" strokeWidth={1} rx={3}/>
+        {/* Zone etiketleri */}
+        <text x={ml+5} y={mt+12} fontSize={8} fill="#EF4444" opacity={0.65} fontWeight={600}>KRİTİK BÖLGE</text>
+        <text x={ml+pw-5} y={mt+ph-5} textAnchor="end" fontSize={8} fill="#22C55E" opacity={0.65} fontWeight={600}>GÜVENLİ BÖLGE</text>
+        {/* Grid çizgileri */}
+        {[1,2,3,4].map(v => (
+          <g key={v}>
+            <line x1={ml+(v/5)*pw} y1={mt} x2={ml+(v/5)*pw} y2={mt+ph} stroke="#F3F4F6" strokeWidth={1}/>
+            <line x1={ml} y1={mt+ph-(v/5)*ph} x2={ml+pw} y2={mt+ph-(v/5)*ph} stroke="#F3F4F6" strokeWidth={1}/>
+          </g>
+        ))}
+        {/* Eksenler */}
+        <line x1={ml} y1={mt} x2={ml} y2={mt+ph+1} stroke="#D1D5DB" strokeWidth={1.5}/>
+        <line x1={ml-1} y1={mt+ph} x2={ml+pw} y2={mt+ph} stroke="#D1D5DB" strokeWidth={1.5}/>
+        {/* Eksen etiketleri */}
+        {[0,1,2,3,4,5].map(v => (
+          <g key={v}>
+            <text x={ml+(v/5)*pw} y={mt+ph+13} textAnchor="middle" fontSize={8} fill="#9CA3AF">{v}</text>
+            <text x={ml-5} y={mt+ph-(v/5)*ph+3} textAnchor="end" fontSize={8} fill="#9CA3AF">{v}</text>
+          </g>
+        ))}
+        {/* Eksen başlıkları */}
+        <text x={ml+pw/2} y={H-4} textAnchor="middle" fontSize={9} fill="#6B7280">Kapasite Skoru (C) →</text>
+        <text x={10} y={mt+ph/2} textAnchor="middle" fontSize={9} fill="#6B7280" transform={`rotate(-90,10,${mt+ph/2})`}>Tehlike Skoru (H) →</text>
+        {/* Grafik başlığı */}
+        <text x={ml+pw/2} y={mt-12} textAnchor="middle" fontSize={12} fontWeight={700} fill="#111827">Tehlike vs Kapasite Matrisi</text>
+        {/* Noktalar */}
+        {pts.map(p => (
+          <circle key={p.f.id} cx={p.sx} cy={p.sy} r={5}
+            fill={p.renk} fillOpacity={0.72} stroke="white" strokeWidth={0.8}
+            style={{ cursor: 'pointer' }}
+            onMouseEnter={() => setTip({ sx: p.sx, sy: p.sy, name: p.f.name, h: p.h, c: p.c })}
+            onMouseLeave={() => setTip(null)}
+          />
+        ))}
+        {/* Tooltip */}
+        {tip && (() => {
+          const tx = Math.min(tip.sx + 8, W - 130)
+          const ty = Math.max(tip.sy - 44, mt)
+          return (
+            <g>
+              <rect x={tx} y={ty} width={120} height={36} rx={5} fill="white" stroke="#E5E7EB" strokeWidth={1}
+                    filter="drop-shadow(0 1px 4px rgba(0,0,0,.1))"/>
+              <text x={tx+7} y={ty+13} fontSize={8.5} fontWeight={700} fill="#111827">
+                {tip.name.length > 17 ? tip.name.slice(0,16)+'…' : tip.name}
+              </text>
+              <text x={tx+7} y={ty+26} fontSize={8} fill="#6B7280">H: {tip.h.toFixed(1)} · C: {tip.c.toFixed(1)}</text>
+            </g>
+          )
+        })()}
+      </svg>
+      {/* Lejant */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 14px', marginTop: 8 }}>
+        {(Object.entries(SEKTOR_META) as [Sektor, { label: string; renk: string }][]).map(([k, v]) => (
+          <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#6B7280' }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: v.renk, display: 'inline-block', flexShrink: 0 }}/>
+            {v.label}
+          </div>
+        ))}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#6B7280' }}>
+          <span style={{ width: 8, height: 8, background: '#FEE2E2', border: '1px solid #EF4444', display: 'inline-block', flexShrink: 0 }}/>
+          Kritik Bölge
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#6B7280' }}>
+          <span style={{ width: 8, height: 8, background: '#DCFCE7', border: '1px solid #22C55E', display: 'inline-block', flexShrink: 0 }}/>
+          Güvenli Bölge
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Exposure Hiyerarşi Tablosu */
+function ExposureHierarchy({ facilities }: { facilities: Facility[] }) {
+  const [expanded, setExpanded] = useState<Set<string>>(new Set())
+  const toggle = (key: string) => setExpanded(prev => {
+    const next = new Set(prev)
+    if (next.has(key)) next.delete(key); else next.add(key)
+    return next
+  })
+
+  const nbMap = new Map<string, Map<Sektor, Facility[]>>()
+  for (const f of facilities) {
+    const nb = f.extra_data?.neighborhood ?? 'Belirsiz'
+    if (!nbMap.has(nb)) nbMap.set(nb, new Map())
+    const sMap = nbMap.get(nb)!
+    if (!sMap.has(f.sector)) sMap.set(f.sector, [])
+    sMap.get(f.sector)!.push(f)
+  }
+
+  const calcMetrics = (fList: Facility[]) => {
+    const avgH = fList.reduce((s, f) => s + (f.extra_data?.H_score ?? 0), 0) / fList.length
+    const avgC = fList.reduce((s, f) => s + cScore(f), 0) / fList.length
+    const residual = avgH * (1 - avgC / 5)
+    return { avgH: parseFloat(avgH.toFixed(2)), avgC: parseFloat(avgC.toFixed(2)), residual: parseFloat(residual.toFixed(2)) }
+  }
+
+  const rColor = (v: number) => v >= 4 ? '#EF4444' : v >= 3 ? '#F97316' : v >= 2 ? '#F59E0B' : '#22C55E'
+  const rBg    = (v: number) => v >= 4 ? '#FEF2F2' : v >= 3 ? '#FFF7ED' : v >= 2 ? '#FFFBEB' : '#F0FDF4'
+
+  const rows = [...nbMap.entries()].map(([nb, sMap]) => {
+    const allF    = [...sMap.values()].flat()
+    const metrics = calcMetrics(allF)
+    const sectors = [...sMap.entries()].map(([sector, fList]) => ({
+      sector, facilities: fList, ...calcMetrics(fList),
+    })).sort((a, b) => b.residual - a.residual)
+    return { nb, sayi: allF.length, ...metrics, sectors }
+  }).sort((a, b) => b.residual - a.residual)
+
+  const COL = '2fr 0.55fr 1fr 1fr 1fr'
+
+  return (
+    <Card>
+      <div className="p-4 border-b border-gray-100 flex items-center justify-between flex-wrap gap-2">
+        <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+          <span style={{ color: GOLD }}>⚠</span> Exposure Hiyerarşi Tablosu
+        </h3>
+        <span className="text-xs text-gray-400">Mahalle → Sektör → Tesis · Residual Exposure sıralı</span>
+      </div>
+      {/* Sütun başlıkları */}
+      <div className="hidden lg:grid px-4 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-widest border-b border-gray-50"
+           style={{ gridTemplateColumns: COL }}>
+        <span>Mahalle / Sektör</span><span>Tesis</span>
+        <span>Inherent Risk (H̄)</span><span>Kontrol Etkinliği</span><span>Residual Exp.</span>
+      </div>
+      <div className="divide-y divide-gray-50">
+        {rows.map(row => {
+          const nbOpen = expanded.has(`nb_${row.nb}`)
+          return (
+            <div key={row.nb}>
+              {/* Mahalle satırı */}
+              <button onClick={() => toggle(`nb_${row.nb}`)} className="w-full text-left hover:bg-gray-50 transition-colors">
+                <div className="grid items-center px-4 py-3 gap-2" style={{ gridTemplateColumns: COL }}>
+                  <div className="flex items-center gap-2">
+                    <span style={{ fontSize: 10, color: '#9CA3AF', display: 'inline-block', transition: 'transform .2s',
+                                   transform: nbOpen ? 'rotate(90deg)' : 'none' }}>▶</span>
+                    <span className="text-sm font-semibold text-gray-900">{row.nb}</span>
+                  </div>
+                  <span className="text-sm font-mono text-gray-600">{row.sayi}</span>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full border w-fit"
+                        style={{ color: rColor(row.avgH), background: rBg(row.avgH), borderColor: rColor(row.avgH)+'40' }}>
+                    {row.avgH.toFixed(1)}
+                  </span>
+                  <span className="text-xs font-mono text-blue-600">{((row.avgC/5)*100).toFixed(0)}%</span>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full border w-fit"
+                        style={{ color: rColor(row.residual), background: rBg(row.residual), borderColor: rColor(row.residual)+'40' }}>
+                    {row.residual.toFixed(2)}
+                  </span>
+                </div>
+              </button>
+
+              {/* Sektör satırları */}
+              {nbOpen && row.sectors.map(sec => {
+                const secKey = `sec_${row.nb}_${sec.sector}`
+                const secOpen = expanded.has(secKey)
+                const sm = SEKTOR_META[sec.sector] ?? SEKTOR_META.OTHER
+                return (
+                  <div key={sec.sector} style={{ background: '#FAFAFA' }}>
+                    <button onClick={() => toggle(secKey)} className="w-full text-left hover:bg-blue-50/60 transition-colors">
+                      <div className="grid items-center gap-2 py-2.5"
+                           style={{ gridTemplateColumns: COL, paddingLeft: 32, paddingRight: 16 }}>
+                        <div className="flex items-center gap-2">
+                          <span style={{ fontSize: 9, color: '#9CA3AF', display: 'inline-block', transition: 'transform .2s',
+                                         transform: secOpen ? 'rotate(90deg)' : 'none' }}>▶</span>
+                          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: sm.renk }}/>
+                          <span className="text-xs font-medium text-gray-700">{sm.label}</span>
+                        </div>
+                        <span className="text-xs font-mono text-gray-500">{sec.facilities.length}</span>
+                        <span className="text-xs font-mono font-semibold" style={{ color: rColor(sec.avgH) }}>{sec.avgH.toFixed(1)}</span>
+                        <span className="text-xs font-mono text-blue-500">{((sec.avgC/5)*100).toFixed(0)}%</span>
+                        <span className="text-xs font-mono font-semibold" style={{ color: rColor(sec.residual) }}>{sec.residual.toFixed(2)}</span>
+                      </div>
+                    </button>
+                    {/* Tesis satırları */}
+                    {secOpen && sec.facilities
+                      .map(f => ({ f, res: (f.extra_data?.H_score ?? 0) * (1 - cScore(f)/5) }))
+                      .sort((a, b) => b.res - a.res)
+                      .slice(0, 10)
+                      .map(({ f, res }) => (
+                        <div key={f.id} className="grid items-center gap-2 hover:bg-blue-50/40 transition-colors"
+                             style={{ gridTemplateColumns: COL, paddingLeft: 52, paddingRight: 16,
+                                      paddingTop: 6, paddingBottom: 6, borderTop: '1px solid #F9FAFB' }}>
+                          <span className="text-xs text-gray-600 truncate">{f.name}</span>
+                          <span className="text-xs text-gray-400">—</span>
+                          <span className="text-xs font-mono" style={{ color: rColor(f.extra_data?.H_score ?? 0) }}>
+                            {(f.extra_data?.H_score ?? 0).toFixed(1)}
+                          </span>
+                          <span className="text-xs font-mono text-blue-400">{((cScore(f)/5)*100).toFixed(0)}%</span>
+                          <span className="text-xs font-mono" style={{ color: rColor(res) }}>{res.toFixed(2)}</span>
+                        </div>
+                      ))
+                    }
+                    {secOpen && sec.facilities.length > 10 && (
+                      <div className="text-xs text-gray-400 py-1.5 text-center" style={{ paddingLeft: 52 }}>
+                        +{sec.facilities.length - 10} tesis daha…
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )
+        })}
+      </div>
+    </Card>
+  )
+}
+
 /* ══════════════════════════════════════════════════════════════
    DYNAMIC IMPORT — CBS HARİTA
 ══════════════════════════════════════════════════════════════ */
@@ -608,6 +851,72 @@ function SendaiTab() {
         </div>
       </div>
 
+      {/* STRATEJİK TİMELINE */}
+      <div>
+        <p style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 16 }}>
+          Stratejik Zaman Çizelgesi
+        </p>
+        {(() => {
+          type MilestoneDurum = 'tamamlandı' | 'devam' | 'planlandı'
+          const milestones: { tarih: string; baslik: string; aciklama: string; durum: MilestoneDurum }[] = [
+            { tarih: 'Mart 2026',   baslik: 'Beylikdüzü Pilot Başlangıç',  aciklama: 'OMNI platform canlıya alındı. 782 tesis Supabase\'e yüklendi. HFER-720 v2.0 hesaplama motoru aktif.', durum: 'tamamlandı' },
+            { tarih: 'Nisan 2026',  baslik: 'İSTKA Başvurusu',             aciklama: 'Mekânsal Dönüşüm Projesi hibesi için belediye başvurusu. 10–20M TL finansman hedefi.', durum: 'devam' },
+            { tarih: 'Haziran 2026',baslik: '39 İlçe Genişleme',           aciklama: 'İstanbul\'un tüm ilçeleri OMNI platformuna dahil edilecek. Pilot başarısı temel şart.', durum: 'planlandı' },
+            { tarih: 'Eylül 2026',  baslik: 'AB Horizon Europe Başvurusu', aciklama: 'Cluster 3 konsorsiyum başvurusu. İTÜ AYM + 2 AB ortağı ile €5–15M fon hedefi.', durum: 'planlandı' },
+            { tarih: 'Aralık 2026', baslik: '%75 Sendai Uyum Hedefi',      aciklama: 'Mevcut %47\'den %75\'e çıkarılacak. SF-3 ve SF-4 öncelikli müdahale alanları.', durum: 'planlandı' },
+            { tarih: '2027',        baslik: '81 İl Ölçekleme',             aciklama: 'OMNI platformunun tüm Türkiye genelinde yaygınlaştırılması. AFAD ulusal entegrasyon.', durum: 'planlandı' },
+          ]
+          const RENK: Record<MilestoneDurum, { circle: string; text: string; bg: string; border: string; icon: string }> = {
+            tamamlandı: { circle: '#10B981', text: '#059669', bg: '#F0FDF4', border: '#6EE7B7', icon: '✓' },
+            devam:      { circle: '#3B82F6', text: '#1D4ED8', bg: '#EFF6FF', border: '#93C5FD', icon: '→' },
+            planlandı:  { circle: '#9CA3AF', text: '#6B7280', bg: '#F9FAFB', border: '#E5E7EB', icon: '○' },
+          }
+          const SVG_H = milestones.length * 80 + 20
+          const CX = 28, Y0 = 30, STEP = 80
+          return (
+            <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
+              {/* SVG dikey çizgi + daireler */}
+              <svg width="56" height={SVG_H} viewBox={`0 0 56 ${SVG_H}`} style={{ flexShrink: 0 }}>
+                <line x1={CX} y1={Y0} x2={CX} y2={Y0 + (milestones.length - 1) * STEP} stroke="#E5E7EB" strokeWidth="2"/>
+                {milestones.map((m, i) => {
+                  const r = RENK[m.durum]
+                  const cy = Y0 + i * STEP
+                  return (
+                    <g key={i}>
+                      <circle cx={CX} cy={cy} r={13} fill={r.circle} stroke="white" strokeWidth="2.5"/>
+                      <text x={CX} y={cy + 4} textAnchor="middle" fontSize="10" fontWeight="700" fill="white">
+                        {r.icon}
+                      </text>
+                    </g>
+                  )
+                })}
+              </svg>
+              {/* Milestone kartları */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 18, paddingTop: 12 }}>
+                {milestones.map((m, i) => {
+                  const r = RENK[m.durum]
+                  return (
+                    <div key={i} style={{ background: r.bg, border: `1px solid ${r.border}`, borderRadius: 12, padding: '12px 16px', marginBottom: 2 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4, flexWrap: 'wrap', gap: 6 }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, fontFamily: 'DM Mono,monospace', color: r.text, letterSpacing: 0.5 }}>
+                          {m.tarih}
+                        </span>
+                        <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
+                                       color: r.text, background: 'white', border: `1px solid ${r.border}` }}>
+                          {m.durum.charAt(0).toUpperCase() + m.durum.slice(1)}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: '#111827', margin: '0 0 4px' }}>{m.baslik}</p>
+                      <p style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5, margin: 0 }}>{m.aciklama}</p>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })()}
+      </div>
+
     </div>
   )
 }
@@ -900,6 +1209,14 @@ export default function BeylikduzuKomuta() {
                 </div>
               </Card>
             </div>
+
+            {/* SCATTER PLOT */}
+            {!loading && facilities.length > 0 && (
+              <Card className="p-6">
+                <SectionTitle icon={<IcoGrid/>} title="Tehlike vs Kapasite Matrisi"/>
+                <ScatterPlot facilities={facilities}/>
+              </Card>
+            )}
           </div>
         )}
 
@@ -975,6 +1292,11 @@ export default function BeylikduzuKomuta() {
                 })}
               </div>
             </Card>
+
+            {/* EXPOSURE HİYERARŞİ TABLOSU */}
+            {!loading && facilities.length > 0 && (
+              <ExposureHierarchy facilities={facilities}/>
+            )}
           </div>
         )}
 

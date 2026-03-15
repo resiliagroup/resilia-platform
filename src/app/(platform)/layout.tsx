@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { mevcutKullanici } from '@/lib/auth';
 import Link from 'next/link';
-import { Shield, BarChart3, Map, Building2, Settings, Activity, AlertTriangle, Database, History, Home } from 'lucide-react';
+import { Shield, BarChart3, Map, Building2, Settings, Activity, AlertTriangle, Database, History, Home, LayoutGrid, FileText, Siren } from 'lucide-react';
 
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
   const [tenant, setTenant] = useState('...')
@@ -31,6 +31,11 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
         </div>
 
         <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
+          <Link href="/hub" className="flex items-center gap-3 px-3 py-2.5 mb-3 hover:bg-slate-800/40 hover:text-white text-slate-300 rounded-lg transition-all text-sm font-semibold bg-slate-800/20">
+            <LayoutGrid className="w-4 h-4 text-[#E8C97A]" />
+            <span>Hub</span>
+          </Link>
+
           <p className="px-3 mb-3 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Risk Motoru</p>
           
           <Link href="/hfe-motoru" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
@@ -67,6 +72,16 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
           <Link href="/tesis-agi" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
             <Building2 className="w-4 h-4 text-slate-400" />
             <span>Tesis Ağı</span>
+          </Link>
+
+          <Link href="/omniplan" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
+            <FileText className="w-4 h-4 text-[#3B82F6]" />
+            <span>omniPLAN</span>
+          </Link>
+
+          <Link href="/omnicrisis" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
+            <Siren className="w-4 h-4 text-[#8B5CF6]" />
+            <span>omniCRISIS</span>
           </Link>
 
           <p className="px-3 mt-6 mb-3 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Yönetim</p>
