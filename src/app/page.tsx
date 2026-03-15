@@ -341,23 +341,35 @@ function LogoBand() {
 
 /* ── products ───────────────────────────────────────────────── */
 const products = [
-  { code: 'omniRISK',   color: T,         href: '/products/omnirisk',
-    desc: 'ISO 31000 çerçevesinde tehlike, kırılganlık, maruziyet ve kapasite parametrelerini bütünleştirerek kurumsal risk envanterini nicel biçimde değerlendiren ve gerçek zamanlı izleme sağlayan karar destek modülü.',
+  { code: 'omniRISK',
+    title: 'Çok Tehlikeli Risk Değerlendirme Motoru (ISO 31000)',
+    color: T, href: '/products/omnirisk',
+    desc: 'Tehlike (H), kırılganlık (F), maruziyet (E) ve kapasite (R) parametrelerini HFER-720 motoruyla bütünleştirerek tesis kırılganlık ve maruziyet değerlendirmesi gerçekleştiren, kurumsal risk envanterini gerçek zamanlı izleyen karar destek modülü.',
     icon: <IconRisk size={52}/> },
-  { code: 'omniIMPACT', color: '#C8A84A', href: '/products/omniimpact',
-    desc: 'ISO 22301 uyumlu İş Etki Analizi (BIA) metodolojisiyle kritik iş süreçlerinin bağımlılık yapısını, kurtarma süresi ve nokta hedeflerini (RTO/RPO) ve kritiklik matrisini sistematik biçimde modelleyen analitik modül.',
+  { code: 'omniIMPACT',
+    title: 'İş Etki Analizi ve Kritiklik Modeli (ISO 22301 Md. 8.2)',
+    color: '#C8A84A', href: '/products/omniimpact',
+    desc: 'ISO 22301 Madde 8.2 kapsamında kritik iş süreçlerinin bağımlılık yapısını, Maksimum Tolere Edilebilir Kesinti Süresi (MTD), Kurtarma Süresi Hedefi (RTO) ve Kurtarma Noktası Hedefini (RPO) sistematik biçimde modelleyen İş Etki Analizi modülü.',
     icon: <IconImpact size={52}/> },
-  { code: 'omniPLAN',   color: '#3B7EC8', href: '/products/omniplan',
-    desc: 'ISO 22301 standardı çerçevesinde İş Sürekliliği Planlarının yapılandırılması, onay süreçlerinin yönetimi ve tatbikat takvimlerinin planlanmasını destekleyen bütünleşik dokümantasyon modülü.',
+  { code: 'omniPLAN',
+    title: 'İş Sürekliliği Planı Yönetimi (ISO 22301 Md. 8.4)',
+    color: '#3B7EC8', href: '/products/omniplan',
+    desc: 'ISO 22301 Madde 8.4 çerçevesinde İş Sürekliliği Planları (İSP) oluşturulması, onay döngüsü yönetimi, tatbikat planlaması ve İSYS belge kontrolünü destekleyen bütünleşik süreklilik yönetim modülü.',
     icon: <IconPlan size={52}/> },
-  { code: 'omniCRISIS', color: R_O, href: '/products/omnicrisis',
-    desc: 'Olay yönetimi hiyerarşisi içinde görev atamalarını, iletişim protokollerini ve karar destek akışlarını entegre eden komuta merkezi modülü; kriz sürecinin tüm aşamalarında kurumsal koordinasyonu sağlar.',
+  { code: 'omniCRISIS',
+    title: 'Olay Komuta Sistemi ve Kriz Koordinasyon Merkezi',
+    color: R_O, href: '/products/omnicrisis',
+    desc: 'Olay Komuta Sistemi (OKS) hiyerarşisi içinde görev atamalarını, iletişim protokollerini ve karar destek akışlarını entegre eden kriz koordinasyon merkezi; olayın tüm aşamalarında kurumsal komuta bütünlüğünü sağlar.',
     icon: <IconCrisis size={52}/> },
-  { code: 'omniAUDIT',  color: R_G, href: '#',
-    desc: 'ISO 22301 uyum denetim süreçlerini, Sendai Çerçevesi öncelik izlemesini ve iç kontrol etkinliği ölçümünü standart denetim metodolojileri doğrultusunda yürüten ve raporlayan uyum modülü.',
+  { code: 'omniAUDIT',
+    title: 'İSYS Performans Değerlendirmesi (ISO 22301 Md. 9)',
+    color: R_G, href: '#',
+    desc: 'ISO 22301 Madde 9 kapsamında İş Sürekliliği Yönetim Sistemi (İSYS) performansını, Sendai Çerçevesi öncelik uyumunu ve iç denetim etkinliğini ölçen; yönetimin gözden geçirmesine veri sağlayan uyum ve izleme modülü.',
     icon: <IconAudit size={52}/> },
-  { code: 'omniVENDOR', color: '#6366F1', href: '#',
-    desc: 'Tedarik zinciri risk skorlaması, kritik tedarikçi bağımlılık analizi ve üçüncü taraf kuruluşların iş sürekliliği olgunluk değerlendirmesini sistematik biçimde gerçekleştiren tedarikçi yönetim modülü.',
+  { code: 'omniVENDOR',
+    title: 'Tedarik Zinciri Dayanıklılık ve Üçüncü Taraf Risk Yönetimi',
+    color: '#6366F1', href: '#',
+    desc: 'Kritik tedarikçilerin HFER tabanlı risk skorlaması, tedarik zinciri bağımlılık analizi ve üçüncü taraf kuruluşların İSYS olgunluk değerlendirmesini standart metodolojiler doğrultusunda gerçekleştiren tedarik zinciri dayanıklılık modülü.',
     icon: <IconVendor size={52}/> },
 ]
 
@@ -370,6 +382,222 @@ const testimonials = [
   { quote: 'omniCRISIS modülünün olay yönetimi altyapısı, kriz koordinasyon süreçlerimizin kurumsal yönetişim standartlarıyla uyumunu doğrudan destekledi.',
     name:  'İcra Kurulu Üyesi', role:  'Kamu ve Belediye Sektörü' },
 ]
+
+/* ═══════════════════════════════════════════════════════════════
+   McKINSEY/WEF TARZΙ SVG İNFOGRAFİKLER
+═══════════════════════════════════════════════════════════════ */
+
+/* 1 — VUCA Matrix 2×2 */
+function VucaMatrix() {
+  const quads = [
+    { x: 0,   y: 0,   w: 200, h: 160, label: 'KOMPLİKE', sub: 'Düşük belirsizlik\nYüksek karmaşıklık', fill: `${R_Y}18`, border: R_Y, tx: 100, ty: 70 },
+    { x: 200, y: 0,   w: 200, h: 160, label: 'KAOTİK',   sub: 'VUCA Bölgesi\nOmniversel Çözüm Alanı', fill: `${R_R}20`, border: R_R, tx: 300, ty: 70 },
+    { x: 0,   y: 160, w: 200, h: 160, label: 'BASİT',    sub: 'Düşük belirsizlik\nDüşük karmaşıklık',  fill: `${R_G}14`, border: R_G, tx: 100, ty: 230 },
+    { x: 200, y: 160, w: 200, h: 160, label: 'KARMAŞIK',  sub: 'Yüksek belirsizlik\nDüşük karmaşıklık', fill: `${R_O}15`, border: R_O, tx: 300, ty: 230 },
+  ]
+  return (
+    <svg viewBox="0 0 440 340" style={{ width: '100%', maxWidth: 480, display: 'block' }}>
+      {/* Quadrants */}
+      {quads.map((q, i) => (
+        <g key={i}>
+          <rect x={q.x + 2} y={q.y + 2} width={q.w - 4} height={q.h - 4}
+                fill={q.fill} stroke={q.border} strokeWidth="1.5" rx="4"/>
+          <text x={q.tx} y={q.ty - 12} textAnchor="middle" fill={N}
+                fontSize="11" fontWeight="700" fontFamily="DM Sans,sans-serif">{q.label}</text>
+          {q.sub.split('\n').map((line, j) => (
+            <text key={j} x={q.tx} y={q.ty + 6 + j * 14} textAnchor="middle" fill={MG}
+                  fontSize="9" fontFamily="DM Sans,sans-serif">{line}</text>
+          ))}
+        </g>
+      ))}
+      {/* VUCA highlight overlay top-right */}
+      <rect x="202" y="2" width="196" height="156" fill="none" stroke={R_R} strokeWidth="2.5"
+            strokeDasharray="6 3" rx="4"/>
+      <text x="390" y="18" textAnchor="end" fill={R_R} fontSize="9" fontWeight="700"
+            fontFamily="DM Sans,sans-serif">HEDEF ALAN</text>
+      {/* Omniversel arrow */}
+      <line x1="300" y1="140" x2="300" y2="90" stroke={T} strokeWidth="1.5" strokeDasharray="4 3" markerEnd="url(#arr)"/>
+      <text x="300" y="152" textAnchor="middle" fill={T} fontSize="8" fontWeight="700"
+            fontFamily="DM Sans,sans-serif">omniRISK çözüm bandı</text>
+      <defs>
+        <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L6,3 Z" fill={T}/>
+        </marker>
+      </defs>
+      {/* Axes */}
+      <line x1="220" y1="0" x2="220" y2="320" stroke={BORDER} strokeWidth="1.5"/>
+      <line x1="0" y1="160" x2="420" y2="160" stroke={BORDER} strokeWidth="1.5"/>
+      {/* Axis labels */}
+      <text x="210" y="334" textAnchor="middle" fill={MG} fontSize="10" fontWeight="600"
+            fontFamily="DM Sans,sans-serif">← Düşük Belirsizlik · Yüksek Belirsizlik →</text>
+      <text x="-160" y="12" transform="rotate(-90)" textAnchor="middle" fill={MG} fontSize="10"
+            fontWeight="600" fontFamily="DM Sans,sans-serif">← Düşük Karmaşıklık · Yüksek →</text>
+    </svg>
+  )
+}
+
+/* 2 — Capacity Effect Chart (logarithmic / C² effect) */
+function CapacityChart() {
+  const W = 420, H = 220, PL = 56, PR = 24, PT = 20, PB = 48
+  const cw = W - PL - PR, ch = H - PT - PB
+  // C² eğrisi: X=0..1, Y = 1 - e^(-4x²)  → mapped to canvas
+  const curve: string[] = []
+  for (let i = 0; i <= 50; i++) {
+    const t = i / 50            // 0..1
+    const x = PL + t * cw
+    const y = PT + ch - (1 - Math.exp(-5 * t * t)) * ch
+    curve.push(`${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`)
+  }
+  // Linear reference: same X range, straight diagonal
+  const linStart = `M${PL},${PT + ch}`
+  const linEnd   = `L${PL + cw},${PT}`
+  // ALARP band: y between 40% and 65% risk reduction
+  const alarpY1 = PT + ch - 0.40 * ch
+  const alarpY2 = PT + ch - 0.65 * ch
+  // X axis labels
+  const xLabels = ['1','2','3','4','5']
+  // Y axis labels
+  const yLabels = ['0%','25%','50%','75%','95%+']
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: 480, display: 'block' }}>
+      {/* ALARP band */}
+      <rect x={PL} y={alarpY2} width={cw} height={alarpY1 - alarpY2}
+            fill={`${R_Y}18`} stroke="none"/>
+      <text x={PL + cw + 4} y={(alarpY1 + alarpY2) / 2 + 4} fill={R_Y} fontSize="8"
+            fontWeight="700" fontFamily="DM Sans,sans-serif">ALARP</text>
+      {/* Grid lines */}
+      {[0.25, 0.5, 0.75, 1].map(f => {
+        const gy = PT + ch - f * ch
+        return <line key={f} x1={PL} y1={gy} x2={PL + cw} y2={gy}
+                     stroke={BORDER} strokeWidth="1" strokeDasharray="4 4"/>
+      })}
+      {/* Linear reference */}
+      <path d={`${linStart} ${linEnd}`} fill="none" stroke="#C0CDD8"
+            strokeWidth="1.5" strokeDasharray="5 4"/>
+      <text x={PL + cw - 4} y={PT + 10} textAnchor="end" fill="#C0CDD8" fontSize="8"
+            fontFamily="DM Sans,sans-serif">Doğrusal</text>
+      {/* C² HFER curve */}
+      <path d={curve.join(' ')} fill="none" stroke={T} strokeWidth="2.5" strokeLinecap="round"/>
+      {/* C² annotation */}
+      <text x={PL + cw * 0.62} y={PT + ch * 0.22} fill={T} fontSize="9" fontWeight="700"
+            fontFamily="DM Sans,sans-serif">C² Etkisi ↑</text>
+      {/* Axes */}
+      <line x1={PL} y1={PT} x2={PL} y2={PT + ch} stroke={N} strokeWidth="1.5"/>
+      <line x1={PL} y1={PT + ch} x2={PL + cw} y2={PT + ch} stroke={N} strokeWidth="1.5"/>
+      {/* X labels */}
+      {xLabels.map((l, i) => (
+        <text key={l} x={PL + (i + 0.5) * cw / 5} y={PT + ch + 16} textAnchor="middle"
+              fill={MG} fontSize="9" fontFamily="DM Sans,sans-serif">{l}</text>
+      ))}
+      <text x={PL + cw / 2} y={H - 4} textAnchor="middle" fill={MG} fontSize="9"
+            fontWeight="600" fontFamily="DM Sans,sans-serif">Kapasite Yatırımı →</text>
+      {/* Y labels */}
+      {yLabels.map((l, i) => {
+        const gy = PT + ch - (i / 4) * ch
+        return <text key={l} x={PL - 6} y={gy + 4} textAnchor="end" fill={MG}
+                     fontSize="8" fontFamily="DM Sans,sans-serif">{l}</text>
+      })}
+    </svg>
+  )
+}
+
+/* 3 — ISYS Maturity Ladder */
+function MaturityLadder() {
+  const steps = [
+    { level: '01', label: 'Reaktif',    sub: 'Yalnızca olaydan sonra',  color: '#CBD5E1' },
+    { level: '02', label: 'Farkındalık', sub: 'Riskler tanımlandı',     color: R_Y },
+    { level: '03', label: 'Tanımlı',    sub: 'Süreçler belgelendi',      color: R_O },
+    { level: '04', label: 'Yönetilen',  sub: 'Ölçülen & izlenen',        color: '#6ABFB8' },
+    { level: '05', label: 'Optimize',   sub: 'Sürekli iyileştirme',      color: T },
+  ]
+  const W = 260, stepH = 52, totalH = steps.length * stepH + 32
+  return (
+    <svg viewBox={`0 0 ${W} ${totalH}`} style={{ width: '100%', maxWidth: 280, display: 'block' }}>
+      <text x={W / 2} y="16" textAnchor="middle" fill={MG} fontSize="9" fontWeight="700"
+            fontFamily="DM Sans,sans-serif" letterSpacing="1">İSYS OLGUNLUK MODELİ</text>
+      {steps.map((s, i) => {
+        const rev  = steps.length - 1 - i        // top = highest
+        const y    = 24 + rev * stepH
+        const wide = 120 + rev * 24              // wider at top
+        const x    = (W - wide) / 2
+        const hi   = i === 3 || i === 4           // highlight omniverSEL band
+        return (
+          <g key={i}>
+            <rect x={x} y={y} width={wide} height={stepH - 6} rx="5"
+                  fill={hi ? `${s.color}25` : '#F8FAFA'} stroke={s.color} strokeWidth={hi ? 2 : 1}/>
+            <text x={x + 10} y={y + 17} fill={s.color} fontSize="9" fontWeight="700"
+                  fontFamily="DM Mono,monospace">{s.level}</text>
+            <text x={x + 10} y={y + 31} fill={N} fontSize="11" fontWeight="700"
+                  fontFamily="DM Sans,sans-serif">{s.label}</text>
+            <text x={x + 10} y={y + 43} fill={MG} fontSize="9"
+                  fontFamily="DM Sans,sans-serif">{s.sub}</text>
+            {hi && <text x={x + wide - 6} y={y + 24} textAnchor="end" fill={T} fontSize="8"
+                          fontWeight="700" fontFamily="DM Sans,sans-serif">◀ OMNI</text>}
+          </g>
+        )
+      })}
+    </svg>
+  )
+}
+
+/* 4 — Risk Tolerance Matrix 5×5 */
+function RiskMatrix() {
+  const COLS = 5, ROWS = 5
+  const cellColors: string[][] = [
+    [R_G, R_G, R_G, R_Y, R_Y],
+    [R_G, R_G, R_Y, R_Y, R_O],
+    [R_G, R_Y, R_Y, R_O, R_O],
+    [R_Y, R_Y, R_O, R_R, R_R],
+    [R_Y, R_O, R_R, R_R, R_R],
+  ]
+  // Sample sector dots [col, row, label]
+  const dots: [number, number, string][] = [
+    [3, 0, 'Banka'],
+    [4, 1, 'Hastane'],
+    [2, 2, 'Sanayi'],
+    [1, 3, 'Okul'],
+    [3, 3, 'Altyapı'],
+  ]
+  const cs = 44, ml = 36, mt = 8
+  const W = ml + COLS * cs + 16, H = mt + ROWS * cs + 36
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: 300, display: 'block' }}>
+      {cellColors.map((row, ri) =>
+        row.map((color, ci) => {
+          const x = ml + ci * cs, y = mt + ri * cs
+          return (
+            <rect key={`${ri}-${ci}`} x={x + 1} y={y + 1} width={cs - 2} height={cs - 2}
+                  fill={`${color}22`} stroke={`${color}50`} strokeWidth="1" rx="2"/>
+          )
+        })
+      )}
+      {dots.map(([ci, ri, label], i) => {
+        const x = ml + ci * cs + cs / 2, y = mt + ri * cs + cs / 2
+        return (
+          <g key={i}>
+            <circle cx={x} cy={y} r="9" fill={N} stroke={BG} strokeWidth="1.5"/>
+            <text x={x} y={y + 4} textAnchor="middle" fill={BG} fontSize="7"
+                  fontWeight="700" fontFamily="DM Sans,sans-serif">{label.slice(0,3)}</text>
+          </g>
+        )
+      })}
+      {/* Axis labels */}
+      {['1','2','3','4','5'].map((l, i) => (
+        <g key={l}>
+          <text x={ml + i * cs + cs / 2} y={mt + ROWS * cs + 16} textAnchor="middle"
+                fill={MG} fontSize="9" fontFamily="DM Sans,sans-serif">{l}</text>
+          <text x={ml - 6} y={mt + (ROWS - 1 - i) * cs + cs / 2 + 4} textAnchor="end"
+                fill={MG} fontSize="9" fontFamily="DM Sans,sans-serif">{l}</text>
+        </g>
+      ))}
+      <text x={ml + (COLS * cs) / 2} y={H - 4} textAnchor="middle" fill={MG} fontSize="9"
+            fontWeight="600" fontFamily="DM Sans,sans-serif">Olasılık →</text>
+      <text x="8" y={mt + (ROWS * cs) / 2} textAnchor="middle" fill={MG} fontSize="9"
+            fontWeight="600" transform={`rotate(-90,8,${mt + (ROWS * cs) / 2})`}
+            fontFamily="DM Sans,sans-serif">Etki</text>
+    </svg>
+  )
+}
 
 /* ── StatItem ─────────────────────────────────────────────────── */
 function StatItem({ target, suffix, label, go }: { target: number; suffix: string; label: string; go: boolean }) {
@@ -622,43 +850,38 @@ export default function Page() {
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: T,
                               display: 'inline-block' }}/>
               <span style={{ color: T, fontSize: 12, fontWeight: 600, letterSpacing: 1 }}>
-                HFER-720 Motor Aktif · ISO 22301
+                HFER-720 Motor Aktif · ISO 22301 · ISO 31000 · ISO 22316
               </span>
             </div>
 
-            <h1 style={{ fontSize: 'clamp(32px, 4vw, 58px)', fontWeight: 700,
-                         lineHeight: 1.12, color: N, marginBottom: 24 }}>
-              Kentsel Dirençlilik İçin<br/>
-              <span style={{ color: T }}>Bilimsel Temelli</span><br/>
-              Karar Destek Sistemi
+            <h1 style={{ fontSize: 'clamp(30px, 3.8vw, 54px)', fontWeight: 700,
+                         lineHeight: 1.1, color: N, marginBottom: 24 }}>
+              VUCA Dünyasında<br/>
+              <span style={{ color: T }}>Kurumsal Dayanıklılık</span>
             </h1>
 
-            <p style={{ color: MG, fontSize: 17, lineHeight: 1.8,
-                        maxWidth: 520, marginBottom: 40, fontWeight: 400 }}>
-              Çok tehlikeli kentsel ortamlarda kurumsal dayanıklılığın ölçülmesi, planlanması ve
-              yönetilmesi için HFER-720 motorunu kullanan bütünleşik bir analitik platform.
+            <p style={{ color: MG, fontSize: 16, lineHeight: 1.85,
+                        maxWidth: 540, marginBottom: 40, fontWeight: 400 }}>
+              Değişken, belirsiz, karmaşık ve muğlak (VUCA) risk ortamında; kentsel tesis ağlarının
+              nicel dayanıklılık değerlendirmesi, İş Sürekliliği Yönetimi (ISO 22301) ve
+              gerçek zamanlı Olay Komuta desteği için bütünleşik analitik platform.
             </p>
 
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 52 }}>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 40 }}>
               <Link href="/login" className="btn-teal" style={{ fontSize: 15, padding: '13px 32px' }}>
                 Ücretsiz Demo
               </Link>
               <a href="#products" className="btn-outline" style={{ fontSize: 15, padding: '12px 32px' }}>
-                Ürünleri Keşfet
+                Modülleri İncele
               </a>
             </div>
 
-            {/* trust row */}
-            <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
-              {[
-                { v: '720+', l: 'Parametre' },
-                { v: '39',   l: 'İlçe' },
-                { v: '%98',  l: 'Uptime' },
-              ].map(s => (
-                <div key={s.l}>
-                  <div style={{ color: N, fontSize: 24, fontWeight: 700 }}>{s.v}</div>
-                  <div style={{ color: MG, fontSize: 12, fontWeight: 500, marginTop: 2 }}>{s.l}</div>
-                </div>
+            {/* trust badges */}
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {['ISO 22301', 'ISO 31000', 'ISO 22316', 'UNDRR Sendai', 'AFAD'].map(b => (
+                <span key={b} style={{ background: `${T}10`, color: T, fontSize: 10,
+                                        fontWeight: 700, letterSpacing: 0.8, padding: '5px 12px',
+                                        borderRadius: 20, border: `1px solid ${T}25` }}>{b}</span>
               ))}
             </div>
           </div>
@@ -686,22 +909,84 @@ export default function Page() {
         </div>
       </section>
 
+      {/* ══ PROBLEM TANIMI ═══════════════════════════════════════ */}
+      <section style={{ padding: '100px 48px', background: BG }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 72, alignItems: 'center' }}>
+            {/* Left: VUCA Matrix */}
+            <div>
+              <VucaMatrix />
+            </div>
+            {/* Right: text */}
+            <div>
+              <p style={{ color: R_R, fontSize: 12, fontWeight: 700, letterSpacing: 3,
+                          textTransform: 'uppercase', marginBottom: 14 }}>
+                Problem Tanımı
+              </p>
+              <h2 style={{ color: N, fontSize: 'clamp(24px, 3.2vw, 36px)', fontWeight: 700,
+                            lineHeight: 1.2, marginBottom: 24 }}>
+                VUCA Ortamında Geleneksel Acil Durum Planlarının Yetersizliği
+              </h2>
+              <div style={{ background: `${R_Y}10`, border: `1px solid ${R_Y}30`,
+                             borderLeft: `4px solid ${R_Y}`, borderRadius: 8,
+                             padding: '16px 20px', marginBottom: 24 }}>
+                <p style={{ color: N, fontSize: 13, lineHeight: 1.75, fontWeight: 500 }}>
+                  <strong style={{ color: R_O }}>WEF Küresel Riskler Raporu 2023:</strong>{' '}
+                  Dünya Ekonomik Forumu&apos;na göre, doğal afetler ve iklim değişikliği kaynaklı
+                  riskler ilk beş küresel risk arasında yer almaktadır. Kurumsal hazırlıksızlık,
+                  operasyonel kesintilerin ekonomik maliyetini katlanarak artırmaktadır.
+                </p>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {[
+                  {
+                    icon: R_R,
+                    title: 'NATECH Kaskad Etkileri',
+                    desc: 'Doğa Kaynaklı Teknolojik Kaza (NATECH) senaryolarında kaskad etkiler, izole hazırlanan planları geçersiz kılmaktadır. Bağımlılık analizi yapılmaksızın üretilen İSP\'ler, gerçek kesinti koşullarında işlevselliğini yitirmektedir.',
+                  },
+                  {
+                    icon: R_O,
+                    title: 'Silolu Planlama Yaklaşımı',
+                    desc: 'Kurumlar arası bağımlılıklar göz ardı edilerek hazırlanan tekil İş Sürekliliği Planları (İSP), sistem genelinde domino etkisiyle yayılan arızaları önleyememektedir.',
+                  },
+                  {
+                    icon: R_Y,
+                    title: 'Nicel Değerlendirme Eksikliği',
+                    desc: 'Nitel risk tanımlamalarından üretilen öncelik sıralamaları, kaynak tahsisinde veri odaklı karar desteği sağlayamamakta; ALARP ilkesiyle uyumlu risk müdahale hiyerarşisi kurulamamaktadır.',
+                  },
+                ].map((item, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.icon,
+                                   flexShrink: 0, marginTop: 6 }}/>
+                    <div>
+                      <div style={{ color: N, fontWeight: 700, fontSize: 14, marginBottom: 4 }}>{item.title}</div>
+                      <p style={{ color: MG, fontSize: 13, lineHeight: 1.7 }}>{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ══ HOW IT WORKS ═════════════════════════════════════════ */}
-      <section ref={howSection.ref} style={{ padding: '100px 48px', background: BG }}>
+      <section ref={howSection.ref} style={{ padding: '100px 48px', background: GR }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
-            <SectionLabel text="Nasıl Çalışır?" />
-            <SectionTitle>Dört Adımda Dayanıklılık</SectionTitle>
-            <p style={{ color: MG, fontSize: 16, maxWidth: 560, margin: '0 auto' }}>
-              Platform; ham veriden nicel risk değerlendirmesine, oradan kurumsal karar desteğine uzanan sistematik bir analiz altyapısı sunar.
+            <SectionLabel text="Metodoloji" />
+            <SectionTitle>Dört Aşamalı İSYS Uygulama Süreci</SectionTitle>
+            <p style={{ color: MG, fontSize: 16, maxWidth: 600, margin: '0 auto' }}>
+              Platform; tesis kırılganlık envanterinden nicel Afet Risk Yönetimi değerlendirmesine,
+              oradan ISO 22301 uyumlu İş Sürekliliği Yönetim Sistemi (İSYS) kurulumuna uzanan sistematik iş akışını destekler.
             </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
             {[
-              { num: '01', title: 'Veri Toplama & Envanter', desc: 'Tesis envanteri, CBS tabanlı coğrafi veri katmanları ve çok tehlikeli alan haritaları standart veri modeliyle sisteme aktarılır.', color: T },
-              { num: '02', title: 'Nicel Risk Değerlendirmesi', desc: 'HFER-720 motoru, her tesis için tehlike (H), kırılganlık, maruziyet ve kapasite parametrelerini işleyerek URI skoru üretir.', color: R_Y },
-              { num: '03', title: 'Süreklililik Planlaması', desc: 'Kritiklik sıralaması, BCP dokümantasyonu, RTO/RPO hedef belirleme ve tatbikat takvimi ISO 22301 çerçevesinde yönetilir.', color: R_O },
-              { num: '04', title: 'İzleme & Uyum Raporlaması', desc: 'Gerçek zamanlı gösterge paneli, denetim izleme kaydı ve Sendai Çerçevesi uyum skoru sistematik olarak izlenir ve raporlanır.', color: R_R },
+              { num: '01', title: 'Tesis Kırılganlık ve Maruziyet Değerlendirmesi', desc: 'CBS tabanlı coğrafi veri katmanları, çok tehlikeli alan haritaları ve yapısal envanter standart veri modeliyle sisteme aktarılarak tesis bazlı kırılganlık ve maruziyet profili oluşturulur.', color: T },
+              { num: '02', title: 'HFER-720 Risk Değerlendirmesi (ISO 31000)', desc: 'HFER-720 motoru; tehlike (H), kırılganlık, maruziyet ve kapasite parametrelerini ISO 31000 çerçevesinde işleyerek tesis bazlı URI (Unified Risk Index) skoru üretir.', color: R_Y },
+              { num: '03', title: 'İş Sürekliliği Planı (İSP) Geliştirme (ISO 22301)', desc: 'Kritiklik sıralaması, İş Etki Analizi (BIA), MTD/RTO/RPO hedef belirleme ve İSP dokümantasyonu ISO 22301 Madde 8 çerçevesinde yönetilir.', color: R_O },
+              { num: '04', title: 'İSYS Performans İzleme ve Uyum Raporlaması', desc: 'Gerçek zamanlı gösterge paneli, ISO 22301 Madde 9 kapsamında İSYS performans ölçümü, iç denetim kaydı ve Sendai Çerçevesi uyum skoru sistematik olarak izlenir ve raporlanır.', color: R_R },
             ].map((step, i) => (
               <div key={i} style={{
                 opacity: howSection.inView ? 1 : 0,
@@ -725,11 +1010,31 @@ export default function Page() {
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <SectionLabel text="Modüler Platform" />
-            <SectionTitle>Her Süreç İçin Doğru Modül</SectionTitle>
-            <p style={{ color: MG, fontSize: 16, maxWidth: 600, margin: '0 auto' }}>
-              ISO 22301, ISO 31000 ve Sendai Çerçevesi ile uyumlu altı modül; kurumsal risk
-              yönetimi döngüsünün her aşamasını sistematik biçimde destekler.
+            <SectionTitle>İSYS Yaşam Döngüsünün Her Aşaması İçin Modül</SectionTitle>
+            <p style={{ color: MG, fontSize: 16, maxWidth: 640, margin: '0 auto' }}>
+              ISO 22301, ISO 31000 ve ISO 22316 ile uyumlu altı modül; İş Sürekliliği Yönetim Sistemi
+              (İSYS) kurulum, işletim ve sürekli iyileştirme döngüsünü uçtan uca destekler.
             </p>
+          </div>
+          {/* İSYS Maturity Ladder */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 48, marginBottom: 48,
+                        background: BG, border: `1px solid ${BORDER}`, borderRadius: 16, padding: '32px 40px' }}>
+            <div style={{ flexShrink: 0 }}>
+              <MaturityLadder />
+            </div>
+            <div>
+              <p style={{ color: T, fontSize: 11, fontWeight: 700, letterSpacing: 2,
+                          textTransform: 'uppercase', marginBottom: 10 }}>İSYS Olgunluk Modeli</p>
+              <h3 style={{ color: N, fontSize: 20, fontWeight: 700, marginBottom: 12 }}>
+                Omniversel Kullanıcıları 4–5 Olgunluk Bandında Konumlanmaktadır
+              </h3>
+              <p style={{ color: MG, fontSize: 14, lineHeight: 1.8, maxWidth: 520 }}>
+                BCMMetrics ve Fusion RM yaklaşımlarıyla uyumlu bu model, kurumunuzun mevcut İSYS
+                olgunluk seviyesini ölçer ve Optimize (Seviye 5) bandına ulaşma yolunu sistematik
+                biçimde planlar. omniAUDIT modülü, periyodik olgunluk değerlendirmesini otomatik
+                yürüterek sürekli iyileştirmeyi (ISO 22301 Md. 10) kanıtlanabilir kılar.
+              </p>
+            </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             {products.map((p, i) => (
@@ -742,7 +1047,9 @@ export default function Page() {
                 <div style={{ marginBottom: 20 }}>{p.icon}</div>
                 <span className="product-tag"
                       style={{ background: `${p.color}14`, color: p.color }}>{p.code}</span>
-                <p style={{ color: MG, fontSize: 14, lineHeight: 1.75 }}>{p.desc}</p>
+                <div style={{ color: N, fontSize: 13, fontWeight: 600, lineHeight: 1.4,
+                               marginBottom: 10 }}>{p.title}</div>
+                <p style={{ color: MG, fontSize: 13, lineHeight: 1.75 }}>{p.desc}</p>
                 <Link href={p.href} style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 6,
                                color: p.color, fontSize: 13, fontWeight: 600 }}>
                   <span>Detayları İncele</span>
@@ -763,11 +1070,14 @@ export default function Page() {
           <div style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 20,
                         padding: '56px 64px', textAlign: 'center',
                         boxShadow: '0 4px 32px rgba(45,138,135,.08)' }}>
-            <SectionLabel text="HFER-720 Motor" />
+            <SectionLabel text="HFER-720 Motor — Sendai Çarpanı" />
             <h2 style={{ color: N, fontSize: 'clamp(24px, 3.5vw, 36px)', fontWeight: 700,
-                          lineHeight: 1.2, marginBottom: 32 }}>
-              Her Risk Skoru Bir Formüle Dayanır
+                          lineHeight: 1.2, marginBottom: 8 }}>
+              Kapasite Yatırımının Üstel Dayanıklılık Getirisi
             </h2>
+            <p style={{ color: T, fontSize: 13, fontWeight: 600, marginBottom: 28 }}>
+              HFER-720 Modeli — ALARP (As Low as is Reasonably Practicable) İlkesiyle Uyumlu
+            </p>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
                           gap: 16, flexWrap: 'wrap', marginBottom: 36 }}>
               {[
@@ -796,10 +1106,17 @@ export default function Page() {
                 )
               ))}
             </div>
-            <p style={{ color: MG, fontSize: 15, lineHeight: 1.8, maxWidth: 560, margin: '0 auto 28px' }}>
-              720 parametreli model; coğrafi, yapısal, operasyonel ve sosyal verileri
-              tek bir ölçülebilir URI skoruna dönüştürerek önceliklendirme yapar.
+            <p style={{ color: MG, fontSize: 15, lineHeight: 1.85, maxWidth: 620, margin: '0 auto 28px' }}>
+              HFER-720 formülündeki <strong style={{ color: N }}>C² (kapasite kare)</strong> terimi,
+              ISO 31000 risk müdahale hiyerarşisiyle uyumlu olarak, kurumsal kapasite artışının
+              <strong style={{ color: N }}> doğrusal olmayan (nonlinear) risk azaltma etkisini</strong>{' '}
+              matematiksel olarak ifade etmektedir. 720 parametre; coğrafi, yapısal, operasyonel
+              ve sosyal boyutları bütünleştirerek tek bir ölçülebilir URI skoru üretir.
             </p>
+            {/* Capacity Effect Chart */}
+            <div style={{ margin: '0 auto 28px', maxWidth: 480 }}>
+              <CapacityChart />
+            </div>
             <Link href="/products/omnirisk" style={{ display: 'inline-flex', alignItems: 'center', gap: 6,
                                                        color: T, fontSize: 14, fontWeight: 600,
                                                        border: `1.5px solid ${T}`, borderRadius: 6,
@@ -816,20 +1133,31 @@ export default function Page() {
       {/* ══ SECTORS ══════════════════════════════════════════════ */}
       <section id="sectors-detail" style={{ padding: '100px 48px', background: BG }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 64 }}>
-            <SectionLabel text="Sektörel Çözümler" />
-            <SectionTitle>Her Sektör İçin Özelleştirilmiş</SectionTitle>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 64,
+                        alignItems: 'start', marginBottom: 56 }}>
+            <div>
+              <SectionLabel text="Sektörel Çözümler" />
+              <SectionTitle>Sektöre Özgü Afet Risk Yönetimi</SectionTitle>
+              <p style={{ color: MG, fontSize: 15, lineHeight: 1.8, marginBottom: 28 }}>
+                Her sektörün kendine özgü tehlike profili, kırılganlık yapısı ve yasal
+                uyum gereksinimleri bulunmaktadır. Platform; Risk Toleransı Matrisini
+                (ISO 31000) sektör kalibrasyonuyla uygular.
+              </p>
+              <RiskMatrix />
+              <p style={{ color: MG, fontSize: 11, marginTop: 12, textAlign: 'center' }}>
+                Sektör bazlı risk toleransı konumlandırması (Olasılık × Etki Matrisi)
+              </p>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}>
             {[
-              { title: 'Bankacılık & Finans', desc: 'Sermaye yeterliliği, operasyonel risk ve BCM planları Basel III uyumlu.', standards: 'ISO 22301 · Basel III', iconBg: T },
-              { title: 'Sağlık & Hastane',    desc: 'Kritik tıbbi hizmetlerin sürekliliği ve tahliye planları.', standards: 'ISO 22301 · Sendai SF-3', iconBg: R_R },
-              { title: 'Sanayi & Üretim',     desc: 'NATECH senaryoları ve tedarik zinciri kesintisi analizi.', standards: 'RAPID-N · ISO 31000', iconBg: R_O },
-              { title: 'Eğitim Kurumları',    desc: 'Okul tahliye planları ve deprem tatbikatları.', standards: 'AFAD · Sendai SF-2', iconBg: '#3B7EC8' },
-              { title: 'Kritik Altyapı',      desc: 'Enerji, su, ulaşım altyapısının kademeli bozulma analizi.', standards: 'CIP Standartları · ISO 22301', iconBg: R_Y },
-              { title: 'Kamu & Belediye',     desc: 'İlçe bazlı risk haritası ve halk iletişim planı.', standards: 'Sendai · HFER-720', iconBg: T },
-              { title: 'Turizm & Konaklama',  desc: 'Otel tahliye planları ve sezon bazlı kriz senaryoları.', standards: 'ISO 22301 · NFPA 101', iconBg: '#7B5EA7' },
-              { title: 'Lojistik & Tedarik',  desc: 'Kritik tedarikçi analizi ve alternatif rota planlaması.', standards: 'ISO 28000 · ISO 22301', iconBg: '#2D8A87' },
+              { title: 'Bankacılık & Finans', desc: 'Operasyonel risk envanteri, İSYS kurulumu ve İSP geliştirme Basel III ve ISO 22301 uyum gereksinimleri doğrultusunda yürütülür.', standards: 'ISO 22301 · Basel III', iconBg: T },
+              { title: 'Sağlık & Hastane',    desc: 'Kritik hasta hizmetleri sürekliliği, tıbbi altyapı kırılganlık değerlendirmesi ve Olay Komuta Sistemi (OKS) entegrasyonu sağlanır.', standards: 'ISO 22301 · Sendai SF-3', iconBg: R_R },
+              { title: 'Sanayi & Üretim',     desc: 'NATECH kaskad senaryo analizi, tedarik zinciri kesintisi modellemesi ve ALARP ilkesiyle uyumlu risk müdahale planı üretilir.', standards: 'RAPID-N · ISO 31000', iconBg: R_O },
+              { title: 'Eğitim Kurumları',    desc: 'Afet Risk Yönetimi (ARM) planları, tatbikat yönetimi ve Sendai SF-2 kapsamında okul dirençlilik değerlendirmesi yapılır.', standards: 'AFAD · Sendai SF-2', iconBg: '#3B7EC8' },
+              { title: 'Kritik Altyapı',      desc: 'Enerji, su ve ulaşım sistemlerinde kademeli bozulma (N-1) analizi, bağımlılık haritalaması ve CIP standartlarına uyum sağlanır.', standards: 'CIP Standartları · ISO 22301', iconBg: R_Y },
+              { title: 'Kamu & Belediye',     desc: 'Kentsel ölçekte Tesis Kırılganlık ve Maruziyet Değerlendirmesi ile Sendai Çerçevesi önceliklerine göre yatırım planlaması gerçekleştirilir.', standards: 'Sendai · HFER-720', iconBg: T },
+              { title: 'Turizm & Konaklama',  desc: 'Misafir güvenliği protokolleri, tahliye planı ve sezon bazlı İSP geliştirme ISO 22301 ve NFPA 101 çerçevesinde yürütülür.', standards: 'ISO 22301 · NFPA 101', iconBg: '#7B5EA7' },
+              { title: 'Lojistik & Tedarik',  desc: 'Kritik tedarikçi kırılganlık skorlaması, alternatif tedarik rotası planlaması ve ISO 28000 kapsamında tedarik zinciri dayanıklılığı değerlendirilir.', standards: 'ISO 28000 · ISO 22301', iconBg: '#2D8A87' },
             ].map((sector, i) => (
               <div key={i}
                    style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 16,
@@ -861,6 +1189,7 @@ export default function Page() {
               </div>
             ))}
           </div>
+          </div>
         </div>
       </section>
 
@@ -872,21 +1201,22 @@ export default function Page() {
             <BcmCycle />
           </div>
           <div style={{ opacity: bcmSection.inView ? 1 : 0, transform: bcmSection.inView ? 'translateX(0)' : 'translateX(30px)', transition: 'all .7s ease .15s' }}>
-            <SectionLabel text="BCM Döngüsü" />
-            <SectionTitle>Kesintisiz Dayanıklılık<br/>Döngüsü</SectionTitle>
+            <SectionLabel text="İSYS Yaşam Döngüsü (ISO 22301)" />
+            <SectionTitle>Kurumsal Dayanıklılık<br/>Yönetim Döngüsü</SectionTitle>
             <p style={{ color: MG, fontSize: 16, lineHeight: 1.8, marginBottom: 36 }}>
-              HFER-720 motoru, yedi aşamalı BCM döngüsünü sürekli besler.
-              Önlemeden yönetişime kadar her aşama platformda izlenir, güncellenir ve raporlanır.
+              HFER-720 motoru, ISO 22301 ve ISO 22316 uyumlu yedi aşamalı İSYS döngüsünü
+              sürekli besler. Afet Risk Yönetimi&apos;nden kurumsal yönetişime kadar her aşama
+              platformda izlenir, güncellenir ve Sendai Çerçevesi hedefleriyle eşleştirilir.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {[
-                { phase: 'Önleme',          desc: 'Tehlike tespiti ve proaktif risk azaltma',        color: R_G },
-                { phase: 'Hazırlıklı Olma', desc: 'Plan geliştirme, eğitim, tatbikat yönetimi',      color: '#4AA89E' },
-                { phase: 'Zarar Azaltma',   desc: 'Kayıp minimizasyonu ve güçlendirme yatırımları',  color: R_Y },
-                { phase: 'Müdahale',        desc: 'Gerçek zamanlı kriz komuta merkezi',              color: R_O },
-                { phase: 'İyileştirme',     desc: 'Operasyon restorasyonu ve RTO/RPO takibi',        color: R_R },
-                { phase: 'İzleme',          desc: 'KPI kontrol paneli ve uyum denetimi',            color: '#B05A00' },
-                { phase: 'Yönetişim',       desc: 'Üst yönetim raporlama ve strateji güncelleme',   color: N },
+                { phase: 'Önleme',             desc: 'Afet Risk Yönetimi (ARM) — tehlike tespiti ve proaktif risk azaltma (ISO 31000)',           color: R_G },
+                { phase: 'Hazırlıklı Olma',    desc: 'İSP geliştirme, personel eğitimi ve tatbikat yönetimi (ISO 22301 Md. 8)',                  color: '#4AA89E' },
+                { phase: 'Zarar Azaltma',      desc: 'ALARP ilkesiyle uyumlu kayıp minimizasyonu ve yapısal güçlendirme yatırımları',             color: R_Y },
+                { phase: 'Müdahale',           desc: 'Olay Komuta Sistemi (OKS) — gerçek zamanlı kriz koordinasyon merkezi',                     color: R_O },
+                { phase: 'İyileştirme',        desc: 'Operasyon restorasyonu — RTO/RPO hedeflerine ulaşım ve İSP güncelleme döngüsü',             color: R_R },
+                { phase: 'İzleme',             desc: 'İSYS performans ölçümü — KPI gösterge paneli ve iç denetim (ISO 22301 Md. 9)',              color: '#B05A00' },
+                { phase: 'Yönetişim',          desc: 'Üst yönetim gözden geçirmesi, strateji güncelleme ve sürekli iyileştirme (ISO 22301 Md. 10)', color: N },
               ].map(item => (
                 <div key={item.phase} style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
                   <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color, flexShrink: 0, marginTop: 5 }}/>
