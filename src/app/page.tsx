@@ -273,7 +273,10 @@ function IconVendor({ size = 52 }: { size?: number }) {
 
 /* ── BCM Cycle SVG — 7 segment ────────────────────────────────── */
 function BcmCycle() {
+  const [hovered, setHovered] = useState<number | null>(null)
   const STEP = 360 / 7
+  // approx pill half-widths at 15px DM Sans bold (label char count * ~7.2px + 12px padding each side)
+  const pillHW = [54, 82, 74, 52, 64, 48, 62]
   const segments = [
     { label: 'Önleme',          color: R_G },
     { label: 'Hazırlıklı Olma', color: '#4AA89E' },
@@ -283,14 +286,16 @@ function BcmCycle() {
     { label: 'İzleme',          color: '#B05A00' },
     { label: 'Yönetişim',       color: N },
   ].map((s, i) => ({ ...s, angle: -90 + i * STEP }))
+  const CX = 220, CY = 210
   const toXY = (deg: number, r: number) => ({
-    x: 200 + r * Math.cos((deg * Math.PI) / 180),
-    y: 200 + r * Math.sin((deg * Math.PI) / 180),
+    x: CX + r * Math.cos((deg * Math.PI) / 180),
+    y: CY + r * Math.sin((deg * Math.PI) / 180),
   })
   const HALF = STEP / 2 - 5
+  const PILL_H = 28
   return (
-    <svg viewBox="0 0 400 400" style={{ width: '100%', maxWidth: 420 }}>
-      <circle cx="200" cy="200" r="168" fill="none" stroke={BORDER} strokeWidth="1" strokeDasharray="6 6"/>
+    <svg viewBox="-20 -10 480 430" style={{ width: '100%', maxWidth: 460 }}>
+      <circle cx={CX} cy={CY} r="168" fill="none" stroke={BORDER} strokeWidth="1" strokeDasharray="6 6"/>
       {segments.map((seg, i) => {
         const a0 = seg.angle - HALF, a1 = seg.angle + HALF
         const si = toXY(a0, 112), ei = toXY(a1, 112)
@@ -304,23 +309,35 @@ function BcmCycle() {
       })}
       {segments.map((seg, i) => {
         const inner = toXY(seg.angle, 112)
-        const dot   = toXY(seg.angle, 148)
-        const lbl   = toXY(seg.angle, 172)
+        const dot   = toXY(seg.angle, 150)
+        const lbl   = toXY(seg.angle, 178)
+        const hw    = pillHW[i]
+        const isHov = hovered === i
         return (
-          <g key={i}>
+          <g key={i} style={{ cursor: 'pointer' }}
+             onMouseEnter={() => setHovered(i)}
+             onMouseLeave={() => setHovered(null)}>
             <line x1={inner.x} y1={inner.y} x2={dot.x} y2={dot.y}
                   stroke={seg.color} strokeWidth="1.5" strokeDasharray="3 3"/>
-            <circle cx={dot.x} cy={dot.y} r="4" fill={seg.color}/>
+            <circle cx={dot.x} cy={dot.y} r="4.5" fill={seg.color}/>
+            <rect x={lbl.x - hw} y={lbl.y - PILL_H / 2}
+                  width={hw * 2} height={PILL_H} rx="14"
+                  fill={isHov ? seg.color : BG}
+                  stroke={seg.color} strokeWidth="1.5"
+                  style={{ transition: 'fill .2s' }}/>
             <text x={lbl.x} y={lbl.y} textAnchor="middle" dominantBaseline="middle"
-                  fill={N} fontSize="10.5" fontFamily="DM Sans,sans-serif" fontWeight="600">{seg.label}</text>
+                  fill={isHov ? BG : N}
+                  fontSize="13" fontFamily="DM Sans,sans-serif" fontWeight="700"
+                  letterSpacing="0.01em"
+                  style={{ transition: 'fill .2s', userSelect: 'none' }}>{seg.label}</text>
           </g>
         )
       })}
-      <circle cx="200" cy="200" r="78" fill={BG} stroke={BORDER} strokeWidth="1"/>
-      <circle cx="200" cy="200" r="72" fill="none" stroke={T} strokeWidth="1.5"/>
-      <text x="200" y="194" textAnchor="middle" fill={T} fontSize="14"
+      <circle cx={CX} cy={CY} r="78" fill={BG} stroke={BORDER} strokeWidth="1"/>
+      <circle cx={CX} cy={CY} r="72" fill="none" stroke={T} strokeWidth="1.5"/>
+      <text x={CX} y={CY - 6} textAnchor="middle" fill={T} fontSize="14"
             fontFamily="DM Sans,sans-serif" fontWeight="700" letterSpacing="1">HFER-720</text>
-      <text x="200" y="211" textAnchor="middle" fill={MG} fontSize="9"
+      <text x={CX} y={CY + 11} textAnchor="middle" fill={MG} fontSize="9"
             fontFamily="DM Sans,sans-serif">BCM MOTOR</text>
     </svg>
   )
@@ -510,7 +527,7 @@ function VucaMatrix() {
             fontWeight="600" fontFamily="DM Sans,sans-serif">← Düşük Karmaşıklık · Yüksek →</text>
       {/* WEF note */}
       <text x="476" y="319" textAnchor="end" fill={MG} fontSize="8"
-            fontFamily="DM Sans,sans-serif">Kaynak: WEF 2023</text>
+            fontFamily="DM Sans,sans-serif">Kaynak: WEF Küresel Riskler Raporu 2025</text>
     </svg>
   )
 }
