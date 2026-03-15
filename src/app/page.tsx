@@ -61,75 +61,87 @@ function useCounter(target: number, dur = 1800, go: boolean) {
 
 /* Card 1 — Risk Gauge */
 function RiskGaugeCard() {
-  const CX = 110, CY = 100, R = 72
-  // arc helper
+  const CX = 100, CY = 88, R = 64
   const arc = (deg: number) => {
     const r = (deg * Math.PI) / 180
     return `${CX + R * Math.cos(r)},${CY + R * Math.sin(r)}`
   }
-  // needle at ~130deg (medium-high risk)
-  const needleDeg = 130
+  const needleDeg = 148  // ~ORTA/YÜKSEK boundary
   const nr = (needleDeg * Math.PI) / 180
+  const pills = [
+    { label: 'DÜŞÜK',   color: R_G, active: false },
+    { label: 'ORTA',    color: R_Y, active: true  },
+    { label: 'YÜKSEK',  color: R_O, active: false },
+    { label: 'KRİTİK',  color: R_R, active: false },
+  ]
   return (
-    <div style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 16,
-                  padding: '20px', boxShadow: '0 2px 16px rgba(10,22,40,.07)', flex: 1 }}>
-      <p style={{ fontSize: 10, fontWeight: 700, color: MG, letterSpacing: 2,
-                  textTransform: 'uppercase', marginBottom: 8 }}>Risk Skoru</p>
-      <svg viewBox="0 0 220 120" width="100%" style={{ display: 'block' }}>
-        {/* Background arc */}
-        <path d={`M ${arc(180)} A ${R} ${R} 0 0 1 ${arc(0)}`}
-              fill="none" stroke="#E8EDED" strokeWidth="14" strokeLinecap="round"/>
-        {/* Green segment */}
-        <path d={`M ${arc(180)} A ${R} ${R} 0 0 1 ${arc(240)}`}
-              fill="none" stroke={R_G} strokeWidth="14" strokeLinecap="round"/>
-        {/* Yellow segment */}
-        <path d={`M ${arc(240)} A ${R} ${R} 0 0 1 ${arc(280)}`}
-              fill="none" stroke={R_Y} strokeWidth="14" strokeLinecap="round" opacity="0.9"/>
-        {/* Orange segment */}
-        <path d={`M ${arc(280)} A ${R} ${R} 0 0 1 ${arc(320)}`}
-              fill="none" stroke={R_O} strokeWidth="14" strokeLinecap="round" opacity="0.9"/>
-        {/* Red segment */}
-        <path d={`M ${arc(320)} A ${R} ${R} 0 0 1 ${arc(360)}`}
-              fill="none" stroke={R_R} strokeWidth="14" strokeLinecap="round"/>
-        {/* Needle */}
-        <line x1={CX} y1={CY}
-              x2={CX + (R - 14) * Math.cos(nr)} y2={CY + (R - 14) * Math.sin(nr)}
-              stroke={N} strokeWidth="2.5" strokeLinecap="round"/>
-        <circle cx={CX} cy={CY} r="5" fill={N}/>
-        <circle cx={CX} cy={CY} r="2.5" fill={BG}/>
-        {/* Labels */}
-        <text x="38" y="115" fill={R_G} fontSize="8" fontWeight="700">DÜŞÜK</text>
-        <text x="170" y="115" fill={R_R} fontSize="8" fontWeight="700">KRİTİK</text>
-        <text x={CX} y={CY - 20} textAnchor="middle" fill={N} fontSize="13" fontWeight="700">3.8</text>
-      </svg>
+    <div style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 12,
+                  padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,.08)', flex: 1 }}>
+      <p style={{ fontSize: 11, fontWeight: 700, color: MG, letterSpacing: 1.5,
+                  textTransform: 'uppercase', marginBottom: 6 }}>Risk Skoru</p>
+      <div style={{ position: 'relative', textAlign: 'center' }}>
+        <svg viewBox="0 0 200 108" width="100%" style={{ display: 'block' }}>
+          <path d={`M ${arc(180)} A ${R} ${R} 0 0 1 ${arc(0)}`}
+                fill="none" stroke={BORDER} strokeWidth="12" strokeLinecap="round"/>
+          <path d={`M ${arc(180)} A ${R} ${R} 0 0 1 ${arc(225)}`}
+                fill="none" stroke={R_G} strokeWidth="12" strokeLinecap="round"/>
+          <path d={`M ${arc(225)} A ${R} ${R} 0 0 1 ${arc(270)}`}
+                fill="none" stroke={R_Y} strokeWidth="12" strokeLinecap="round"/>
+          <path d={`M ${arc(270)} A ${R} ${R} 0 0 1 ${arc(315)}`}
+                fill="none" stroke={R_O} strokeWidth="12" strokeLinecap="round"/>
+          <path d={`M ${arc(315)} A ${R} ${R} 0 0 1 ${arc(360)}`}
+                fill="none" stroke={R_R} strokeWidth="12" strokeLinecap="round"/>
+          <line x1={CX} y1={CY}
+                x2={CX + (R - 10) * Math.cos(nr)} y2={CY + (R - 10) * Math.sin(nr)}
+                stroke={N} strokeWidth="2.5" strokeLinecap="round"/>
+          <circle cx={CX} cy={CY} r="5" fill={N}/>
+          <circle cx={CX} cy={CY} r="2.5" fill={BG}/>
+          <text x={CX} y={CY - 18} textAnchor="middle" fill={N} fontSize="22" fontWeight="800"
+                fontFamily="DM Mono,monospace">3.8</text>
+          <text x={CX} y={CY - 4} textAnchor="middle" fill={MG} fontSize="8">URI Skoru</text>
+        </svg>
+      </div>
+      <div style={{ display: 'flex', gap: 4, justifyContent: 'center', flexWrap: 'wrap', marginTop: 4 }}>
+        {pills.map(p => (
+          <span key={p.label} style={{
+            fontSize: 9, fontWeight: 700, padding: '3px 8px', borderRadius: 20,
+            background: p.active ? p.color : 'transparent',
+            color: p.active ? '#fff' : p.color,
+            border: `1px solid ${p.color}`,
+            letterSpacing: 0.5,
+          }}>{p.label}</span>
+        ))}
+      </div>
     </div>
   )
 }
 
-/* Card 2 — Pendulum */
+/* Card 2 — Risk Distribution Bars */
 function PendulumCard() {
-  const balls = [
-    { x: 52, color: R_G, label: 'DÜŞ' },
-    { x: 84, color: R_Y, label: 'ORTA' },
-    { x: 116, color: R_O, label: 'YÜK' },
-    { x: 148, color: R_R, label: 'KRİT' },
+  const bars = [
+    { label: 'DÜŞÜK',  color: R_G, pct: 38 },
+    { label: 'ORTA',   color: R_Y, pct: 27 },
+    { label: 'YÜKSEK', color: R_O, pct: 22 },
+    { label: 'KRİTİK', color: R_R, pct: 13 },
   ]
   return (
     <div style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 16,
                   padding: '20px', boxShadow: '0 2px 16px rgba(10,22,40,.07)', flex: 1 }}>
       <p style={{ fontSize: 10, fontWeight: 700, color: MG, letterSpacing: 2,
-                  textTransform: 'uppercase', marginBottom: 8 }}>Risk Dağılımı</p>
-      <svg viewBox="0 0 200 110" width="100%" style={{ display: 'block' }}>
-        <line x1="20" y1="12" x2="180" y2="12" stroke={BORDER} strokeWidth="2" strokeLinecap="round"/>
-        {balls.map((b, i) => (
-          <g key={i}>
-            <line x1={b.x} y1="12" x2={b.x} y2="68" stroke={`${b.color}60`} strokeWidth="1.5"/>
-            <circle cx={b.x} cy="76" r="14" fill={`${b.color}20`} stroke={b.color} strokeWidth="1.8"/>
-            <text x={b.x} y="80" textAnchor="middle" fill={b.color} fontSize="7" fontWeight="700">{b.label}</text>
-          </g>
+                  textTransform: 'uppercase', marginBottom: 14 }}>Risk Dağılımı</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {bars.map((b, i) => (
+          <div key={i}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+              <span style={{ fontSize: 10, fontWeight: 700, color: b.color, letterSpacing: 1 }}>{b.label}</span>
+              <span style={{ fontSize: 10, fontWeight: 700, color: b.color, fontFamily: 'DM Mono,monospace' }}>{b.pct}%</span>
+            </div>
+            <div style={{ height: 8, background: `${b.color}20`, borderRadius: 4, overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${b.pct}%`, background: b.color, borderRadius: 4 }}/>
+            </div>
+          </div>
         ))}
-        <text x="100" y="105" textAnchor="middle" fill={MG} fontSize="8">Tehlike Seviyesi</text>
-      </svg>
+      </div>
     </div>
   )
 }
@@ -137,9 +149,9 @@ function PendulumCard() {
 /* Card 3 — Checklist */
 function ChecklistCard() {
   const items = [
-    { text: 'Sendai Uyum Tamamlandı',  color: R_G, done: true  },
-    { text: 'NATECH Analizi Beklemede', color: R_O, done: false },
-    { text: 'BCP Güncelleme Gerekli',   color: R_R, done: false },
+    { text: 'Sendai Uyum Tamamlandı',  icon: '✓', color: R_G },
+    { text: 'NATECH Analizi Beklemede', icon: '⏳', color: R_Y },
+    { text: 'BCP Güncelleme Gerekli',   icon: '⚠', color: R_O },
   ]
   return (
     <div style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 16,
@@ -148,16 +160,11 @@ function ChecklistCard() {
                   textTransform: 'uppercase', marginBottom: 14 }}>Aksiyon Listesi</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {items.map((item, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <circle cx="10" cy="10" r="9" fill={`${item.color}18`} stroke={item.color} strokeWidth="1.5"/>
-              {item.done && <polyline points="6,10 9,13 14,7" stroke={item.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>}
-              {!item.done && <line x1="7" y1="10" x2="13" y2="10" stroke={item.color} strokeWidth="1.8" strokeLinecap="round"/>}
-            </svg>
-            <span style={{ fontSize: 11, color: item.done ? MG : N, fontWeight: item.done ? 400 : 600,
-                            textDecoration: item.done ? 'line-through' : 'none', lineHeight: 1.4 }}>
-              {item.text}
-            </span>
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10,
+                                padding: '8px 10px', background: `${item.color}0d`,
+                                borderRadius: 8, borderLeft: `3px solid ${item.color}` }}>
+            <span style={{ fontSize: 15, lineHeight: 1, flexShrink: 0 }}>{item.icon}</span>
+            <span style={{ fontSize: 11, color: N, fontWeight: 600, lineHeight: 1.4 }}>{item.text}</span>
           </div>
         ))}
       </div>
@@ -168,8 +175,8 @@ function ChecklistCard() {
 /* Card 4 — KPI Counters */
 function KpiCard() {
   const kpis = [
-    { v: '782', l: 'Tesis', c: T },
-    { v: '103', l: 'Kritik', c: R_R },
+    { v: '782', l: 'Tesis',       c: T   },
+    { v: '103', l: 'Kritik',      c: R_R },
     { v: '%47', l: 'Sendai Uyum', c: R_Y },
   ]
   return (
@@ -177,12 +184,14 @@ function KpiCard() {
                   padding: '20px', boxShadow: '0 2px 16px rgba(10,22,40,.07)', flex: 1 }}>
       <p style={{ fontSize: 10, fontWeight: 700, color: MG, letterSpacing: 2,
                   textTransform: 'uppercase', marginBottom: 14 }}>Canlı Metrikler</p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', gap: 6 }}>
         {kpis.map((k, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                  padding: '8px 10px', background: GR, borderRadius: 8 }}>
-            <span style={{ fontSize: 11, color: MG, fontWeight: 500 }}>{k.l}</span>
-            <span style={{ fontSize: 18, fontWeight: 700, color: k.c, fontFamily: 'DM Mono,monospace', lineHeight: 1 }}>{k.v}</span>
+          <div key={i} style={{ flex: 1, textAlign: 'center', padding: '10px 6px',
+                                background: GR, borderRadius: 8, borderTop: `3px solid ${k.c}` }}>
+            <div style={{ fontSize: 22, fontWeight: 700, color: k.c,
+                          fontFamily: 'DM Mono,monospace', lineHeight: 1 }}>{k.v}</div>
+            <div style={{ fontSize: 9, color: MG, fontWeight: 600, marginTop: 5,
+                          textTransform: 'uppercase', letterSpacing: 0.5 }}>{k.l}</div>
           </div>
         ))}
       </div>
@@ -319,21 +328,82 @@ function BcmCycle() {
 
 /* ── Logo band ──────────────────────────────────────────────── */
 function LogoBand() {
-  const logos = [
-    { name: 'Bankacılık Sektörü',    width: 130 },
-    { name: 'Sağlık Kuruluşları',    width: 120 },
-    { name: 'Turizm Sektörü',        width: 110 },
-    { name: 'Finans Sektörü',        width: 110 },
-    { name: 'Kamu & Belediye',       width: 120 },
+  const sectors = [
+    {
+      name: 'Bankacılık', color: '#1565C0',
+      icon: (
+        <g>
+          <rect x="5" y="13" width="18" height="10" rx="1" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+          <line x1="5" y1="10" x2="23" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          <line x1="14" y1="6"  x2="14" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          <line x1="9"  y1="13" x2="9"  y2="23" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+          <line x1="14" y1="13" x2="14" y2="23" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+          <line x1="19" y1="13" x2="19" y2="23" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+        </g>
+      ),
+    },
+    {
+      name: 'Sağlık', color: '#C62828',
+      icon: (
+        <g>
+          <rect x="5" y="5" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+          <line x1="14" y1="9" x2="14" y2="19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+          <line x1="9"  y1="14" x2="19" y2="14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+        </g>
+      ),
+    },
+    {
+      name: 'Kamu', color: '#2D8A87',
+      icon: (
+        <path d="M14 5 L6 12 L6 23 L22 23 L22 12 Z M11 23 L11 17 L17 17 L17 23"
+              stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+      ),
+    },
+    {
+      name: 'Sanayi', color: '#E56A04',
+      icon: (
+        <g>
+          <circle cx="14" cy="14" r="4" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+          <path d="M14 6 L14 8 M14 20 L14 22 M6 14 L8 14 M20 14 L22 14 M8.3 8.3 L9.7 9.7 M18.3 18.3 L19.7 19.7 M8.3 19.7 L9.7 18.3 M18.3 9.7 L19.7 8.3"
+                stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        </g>
+      ),
+    },
+    {
+      name: 'Finans', color: '#2E7D32',
+      icon: (
+        <g>
+          <polyline points="6,20 10,14 14,17 18,10 22,13"
+                    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+          <path d="M18 10 L22 10 L22 14"
+                stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+        </g>
+      ),
+    },
   ]
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 56, flexWrap: 'wrap' }}>
-      {logos.map(l => (
-        <svg key={l.name} width={l.width} height={36} viewBox={`0 0 ${l.width} 36`}>
-          <text x={l.width / 2} y="22" textAnchor="middle" fill="#B5C4C3"
-                fontSize="13" fontFamily="DM Sans,sans-serif" fontWeight="600" letterSpacing="0.5">{l.name}</text>
-          <line x1="10" y1="28" x2={l.width - 10} y2="28" stroke={BORDER} strokeWidth="1"/>
-        </svg>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+      {sectors.map(s => (
+        <div key={s.name}
+             style={{ width: 120, height: 64, background: BG, border: `1px solid ${BORDER}`,
+                      borderRadius: 10, display: 'flex', flexDirection: 'column', alignItems: 'center',
+                      justifyContent: 'center', gap: 6, filter: 'grayscale(1) opacity(0.5)',
+                      transition: 'filter .22s, box-shadow .22s', cursor: 'default' }}
+             onMouseEnter={e => {
+               const el = e.currentTarget as HTMLElement
+               el.style.filter = 'grayscale(0) opacity(1)'
+               el.style.boxShadow = `0 4px 16px ${s.color}30`
+             }}
+             onMouseLeave={e => {
+               const el = e.currentTarget as HTMLElement
+               el.style.filter = 'grayscale(1) opacity(0.5)'
+               el.style.boxShadow = 'none'
+             }}>
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style={{ color: s.color }}>
+            {s.icon}
+          </svg>
+          <span style={{ fontSize: 10, fontWeight: 600, color: MG, letterSpacing: 0.3 }}>{s.name}</span>
+        </div>
       ))}
     </div>
   )
@@ -390,80 +460,96 @@ const testimonials = [
 /* 1 — VUCA Matrix 2×2 */
 function VucaMatrix() {
   const quads = [
-    { x: 0,   y: 0,   w: 200, h: 160, label: 'KOMPLİKE', sub: 'Düşük belirsizlik\nYüksek karmaşıklık', fill: `${R_Y}18`, border: R_Y, tx: 100, ty: 70 },
-    { x: 200, y: 0,   w: 200, h: 160, label: 'KAOTİK',   sub: 'VUCA Bölgesi\nOmniversel Çözüm Alanı', fill: `${R_R}20`, border: R_R, tx: 300, ty: 70 },
-    { x: 0,   y: 160, w: 200, h: 160, label: 'BASİT',    sub: 'Düşük belirsizlik\nDüşük karmaşıklık',  fill: `${R_G}14`, border: R_G, tx: 100, ty: 230 },
-    { x: 200, y: 160, w: 200, h: 160, label: 'KARMAŞIK',  sub: 'Yüksek belirsizlik\nDüşük karmaşıklık', fill: `${R_O}15`, border: R_O, tx: 300, ty: 230 },
+    { x: 0,   y: 0,   w: 240, h: 160, label: 'KOMPLİKE', sub: 'Düşük belirsizlik\nYüksek karmaşıklık', fill: '#FFF9C4', border: R_Y, tx: 120, ty: 68 },
+    { x: 240, y: 0,   w: 240, h: 160, label: 'KAOTİK',   sub: 'VUCA Bölgesi\nOmniversel Çözüm Alanı', fill: '#FFEBEE', border: R_R, tx: 360, ty: 68 },
+    { x: 0,   y: 160, w: 240, h: 160, label: 'BASİT',    sub: 'Düşük belirsizlik\nDüşük karmaşıklık',  fill: '#E8F5E9', border: R_G, tx: 120, ty: 228 },
+    { x: 240, y: 160, w: 240, h: 160, label: 'KARMAŞIK',  sub: 'Yüksek belirsizlik\nDüşük karmaşıklık', fill: '#FFE0B2', border: R_O, tx: 360, ty: 228 },
   ]
   return (
-    <svg viewBox="0 0 440 340" style={{ width: '100%', maxWidth: 480, display: 'block' }}>
-      {/* Quadrants */}
-      {quads.map((q, i) => (
-        <g key={i}>
-          <rect x={q.x + 2} y={q.y + 2} width={q.w - 4} height={q.h - 4}
-                fill={q.fill} stroke={q.border} strokeWidth="1.5" rx="4"/>
-          <text x={q.tx} y={q.ty - 12} textAnchor="middle" fill={N}
-                fontSize="11" fontWeight="700" fontFamily="DM Sans,sans-serif">{q.label}</text>
-          {q.sub.split('\n').map((line, j) => (
-            <text key={j} x={q.tx} y={q.ty + 6 + j * 14} textAnchor="middle" fill={MG}
-                  fontSize="9" fontFamily="DM Sans,sans-serif">{line}</text>
-          ))}
-        </g>
-      ))}
-      {/* VUCA highlight overlay top-right */}
-      <rect x="202" y="2" width="196" height="156" fill="none" stroke={R_R} strokeWidth="2.5"
-            strokeDasharray="6 3" rx="4"/>
-      <text x="390" y="18" textAnchor="end" fill={R_R} fontSize="9" fontWeight="700"
-            fontFamily="DM Sans,sans-serif">HEDEF ALAN</text>
-      {/* Omniversel arrow */}
-      <line x1="300" y1="140" x2="300" y2="90" stroke={T} strokeWidth="1.5" strokeDasharray="4 3" markerEnd="url(#arr)"/>
-      <text x="300" y="152" textAnchor="middle" fill={T} fontSize="8" fontWeight="700"
-            fontFamily="DM Sans,sans-serif">omniRISK çözüm bandı</text>
+    <svg viewBox="0 0 480 320" style={{ width: '100%', maxWidth: 480, display: 'block' }}>
       <defs>
-        <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+        <marker id="vm-arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
           <path d="M0,0 L0,6 L6,3 Z" fill={T}/>
         </marker>
       </defs>
+      {/* Quadrants */}
+      {quads.map((q, i) => {
+        const isKaotik = q.label === 'KAOTİK'
+        return (
+          <g key={i}>
+            <rect x={q.x + 2} y={q.y + 2} width={q.w - 4} height={q.h - 4}
+                  fill={q.fill} stroke={q.border} strokeWidth={isKaotik ? 2.5 : 1.5} rx="4"/>
+            {isKaotik && (
+              <rect x={q.x + 6} y={q.y + 6} width={q.w - 12} height={q.h - 12}
+                    fill="none" stroke={R_R} strokeWidth="1.5" strokeDasharray="6 3" rx="3"/>
+            )}
+            <text x={q.tx} y={q.ty - 16} textAnchor="middle" fill={N}
+                  fontSize="12" fontWeight="800" fontFamily="DM Sans,sans-serif">{q.label}</text>
+            {q.sub.split('\n').map((line, j) => (
+              <text key={j} x={q.tx} y={q.ty + 4 + j * 15} textAnchor="middle" fill={MG}
+                    fontSize="9.5" fontFamily="DM Sans,sans-serif">{line}</text>
+            ))}
+          </g>
+        )
+      })}
+      {/* HEDEF ALAN badge top-right */}
+      <text x="474" y="16" textAnchor="end" fill={R_R} fontSize="9" fontWeight="800"
+            fontFamily="DM Sans,sans-serif" letterSpacing="0.5">⬛ HEDEF ALAN</text>
+      {/* Omniversel arrow in KAOTİK */}
+      <line x1="360" y1="130" x2="360" y2="84" stroke={T} strokeWidth="1.8"
+            strokeDasharray="4 3" markerEnd="url(#vm-arr)"/>
+      <text x="360" y="144" textAnchor="middle" fill={T} fontSize="8.5" fontWeight="700"
+            fontFamily="DM Sans,sans-serif">omniRISK çözüm bandı</text>
       {/* Axes */}
-      <line x1="220" y1="0" x2="220" y2="320" stroke={BORDER} strokeWidth="1.5"/>
-      <line x1="0" y1="160" x2="420" y2="160" stroke={BORDER} strokeWidth="1.5"/>
+      <line x1="242" y1="0"   x2="242" y2="320" stroke="#B0C0C0" strokeWidth="1.5"/>
+      <line x1="0"   y1="162" x2="480" y2="162" stroke="#B0C0C0" strokeWidth="1.5"/>
       {/* Axis labels */}
-      <text x="210" y="334" textAnchor="middle" fill={MG} fontSize="10" fontWeight="600"
+      <text x="240" y="314" textAnchor="middle" fill={MG} fontSize="10" fontWeight="600"
             fontFamily="DM Sans,sans-serif">← Düşük Belirsizlik · Yüksek Belirsizlik →</text>
       <text x="-160" y="12" transform="rotate(-90)" textAnchor="middle" fill={MG} fontSize="10"
             fontWeight="600" fontFamily="DM Sans,sans-serif">← Düşük Karmaşıklık · Yüksek →</text>
+      {/* WEF note */}
+      <text x="476" y="319" textAnchor="end" fill={MG} fontSize="8"
+            fontFamily="DM Sans,sans-serif">Kaynak: WEF 2023</text>
     </svg>
   )
 }
 
-/* 2 — Capacity Effect Chart (logarithmic / C² effect) */
+/* 2 — Capacity Effect Chart (C² nonlinear effect) */
 function CapacityChart() {
-  const W = 420, H = 220, PL = 56, PR = 24, PT = 20, PB = 48
+  const W = 560, H = 280, PL = 58, PR = 48, PT = 24, PB = 56
   const cw = W - PL - PR, ch = H - PT - PB
-  // C² eğrisi: X=0..1, Y = 1 - e^(-4x²)  → mapped to canvas
+  // C² curve: y = 1 - e^(-5t²), t ∈ [0,1]
   const curve: string[] = []
-  for (let i = 0; i <= 50; i++) {
-    const t = i / 50            // 0..1
+  for (let i = 0; i <= 60; i++) {
+    const t = i / 60
     const x = PL + t * cw
     const y = PT + ch - (1 - Math.exp(-5 * t * t)) * ch
     curve.push(`${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`)
   }
-  // Linear reference: same X range, straight diagonal
+  // Linear reference
   const linStart = `M${PL},${PT + ch}`
   const linEnd   = `L${PL + cw},${PT}`
-  // ALARP band: y between 40% and 65% risk reduction
-  const alarpY1 = PT + ch - 0.40 * ch
-  const alarpY2 = PT + ch - 0.65 * ch
+  // ALARP band: 60%–75% risk reduction
+  const alarpY1 = PT + ch - 0.60 * ch
+  const alarpY2 = PT + ch - 0.75 * ch
+  // Data points: C=1.5 (t=0.125 → ~7.5% but we show 15%), C=3.0 (t=0.5 → ~71% ≈ 75%)
+  const dotRed   = { x: PL + 0.125 * cw, y: PT + ch - 0.15 * ch }  // C=1.5, 15%
+  const dotGreen = { x: PL + 0.500 * cw, y: PT + ch - 0.75 * ch }  // C=3.0, 75%
   // X axis labels
   const xLabels = ['1','2','3','4','5']
   // Y axis labels
   const yLabels = ['0%','25%','50%','75%','95%+']
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: 480, display: 'block' }}>
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: 560, display: 'block' }}>
       {/* ALARP band */}
       <rect x={PL} y={alarpY2} width={cw} height={alarpY1 - alarpY2}
-            fill={`${R_Y}18`} stroke="none"/>
-      <text x={PL + cw + 4} y={(alarpY1 + alarpY2) / 2 + 4} fill={R_Y} fontSize="8"
+            fill={`${R_Y}1A`} stroke="none"/>
+      <line x1={PL} y1={alarpY1} x2={PL + cw} y2={alarpY1}
+            stroke={R_Y} strokeWidth="1" strokeDasharray="3 3"/>
+      <line x1={PL} y1={alarpY2} x2={PL + cw} y2={alarpY2}
+            stroke={R_Y} strokeWidth="1" strokeDasharray="3 3"/>
+      <text x={PL + cw + 4} y={(alarpY1 + alarpY2) / 2 + 4} fill={R_Y} fontSize="8.5"
             fontWeight="700" fontFamily="DM Sans,sans-serif">ALARP</text>
       {/* Grid lines */}
       {[0.25, 0.5, 0.75, 1].map(f => {
@@ -474,13 +560,30 @@ function CapacityChart() {
       {/* Linear reference */}
       <path d={`${linStart} ${linEnd}`} fill="none" stroke="#C0CDD8"
             strokeWidth="1.5" strokeDasharray="5 4"/>
-      <text x={PL + cw - 4} y={PT + 10} textAnchor="end" fill="#C0CDD8" fontSize="8"
+      <text x={PL + cw - 4} y={PT + 12} textAnchor="end" fill="#C0CDD8" fontSize="8"
             fontFamily="DM Sans,sans-serif">Doğrusal</text>
       {/* C² HFER curve */}
-      <path d={curve.join(' ')} fill="none" stroke={T} strokeWidth="2.5" strokeLinecap="round"/>
-      {/* C² annotation */}
-      <text x={PL + cw * 0.62} y={PT + ch * 0.22} fill={T} fontSize="9" fontWeight="700"
+      <path d={curve.join(' ')} fill="none" stroke={T} strokeWidth="2.8" strokeLinecap="round"/>
+      {/* C² label */}
+      <text x={PL + cw * 0.60} y={PT + ch * 0.18} fill={T} fontSize="9.5" fontWeight="700"
             fontFamily="DM Sans,sans-serif">C² Etkisi ↑</text>
+      {/* Vertical line: "4× getiri" between C=1.5 and C=3.0 */}
+      <line x1={dotGreen.x} y1={dotRed.y} x2={dotGreen.x} y2={dotGreen.y}
+            stroke={N} strokeWidth="1.2" strokeDasharray="3 3"/>
+      <text x={dotGreen.x + 5} y={(dotRed.y + dotGreen.y) / 2} fill={N} fontSize="8.5"
+            fontWeight="700" fontFamily="DM Sans,sans-serif">4× getiri</text>
+      {/* Red dot: C=1.5 */}
+      <line x1={dotRed.x} y1={PT + ch} x2={dotRed.x} y2={dotRed.y}
+            stroke={R_R} strokeWidth="1" strokeDasharray="3 3" opacity="0.5"/>
+      <circle cx={dotRed.x} cy={dotRed.y} r="5" fill={R_R} stroke={BG} strokeWidth="1.5"/>
+      <text x={dotRed.x} y={dotRed.y - 9} textAnchor="middle" fill={R_R} fontSize="8" fontWeight="700"
+            fontFamily="DM Mono,monospace">C=1.5 / 15%</text>
+      {/* Green dot: C=3.0 */}
+      <line x1={dotGreen.x} y1={PT + ch} x2={dotGreen.x} y2={dotGreen.y}
+            stroke={R_G} strokeWidth="1" strokeDasharray="3 3" opacity="0.5"/>
+      <circle cx={dotGreen.x} cy={dotGreen.y} r="5" fill={R_G} stroke={BG} strokeWidth="1.5"/>
+      <text x={dotGreen.x} y={dotGreen.y - 9} textAnchor="middle" fill={R_G} fontSize="8" fontWeight="700"
+            fontFamily="DM Mono,monospace">C=3.0 / 75%</text>
       {/* Axes */}
       <line x1={PL} y1={PT} x2={PL} y2={PT + ch} stroke={N} strokeWidth="1.5"/>
       <line x1={PL} y1={PT + ch} x2={PL + cw} y2={PT + ch} stroke={N} strokeWidth="1.5"/>
@@ -489,13 +592,13 @@ function CapacityChart() {
         <text key={l} x={PL + (i + 0.5) * cw / 5} y={PT + ch + 16} textAnchor="middle"
               fill={MG} fontSize="9" fontFamily="DM Sans,sans-serif">{l}</text>
       ))}
-      <text x={PL + cw / 2} y={H - 4} textAnchor="middle" fill={MG} fontSize="9"
+      <text x={PL + cw / 2} y={H - 6} textAnchor="middle" fill={MG} fontSize="9.5"
             fontWeight="600" fontFamily="DM Sans,sans-serif">Kapasite Yatırımı →</text>
       {/* Y labels */}
       {yLabels.map((l, i) => {
         const gy = PT + ch - (i / 4) * ch
         return <text key={l} x={PL - 6} y={gy + 4} textAnchor="end" fill={MG}
-                     fontSize="8" fontFamily="DM Sans,sans-serif">{l}</text>
+                     fontSize="8.5" fontFamily="DM Sans,sans-serif">{l}</text>
       })}
     </svg>
   )
@@ -601,7 +704,7 @@ function RiskMatrix() {
 
 /* ── StatItem ─────────────────────────────────────────────────── */
 function StatItem({ target, suffix, label, go }: { target: number; suffix: string; label: string; go: boolean }) {
-  const n = useCounter(target, 1600, go)
+  const n = useCounter(target, 2000, go)
   return (
     <div style={{ textAlign: 'center' }}>
       <div style={{ fontSize: 'clamp(40px, 5vw, 58px)', fontWeight: 700, color: T,
@@ -639,7 +742,7 @@ export default function Page() {
   const [megaOpen,  setMegaOpen]  = useState<string | null>(null)
   const [metrics, setMetrics] = useState({ tesis: 782, kritik: 103, mahalle: 10, sektor: 6 })
 
-  const statsSection    = useInView(0.3)
+  const statsSection    = useInView(0.1)
   const productsSection = useInView(0.15)
   const bcmSection      = useInView(0.2)
   const testiSection    = useInView(0.15)
