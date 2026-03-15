@@ -976,8 +976,8 @@ export default function Page() {
 
             <h1 style={{ fontSize: 'clamp(30px, 3.8vw, 54px)', fontWeight: 700,
                          lineHeight: 1.1, color: N, marginBottom: 24 }}>
-              VUCA Dünyasında<br/>
-              <span style={{ color: T }}>Kurumsal Dayanıklılık</span>
+              Afetlerde Dayanıklılık, Risk Yönetimi<br/>
+              <span style={{ color: T }}>ve İş Sürekliliği</span>
             </h1>
 
             <p style={{ color: MG, fontSize: 16, lineHeight: 1.85,
