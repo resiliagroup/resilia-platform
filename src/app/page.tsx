@@ -6,9 +6,9 @@ import { createClient } from '@supabase/supabase-js'
 
 /* ─── tokens ─────────────────────────────────────────────────── */
 const N  = '#0A1628'
-const T  = '#6ABFB8'
+const T  = '#00d4b8'
 const G  = '#E8C97A'
-const GR = '#F7F8FA'
+const GR = '#f5f7fa'
 const MG = '#8FA3B8'
 const BG = '#FFFFFF'
 
@@ -442,14 +442,14 @@ export default function Page() {
         a{text-decoration:none;color:inherit}
         @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
         @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-        .nav-link{color:${MG};font-size:14px;font-weight:500;transition:color .18s;cursor:pointer;position:relative}
-        .nav-link:hover{color:${N}}
-        .btn-navy{display:inline-block;background:${N};color:#fff;font-weight:600;font-size:14px;
-          padding:11px 26px;border-radius:6px;transition:background .18s,transform .12s;cursor:pointer;border:none;font-family:'DM Sans',sans-serif}
-        .btn-navy:hover{background:#142340;transform:translateY(-1px)}
-        .btn-outline{display:inline-block;border:1.5px solid ${N};color:${N};font-weight:600;font-size:14px;
-          padding:10px 26px;border-radius:6px;transition:background .18s;cursor:pointer;font-family:'DM Sans',sans-serif}
-        .btn-outline:hover{background:${GR}}
+        .nav-link{color:rgba(255,255,255,0.72);font-size:14px;font-weight:500;transition:color .18s;cursor:pointer;position:relative}
+        .nav-link:hover{color:#fff}
+        .btn-navy{display:inline-block;background:${G};color:${N};font-weight:700;font-size:14px;
+          padding:11px 26px;border-radius:6px;transition:opacity .18s,transform .12s;cursor:pointer;border:none;font-family:'DM Sans',sans-serif}
+        .btn-navy:hover{opacity:.88;transform:translateY(-1px)}
+        .btn-outline{display:inline-block;border:1.5px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.88);font-weight:600;font-size:14px;
+          padding:10px 26px;border-radius:6px;transition:border-color .18s,background .18s;cursor:pointer;font-family:'DM Sans',sans-serif}
+        .btn-outline:hover{border-color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.06)}
         .btn-teal{display:inline-block;background:${T};color:${N};font-weight:600;font-size:14px;
           padding:10px 26px;border-radius:6px;transition:opacity .18s,transform .12s;cursor:pointer}
         .btn-teal:hover{opacity:.88;transform:translateY(-1px)}
@@ -468,10 +468,12 @@ export default function Page() {
       {/* ══ NAV ══════════════════════════════════════════════════ */}
       <header style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, height: 68,
-        background: BG,
-        borderBottom: scrolled ? '1px solid #E8EDF3' : '1px solid transparent',
-        boxShadow: scrolled ? '0 2px 16px rgba(10,22,40,.06)' : 'none',
-        transition: 'box-shadow .25s, border-color .25s',
+        background: scrolled ? 'rgba(18,6,58,0.96)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(14px)' : 'none',
+        WebkitBackdropFilter: scrolled ? 'blur(14px)' : 'none',
+        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.07)' : '1px solid transparent',
+        boxShadow: scrolled ? '0 2px 24px rgba(0,0,0,.35)' : 'none',
+        transition: 'all .25s',
         display: 'flex', alignItems: 'center', padding: '0 48px',
       }}>
         <div style={{ maxWidth: 1200, width: '100%', margin: '0 auto',
@@ -484,7 +486,7 @@ export default function Page() {
               <polygon points="16,12 21,20 11,20" fill={T} fillOpacity="0.4"/>
               <circle cx="16" cy="18" r="2" fill={G}/>
             </svg>
-            <span style={{ color: N, fontSize: 18, fontWeight: 700, letterSpacing: 0.5 }}>
+            <span style={{ color: '#fff', fontSize: 18, fontWeight: 700, letterSpacing: 0.5 }}>
               omni<span style={{ color: T }}>versel</span>
             </span>
           </div>
@@ -499,7 +501,7 @@ export default function Page() {
               <span className="nav-link" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 Platform
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d="M3 5l3 3 3-3" stroke={MG} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M3 5l3 3 3-3" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </span>
               {megaOpen === 'platform' && (
@@ -547,7 +549,7 @@ export default function Page() {
               <span className="nav-link" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 Sektörler
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d="M3 5l3 3 3-3" stroke={MG} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M3 5l3 3 3-3" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </span>
               {megaOpen === 'sektor' && (
@@ -569,13 +571,15 @@ export default function Page() {
             </div>
 
             <a href="#about" className="nav-link">Hakkımızda</a>
-            <Link href="/login" className="btn-navy">Demo Talep</Link>
+            <Link href="/login" style={{ background: G, color: N, fontWeight: 700, fontSize: 14,
+                                          padding: '10px 24px', borderRadius: 6, display: 'inline-block',
+                                          transition: 'opacity .18s' }}>Demo Talep</Link>
           </nav>
         </div>
       </header>
 
       {/* ══ HERO ═════════════════════════════════════════════════ */}
-      <section style={{ padding: '140px 48px 100px', background: BG }}>
+      <section style={{ padding: '140px 48px 100px', background: 'linear-gradient(135deg, #12063A 0%, #1e0f5c 50%, #0d1f4a 100%)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto',
                       display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 72, alignItems: 'center' }}>
           {/* left */}
@@ -591,12 +595,12 @@ export default function Page() {
             </div>
 
             <h1 style={{ fontSize: 'clamp(40px, 5vw, 68px)', fontWeight: 700,
-                         lineHeight: 1.08, color: N, marginBottom: 24 }}>
+                         lineHeight: 1.08, color: '#fff', marginBottom: 24 }}>
               Dayanıklılık.<br />
               <span style={{ color: T }}>Ölçülebilir.</span>
             </h1>
 
-            <p style={{ color: MG, fontSize: 18, lineHeight: 1.75,
+            <p style={{ color: 'rgba(255,255,255,0.62)', fontSize: 18, lineHeight: 1.75,
                         maxWidth: 500, marginBottom: 40, fontWeight: 400 }}>
               720 parametre, 39 ilçe haritası ve yapay zeka destekli BCM döngüsüyle
               kurumunuzun kriz hazırlığını somut verilere dönüştürün.
@@ -609,9 +613,6 @@ export default function Page() {
               <a href="#products" className="btn-outline" style={{ fontSize: 15, padding: '12px 32px' }}>
                 Ürünleri Keşfet
               </a>
-              <Link href="/hub" className="btn-teal" style={{ fontSize: 15, padding: '12px 28px' }}>
-                Canlı Demo İzle →
-              </Link>
             </div>
 
             {/* mini trust row */}
@@ -622,8 +623,8 @@ export default function Page() {
                 { v: '%98',  l: 'Uptime' },
               ].map(s => (
                 <div key={s.l}>
-                  <div style={{ color: N, fontSize: 24, fontWeight: 700 }}>{s.v}</div>
-                  <div style={{ color: MG, fontSize: 12, fontWeight: 500, marginTop: 2 }}>{s.l}</div>
+                  <div style={{ color: '#fff', fontSize: 24, fontWeight: 700 }}>{s.v}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, fontWeight: 500, marginTop: 2 }}>{s.l}</div>
                 </div>
               ))}
             </div>
@@ -647,7 +648,7 @@ export default function Page() {
       </section>
 
       {/* ══ LIVE METRICS BAND ════════════════════════════════════ */}
-      <section ref={metricsSection.ref} style={{ background: N, padding: '64px 48px' }}>
+      <section ref={metricsSection.ref} style={{ background: '#0f0730', padding: '64px 48px' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <p style={{ textAlign: 'center', color: '#4A6580', fontSize: 11, fontWeight: 700,
                       letterSpacing: 3, textTransform: 'uppercase', marginBottom: 44 }}>
@@ -795,7 +796,7 @@ export default function Page() {
       </section>
 
       {/* ══ STATS ════════════════════════════════════════════════ */}
-      <section id="sectors" ref={statsSection.ref} style={{ padding: '80px 48px', background: N }}>
+      <section id="sectors" ref={statsSection.ref} style={{ padding: '80px 48px', background: '#0f0730' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 40, textAlign: 'center' }}>
           {[
             { target: 720, suffix: '+', label: 'Analiz Parametresi' },
@@ -1092,7 +1093,7 @@ export default function Page() {
       </section>
 
       {/* ══ FOOTER ═══════════════════════════════════════════════ */}
-      <footer style={{ background: N, padding: '64px 48px 36px' }}>
+      <footer style={{ background: '#0a0520', padding: '64px 48px 36px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 48, marginBottom: 56 }}>
             <div>
