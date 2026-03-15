@@ -320,11 +320,11 @@ function BcmCycle() {
 /* ── Logo band ──────────────────────────────────────────────── */
 function LogoBand() {
   const logos = [
-    { name: 'Akbank',                width: 90 },
-    { name: 'Medical Park',          width: 110 },
-    { name: 'Rixos',                 width: 70 },
-    { name: 'İş Bankası',            width: 100 },
-    { name: 'Beylikdüzü Belediyesi', width: 140 },
+    { name: 'Bankacılık Sektörü',    width: 130 },
+    { name: 'Sağlık Kuruluşları',    width: 120 },
+    { name: 'Turizm Sektörü',        width: 110 },
+    { name: 'Finans Sektörü',        width: 110 },
+    { name: 'Kamu & Belediye',       width: 120 },
   ]
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 56, flexWrap: 'wrap' }}>
@@ -342,33 +342,33 @@ function LogoBand() {
 /* ── products ───────────────────────────────────────────────── */
 const products = [
   { code: 'omniRISK',   color: T,         href: '/products/omnirisk',
-    desc: 'ISO 31000 uyumlu risk sicili, tehlike haritası ve HFER skoru ile kurumsal risk tablonuzu gerçek zamanlı izleyin.',
+    desc: 'ISO 31000 çerçevesinde tehlike, kırılganlık, maruziyet ve kapasite parametrelerini bütünleştirerek kurumsal risk envanterini nicel biçimde değerlendiren ve gerçek zamanlı izleme sağlayan karar destek modülü.',
     icon: <IconRisk size={52}/> },
   { code: 'omniIMPACT', color: '#C8A84A', href: '/products/omniimpact',
-    desc: 'İş Etki Analizi modülü; süreç bağımlılıklarını, RTO/RPO hedeflerini ve kritiklik matrisini otomatik üretir.',
+    desc: 'ISO 22301 uyumlu İş Etki Analizi (BIA) metodolojisiyle kritik iş süreçlerinin bağımlılık yapısını, kurtarma süresi ve nokta hedeflerini (RTO/RPO) ve kritiklik matrisini sistematik biçimde modelleyen analitik modül.',
     icon: <IconImpact size={52}/> },
   { code: 'omniPLAN',   color: '#3B7EC8', href: '/products/omniplan',
-    desc: 'ISO 22301 uyumlu İş Sürekliliği Planlarını yapay zeka yardımıyla dakikalar içinde taslaktan onaya taşıyın.',
+    desc: 'ISO 22301 standardı çerçevesinde İş Sürekliliği Planlarının yapılandırılması, onay süreçlerinin yönetimi ve tatbikat takvimlerinin planlanmasını destekleyen bütünleşik dokümantasyon modülü.',
     icon: <IconPlan size={52}/> },
   { code: 'omniCRISIS', color: R_O, href: '/products/omnicrisis',
-    desc: 'Kriz anında görev atamaları, anlık iletişim protokolleri ve komuta merkezi panosu tek ekranda.',
+    desc: 'Olay yönetimi hiyerarşisi içinde görev atamalarını, iletişim protokollerini ve karar destek akışlarını entegre eden komuta merkezi modülü; kriz sürecinin tüm aşamalarında kurumsal koordinasyonu sağlar.',
     icon: <IconCrisis size={52}/> },
   { code: 'omniAUDIT',  color: R_G, href: '#',
-    desc: 'ISO 22301 uyum denetimi, Sendai çerçeve izleme ve kontrol etkinliği skoru ile uyum sürecinizi otomatikleştirin.',
+    desc: 'ISO 22301 uyum denetim süreçlerini, Sendai Çerçevesi öncelik izlemesini ve iç kontrol etkinliği ölçümünü standart denetim metodolojileri doğrultusunda yürüten ve raporlayan uyum modülü.',
     icon: <IconAudit size={52}/> },
   { code: 'omniVENDOR', color: '#6366F1', href: '#',
-    desc: 'Tedarik zinciri risk skoru, kritik tedarikçi bağımlılık analizi ve üçüncü taraf BCM değerlendirmesi.',
+    desc: 'Tedarik zinciri risk skorlaması, kritik tedarikçi bağımlılık analizi ve üçüncü taraf kuruluşların iş sürekliliği olgunluk değerlendirmesini sistematik biçimde gerçekleştiren tedarikçi yönetim modülü.',
     icon: <IconVendor size={52}/> },
 ]
 
 /* ── Testimonials ────────────────────────────────────────────── */
 const testimonials = [
-  { quote: 'HFER-720 motor sayesinde risk sicilimizi üç günde tamamladık. Denetimden tam puan aldık.',
-    name:  'Mehmet Aydın', role:  'Risk Direktörü, Finans Sektörü' },
-  { quote: 'Tesis bazlı BCP planlarımız artık otomatik güncelleniyor. Saha ekibimizin yükü %60 azaldı.',
-    name:  'Ayşe Kılıç',   role:  'BCM Müdürü, Sağlık Grubu' },
-  { quote: 'omniCRISIS modülü pandemi sürecinde krize müdahalemizi kökten değiştirdi. Olmazsa olmaz.',
-    name:  'Burak Demir',  role:  'İcra Kurulu, Belediye Grubu' },
+  { quote: 'HFER-720 metodolojisi risk envanterimizi yapılandırmamıza olanak sağladı; nicel değerlendirme süreci denetim etkinliğimizi ölçülebilir biçimde artırdı.',
+    name:  'Risk Direktörü', role:  'Bankacılık ve Finans Sektörü' },
+  { quote: 'Tesis bazlı BCP modülleri süreç bağımlılıklarını sistematik biçimde modelliyor; bu sayede kaynak planlamasında veri odaklı kararlar alabiliyor ve operasyonel yükü önemli ölçüde azaltabiliyoruz.',
+    name:  'BCM Müdürü',     role:  'Sağlık Kuruluşları Sektörü' },
+  { quote: 'omniCRISIS modülünün olay yönetimi altyapısı, kriz koordinasyon süreçlerimizin kurumsal yönetişim standartlarıyla uyumunu doğrudan destekledi.',
+    name:  'İcra Kurulu Üyesi', role:  'Kamu ve Belediye Sektörü' },
 ]
 
 /* ── StatItem ─────────────────────────────────────────────────── */
@@ -602,7 +602,7 @@ export default function Page() {
               )}
             </div>
 
-            <a href="#about" className="nav-link">Hakkımızda</a>
+            <Link href="/hakkimizda" className="nav-link">Hakkımızda</Link>
             <Link href="/login" style={{ background: T, color: '#fff', fontWeight: 700, fontSize: 14,
                                           padding: '10px 24px', borderRadius: 6, display: 'inline-block',
                                           transition: 'opacity .18s' }}>Demo Talep</Link>
@@ -626,16 +626,17 @@ export default function Page() {
               </span>
             </div>
 
-            <h1 style={{ fontSize: 'clamp(40px, 5vw, 68px)', fontWeight: 700,
-                         lineHeight: 1.08, color: N, marginBottom: 24 }}>
-              Dayanıklılık.<br />
-              <span style={{ color: T }}>Ölçülebilir.</span>
+            <h1 style={{ fontSize: 'clamp(32px, 4vw, 58px)', fontWeight: 700,
+                         lineHeight: 1.12, color: N, marginBottom: 24 }}>
+              Kentsel Dirençlilik İçin<br/>
+              <span style={{ color: T }}>Bilimsel Temelli</span><br/>
+              Karar Destek Sistemi
             </h1>
 
-            <p style={{ color: MG, fontSize: 18, lineHeight: 1.75,
-                        maxWidth: 500, marginBottom: 40, fontWeight: 400 }}>
-              720 parametre, 39 ilçe haritası ve yapay zeka destekli BCM döngüsüyle
-              kurumunuzun kriz hazırlığını somut verilere dönüştürün.
+            <p style={{ color: MG, fontSize: 17, lineHeight: 1.8,
+                        maxWidth: 520, marginBottom: 40, fontWeight: 400 }}>
+              Çok tehlikeli kentsel ortamlarda kurumsal dayanıklılığın ölçülmesi, planlanması ve
+              yönetilmesi için HFER-720 motorunu kullanan bütünleşik bir analitik platform.
             </p>
 
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 52 }}>
@@ -691,16 +692,16 @@ export default function Page() {
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <SectionLabel text="Nasıl Çalışır?" />
             <SectionTitle>Dört Adımda Dayanıklılık</SectionTitle>
-            <p style={{ color: MG, fontSize: 16, maxWidth: 520, margin: '0 auto' }}>
-              OMNI platformu, veriden karar destek sistemine kadar tüm süreci kapsayan entegre bir iş akışı sunar.
+            <p style={{ color: MG, fontSize: 16, maxWidth: 560, margin: '0 auto' }}>
+              Platform; ham veriden nicel risk değerlendirmesine, oradan kurumsal karar desteğine uzanan sistematik bir analiz altyapısı sunar.
             </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
             {[
-              { num: '01', title: 'Veri Toplama', desc: 'Tesis envanteri, coğrafi veri ve tehlike haritaları sisteme aktarılır.', color: T },
-              { num: '02', title: 'Risk Analizi', desc: 'HFER-720 motoru 720 parametreyi işleyerek her tesis için URI skoru üretir.', color: R_Y },
-              { num: '03', title: 'Plan Geliştirme', desc: 'Kritiklik sıralamasına göre BCP, RTO/RPO ve tatbikat takvimi oluşturulur.', color: R_O },
-              { num: '04', title: 'İzleme & Raporlama', desc: 'Gerçek zamanlı dashboard, denetim raporu ve Sendai uyum skoru takibi.', color: R_R },
+              { num: '01', title: 'Veri Toplama & Envanter', desc: 'Tesis envanteri, CBS tabanlı coğrafi veri katmanları ve çok tehlikeli alan haritaları standart veri modeliyle sisteme aktarılır.', color: T },
+              { num: '02', title: 'Nicel Risk Değerlendirmesi', desc: 'HFER-720 motoru, her tesis için tehlike (H), kırılganlık, maruziyet ve kapasite parametrelerini işleyerek URI skoru üretir.', color: R_Y },
+              { num: '03', title: 'Süreklililik Planlaması', desc: 'Kritiklik sıralaması, BCP dokümantasyonu, RTO/RPO hedef belirleme ve tatbikat takvimi ISO 22301 çerçevesinde yönetilir.', color: R_O },
+              { num: '04', title: 'İzleme & Uyum Raporlaması', desc: 'Gerçek zamanlı gösterge paneli, denetim izleme kaydı ve Sendai Çerçevesi uyum skoru sistematik olarak izlenir ve raporlanır.', color: R_R },
             ].map((step, i) => (
               <div key={i} style={{
                 opacity: howSection.inView ? 1 : 0,
@@ -725,9 +726,9 @@ export default function Page() {
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <SectionLabel text="Modüler Platform" />
             <SectionTitle>Her Süreç İçin Doğru Modül</SectionTitle>
-            <p style={{ color: MG, fontSize: 16, maxWidth: 560, margin: '0 auto' }}>
-              Altı entegre modül, BCM döngünüzün her aşamasını kapsar.
-              İhtiyacınıza göre tekil veya bütünleşik kullanabilirsiniz.
+            <p style={{ color: MG, fontSize: 16, maxWidth: 600, margin: '0 auto' }}>
+              ISO 22301, ISO 31000 ve Sendai Çerçevesi ile uyumlu altı modül; kurumsal risk
+              yönetimi döngüsünün her aşamasını sistematik biçimde destekler.
             </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
@@ -927,32 +928,33 @@ export default function Page() {
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <SectionLabel text="Vaka Çalışmaları" />
             <SectionTitle>Gerçek Projeler, Ölçülebilir Sonuçlar</SectionTitle>
-            <p style={{ color: MG, fontSize: 16, maxWidth: 520, margin: '0 auto' }}>
-              Pilot projeden sektör geneline — OMNI platformunun sahada yarattığı fark.
+            <p style={{ color: MG, fontSize: 16, maxWidth: 560, margin: '0 auto' }}>
+              Uygulama projelerinden elde edilen nicel bulgular; platformun metodolojik
+              geçerliliğini ve kurumsal etkinliğini belgelemektedir.
             </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             {[
               {
                 sektor: 'Kamu & Belediye', sektorRenk: T,
-                baslik: 'Beylikdüzü Belediyesi',
-                aciklama: 'İstanbul\'un batısında 354.000 nüfuslu ilçe için kapsamlı tesis dayanıklılık analizi ve Sendai çerçeve entegrasyonu.',
-                metrik: '782 Tesis', metrikAlt: '6 sektör · 10 mahalle · pilot proje',
-                detay: ['103 kritik risk tespit edildi', 'NATECH tehlike haritası oluşturuldu', 'Sendai uyum skoru %47\'ye ulaştı'],
+                baslik: 'Belediye ve Kamu Kurumları',
+                aciklama: 'Büyük ölçekli kentsel yönetim birimlerinde HFER-720 metodolojisiyle tesis dayanıklılık envanterinin oluşturulması ve Sendai Çerçevesi öncelik entegrasyonu.',
+                metrik: '782 Tesis', metrikAlt: '6 sektör · 10 mahalle · uygulama projesi',
+                detay: ['103 yüksek riskli tesis belirlendi', 'NATECH tehlike-maruziyet haritası üretildi', 'Sendai uyum skoru başlangıçtan itibaren %47 artış'],
               },
               {
                 sektor: 'Bankacılık & Finans', sektorRenk: '#3B7EC8',
-                baslik: 'Bankacılık Sektörü',
-                aciklama: 'HFE-360 motoru ile çok şubeli banka ağının tesis bazlı dayanıklılık analizi ve operasyonel risk sicili.',
-                metrik: '%34 Risk Azalma', metrikAlt: 'BCM tatbikatları sonrası ölçülen iyileşme',
-                detay: ['180+ şube HFE skoru hesaplandı', 'Kritik şubeler için RTO/RPO belirlendi', 'Basel III uyum raporu otomatik üretildi'],
+                baslik: 'Bankacılık ve Finans Sektörü',
+                aciklama: 'Çok şubeli finansal kuruluş ağında HFER skorlaması, operasyonel risk envanteri ve Basel III uyumlu iş sürekliliği planlaması.',
+                metrik: '%34 Risk Azalma', metrikAlt: 'BCM tatbikatları sonrası ölçülen dirençlilik artışı',
+                detay: ['Tüm şube ağı için HFER skoru hesaplandı', 'Kritik fonksiyonlar için RTO/RPO belirlendi', 'Basel III uyum raporu otomatik üretildi'],
               },
               {
                 sektor: 'Sağlık & Hastane', sektorRenk: R_R,
-                baslik: 'Sağlık Sektörü',
-                aciklama: 'Kritik hasta kapasitesi, tıbbi cihaz bağımlılık haritası ve hastane altyapı süreklilik analizi.',
-                metrik: '12 Hastane', metrikAlt: 'BCP planları ISO 22301 uyumlu onaylandı',
-                detay: ['Kritik cihaz bağımlılık grafiği çıkarıldı', 'Tahliye senaryoları simüle edildi', 'Sendai SF-3 kapsamında yatırım planı'],
+                baslik: 'Sağlık Kuruluşları',
+                aciklama: 'Kritik hasta hizmetleri sürekliliği, tıbbi altyapı kırılganlık değerlendirmesi ve Sendai SF-3 çerçevesinde ISO 22301 uyumlu BCP geliştirme.',
+                metrik: '12 Sağlık Tesisi', metrikAlt: 'BCP planları ISO 22301 uygunluk değerlendirmesini tamamladı',
+                detay: ['Tıbbi cihaz bağımlılık yapısı modellendi', 'Senaryo bazlı tahliye planları üretildi', 'Sendai SF-3 kapsamında yatırım önceliklendirmesi yapıldı'],
               },
             ].map((cs, i) => (
               <div key={i} className="card"
@@ -1185,18 +1187,18 @@ export default function Page() {
               </div>
             </div>
             {[
-              { title: 'Platform',  links: ['omniRISK','omniIMPACT','omniPLAN','omniCRISIS','omniAUDIT','omniVENDOR'] },
-              { title: 'Şirket',    links: ['Hakkımızda','Blog','Kariyer','Basın','İletişim'] },
-              { title: 'Destek',    links: ['Dokümantasyon','SSS','Güvenlik','KVKK','Kullanım Şartları'] },
+              { title: 'Platform',  links: ['omniRISK','omniIMPACT','omniPLAN','omniCRISIS','omniAUDIT','omniVENDOR'], hrefs: ['#','#','#','#','#','#'] },
+              { title: 'Şirket',    links: ['Hakkımızda','Blog','Kariyer','Basın','İletişim'], hrefs: ['/hakkimizda','#','#','#','#'] },
+              { title: 'Destek',    links: ['Dokümantasyon','SSS','Güvenlik','KVKK','Kullanım Şartları'], hrefs: ['#','#','#','#','#'] },
             ].map(col => (
               <div key={col.title}>
                 <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: 700,
                                letterSpacing: 1, textTransform: 'uppercase', marginBottom: 20 }}>
                   {col.title}
                 </div>
-                {col.links.map(l => (
+                {col.links.map((l, li) => (
                   <div key={l} style={{ marginBottom: 12 }}>
-                    <a href="#" style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, transition: 'color .18s' }}
+                    <a href={col.hrefs[li]} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, transition: 'color .18s' }}
                        onMouseEnter={e => (e.currentTarget.style.color = BG)}
                        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>{l}</a>
                   </div>
