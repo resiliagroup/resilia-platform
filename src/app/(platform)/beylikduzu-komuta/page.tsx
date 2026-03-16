@@ -507,10 +507,10 @@ const SF_RENK: Record<string, { border: string; bg: string; text: string; bar: s
 const GOSTERGE_IKONU: Record<string, string> = { '✓': '✓', '⚠': '⚠', '✗': '✗' }
 const GOSTERGE_RENK:  Record<string, string>  = { '✓': '#10B981', '⚠': '#F59E0B', '✗': '#EF4444' }
 
-function SfKarti({ no, baslik, ilerleme, durum, gostergeler, omni }: {
+function SfKarti({ no, baslik, ilerleme, durum, gostergeler, omni, ikon }: {
   no: string; baslik: string; ilerleme: number; durum: string
   gostergeler: { metin: string; ikon: '✓' | '⚠' | '✗' }[]
-  omni: string
+  omni: string; ikon?: string
 }) {
   const r = SF_RENK[durum] ?? SF_RENK.Eksik
   return (
@@ -519,6 +519,7 @@ function SfKarti({ no, baslik, ilerleme, durum, gostergeler, omni }: {
       {/* Başlık satırı */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {ikon && <img src={ikon} width={28} height={28} alt={no} style={{ objectFit: 'contain', flexShrink: 0 }}/>}
           <span style={{ fontFamily: 'DM Mono,monospace', fontSize: 11, fontWeight: 700, letterSpacing: 1,
                          background: r.bg, color: r.text, border: `1px solid ${r.border}44`,
                          padding: '3px 8px', borderRadius: 6 }}>{no}</span>
@@ -631,15 +632,17 @@ function SendaiTab() {
   const SF_DATA = [
     {
       no: 'SF-1', baslik: 'Afet Riskini Anlama', ilerleme: 68, durum: 'Aktif',
+      ikon: '/icons/Icon_MIT_06_Risk.png',
       gostergeler: [
-        { metin: 'URI skoru hazır — HFER-720 hesaplama aktif',        ikon: '✓' as const },
+        { metin: 'URI skoru hazır — omniRISK hesaplama aktif',        ikon: '✓' as const },
         { metin: 'Mahalle haritası — 6 mahalle analizi tamamlandı',   ikon: '✓' as const },
         { metin: 'CBS entegrasyon — ısı haritası kısmi, F-N eksik',   ikon: '⚠' as const },
       ],
-      omni: 'HFER-720 URI skoru + mahalle bazlı risk haritası + CBS tesis katmanı',
+      omni: 'omniRISK URI skoru + mahalle bazlı risk haritası + CBS tesis katmanı',
     },
     {
       no: 'SF-2', baslik: 'Risk Yönetişimini Güçlendirme', ilerleme: 34, durum: 'Kısmi',
+      ikon: '/icons/Icon_PROTECT_01_Planning.png',
       gostergeler: [
         { metin: 'ISO 22301 — belediye taslak aşamasında',            ikon: '⚠' as const },
         { metin: 'BCP planı — henüz tamamlanmadı',                    ikon: '✗' as const },
@@ -649,6 +652,7 @@ function SendaiTab() {
     },
     {
       no: 'SF-3', baslik: 'Dayanıklılığa Yatırım', ilerleme: 21, durum: 'Planlandı',
+      ikon: '/icons/Icon_MIT_05_LongTerm.png',
       gostergeler: [
         { metin: 'Tesis skoru — 782 tesis H_score hesaplı',           ikon: '✓' as const },
         { metin: 'Yatırım planı — taslak hazırlık aşaması',           ikon: '⚠' as const },
@@ -658,6 +662,7 @@ function SendaiTab() {
     },
     {
       no: 'SF-4', baslik: 'Etkin Müdahale ve Yeniden Yapılanma', ilerleme: 12, durum: 'Eksik',
+      ikon: '/icons/Icon_RESP_03_OpCoord.png',
       gostergeler: [
         { metin: 'EOC kurulum — protokol hazırlanmadı',               ikon: '✗' as const },
         { metin: 'Tatbikat planı — takvim oluşturulmadı',             ikon: '✗' as const },

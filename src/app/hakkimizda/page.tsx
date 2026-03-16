@@ -240,148 +240,122 @@ export default function HakkimizdaPage() {
       {/* ── AKADEMİK ORTAKLIK ────────────────────────────────────── */}
       <section style={{ padding: '80px 48px', background: BG }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 64, alignItems: 'center' }}>
-            {/* İTÜ logo placeholder */}
-            <div style={{ background: GR, border: `1px solid ${BORDER}`, borderRadius: 20,
-                          padding: '52px', textAlign: 'center' }}>
-              <div style={{ marginBottom: 16 }}>
-                <span style={{ fontSize: 52, fontWeight: 800, color: N,
-                                fontFamily: 'DM Sans,sans-serif', letterSpacing: -2 }}>İTÜ</span>
-              </div>
-              <div style={{ width: 56, height: 2, background: T, margin: '0 auto 16px' }}/>
-              <p style={{ color: MG, fontSize: 14, fontWeight: 600, lineHeight: 1.5 }}>
-                Afet Yönetimi Enstitüsü
-              </p>
-              <p style={{ color: MG, fontSize: 12, marginTop: 6 }}>
-                İstanbul Teknik Üniversitesi
-              </p>
-            </div>
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <p style={{ color: T, fontSize: 12, fontWeight: 700, letterSpacing: 3,
+                        textTransform: 'uppercase', marginBottom: 14 }}>Akademik Ar-Ge İş Birliği</p>
+            <h2 style={{ fontSize: 'clamp(22px, 3vw, 36px)', fontWeight: 700, color: N,
+                          lineHeight: 1.2, marginBottom: 24, maxWidth: 800, margin: '0 auto 24px' }}>
+              İTÜ Afet Yönetim Araştırma ve Uygulama Merkezi (AYM) ile Ar-Ge İş Birliği
+            </h2>
+            <p style={{ color: MG, fontSize: 16, lineHeight: 1.85, maxWidth: 780, margin: '0 auto 16px' }}>
+              Omniversel, İstanbul Teknik Üniversitesi Afet Yönetim Araştırma ve Uygulama Merkezi
+              (İTÜ AYM) ile stratejik Ar-Ge iş birliği çerçevesinde faaliyet göstermektedir.{' '}
+              <strong style={{ color: N }}>omniRISK metodolojisinin bilimsel temeli</strong>, İTÜ AYM
+              bünyesinde yürütülen akademik araştırmalar ve saha çalışmaları ile geliştirilmiş ve
+              validasyon süreçleri tamamlanmıştır.
+            </p>
+          </div>
 
-            {/* Text */}
-            <div>
-              <p style={{ color: T, fontSize: 12, fontWeight: 700, letterSpacing: 3,
-                          textTransform: 'uppercase', marginBottom: 14 }}>Akademik İş Birliği</p>
-              <h2 style={{ fontSize: 'clamp(22px, 3vw, 34px)', fontWeight: 700, color: N,
-                            lineHeight: 1.2, marginBottom: 24 }}>
-                İTÜ Afet Yönetimi Enstitüsü<br/>Akademik İş Birliği
-              </h2>
-              <p style={{ color: MG, fontSize: 16, lineHeight: 1.85, marginBottom: 28 }}>
-                Omniversel, İstanbul Teknik Üniversitesi Afet Yönetimi Enstitüsü ile stratejik
-                akademik iş birliği çerçevesinde <strong style={{ color: N, fontWeight: 600 }}>omniRISK
-                modelini geliştirmiş</strong> ve validasyon süreçlerini yürütmüştür.
-              </p>
-              <p style={{ color: MG, fontSize: 15, lineHeight: 1.8, marginBottom: 32 }}>
-                Bu iş birliği; metodolojik titizlik, uluslararası standart uyumu ve sahaya
-                yönelik uygulama etkinliğinin bütünleştirilmesini güvence altına almaktadır.
-                Araştırma bulguları, ISO 22301 ve Sendai Çerçevesi doğrultusunda platforma
-                sistematik biçimde entegre edilmektedir.
-              </p>
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                {['omniRISK Modeli', 'Validasyon Çalışmaları', 'Akademik Yayınlar'].map(b => (
-                  <span key={b} style={{ background: `${T}12`, color: T, fontSize: 12,
-                                          fontWeight: 600, padding: '6px 14px', borderRadius: 20,
-                                          border: `1px solid ${T}25` }}>{b}</span>
-                ))}
+          {/* 3 işbirliği kartı */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, marginBottom: 56 }}>
+            {[
+              {
+                title: 'Ar-Ge İş Birliği',
+                icon: '🔬',
+                desc: 'omniRISK metodolojisi İTÜ AYM akademik araştırmalarıyla ortak geliştirilmekte; saha çalışmaları ve veri validasyonu birlikte yürütülmektedir.',
+              },
+              {
+                title: 'Eğitim & Kapasite',
+                icon: '🎓',
+                desc: 'Afet yönetimi, kentsel dayanıklılık ve ISO 22301 alanlarında ortak eğitim programları, sertifika çalışmaları ve kapasite geliştirme faaliyetleri.',
+              },
+              {
+                title: 'Danışmanlık',
+                icon: '🤝',
+                desc: 'Kamu kurumları ve özel sektör için AFAD/Sendai uyumlu kurumsal dayanıklılık danışmanlığı, kentsel risk atlası üretimi ve politika desteği.',
+              },
+            ].map(k => (
+              <div key={k.title} style={{ background: GR, border: `1px solid ${BORDER}`,
+                                           borderTop: `4px solid ${T}`, borderRadius: 16,
+                                           padding: '32px 28px' }}>
+                <div style={{ fontSize: 36, marginBottom: 14 }}>{k.icon}</div>
+                <h3 style={{ color: N, fontWeight: 700, fontSize: 17, marginBottom: 12 }}>{k.title}</h3>
+                <p style={{ color: MG, fontSize: 14, lineHeight: 1.75 }}>{k.desc}</p>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ── EKİP ─────────────────────────────────────────────────── */}
+      {/* ── KURUMSAL YAPI ────────────────────────────────────────── */}
       <section style={{ padding: '80px 48px', background: GR }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <p style={{ color: T, fontSize: 12, fontWeight: 700, letterSpacing: 3,
-                        textTransform: 'uppercase', marginBottom: 12 }}>Ekip</p>
-            <h2 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 700, color: N,
+                        textTransform: 'uppercase', marginBottom: 12 }}>Kurumsal Yapı</p>
+            <h2 style={{ fontSize: 'clamp(26px, 4vw, 40px)', fontWeight: 700, color: N,
                           lineHeight: 1.15, marginBottom: 16 }}>
-              Araştırma ve Uygulama Ekibi
+              Stratejik Ortaklık Modeli
             </h2>
-            <p style={{ color: MG, fontSize: 16, maxWidth: 520, margin: '0 auto' }}>
-              Omniversel ekibi; afet yönetimi araştırması, kentsel planlama ve kurumsal
-              süreklilik alanlarında uzman akademisyen ve uygulamacılardan oluşmaktadır.
-            </p>
           </div>
 
-          {/* Featured card: Erkan AKDENİZ */}
-          {team.filter(m => m.featured).map((m) => (
-            <div key={m.isim} style={{
-              background: N, borderRadius: 20, padding: '40px 48px', marginBottom: 32,
-              display: 'flex', alignItems: 'center', gap: 40,
-              boxShadow: '0 8px 40px rgba(10,22,40,.18)',
-            }}>
-              <div style={{ width: 80, height: 80, borderRadius: '50%', background: `${T}25`,
-                             border: `2px solid ${T}`, display: 'flex', alignItems: 'center',
-                             justifyContent: 'center', flexShrink: 0 }}>
-                <span style={{ color: T, fontWeight: 800, fontSize: 26 }}>
-                  {m.isim.split(' ').filter(w => w === w.toUpperCase() && w.length > 1).map(w => w[0]).join('').slice(0, 2)}
-                </span>
+          {/* 2 büyük kart + × sembolü */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 24,
+                        alignItems: 'center', maxWidth: 900, margin: '0 auto' }}>
+            {/* Omniversel kartı */}
+            <div style={{ background: N, borderRadius: 24, padding: '48px 40px', textAlign: 'center',
+                          boxShadow: '0 8px 40px rgba(10,22,40,.18)' }}>
+              <div style={{ width: 72, height: 72, borderRadius: 16, background: `${T}20`,
+                             border: `2px solid ${T}40`, display: 'flex', alignItems: 'center',
+                             justifyContent: 'center', margin: '0 auto 20px' }}>
+                <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
+                  <polygon points="16,6 24,20 8,20" fill="none" stroke={T} strokeWidth="2"/>
+                  <polygon points="16,11 20,19 12,19" fill={T} fillOpacity="0.4"/>
+                  <circle cx="16" cy="17" r="2" fill={G}/>
+                </svg>
               </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6, flexWrap: 'wrap' }}>
-                  <span style={{ color: '#fff', fontSize: 20, fontWeight: 700 }}>{m.isim}</span>
-                  <span style={{ background: `${G}20`, color: G, fontSize: 11, fontWeight: 700,
-                                  padding: '4px 12px', borderRadius: 20, border: `1px solid ${G}40`,
-                                  letterSpacing: 1 }}>KURUCU ORTAK</span>
-                </div>
-                <p style={{ color: T, fontSize: 14, fontWeight: 600, marginBottom: 4 }}>{m.unvan}</p>
-                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13 }}>{m.kurum}</p>
+              <h3 style={{ color: '#fff', fontWeight: 800, fontSize: 22, marginBottom: 8 }}>Omniversel</h3>
+              <p style={{ color: T, fontSize: 13, fontWeight: 600, marginBottom: 16 }}>Teknoloji & Platform</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {['omniRISK Platform', 'Yazılım Geliştirme', 'Veri Mühendisliği', 'Ürün Yönetimi'].map(item => (
+                  <span key={item} style={{ background: `${T}15`, color: 'rgba(255,255,255,0.8)', fontSize: 12,
+                                            fontWeight: 500, padding: '5px 12px', borderRadius: 8,
+                                            border: `1px solid ${T}25` }}>{item}</span>
+                ))}
               </div>
             </div>
-          ))}
 
-          {/* İTÜ team grid */}
-          <div style={{ marginBottom: 20 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: MG, letterSpacing: 2,
-                        textTransform: 'uppercase', marginBottom: 20 }}>
-              İTÜ Afet Yönetimi Enstitüsü — Akademik Danışman Kadrosu
-            </p>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
-            {team.filter(m => !m.featured).map((m) => {
-              const initials = m.isim
-                .split(' ')
-                .filter(w => /^[A-ZÇĞİÖŞÜ]/.test(w))
-                .slice(-2)
-                .map(w => w[0])
-                .join('')
-              return (
-                <div key={m.isim} style={{
-                  background: BG, border: `1px solid ${BORDER}`,
-                  borderLeft: `4px solid ${T}`, borderRadius: 12,
-                  padding: '24px 24px 20px', transition: 'box-shadow .2s, transform .2s',
-                }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 24px rgba(45,138,135,.1)`
-                    ;(e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'
-                    ;(e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'
-                  }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 14 }}>
-                    <div style={{ width: 44, height: 44, borderRadius: '50%', background: `${T}14`,
-                                   border: `1px solid ${T}30`, display: 'flex', alignItems: 'center',
-                                   justifyContent: 'center', flexShrink: 0 }}>
-                      <span style={{ color: T, fontWeight: 700, fontSize: 13 }}>{initials}</span>
-                    </div>
-                    <div>
-                      <div style={{ color: N, fontWeight: 700, fontSize: 14, lineHeight: 1.3,
-                                     marginBottom: 4 }}>{m.isim}</div>
-                      <div style={{ color: T, fontSize: 12, fontWeight: 600 }}>{m.unvan}</div>
-                    </div>
-                  </div>
-                  <div style={{ paddingLeft: 58 }}>
-                    <p style={{ color: MG, fontSize: 12, lineHeight: 1.5, marginBottom: 8 }}>{m.bolum}</p>
-                    <span style={{ background: `${T}10`, color: T, fontSize: 11, fontWeight: 600,
-                                    padding: '3px 10px', borderRadius: 12, border: `1px solid ${T}20` }}>
-                      {m.kurum}
-                    </span>
-                  </div>
-                </div>
-              )
-            })}
+            {/* × sembolü */}
+            <div style={{ textAlign: 'center', flexShrink: 0 }}>
+              <div style={{ width: 56, height: 56, borderRadius: '50%', background: BG,
+                             border: `2px solid ${BORDER}`, display: 'flex', alignItems: 'center',
+                             justifyContent: 'center' }}>
+                <span style={{ fontSize: 22, fontWeight: 800, color: MG }}>×</span>
+              </div>
+            </div>
+
+            {/* İTÜ AYM kartı */}
+            <div style={{ background: BG, border: `2px solid ${BORDER}`, borderRadius: 24,
+                          padding: '48px 40px', textAlign: 'center',
+                          boxShadow: '0 4px 24px rgba(45,138,135,.08)' }}>
+              <div style={{ width: 72, height: 72, borderRadius: 16, background: `${T}10`,
+                             border: `2px solid ${T}30`, display: 'flex', alignItems: 'center',
+                             justifyContent: 'center', margin: '0 auto 20px' }}>
+                <span style={{ fontSize: 24, fontWeight: 900, color: N, fontFamily: 'DM Sans,sans-serif',
+                                letterSpacing: -1 }}>İTÜ</span>
+              </div>
+              <h3 style={{ color: N, fontWeight: 800, fontSize: 22, marginBottom: 8 }}>İTÜ AYM</h3>
+              <p style={{ color: T, fontSize: 13, fontWeight: 600, marginBottom: 16 }}>
+                Afet Yönetim Araştırma ve Uygulama Merkezi
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {['Akademik Araştırma', 'Metodoloji Geliştirme', 'Saha Çalışmaları', 'Validasyon'].map(item => (
+                  <span key={item} style={{ background: GR, color: MG, fontSize: 12,
+                                            fontWeight: 500, padding: '5px 12px', borderRadius: 8,
+                                            border: `1px solid ${BORDER}` }}>{item}</span>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -401,7 +375,7 @@ export default function HakkimizdaPage() {
               uyumlu biçimde tasarlanmış ve validasyon süreçleri tamamlanmıştır.
             </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 32 }}>
             {standards.map((s, i) => (
               <div key={i} style={{
                 background: GR, border: `1px solid ${BORDER}`, borderRadius: 16,
@@ -421,6 +395,21 @@ export default function HakkimizdaPage() {
                 </div>
               </div>
             ))}
+          </div>
+          {/* İTÜ AYM link */}
+          <div style={{ background: `${T}08`, border: `1px solid ${T}25`, borderRadius: 12,
+                        padding: '16px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T} strokeWidth="2" strokeLinecap="round">
+              <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+            <span style={{ color: MG, fontSize: 14 }}>
+              İTÜ AYM hakkında daha fazla bilgi:{' '}
+              <a href="https://aym.itu.edu.tr" target="_blank" rel="noopener noreferrer"
+                 style={{ color: T, fontWeight: 700, textDecoration: 'underline' }}>
+                aym.itu.edu.tr
+              </a>
+            </span>
           </div>
         </div>
       </section>

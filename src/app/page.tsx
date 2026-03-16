@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
 
@@ -220,74 +220,27 @@ function KpiCard() {
 
 /* ── Product icon SVGs ──────────────────────────────────────── */
 function IconRisk({ size = 52 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
-      <circle cx="32" cy="32" r="30" fill={`${T}14`} stroke={T} strokeWidth="1.5"/>
-      <path d="M12 42 A22 22 0 0 1 52 42" stroke="#E8EDED" strokeWidth="5" strokeLinecap="round"/>
-      <path d="M12 42 A22 22 0 0 1 37 15" stroke={T} strokeWidth="5" strokeLinecap="round"/>
-      <line x1="32" y1="32" x2="22" y2="20" stroke={N} strokeWidth="2.5" strokeLinecap="round"/>
-      <circle cx="32" cy="32" r="4" fill={N}/>
-      <circle cx="32" cy="32" r="2" fill={BG}/>
-    </svg>
-  )
+  return <img src="/icons/Icon_PROTECT_10_Risk.png" width={size} height={size} alt="Risk" style={{ objectFit: 'contain' }}/>
 }
 
 function IconImpact({ size = 52 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
-      <circle cx="32" cy="32" r="30" fill={`${G}18`} stroke={G} strokeWidth="1.5"/>
-      <rect x="12" y="38" width="8" height="12" rx="2" fill={G} opacity="0.4"/>
-      <rect x="22" y="30" width="8" height="20" rx="2" fill={G} opacity="0.65"/>
-      <rect x="32" y="22" width="8" height="28" rx="2" fill={G}/>
-      <rect x="42" y="16" width="8" height="34" rx="2" fill={N}/>
-      <polyline points="16,36 26,28 36,20 46,14" stroke={T} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  )
+  return <img src="/icons/Icon_MIT_05_LongTerm.png" width={size} height={size} alt="Impact" style={{ objectFit: 'contain' }}/>
 }
 
 function IconPlan({ size = 52 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
-      <circle cx="32" cy="32" r="30" fill={`${T}14`} stroke={T} strokeWidth="1.5"/>
-      <path d="M32 14 L46 19 L46 34 C46 42 32 50 32 50 C32 50 18 42 18 34 L18 19 Z"
-            fill={T} fillOpacity="0.15" stroke={T} strokeWidth="2" strokeLinejoin="round"/>
-      <polyline points="25,32 30,37 40,26" stroke={N} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  )
+  return <img src="/icons/Icon_MIT_01_Planning.png" width={size} height={size} alt="Plan" style={{ objectFit: 'contain' }}/>
 }
 
 function IconCrisis({ size = 52 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
-      <circle cx="32" cy="32" r="30" fill={`${R_O}14`} stroke={R_O} strokeWidth="1.5"/>
-      <polygon points="32,13 38,28 35,28 41,51 26,33 30,33" fill={R_O} fillOpacity="0.3" stroke={R_O} strokeWidth="1.2" strokeLinejoin="round"/>
-      <circle cx="32" cy="32" r="21" fill="none" stroke={R_O} strokeWidth="1" strokeDasharray="3 4"/>
-    </svg>
-  )
+  return <img src="/icons/Icon_RESP_03_OpCoord.png" width={size} height={size} alt="Crisis" style={{ objectFit: 'contain' }}/>
 }
 
 function IconAudit({ size = 52 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
-      <circle cx="32" cy="32" r="30" fill={`${R_G}14`} stroke={R_G} strokeWidth="1.5"/>
-      <path d="M32 16 L43 21 L43 34 C43 40 32 47 32 47 C32 47 21 40 21 34 L21 21 Z"
-            fill={R_G} fillOpacity="0.15" stroke={R_G} strokeWidth="1.8" strokeLinejoin="round"/>
-      <polyline points="26,31 30,35 39,26" stroke={R_G} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  )
+  return <img src="/icons/Icon_PROTECT_01_Planning.png" width={size} height={size} alt="Audit" style={{ objectFit: 'contain' }}/>
 }
 
 function IconVendor({ size = 52 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
-      <circle cx="32" cy="32" r="30" fill="rgba(99,102,241,0.08)" stroke="#6366F1" strokeWidth="1.5"/>
-      <rect x="18" y="26" width="28" height="20" rx="3" fill="rgba(99,102,241,0.1)" stroke="#6366F1" strokeWidth="1.8"/>
-      <path d="M23 26 L23 22 A9 9 0 0 1 41 22 L41 26" stroke="#6366F1" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
-      <circle cx="26" cy="36" r="2.5" fill="#6366F1"/>
-      <circle cx="32" cy="36" r="2.5" fill="#6366F1" fillOpacity="0.5"/>
-      <circle cx="38" cy="36" r="2.5" fill="#6366F1" fillOpacity="0.25"/>
-    </svg>
-  )
+  return <img src="/icons/Icon_PROTECT_11_Supply.png" width={size} height={size} alt="Vendor" style={{ objectFit: 'contain' }}/>
 }
 
 /* ── BCM Cycle SVG — 7 segment ────────────────────────────────── */
@@ -364,7 +317,7 @@ function BcmCycle() {
 
 /* ── Logo band ──────────────────────────────────────────────── */
 function LogoBand() {
-  const sectors = [
+  const sectors: { name: string; color: string; png?: string; icon?: React.ReactNode }[] = [
     {
       name: 'Bankacılık', color: '#1565C0',
       icon: (
@@ -378,33 +331,9 @@ function LogoBand() {
         </g>
       ),
     },
-    {
-      name: 'Sağlık', color: '#C62828',
-      icon: (
-        <g>
-          <rect x="5" y="5" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-          <line x1="14" y1="9" x2="14" y2="19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-          <line x1="9"  y1="14" x2="19" y2="14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-        </g>
-      ),
-    },
-    {
-      name: 'Kamu', color: '#2D8A87',
-      icon: (
-        <path d="M14 5 L6 12 L6 23 L22 23 L22 12 Z M11 23 L11 17 L17 17 L17 23"
-              stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-      ),
-    },
-    {
-      name: 'Sanayi', color: '#E56A04',
-      icon: (
-        <g>
-          <circle cx="14" cy="14" r="4" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-          <path d="M14 6 L14 8 M14 20 L14 22 M6 14 L8 14 M20 14 L22 14 M8.3 8.3 L9.7 9.7 M18.3 18.3 L19.7 19.7 M8.3 19.7 L9.7 18.3 M18.3 9.7 L19.7 8.3"
-                stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-        </g>
-      ),
-    },
+    { name: 'Sağlık',  color: '#C62828', png: '/icons/Icon_REC_06_Health.png' },
+    { name: 'Kamu',    color: '#2D8A87', png: '/icons/Icon_MIT_04_Community.png' },
+    { name: 'Sanayi',  color: '#E56A04', png: '/icons/Icon_RESP_04_Infrastructure.png' },
     {
       name: 'Finans', color: '#2E7D32',
       icon: (
@@ -435,9 +364,13 @@ function LogoBand() {
                el.style.filter = 'grayscale(1) opacity(0.5)'
                el.style.boxShadow = 'none'
              }}>
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style={{ color: s.color }}>
-            {s.icon}
-          </svg>
+          {s.png ? (
+            <img src={s.png} width={28} height={28} alt={s.name} style={{ objectFit: 'contain' }}/>
+          ) : (
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style={{ color: s.color }}>
+              {s.icon}
+            </svg>
+          )}
           <span style={{ fontSize: 10, fontWeight: 600, color: MG, letterSpacing: 0.3 }}>{s.name}</span>
         </div>
       ))}
