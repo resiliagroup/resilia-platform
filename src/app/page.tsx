@@ -1420,21 +1420,21 @@ export default function Page() {
                         gap: 24 }}>
             {[
               {
-                sektor: 'Kamu & Belediye', sektorRenk: T,
+                icon: '/icons/Icon_MIT_01_Planning.png', sektor: 'Kamu & Belediye', sektorRenk: T,
                 baslik: 'Belediye ve Kamu Kurumları',
                 aciklama: 'Büyük ölçekli kentsel yönetim birimlerinde omniRISK modeliyle tesis dayanıklılık envanterinin oluşturulması ve Sendai Çerçevesi öncelik entegrasyonu.',
                 metrik: '782 Tesis', metrikAlt: '6 sektör · 10 mahalle · uygulama projesi',
                 detay: ['103 yüksek riskli tesis belirlendi', 'NATECH tehlike-maruziyet haritası üretildi', 'Sendai uyum skoru başlangıçtan itibaren %47 artış'],
               },
               {
-                sektor: 'Bankacılık & Finans', sektorRenk: '#3B7EC8',
+                icon: '/icons/Icon_PROTECT_10_Risk.png', sektor: 'Bankacılık & Finans', sektorRenk: '#3B7EC8',
                 baslik: 'Bankacılık ve Finans Sektörü',
                 aciklama: 'Çok şubeli finansal kuruluş ağında HFER skorlaması, operasyonel risk envanteri ve Basel III uyumlu iş sürekliliği planlaması.',
                 metrik: '%34 Risk Azalma', metrikAlt: 'BCM tatbikatları sonrası ölçülen dirençlilik artışı',
                 detay: ['Tüm şube ağı için HFER skoru hesaplandı', 'Kritik fonksiyonlar için RTO/RPO belirlendi', 'Basel III uyum raporu otomatik üretildi'],
               },
               {
-                sektor: 'Sağlık & Hastane', sektorRenk: R_R,
+                icon: '/icons/Icon_REC_06_Health.png', sektor: 'Sağlık & Hastane', sektorRenk: R_R,
                 baslik: 'Sağlık Kuruluşları',
                 aciklama: 'Kritik hasta hizmetleri sürekliliği, tıbbi altyapı kırılganlık değerlendirmesi ve Sendai SF-3 çerçevesinde ISO 22301 uyumlu BCP geliştirme.',
                 metrik: '12 Sağlık Tesisi', metrikAlt: 'BCP planları ISO 22301 uygunluk değerlendirmesini tamamladı',
@@ -1451,7 +1451,7 @@ export default function Page() {
                   <div style={{ width: 40, height: 40, borderRadius: 10, background: `${cs.sektorRenk}14`,
                                  border: `1px solid ${cs.sektorRenk}30`, display: 'flex', alignItems: 'center',
                                  justifyContent: 'center' }}>
-                    <div style={{ width: 14, height: 14, borderRadius: '50%', background: cs.sektorRenk }}/>
+                    <img src={cs.icon} width={28} height={28} alt={cs.sektor} style={{ objectFit: 'contain' }}/>
                   </div>
                   <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 12,
                                   background: `${cs.sektorRenk}12`, color: cs.sektorRenk,
