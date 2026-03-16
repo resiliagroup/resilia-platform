@@ -172,11 +172,9 @@ export default function LoginPage() {
           <div style={{ width: '100%', maxWidth: 380 }}>
 
             {/* Mobile logo (hidden on desktop) */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 40 }}>
-              <OmniLogo size={36}/>
-              <span style={{ color: N, fontSize: 18, fontWeight: 700 }}>
-                omni<span style={{ color: T }}>versel</span>
-              </span>
+            <div style={{ marginBottom: 40 }}>
+              
+              <OmniverselLogo width={180} height={46} light />
             </div>
 
             <h1 style={{ color: N, fontSize: 26, fontWeight: 700, marginBottom: 6 }}>
