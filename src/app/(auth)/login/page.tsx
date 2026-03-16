@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { oturumAc, rolHedefi } from '@/lib/auth'
+import OmniverselLogo from '@/components/OmniverselLogo'
 
 const N = '#0A1628'
 const G = '#E8C97A'
@@ -97,16 +98,8 @@ export default function LoginPage() {
         }} className="hidden-mobile">
 
           {/* Logo row */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <OmniLogo size={52}/>
-            <div>
-              <div style={{ color: '#F1F5F9', fontSize: 20, fontWeight: 700, letterSpacing: 0.5 }}>
-                omni<span style={{ color: T }}>versel</span>
-              </div>
-              <div style={{ color: '#5B7080', fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', marginTop: 2 }}>
-                Resilience Platform
-              </div>
-            </div>
+          <div>
+            <OmniverselLogo width={220} height={56} />
           </div>
 
           {/* Center content */}

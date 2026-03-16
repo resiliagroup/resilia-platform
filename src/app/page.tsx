@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
+import OmniverselLogo from '@/components/OmniverselLogo'
 
 /* ─── tokens ─────────────────────────────────────────────────── */
 const N      = '#0A1628'   // navy
@@ -842,17 +843,9 @@ export default function Page() {
         <div style={{ maxWidth: 1200, width: '100%', margin: '0 auto',
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <rect width="32" height="32" rx="8" fill={N}/>
-              <polygon points="16,7 25,22 7,22" fill="none" stroke={T} strokeWidth="2"/>
-              <polygon points="16,12 21,20 11,20" fill={T} fillOpacity="0.4"/>
-              <circle cx="16" cy="18" r="2" fill={G}/>
-            </svg>
-            <span style={{ color: N, fontSize: 18, fontWeight: 700, letterSpacing: 0.5 }}>
-              omni<span style={{ color: T }}>versel</span>
-            </span>
-          </div>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
+            <OmniverselLogo width={180} height={46} light />
+          </Link>
 
           {/* Desktop nav */}
           <nav style={{ display: isMobile ? 'none' : 'flex', gap: 32, alignItems: 'center' }}>
@@ -955,6 +948,9 @@ export default function Page() {
         <>
           <div className="mob-overlay" onClick={() => setMenuOpen(false)}/>
           <div className="mob-menu">
+            <div style={{ paddingBottom: 8, marginBottom: 4 }}>
+              <OmniverselLogo width={160} height={40} light />
+            </div>
             <Link href="/hub" onClick={() => setMenuOpen(false)}>Platform Hub</Link>
             <div className="mob-sep"/>
             <p style={{ fontSize: 10, fontWeight: 700, color: MG, letterSpacing: 2, textTransform: 'uppercase', padding: '4px 14px 2px' }}>Modüller</p>
@@ -1661,15 +1657,8 @@ export default function Page() {
                         gridTemplateColumns: isMobile ? '1fr 1fr' : isTablet ? 'repeat(2,1fr)' : '2fr 1fr 1fr 1fr',
                         gap: isMobile ? 32 : 48, marginBottom: isMobile ? 36 : 56 }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-                <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-                  <rect width="32" height="32" rx="8" fill={T} fillOpacity="0.2"/>
-                  <polygon points="16,7 25,22 7,22" fill="none" stroke={T} strokeWidth="2"/>
-                  <circle cx="16" cy="18" r="2" fill={G}/>
-                </svg>
-                <span style={{ color: BG, fontSize: 17, fontWeight: 700 }}>
-                  omni<span style={{ color: T }}>versel</span>
-                </span>
+              <div style={{ marginBottom: 20 }}>
+                <OmniverselLogo width={200} height={50} />
               </div>
               <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.8, maxWidth: 260 }}>
                 Yapay zeka destekli kurumsal dayanıklılık platformu.

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import OmniverselLogo from '@/components/OmniverselLogo'
 
 /* ─── tokens ─────────────────────────────────────────────────── */
 const N      = '#0A1628'
@@ -142,15 +143,7 @@ export default function HakkimizdaPage() {
         <div style={{ maxWidth: 1200, width: '100%', margin: '0 auto',
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
-              <rect width="32" height="32" rx="8" fill={N}/>
-              <polygon points="16,7 25,22 7,22" fill="none" stroke={T} strokeWidth="2"/>
-              <polygon points="16,12 21,20 11,20" fill={T} fillOpacity="0.4"/>
-              <circle cx="16" cy="18" r="2" fill={G}/>
-            </svg>
-            <span style={{ color: N, fontSize: 17, fontWeight: 700 }}>
-              omni<span style={{ color: T }}>versel</span>
-            </span>
+            <OmniverselLogo width={180} height={46} light />
           </Link>
           <nav style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
             <Link href="/" style={{ color: MG, fontSize: 14, fontWeight: 500, transition: 'color .18s' }}
@@ -305,16 +298,9 @@ export default function HakkimizdaPage() {
             {/* Omniversel kartı */}
             <div style={{ background: N, borderRadius: 24, padding: '48px 40px', textAlign: 'center',
                           boxShadow: '0 8px 40px rgba(10,22,40,.18)' }}>
-              <div style={{ width: 72, height: 72, borderRadius: 16, background: `${T}20`,
-                             border: `2px solid ${T}40`, display: 'flex', alignItems: 'center',
-                             justifyContent: 'center', margin: '0 auto 20px' }}>
-                <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
-                  <polygon points="16,6 24,20 8,20" fill="none" stroke={T} strokeWidth="2"/>
-                  <polygon points="16,11 20,19 12,19" fill={T} fillOpacity="0.4"/>
-                  <circle cx="16" cy="17" r="2" fill={G}/>
-                </svg>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+                <OmniverselLogo width={200} height={50} />
               </div>
-              <h3 style={{ color: '#fff', fontWeight: 800, fontSize: 22, marginBottom: 8 }}>Omniversel</h3>
               <p style={{ color: T, fontSize: 13, fontWeight: 600, marginBottom: 16 }}>Teknoloji & Platform</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {['omniRISK Platform', 'Yazılım Geliştirme', 'Veri Mühendisliği', 'Ürün Yönetimi'].map(item => (
@@ -455,15 +441,8 @@ export default function HakkimizdaPage() {
         <div style={{ maxWidth: 1200, margin: '0 auto',
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                       flexWrap: 'wrap', gap: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
-              <rect width="32" height="32" rx="8" fill={T} fillOpacity="0.2"/>
-              <polygon points="16,7 25,22 7,22" fill="none" stroke={T} strokeWidth="2"/>
-              <circle cx="16" cy="18" r="2" fill={G}/>
-            </svg>
-            <span style={{ color: '#fff', fontSize: 16, fontWeight: 700 }}>
-              omni<span style={{ color: T }}>versel</span>
-            </span>
+          <div>
+            <OmniverselLogo width={200} height={50} />
           </div>
           <div style={{ display: 'flex', gap: 28 }}>
             {[

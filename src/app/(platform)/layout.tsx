@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { mevcutKullanici } from '@/lib/auth';
 import Link from 'next/link';
-import { Shield, BarChart3, Map, Building2, Settings, Activity, AlertTriangle, Database, History, Home, LayoutGrid, FileText, Siren, SlidersHorizontal } from 'lucide-react';
+import { BarChart3, Map, Building2, Settings, Activity, AlertTriangle, Database, History, Home, LayoutGrid, FileText, Siren, SlidersHorizontal } from 'lucide-react';
+import OmniverselLogo from '@/components/OmniverselLogo';
 
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
   const [tenant, setTenant] = useState('...')
@@ -18,16 +19,8 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
     <div className="flex h-screen bg-[#0A1628] overflow-hidden">
       <aside className="w-64 bg-[#0D1F3C] text-slate-300 flex flex-col border-r border-slate-800/40">
         
-        <div className="h-16 flex items-center px-6 border-b border-slate-800/40">
-          <div className="flex items-center gap-3">
-            <div className="bg-[#E8C97A]/10 p-2 rounded-lg border border-[#E8C97A]/20">
-              <Shield className="w-5 h-5 text-[#E8C97A]" />
-            </div>
-            <div>
-              <span className="text-white text-lg font-bold tracking-widest">OMNI</span>
-              <p className="text-[10px] text-slate-500 tracking-widest uppercase">Resilience Platform</p>
-            </div>
-          </div>
+        <div className="h-16 flex items-center px-4 border-b border-slate-800/40">
+          <OmniverselLogo width={160} height={42} />
         </div>
 
         <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
