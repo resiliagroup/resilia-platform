@@ -20,7 +20,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
       <aside className="w-64 bg-[#0D1F3C] text-slate-300 flex flex-col border-r border-slate-800/40">
         
         <div className="h-16 flex items-center px-4 border-b border-slate-800/40">
-          <OmniverselLogo width={160} height={42} />
+          <OmniverselLogo width={160} height={42} variant="navy" />
         </div>
 
         <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">

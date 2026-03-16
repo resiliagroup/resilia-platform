@@ -1658,7 +1658,7 @@ export default function Page() {
                         gap: isMobile ? 32 : 48, marginBottom: isMobile ? 36 : 56 }}>
             <div>
               <div style={{ marginBottom: 20 }}>
-                <OmniverselLogo width={200} height={50} />
+                <OmniverselLogo width={200} height={50} variant="navy" />
               </div>
               <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.8, maxWidth: 260 }}>
                 Yapay zeka destekli kurumsal dayanıklılık platformu.

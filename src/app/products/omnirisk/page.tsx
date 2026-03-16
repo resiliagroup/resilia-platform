@@ -428,7 +428,7 @@ export default function OmniRiskPage() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                         flexWrap: 'wrap', gap: 24, paddingBottom: 32,
                         borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-            <OmniverselLogo width={200} height={50} />
+            <OmniverselLogo width={200} height={50} variant="navy" />
             <div style={{ display: 'flex', gap: 32 }}>
               {[['omniRISK', '/products/omnirisk'], ['omniIMPACT', '/products/omniimpact'],
                 ['omniPLAN', '/products/omniplan'], ['omniCRISIS', '/products/omnicrisis']].map(([label, href]) => (

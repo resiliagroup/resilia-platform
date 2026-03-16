@@ -299,7 +299,7 @@ export default function HakkimizdaPage() {
             <div style={{ background: N, borderRadius: 24, padding: '48px 40px', textAlign: 'center',
                           boxShadow: '0 8px 40px rgba(10,22,40,.18)' }}>
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-                <OmniverselLogo width={200} height={50} />
+                <OmniverselLogo width={200} height={50} variant="navy" />
               </div>
               <p style={{ color: T, fontSize: 13, fontWeight: 600, marginBottom: 16 }}>Teknoloji & Platform</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -442,7 +442,7 @@ export default function HakkimizdaPage() {
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                       flexWrap: 'wrap', gap: 24 }}>
           <div>
-            <OmniverselLogo width={200} height={50} />
+            <OmniverselLogo width={200} height={50} variant="navy" />
           </div>
           <div style={{ display: 'flex', gap: 28 }}>
             {[

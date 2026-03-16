@@ -79,7 +79,7 @@ export default function LoginPage() {
           padding: '52px 56px', borderRight: '1px solid #142340',
         }}>
           <div>
-            <OmniverselLogo width={220} height={56} />
+            <OmniverselLogo width={220} height={56} variant="contrast" />
           </div>
 
           <div>
