@@ -63,14 +63,17 @@ const TABS = [
 type Tab = typeof TABS[number]['key']
 
 /* ══════════════════════════════════════════════════════════════
-   INLINE SVG İKONLAR
+   CCDS PNG İKONLAR (public/icons/)
 ══════════════════════════════════════════════════════════════ */
-function IcoShield()   { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> }
-function IcoRadar()    { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg> }
-function IcoPin()      { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> }
-function IcoBuilding() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 21V9"/></svg> }
-function IcoGrid()     { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> }
-function IcoBook()     { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> }
+const CCDS = (file: string, alt: string, size = 18) => (
+  <img src={`/icons/${file}`} width={size} height={size} alt={alt} style={{ objectFit: 'contain', flexShrink: 0 }}/>
+)
+function IcoShield()   { return CCDS('Icon_PROTECT_09_Physical.png',   'Koruma', 18) }
+function IcoRadar()    { return CCDS('Icon_MIT_06_Risk.png',            'Risk',   18) }
+function IcoPin()      { return CCDS('Icon_RESP_15_Situational.png',   'Konum',  18) }
+function IcoBuilding() { return CCDS('Icon_REC_04_Infrastructure.png', 'Altyapı',18) }
+function IcoGrid()     { return CCDS('Icon_MIT_03_Operational.png',    'Operasyonel',18) }
+function IcoBook()     { return CCDS('Icon_PROTECT_01_Planning.png',   'Planlama',18) }
 
 const TAB_ICONS: Record<Tab, React.ReactNode> = {
   ozet:    <IcoBuilding/>,
@@ -833,13 +836,13 @@ function SendaiTab() {
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 16 }}>
           {[
-            { isim: 'Beylikdüzü Belediyesi', rol: 'Pilot alan + Sahip', ikon: '🏛', renk: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE' },
-            { isim: 'İTÜ AYM',               rol: 'Akademik Partner',   ikon: '🎓', renk: '#8B5CF6', bg: '#F5F3FF', border: '#DDD6FE' },
-            { isim: 'Omniversel',             rol: 'Teknoloji Sağlayıcı',ikon: '⚙', renk: '#059669', bg: '#F0FDF4', border: '#BBF7D0' },
+            { isim: 'Beylikdüzü Belediyesi', rol: 'Pilot alan + Sahip', ikon: '/icons/Icon_MIT_04_Community.png',    renk: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE' },
+            { isim: 'İTÜ AYM',               rol: 'Akademik Partner',   ikon: '/icons/Icon_PREVENT_01_Planning.png', renk: '#8B5CF6', bg: '#F5F3FF', border: '#DDD6FE' },
+            { isim: 'Omniversel',             rol: 'Teknoloji Sağlayıcı',ikon: '/icons/Icon_PROTECT_08_Cyber.png',   renk: '#059669', bg: '#F0FDF4', border: '#BBF7D0' },
           ].map(k => (
             <div key={k.isim} style={{ background: k.bg, border: `1px solid ${k.border}`, borderRadius: 12,
                                        padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center', textAlign: 'center' }}>
-              <span style={{ fontSize: 28 }}>{k.ikon}</span>
+              <img src={k.ikon} width={40} height={40} alt={k.isim} style={{ objectFit: 'contain' }}/>
               <span style={{ fontSize: 13, fontWeight: 700, color: k.renk }}>{k.isim}</span>
               <span style={{ fontSize: 11, color: '#6B7280' }}>{k.rol}</span>
             </div>
@@ -1196,13 +1199,13 @@ export default function BeylikduzuKomuta() {
                 <SectionTitle icon={<IcoGrid/>} title="NEFES Birliği Kapasitesi"/>
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   {[
-                    { label: 'Gönüllü',            val: '992',    ikon: '👥' },
-                    { label: 'Müdahale Aracı',     val: '169',    ikon: '🚒' },
-                    { label: 'Müdahale İstasyonu', val: '10',     ikon: '📦' },
-                    { label: 'Haneye Ulaşıldı',    val: '75.498', ikon: '🏠' },
+                    { label: 'Gönüllü',            val: '992',    ikon: '/icons/Icon_RESP_10_MassCare.png'  },
+                    { label: 'Müdahale Aracı',     val: '169',    ikon: '/icons/Icon_RESP_08_Fire.png'      },
+                    { label: 'Müdahale İstasyonu', val: '10',     ikon: '/icons/Icon_RESP_09_Logistics.png' },
+                    { label: 'Haneye Ulaşıldı',    val: '75.498', ikon: '/icons/Icon_REC_07_Housing.png'   },
                   ].map(k => (
                     <div key={k.label} className="bg-gray-50 rounded-lg p-3 text-center border border-gray-100">
-                      <p className="text-xl mb-1">{k.ikon}</p>
+                      <img src={k.ikon} width={28} height={28} alt={k.label} style={{ objectFit: 'contain', margin: '0 auto 4px' }}/>
                       <p className="text-lg font-bold text-gray-900">{k.val}</p>
                       <p className="text-xs text-gray-400 mt-0.5">{k.label}</p>
                     </div>

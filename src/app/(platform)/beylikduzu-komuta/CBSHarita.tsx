@@ -50,24 +50,24 @@ interface FacilityRow {
 /* ══════════════════════════════════════════════════════════════
    META
 ══════════════════════════════════════════════════════════════ */
-const SEKTOR_META: Record<Sektor, { label: string; renk: string; emoji: string }> = {
-  MUNICIPALITY: { label: 'Kamu',   renk: '#5BA3DC', emoji: '🏛️' },
-  HOSPITAL:     { label: 'Sağlık', renk: '#EF4444', emoji: '🏥' },
-  EDUCATION:    { label: 'Eğitim', renk: '#F59E0B', emoji: '🎓' },
-  INDUSTRIAL:   { label: 'Sanayi', renk: '#F97316', emoji: '🏭' },
-  BANK:         { label: 'Finans', renk: '#10B981', emoji: '🏦' },
-  HOTEL:        { label: 'Turizm', renk: '#A78BFA', emoji: '🏨' },
-  OTHER:        { label: 'Diğer',  renk: '#94A3B8', emoji: '📍' },
+const SEKTOR_META: Record<Sektor, { label: string; renk: string; icon: string }> = {
+  MUNICIPALITY: { label: 'Kamu',   renk: '#5BA3DC', icon: '/icons/Icon_MIT_04_Community.png'      },
+  HOSPITAL:     { label: 'Sağlık', renk: '#EF4444', icon: '/icons/Icon_REC_06_Health.png'         },
+  EDUCATION:    { label: 'Eğitim', renk: '#F59E0B', icon: '/icons/Icon_PREVENT_01_Planning.png'   },
+  INDUSTRIAL:   { label: 'Sanayi', renk: '#F97316', icon: '/icons/Icon_REC_04_Infrastructure.png' },
+  BANK:         { label: 'Finans', renk: '#10B981', icon: '/icons/Icon_PROTECT_11_Supply.png'     },
+  HOTEL:        { label: 'Turizm', renk: '#A78BFA', icon: '/icons/Icon_REC_07_Housing.png'        },
+  OTHER:        { label: 'Diğer',  renk: '#94A3B8', icon: '/icons/Icon_RESP_15_Situational.png'  },
 }
 const SEKTORLER = (Object.keys(SEKTOR_META) as Sektor[]).filter(s => s !== 'OTHER')
 
-const TEHLIKE_META: Record<TehlikeTur, { lbl: string; renk: string; emoji: string; alan: keyof ExtraData }> = {
-  deprem:    { lbl: 'Deprem',    renk: '#EF4444', emoji: '🏔️', alan: 'risk_deprem'    },
-  sel:       { lbl: 'Sel',       renk: '#3B82F6', emoji: '🌊', alan: 'risk_sel'       },
-  sicaklik:  { lbl: 'Sıcaklık', renk: '#F59E0B', emoji: '🌡️', alan: 'risk_sicaklik'  },
-  firtina:   { lbl: 'Fırtına',  renk: '#8B5CF6', emoji: '⛈️', alan: 'risk_firtina'   },
-  toplumsal: { lbl: 'Toplumsal',renk: '#EC4899', emoji: '👥', alan: 'risk_toplumsal' },
-  natech:    { lbl: 'NATECH',   renk: '#F97316', emoji: '☢️', alan: 'natech_risk'    },
+const TEHLIKE_META: Record<TehlikeTur, { lbl: string; renk: string; icon: string; alan: keyof ExtraData }> = {
+  deprem:    { lbl: 'Deprem',    renk: '#EF4444', icon: '/icons/Icon_MIT_06_Risk.png',           alan: 'risk_deprem'    },
+  sel:       { lbl: 'Sel',       renk: '#3B82F6', icon: '/icons/Icon_REC_08_Natural.png',        alan: 'risk_sel'       },
+  sicaklik:  { lbl: 'Sıcaklık', renk: '#F59E0B', icon: '/icons/Icon_RESP_06_Environ.png',        alan: 'risk_sicaklik'  },
+  firtina:   { lbl: 'Fırtına',  renk: '#8B5CF6', icon: '/icons/Icon_RESP_06_Environ.png',        alan: 'risk_firtina'   },
+  toplumsal: { lbl: 'Toplumsal',renk: '#EC4899', icon: '/icons/Icon_PREVENT_02_Public_Info.png', alan: 'risk_toplumsal' },
+  natech:    { lbl: 'NATECH',   renk: '#F97316', icon: '/icons/Icon_PROTECT_09_Physical.png',   alan: 'natech_risk'    },
 }
 const TEHLIKE_TURLERI = Object.keys(TEHLIKE_META) as TehlikeTur[]
 
@@ -215,7 +215,7 @@ function TesisPopup({ f }: { f: FacilityRow }) {
     <div style={{ fontFamily:"'DM Sans',sans-serif", padding:'14px 16px', minWidth:220 }}>
       <style>{POPUP_CSS}</style>
       <div style={{ display:'flex', alignItems:'flex-start', gap:8, marginBottom:12 }}>
-        <span style={{ fontSize:18, flexShrink:0, lineHeight:1, marginTop:1 }}>{meta.emoji}</span>
+        <img src={meta.icon} width={20} height={20} alt={meta.label} style={{ flexShrink:0, objectFit:'contain', marginTop:1 }}/>
         <div>
           <p style={{ color:'#F1F5F9', fontWeight:700, fontSize:13, lineHeight:1.35, margin:0 }}>{f.name}</p>
           <span style={{ display:'inline-block', marginTop:5, fontSize:10, fontWeight:700,
@@ -466,7 +466,7 @@ function HexBtn({ tt, aktif, onClick }:{ tt:TehlikeTur; aktif:boolean; onClick:(
         display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:3,
         transition:'background .2s', fontFamily:"'DM Sans',sans-serif",
       }}>
-        <span style={{ fontSize:20, lineHeight:1 }}>{m.emoji}</span>
+        <img src={m.icon} width={22} height={22} alt={m.lbl} style={{ objectFit:'contain' }}/>
         <span style={{ fontSize:8, fontWeight:700, letterSpacing:0.5,
                        color: aktif ? '#0F172A' : '#475569', textTransform:'uppercase' }}>
           {m.lbl}
