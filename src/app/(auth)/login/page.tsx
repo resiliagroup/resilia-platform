@@ -8,28 +8,6 @@ const N = '#0A1628'
 const G = '#E8C97A'
 const T = '#6ABFB8'
 
-/* ── Hexagon logo SVG ─────────────────────────────────────────── */
-function OmniLogo({ size = 52 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 52 52" fill="none">
-      {/* hexagon */}
-      <polygon points="26,4 46,15 46,37 26,48 6,37 6,15"
-               fill="none" stroke={T} strokeWidth="1.8"/>
-      <polygon points="26,12 38,19 38,33 26,40 14,33 14,19"
-               fill={T} fillOpacity="0.12" stroke={T} strokeWidth="1" strokeOpacity="0.5"/>
-      {/* center mark */}
-      <circle cx="26" cy="26" r="4" fill={G}/>
-      <line x1="26" y1="18" x2="26" y2="22" stroke={G} strokeWidth="1.5" strokeLinecap="round"/>
-      <line x1="26" y1="30" x2="26" y2="34" stroke={G} strokeWidth="1.5" strokeLinecap="round"/>
-      <line x1="18" y1="22" x2="22" y2="24" stroke={G} strokeWidth="1.5" strokeLinecap="round"/>
-      <line x1="30" y1="28" x2="34" y2="30" stroke={G} strokeWidth="1.5" strokeLinecap="round"/>
-      <line x1="18" y1="30" x2="22" y2="28" stroke={G} strokeWidth="1.5" strokeLinecap="round"/>
-      <line x1="30" y1="24" x2="34" y2="22" stroke={G} strokeWidth="1.5" strokeLinecap="round"/>
-    </svg>
-  )
-}
-
-/* ── Standard logos (text SVG placeholders) ───────────────────── */
 function StandardLogos() {
   const logos = [
     { name: 'UNDRR', sub: 'MCR2030' },
@@ -41,9 +19,8 @@ function StandardLogos() {
     <div style={{ display: 'flex', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}>
       {logos.map(l => (
         <div key={l.name} style={{ textAlign: 'center', opacity: 0.5 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#8FA3B8', letterSpacing: 1,
-                        fontFamily: 'DM Sans,sans-serif', lineHeight: 1.2 }}>{l.name}</div>
-          <div style={{ fontSize: 10, color: '#5B7080', fontFamily: 'DM Sans,sans-serif' }}>{l.sub}</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#8FA3B8', letterSpacing: 1, lineHeight: 1.2 }}>{l.name}</div>
+          <div style={{ fontSize: 10, color: '#5B7080' }}>{l.sub}</div>
         </div>
       ))}
     </div>
@@ -52,9 +29,9 @@ function StandardLogos() {
 
 export default function LoginPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [sifre, setSifre] = useState('')
-  const [hata,  setHata]  = useState('')
+  const [email, setEmail]           = useState('')
+  const [sifre, setSifre]           = useState('')
+  const [hata,  setHata]            = useState('')
   const [yukleniyor, setYukleniyor] = useState(false)
 
   const girisYap = (e: React.FormEvent) => {
@@ -77,7 +54,7 @@ export default function LoginPage() {
         *{box-sizing:border-box;margin:0;padding:0}
         body{font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
         .inp{width:100%;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;
-             padding:13px 16px;font-size:14px;color:#0A1628;font-family:'DM Sans',sans-serif;
+             padding:13px 16px;font-size:14px;color:${N};font-family:'DM Sans',sans-serif;
              outline:none;transition:border-color .18s,box-shadow .18s}
         .inp::placeholder{color:#94A3B8}
         .inp:focus{border-color:${T};box-shadow:0 0 0 3px ${T}22}
@@ -86,23 +63,25 @@ export default function LoginPage() {
                    font-family:'DM Sans',sans-serif;transition:background .18s,transform .1s}
         .btn-login:hover:not(:disabled){background:#142340;transform:translateY(-1px)}
         .btn-login:disabled{opacity:0.6;cursor:not-allowed}
+        .left-panel{display:flex}
+        @media(max-width:768px){
+          .left-panel{display:none!important}
+          .right-panel{padding:32px 20px!important}
+        }
       `}</style>
 
       <div style={{ minHeight: '100vh', display: 'flex' }}>
 
-        {/* ── LEFT: Navy panel ────────────────────────────────── */}
-        <div style={{
+        {/* LEFT: Navy panel — masaüstünde görünür */}
+        <div className="left-panel" style={{
           width: '48%', minHeight: '100vh', background: N,
-          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+          flexDirection: 'column', justifyContent: 'space-between',
           padding: '52px 56px', borderRight: '1px solid #142340',
-        }} className="hidden-mobile">
-
-          {/* Logo row */}
+        }}>
           <div>
             <OmniverselLogo width={220} height={56} />
           </div>
 
-          {/* Center content */}
           <div>
             <p style={{ color: '#94A3B8', fontSize: 11, fontWeight: 700, letterSpacing: 3,
                         textTransform: 'uppercase', marginBottom: 20 }}>
@@ -114,34 +93,17 @@ export default function LoginPage() {
               dönüştürün.
             </h2>
 
-            {/* 3 bullet points */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               {[
-                {
-                  kod:  'HFER-720',
-                  baslik: '720 Parametre Motoru',
-                  aciklama: 'Her tesisin tehlike, kırılganlık ve risk skoru anlık hesaplanır.',
-                  renk: G,
-                },
-                {
-                  kod:  'Sendai Uyumlu',
-                  baslik: 'Uluslararası Çerçeve',
-                  aciklama: 'Sendai 2015–2030 ve ISO 22301 standartlarıyla tam entegrasyon.',
-                  renk: T,
-                },
-                {
-                  kod:  'ISO 22301',
-                  baslik: 'BCM Sürekliliği',
-                  aciklama: 'İş sürekliliği planları otomatik güncellenir, denetim hazır tutulur.',
-                  renk: '#7B9FD4',
-                },
+                { kod: 'HFER-720',     baslik: '720 Parametre Motoru',  aciklama: 'Her tesisin tehlike, kırılganlık ve risk skoru anlık hesaplanır.',                    renk: G },
+                { kod: 'Sendai',       baslik: 'Uluslararası Çerçeve', aciklama: 'Sendai 2015–2030 ve ISO 22301 standartlarıyla tam entegrasyon.',                       renk: T },
+                { kod: 'ISO 22301',    baslik: 'BCM Sürekliliği',       aciklama: 'İş sürekliliği planları otomatik güncellenir, denetim hazır tutulur.',                renk: '#7B9FD4' },
               ].map(b => (
                 <div key={b.kod} style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
                   <div style={{ width: 40, height: 40, borderRadius: 10, border: `1px solid ${b.renk}33`,
                                 background: `${b.renk}11`, display: 'flex', alignItems: 'center',
                                 justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ fontSize: 9, fontWeight: 800, color: b.renk, letterSpacing: 0.5,
-                                   fontFamily: 'DM Sans,sans-serif', textAlign: 'center', lineHeight: 1.2 }}>
+                    <span style={{ fontSize: 9, fontWeight: 800, color: b.renk, letterSpacing: 0.5, textAlign: 'center', lineHeight: 1.2 }}>
                       {b.kod}
                     </span>
                   </div>
@@ -154,7 +116,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Bottom: standard logos */}
           <div>
             <div style={{ height: 1, background: '#142340', marginBottom: 24 }}/>
             <StandardLogos/>
@@ -164,17 +125,16 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* ── RIGHT: Login form ────────────────────────────────── */}
-        <div style={{
+        {/* RIGHT: Login form */}
+        <div className="right-panel" style={{
           flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
           background: '#FFFFFF', padding: '48px 32px',
         }}>
           <div style={{ width: '100%', maxWidth: 380 }}>
 
-            {/* Mobile logo (hidden on desktop) */}
-            <div style={{ marginBottom: 40 }}>
-              
-              <OmniverselLogo width={180} height={46} light />
+            {/* Mobilde logo göster */}
+            <div style={{ marginBottom: 36 }}>
+              <OmniverselLogo width={200} height={52} light />
             </div>
 
             <h1 style={{ color: N, fontSize: 26, fontWeight: 700, marginBottom: 6 }}>
@@ -185,24 +145,12 @@ export default function LoginPage() {
             </p>
 
             <form onSubmit={girisYap} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <input
-                className="inp"
-                type="email"
-                placeholder="E-posta adresi"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-              />
-              <input
-                className="inp"
-                type="password"
-                placeholder="Şifre"
-                value={sifre}
-                onChange={e => setSifre(e.target.value)}
-                required
-                autoComplete="current-password"
-              />
+              <input className="inp" type="email" placeholder="E-posta adresi"
+                     value={email} onChange={e => setEmail(e.target.value)}
+                     required autoComplete="email"/>
+              <input className="inp" type="password" placeholder="Şifre"
+                     value={sifre} onChange={e => setSifre(e.target.value)}
+                     required autoComplete="current-password"/>
 
               {hata && (
                 <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8,
@@ -212,11 +160,10 @@ export default function LoginPage() {
               )}
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: -4 }}>
-                <a href="#" style={{ fontSize: 13, color: T, fontWeight: 500,
-                                     textDecoration: 'none', fontFamily: 'DM Sans,sans-serif' }}
+                <a href="#" style={{ fontSize: 13, color: T, fontWeight: 500 }}
                    onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                    onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}>
-                  Sifremi Unuttum
+                  Şifremi Unuttum
                 </a>
               </div>
 
@@ -228,13 +175,10 @@ export default function LoginPage() {
             <div style={{ marginTop: 28, padding: '14px 18px', background: '#F8FAFC',
                           border: '1px solid #E2E8F0', borderRadius: 10 }}>
               <p style={{ fontSize: 12, color: '#94A3B8', lineHeight: 1.6 }}>
-                Platforma erişim için
-                {' '}
-                <a href="mailto:demo@omniversel.com"
-                   style={{ color: T, fontWeight: 600, textDecoration: 'none' }}>
+                Platforma erişim için{' '}
+                <a href="mailto:demo@omniversel.com" style={{ color: T, fontWeight: 600 }}>
                   demo@omniversel.com
-                </a>
-                {' '}adresine yazın.
+                </a>{' '}adresine yazın.
               </p>
             </div>
 
