@@ -61,7 +61,7 @@ function useCounter(target: number, dur = 1800, go: boolean) {
 
 /* ─── useWindowWidth ─────────────────────────────────────────── */
 function useWindowWidth() {
-  const [w, setW] = useState(0)
+  const [w, setW] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 768)
   useEffect(() => {
     const fn = () => setW(window.innerWidth)
     fn()
