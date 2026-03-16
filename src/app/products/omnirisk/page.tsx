@@ -26,7 +26,7 @@ export default function OmniRiskPage() {
 
   const features = [
     {
-      title: 'HFER-720 Motoru',
+      title: 'omniRISK Modeli',
       desc: '720 analiz parametresi, 39 ilçe kapsama, gerçek zamanlı hesaplama motoru.',
       path: 'M2 8 L8 8 M2 5 L8 5 M2 2 L8 2',
     },

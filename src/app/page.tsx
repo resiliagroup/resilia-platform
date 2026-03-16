@@ -66,12 +66,15 @@ function RiskGaugeCard() {
     const r = (deg * Math.PI) / 180
     return `${CX + R * Math.cos(r)},${CY + R * Math.sin(r)}`
   }
-  const needleDeg = 148  // ~ORTA/YÜKSEK boundary
+  // Score 3.8/5 → angle = 180 + (3.8/5)*180 = 316.8°
+  const score = 3.8
+  const needleDeg = 180 + (score / 5) * 180
   const nr = (needleDeg * Math.PI) / 180
+  const tickVals = [0, 1, 2, 3, 4, 5]
   const pills = [
     { label: 'DÜŞÜK',   color: R_G, active: false },
-    { label: 'ORTA',    color: R_Y, active: true  },
-    { label: 'YÜKSEK',  color: R_O, active: false },
+    { label: 'ORTA',    color: R_Y, active: false },
+    { label: 'YÜKSEK',  color: R_O, active: true  },
     { label: 'KRİTİK',  color: R_R, active: false },
   ]
   return (
@@ -91,6 +94,22 @@ function RiskGaugeCard() {
                 fill="none" stroke={R_O} strokeWidth="12" strokeLinecap="round"/>
           <path d={`M ${arc(315)} A ${R} ${R} 0 0 1 ${arc(360)}`}
                 fill="none" stroke={R_R} strokeWidth="12" strokeLinecap="round"/>
+          {/* Tick marks at 0,1,2,3,4,5 */}
+          {tickVals.map(v => {
+            const d = 180 + (v / 5) * 180
+            const rad = (d * Math.PI) / 180
+            const tx = CX + R * Math.cos(rad)
+            const ty = CY + R * Math.sin(rad)
+            const lx = CX + (R + 14) * Math.cos(rad)
+            const ly = CY + (R + 14) * Math.sin(rad)
+            return (
+              <g key={v}>
+                <circle cx={tx} cy={ty} r="2" fill={BG} stroke={N} strokeWidth="1"/>
+                <text x={lx} y={ly} textAnchor="middle" dominantBaseline="middle"
+                      fontSize="7" fill={MG} fontFamily="DM Mono,monospace">{v}</text>
+              </g>
+            )
+          })}
           <line x1={CX} y1={CY}
                 x2={CX + (R - 10) * Math.cos(nr)} y2={CY + (R - 10) * Math.sin(nr)}
                 stroke={N} strokeWidth="2.5" strokeLinecap="round"/>
@@ -336,7 +355,7 @@ function BcmCycle() {
       <circle cx={CX} cy={CY} r="78" fill={BG} stroke={BORDER} strokeWidth="1"/>
       <circle cx={CX} cy={CY} r="72" fill="none" stroke={T} strokeWidth="1.5"/>
       <text x={CX} y={CY - 6} textAnchor="middle" fill={T} fontSize="14"
-            fontFamily="DM Sans,sans-serif" fontWeight="700" letterSpacing="1">HFER-720</text>
+            fontFamily="DM Sans,sans-serif" fontWeight="700" letterSpacing="1">omniRISK</text>
       <text x={CX} y={CY + 11} textAnchor="middle" fill={MG} fontSize="9"
             fontFamily="DM Sans,sans-serif">BCM MOTOR</text>
     </svg>
@@ -429,9 +448,9 @@ function LogoBand() {
 /* ── products ───────────────────────────────────────────────── */
 const products = [
   { code: 'omniRISK',
-    title: 'Çok Tehlikeli Risk Değerlendirme Motoru (ISO 31000)',
+    title: 'Yapay Zeka Destekli Risk Değerlendirme Sistemi (ISO 31000)',
     color: T, href: '/products/omnirisk',
-    desc: 'Tehlike (H), kırılganlık (F), maruziyet (E) ve kapasite (R) parametrelerini HFER-720 motoruyla bütünleştirerek tesis kırılganlık ve maruziyet değerlendirmesi gerçekleştiren, kurumsal risk envanterini gerçek zamanlı izleyen karar destek modülü.',
+    desc: 'Tehlike (H), kırılganlık (F), maruziyet (E) ve kapasite (C) parametrelerini omniRISK modeliyle bütünleştirerek tesis kırılganlık ve maruziyet değerlendirmesi gerçekleştiren, kurumsal risk envanterini gerçek zamanlı izleyen karar destek modülü.',
     icon: <IconRisk size={52}/> },
   { code: 'omniIMPACT',
     title: 'İş Etki Analizi ve Kritiklik Modeli (ISO 22301 Md. 8.2)',
@@ -462,7 +481,7 @@ const products = [
 
 /* ── Testimonials ────────────────────────────────────────────── */
 const testimonials = [
-  { quote: 'HFER-720 metodolojisi risk envanterimizi yapılandırmamıza olanak sağladı; nicel değerlendirme süreci denetim etkinliğimizi ölçülebilir biçimde artırdı.',
+  { quote: 'omniRISK modeli risk envanterimizi yapılandırmamıza olanak sağladı; nicel değerlendirme süreci denetim etkinliğimizi ölçülebilir biçimde artırdı.',
     name:  'Risk Direktörü', role:  'Bankacılık ve Finans Sektörü' },
   { quote: 'Tesis bazlı BCP modülleri süreç bağımlılıklarını sistematik biçimde modelliyor; bu sayede kaynak planlamasında veri odaklı kararlar alabiliyor ve operasyonel yükü önemli ölçüde azaltabiliyoruz.',
     name:  'BCM Müdürü',     role:  'Sağlık Kuruluşları Sektörü' },
@@ -970,7 +989,7 @@ export default function Page() {
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: T,
                               display: 'inline-block' }}/>
               <span style={{ color: T, fontSize: 12, fontWeight: 600, letterSpacing: 1 }}>
-                HFER-720 Motor Aktif · ISO 22301 · ISO 31000 · ISO 22316
+                omniRISK modeli Aktif · ISO 22301 · ISO 31000 · ISO 22316
               </span>
             </div>
 
@@ -1051,7 +1070,7 @@ export default function Page() {
                              borderLeft: `4px solid ${R_Y}`, borderRadius: 8,
                              padding: '16px 20px', marginBottom: 24 }}>
                 <p style={{ color: N, fontSize: 13, lineHeight: 1.75, fontWeight: 500 }}>
-                  <strong style={{ color: R_O }}>WEF Küresel Riskler Raporu 2023:</strong>{' '}
+                  <strong style={{ color: R_O }}>WEF Küresel Riskler Raporu 2025:</strong>{' '}
                   Dünya Ekonomik Forumu&apos;na göre, doğal afetler ve iklim değişikliği kaynaklı
                   riskler ilk beş küresel risk arasında yer almaktadır. Kurumsal hazırlıksızlık,
                   operasyonel kesintilerin ekonomik maliyetini katlanarak artırmaktadır.
@@ -1103,8 +1122,8 @@ export default function Page() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
             {[
-              { num: '01', title: 'Tesis Kırılganlık ve Maruziyet Değerlendirmesi', desc: 'CBS tabanlı coğrafi veri katmanları, çok tehlikeli alan haritaları ve yapısal envanter standart veri modeliyle sisteme aktarılarak tesis bazlı kırılganlık ve maruziyet profili oluşturulur.', color: T },
-              { num: '02', title: 'HFER-720 Risk Değerlendirmesi (ISO 31000)', desc: 'HFER-720 motoru; tehlike (H), kırılganlık, maruziyet ve kapasite parametrelerini ISO 31000 çerçevesinde işleyerek tesis bazlı URI (Unified Risk Index) skoru üretir.', color: R_Y },
+              { num: '01', title: 'Tesis Kırılganlık ve Maruziyet Değerlendirmesi', desc: 'CBS tabanlı coğrafi veri katmanları, tehlike haritaları, yapısal ve yapısal olmayan envanter standart veri modeliyle sisteme aktarılarak tesis bazlı kırılganlık ve maruziyet profili oluşturulur.', color: T },
+              { num: '02', title: 'omniRISK Risk Değerlendirmesi (ISO 31000)', desc: 'omniRISK modeli; tehlike (H), kırılganlık (F), maruziyet (E) ve kapasite (C) parametrelerini ISO 31000 çerçevesinde işleyerek tesis bazlı URI (Unified Risk Index) skoru üretir.', color: R_Y },
               { num: '03', title: 'İş Sürekliliği Planı (İSP) Geliştirme (ISO 22301)', desc: 'Kritiklik sıralaması, İş Etki Analizi (BIA), MTD/RTO/RPO hedef belirleme ve İSP dokümantasyonu ISO 22301 Madde 8 çerçevesinde yönetilir.', color: R_O },
               { num: '04', title: 'İSYS Performans İzleme ve Uyum Raporlaması', desc: 'Gerçek zamanlı gösterge paneli, ISO 22301 Madde 9 kapsamında İSYS performans ölçümü, iç denetim kaydı ve Sendai Çerçevesi uyum skoru sistematik olarak izlenir ve raporlanır.', color: R_R },
             ].map((step, i) => (
@@ -1190,47 +1209,51 @@ export default function Page() {
           <div style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 20,
                         padding: '56px 64px', textAlign: 'center',
                         boxShadow: '0 4px 32px rgba(45,138,135,.08)' }}>
-            <SectionLabel text="HFER-720 Motor — Sendai Çarpanı" />
+            <SectionLabel text="omniRISK — Sendai Çarpanı" />
             <h2 style={{ color: N, fontSize: 'clamp(24px, 3.5vw, 36px)', fontWeight: 700,
                           lineHeight: 1.2, marginBottom: 8 }}>
               Kapasite Yatırımının Üstel Dayanıklılık Getirisi
             </h2>
-            <p style={{ color: T, fontSize: 13, fontWeight: 600, marginBottom: 28 }}>
-              HFER-720 Modeli — ALARP (As Low as is Reasonably Practicable) İlkesiyle Uyumlu
+            <p style={{ color: T, fontSize: 13, fontWeight: 600, marginBottom: 20 }}>
+              omniRISK Modeli — ALARP (As Low as is Reasonably Practicable) İlkesiyle Uyumlu
             </p>
+            {/* Formula display */}
+            <div style={{ background: `${N}06`, border: `1.5px solid ${T}30`, borderRadius: 14,
+                          padding: '18px 24px', marginBottom: 28, display: 'inline-block' }}>
+              <span style={{ fontSize: 20, fontWeight: 800, fontFamily: 'DM Mono,monospace', color: N, letterSpacing: 1 }}>
+                omniRISK = (H × F × E) / (1 + k·C²)
+              </span>
+            </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          gap: 16, flexWrap: 'wrap', marginBottom: 36 }}>
+                          gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
               {[
                 { sym: 'H', label: 'Tehlike',    color: R_R },
-                { sym: '×', label: '',            color: MG },
-                { sym: 'V', label: 'Kırılganlık', color: R_O },
-                { sym: '×', label: '',            color: MG },
+                { sym: 'F', label: 'Kırılganlık', color: R_O },
                 { sym: 'E', label: 'Maruziyet',  color: R_Y },
-                { sym: '/', label: '',            color: MG },
                 { sym: 'C', label: 'Kapasite',   color: R_G },
-                { sym: '=', label: '',            color: MG },
-                { sym: 'URI', label: 'Risk Skoru', color: T },
-              ].map((f, i) => (
-                f.label === '' ? (
-                  <span key={i} style={{ fontSize: 28, color: MG, fontWeight: 300 }}>{f.sym}</span>
-                ) : (
-                  <div key={i} style={{ textAlign: 'center' }}>
-                    <div style={{ width: 52, height: 52, borderRadius: 12, background: `${f.color}14`,
-                                   border: `2px solid ${f.color}30`, display: 'flex', alignItems: 'center',
-                                   justifyContent: 'center', margin: '0 auto 6px' }}>
-                      <span style={{ fontSize: 18, fontWeight: 800, color: f.color,
-                                      fontFamily: 'DM Mono,monospace' }}>{f.sym}</span>
-                    </div>
-                    <span style={{ fontSize: 9, color: MG, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase' }}>{f.label}</span>
+                { sym: 'k', label: 'Düzeltme',   color: T },
+              ].map((f) => (
+                <div key={f.sym} style={{ textAlign: 'center' }}>
+                  <div style={{ width: 52, height: 52, borderRadius: 12, background: `${f.color}14`,
+                                 border: `2px solid ${f.color}30`, display: 'flex', alignItems: 'center',
+                                 justifyContent: 'center', margin: '0 auto 6px' }}>
+                    <span style={{ fontSize: 18, fontWeight: 800, color: f.color,
+                                    fontFamily: 'DM Mono,monospace' }}>{f.sym}</span>
                   </div>
-                )
+                  <span style={{ fontSize: 9, color: MG, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase' }}>{f.label}</span>
+                </div>
               ))}
             </div>
+            <p style={{ fontSize: 11, color: T, fontWeight: 600, marginBottom: 24,
+                        background: `${T}10`, border: `1px solid ${T}25`, borderRadius: 8,
+                        padding: '6px 16px', display: 'inline-block' }}>
+              k: sektöre özgü düzeltme katsayısı
+            </p>
             <p style={{ color: MG, fontSize: 15, lineHeight: 1.85, maxWidth: 620, margin: '0 auto 28px' }}>
-              HFER-720 formülündeki <strong style={{ color: N }}>C² (kapasite kare)</strong> terimi,
+              omniRISK formülündeki <strong style={{ color: N }}>C² (kapasite kare)</strong> terimi,
               ISO 31000 risk müdahale hiyerarşisiyle uyumlu olarak, kurumsal kapasite artışının
               <strong style={{ color: N }}> doğrusal olmayan (nonlinear) risk azaltma etkisini</strong>{' '}
-              matematiksel olarak ifade etmektedir. 720 parametre; coğrafi, yapısal, operasyonel
+              matematiksel olarak ifade etmektedir. Model; coğrafi, yapısal, operasyonel
               ve sosyal boyutları bütünleştirerek tek bir ölçülebilir URI skoru üretir.
             </p>
             {/* Capacity Effect Chart */}
@@ -1275,7 +1298,7 @@ export default function Page() {
               { title: 'Sanayi & Üretim',     desc: 'NATECH kaskad senaryo analizi, tedarik zinciri kesintisi modellemesi ve ALARP ilkesiyle uyumlu risk müdahale planı üretilir.', standards: 'RAPID-N · ISO 31000', iconBg: R_O },
               { title: 'Eğitim Kurumları',    desc: 'Afet Risk Yönetimi (ARM) planları, tatbikat yönetimi ve Sendai SF-2 kapsamında okul dirençlilik değerlendirmesi yapılır.', standards: 'AFAD · Sendai SF-2', iconBg: '#3B7EC8' },
               { title: 'Kritik Altyapı',      desc: 'Enerji, su ve ulaşım sistemlerinde kademeli bozulma (N-1) analizi, bağımlılık haritalaması ve CIP standartlarına uyum sağlanır.', standards: 'CIP Standartları · ISO 22301', iconBg: R_Y },
-              { title: 'Kamu & Belediye',     desc: 'Kentsel ölçekte Tesis Kırılganlık ve Maruziyet Değerlendirmesi ile Sendai Çerçevesi önceliklerine göre yatırım planlaması gerçekleştirilir.', standards: 'Sendai · HFER-720', iconBg: T },
+              { title: 'Kamu & Belediye',     desc: 'Kentsel ölçekte Tesis Kırılganlık ve Maruziyet Değerlendirmesi ile Sendai Çerçevesi önceliklerine göre yatırım planlaması gerçekleştirilir.', standards: 'Sendai · omniRISK', iconBg: T },
               { title: 'Turizm & Konaklama',  desc: 'Misafir güvenliği protokolleri, tahliye planı ve sezon bazlı İSP geliştirme ISO 22301 ve NFPA 101 çerçevesinde yürütülür.', standards: 'ISO 22301 · NFPA 101', iconBg: '#7B5EA7' },
               { title: 'Lojistik & Tedarik',  desc: 'Kritik tedarikçi kırılganlık skorlaması, alternatif tedarik rotası planlaması ve ISO 28000 kapsamında tedarik zinciri dayanıklılığı değerlendirilir.', standards: 'ISO 28000 · ISO 22301', iconBg: '#2D8A87' },
             ].map((sector, i) => (
@@ -1324,7 +1347,7 @@ export default function Page() {
             <SectionLabel text="İSYS Yaşam Döngüsü (ISO 22301)" />
             <SectionTitle>Kurumsal Dayanıklılık<br/>Yönetim Döngüsü</SectionTitle>
             <p style={{ color: MG, fontSize: 16, lineHeight: 1.8, marginBottom: 36 }}>
-              HFER-720 motoru, ISO 22301 ve ISO 22316 uyumlu yedi aşamalı İSYS döngüsünü
+              omniRISK modeli, ISO 22301 ve ISO 22316 uyumlu yedi aşamalı İSYS döngüsünü
               sürekli besler. Afet Risk Yönetimi&apos;nden kurumsal yönetişime kadar her aşama
               platformda izlenir, güncellenir ve Sendai Çerçevesi hedefleriyle eşleştirilir.
             </p>
@@ -1388,7 +1411,7 @@ export default function Page() {
               {
                 sektor: 'Kamu & Belediye', sektorRenk: T,
                 baslik: 'Belediye ve Kamu Kurumları',
-                aciklama: 'Büyük ölçekli kentsel yönetim birimlerinde HFER-720 metodolojisiyle tesis dayanıklılık envanterinin oluşturulması ve Sendai Çerçevesi öncelik entegrasyonu.',
+                aciklama: 'Büyük ölçekli kentsel yönetim birimlerinde omniRISK modeliyle tesis dayanıklılık envanterinin oluşturulması ve Sendai Çerçevesi öncelik entegrasyonu.',
                 metrik: '782 Tesis', metrikAlt: '6 sektör · 10 mahalle · uygulama projesi',
                 detay: ['103 yüksek riskli tesis belirlendi', 'NATECH tehlike-maruziyet haritası üretildi', 'Sendai uyum skoru başlangıçtan itibaren %47 artış'],
               },
@@ -1465,7 +1488,7 @@ export default function Page() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             {[
-              { kategori: 'Metodoloji', kategorRenk: T, baslik: 'HFER-720: 720 Parametreli Risk Modeli',
+              { kategori: 'Metodoloji', kategorRenk: T, baslik: 'omniRISK: Yapay Zeka Destekli Risk Modeli',
                 ozet: 'Tehlike, kırılganlık, kapasite ve maruziyet bileşenlerini tek bir URI skoruna nasıl dönüştürüyoruz?',
                 okumaSuresi: '8 dk', tarih: 'Mart 2026' },
               { kategori: 'Kavram', kategorRenk: R_O, baslik: 'NATECH Nedir? Doğal Afet Kaynaklı Teknolojik Kazalar',
@@ -1558,7 +1581,7 @@ export default function Page() {
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0 }}>
             {[
-              { target: metrics.tesis,   suffix: '',  label: 'Tesis Analiz Edildi',  sub: 'HFER-720 skoru hesaplı'  },
+              { target: metrics.tesis,   suffix: '',  label: 'Tesis Analiz Edildi',  sub: 'omniRISK skoru hesaplı'  },
               { target: metrics.kritik,  suffix: '',  label: 'Kritik Risk Tespit',    sub: 'H_score ≥ 4 seviyesi'   },
               { target: metrics.mahalle, suffix: '',  label: 'Mahalle Haritalandı',   sub: 'CBS katmanı aktif'       },
               { target: metrics.sektor,  suffix: '',  label: 'Sektör Kapsandı',       sub: 'Çapraz sektör analizi'  },

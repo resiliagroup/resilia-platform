@@ -1,5 +1,6 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import dynamic from 'next/dynamic'
 import { supabase } from '@/lib/supabase'
 import { SORULAR } from '@/lib/sorular'
 import { SORULAR_SANAYI, SANAYI_SORU_META } from '@/lib/sorular-sanayi'
@@ -37,6 +38,8 @@ export interface TesisKarti {
   guvenlik_sirket: string; guvenlik_tel: string
   en_yakin_hastane: string; en_yakin_itfaiye: string
   komsu_risk: string; ek_not: string
+  // Adres
+  mahalle: string; cadde_sokak: string; lat: string; lng: string
 }
 
 const TESİS_BOŞ: TesisKarti = {
@@ -53,6 +56,7 @@ const TESİS_BOŞ: TesisKarti = {
   guvenlik_sirket: '', guvenlik_tel: '',
   en_yakin_hastane: '', en_yakin_itfaiye: '',
   komsu_risk: '', ek_not: '',
+  mahalle: '', cadde_sokak: '', lat: '', lng: '',
 }
 
 // ─── Railway sabitleri ─────────────────────────────────────────
@@ -175,6 +179,14 @@ const SEKTOR_BIRIM_LABEL: Partial<Record<Sektor, string>> = {
 const BOLUMLER = ['TEHLİKE', 'KIRILGANLIK', 'KAPASİTE'] as const
 const TEAL = '#009B8D'; const NAVY = '#0A1628'; const AMBER = '#D97706'
 
+const BEYLIKDUZU_MAHALLELER = [
+  'Yakuplu', 'Kavaklı', 'Sahil', 'Marmara', 'Gürpınar',
+  'Dereağzı', 'Adnan Kahveci', 'Büyükşehir', 'Barış', 'Cumhuriyet',
+]
+
+// Dynamic Leaflet map (SSR disabled)
+const LeafletMap = dynamic(() => import('./LeafletMap'), { ssr: false })
+
 export default function FormPage() {
   const [adim, setAdim] = useState<1|2>(1)
   const [tesis, setTesis] = useState<TesisKarti>(TESİS_BOŞ)
@@ -188,6 +200,10 @@ export default function FormPage() {
   const [ilKodu, setIlKodu] = useState('')
   const [oneriGoster, setOneriGoster] = useState(false)
   const [tesisTamam, setTesisTamam] = useState(false)
+  // Adres
+  const [konumModu, setKonumModu] = useState<null|'harita'|'koordinat'>(null)
+  const [manuelLat, setManuelLat] = useState('')
+  const [manuelLng, setManuelLng] = useState('')
 
   useEffect(() => {
     const k = mevcutKullanici()
@@ -352,7 +368,7 @@ export default function FormPage() {
           {/* URI Skoru kartı */}
           <div style={{background:'white',borderRadius:20,border:`2px solid ${renkHex}33`,padding:'32px 32px 24px',textAlign:'center',marginBottom:16}}>
             <div style={{fontSize:13,fontWeight:700,color:'#9CA3AF',letterSpacing:'.08em',textTransform:'uppercase',marginBottom:12}}>
-              HFER-720 · URI Dayanıklılık Skoru
+              omniRISK · URI Dayanıklılık Skoru
             </div>
             <div style={{fontSize:80,fontWeight:800,lineHeight:1,color:renkHex,marginBottom:8}}>
               {Math.round(s.uri_score)}
@@ -374,7 +390,7 @@ export default function FormPage() {
           {/* HFE Boyut skorları */}
           <div style={{background:'white',borderRadius:16,border:'1px solid #ECEAE8',padding:'20px 24px',marginBottom:16}}>
             <p style={{fontSize:11,fontWeight:700,color:'#9CA3AF',letterSpacing:'.07em',textTransform:'uppercase',marginBottom:16}}>
-              HFER-720 Boyut Analizi
+              omniRISK Boyut Analizi
             </p>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:12}}>
               {([
@@ -544,6 +560,103 @@ export default function FormPage() {
               🏢 <strong>Şube Tesis Kartı</strong> — <em>Bir kez doldurulur, kalıcı kayıt oluşturur.</em> Yapısal bilgiler,
               kritik sistem envanteri ve acil iletişim bilgilerini içerir.
               <span style={{color:'#EF4444'}}> * </span>ile işaretli alanlar zorunludur.
+            </div>
+
+            {/* 0. Adres */}
+            <div className="card" style={{marginBottom:14}}>
+              <p className="sek-h"><span className="num">0</span> Adres & Konum</p>
+
+              {/* A) Mahalle */}
+              <div className="fg" style={{margin:'0 0 12px'}}>
+                <label className="fl">Mahalle<span style={{color:'#EF4444',marginLeft:2}}>*</span></label>
+                <select className="inp" value={tesis.mahalle} onChange={e => tD('mahalle', e.target.value)}>
+                  <option value="">— Mahalle seçin —</option>
+                  {BEYLIKDUZU_MAHALLELER.map(m => <option key={m}>{m}</option>)}
+                </select>
+              </div>
+
+              {/* B) Cadde/Sokak (aktif olur mahalle seçilince) */}
+              {tesis.mahalle && (
+                <div className="fg" style={{margin:'0 0 12px'}}>
+                  <label className="fl">Cadde / Sokak</label>
+                  <input className="inp" type="text"
+                    placeholder="Cadde veya sokak adı yazın..."
+                    value={tesis.cadde_sokak}
+                    onChange={e => tD('cadde_sokak', e.target.value)} />
+                </div>
+              )}
+
+              {/* C) Konum belirleme */}
+              {tesis.mahalle && (
+                <div style={{marginBottom:12}}>
+                  <label className="fl" style={{marginBottom:8}}>Konum Belirleme</label>
+                  <div style={{display:'flex',gap:8,flexWrap:'wrap' as const}}>
+                    <button type="button" onClick={() => setKonumModu(konumModu==='harita'?null:'harita')}
+                      style={{flex:1,minWidth:100,padding:'8px 10px',borderRadius:8,border:`1.5px solid ${konumModu==='harita'?TEAL:'#CBD5E1'}`,background:konumModu==='harita'?`${TEAL}10`:'white',color:NAVY,fontSize:12,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>
+                      🗺️ Haritadan İşaretle
+                    </button>
+                    <button type="button" onClick={() => {
+                      if (!navigator.geolocation) return alert('Tarayıcı konum desteği yok.')
+                      navigator.geolocation.getCurrentPosition(pos => {
+                        const lat = pos.coords.latitude.toFixed(6)
+                        const lng = pos.coords.longitude.toFixed(6)
+                        tD('lat', lat); tD('lng', lng)
+                        setKonumModu(null)
+                      }, () => alert('Konum alınamadı.'))
+                    }}
+                      style={{flex:1,minWidth:100,padding:'8px 10px',borderRadius:8,border:'1.5px solid #CBD5E1',background:'white',color:NAVY,fontSize:12,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>
+                      📍 Mevcut Konumumu Kullan
+                    </button>
+                    <button type="button" onClick={() => setKonumModu(konumModu==='koordinat'?null:'koordinat')}
+                      style={{flex:1,minWidth:100,padding:'8px 10px',borderRadius:8,border:`1.5px solid ${konumModu==='koordinat'?TEAL:'#CBD5E1'}`,background:konumModu==='koordinat'?`${TEAL}10`:'white',color:NAVY,fontSize:12,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>
+                      🔢 Koordinat Gir
+                    </button>
+                  </div>
+
+                  {/* Harita */}
+                  {konumModu === 'harita' && (
+                    <div style={{marginTop:10,borderRadius:10,overflow:'hidden',border:'1px solid #CBD5E1',height:300}}>
+                      <LeafletMap
+                        center={[40.99, 28.67]}
+                        lat={tesis.lat ? parseFloat(tesis.lat) : undefined}
+                        lng={tesis.lng ? parseFloat(tesis.lng) : undefined}
+                        onSelect={(lat, lng) => { tD('lat', lat.toFixed(6)); tD('lng', lng.toFixed(6)) }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Manuel koordinat */}
+                  {konumModu === 'koordinat' && (
+                    <div className="g2" style={{marginTop:10}}>
+                      <div className="fg" style={{margin:0}}>
+                        <label className="fl">Enlem (Latitude)</label>
+                        <input className="inp" type="number" step="0.0001" placeholder="40.9921"
+                          value={manuelLat} onChange={e => setManuelLat(e.target.value)} />
+                      </div>
+                      <div className="fg" style={{margin:0}}>
+                        <label className="fl">Boylam (Longitude)</label>
+                        <input className="inp" type="number" step="0.0001" placeholder="28.6714"
+                          value={manuelLng} onChange={e => setManuelLng(e.target.value)} />
+                      </div>
+                      <div style={{gridColumn:'1/-1'}}>
+                        <button type="button" onClick={() => {
+                          if (manuelLat && manuelLng) { tD('lat', manuelLat); tD('lng', manuelLng); setKonumModu(null) }
+                        }}
+                          style={{padding:'7px 18px',borderRadius:8,border:'none',background:TEAL,color:'white',fontSize:12,fontWeight:700,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>
+                          Kaydet
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* D) Konum belirlendi badge */}
+              {tesis.lat && tesis.lng && (
+                <div style={{display:'inline-flex',alignItems:'center',gap:6,background:'#F0FDF4',border:'1px solid #BBF7D0',borderRadius:99,padding:'5px 14px',fontSize:12,color:'#166534',fontWeight:600}}>
+                  📍 Konum belirlendi: {parseFloat(tesis.lat).toFixed(4)}, {parseFloat(tesis.lng).toFixed(4)}
+                </div>
+              )}
             </div>
 
             {/* 1. Yapısal */}

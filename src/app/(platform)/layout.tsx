@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { mevcutKullanici } from '@/lib/auth';
 import Link from 'next/link';
-import { Shield, BarChart3, Map, Building2, Settings, Activity, AlertTriangle, Database, History, Home, LayoutGrid, FileText, Siren } from 'lucide-react';
+import { Shield, BarChart3, Map, Building2, Settings, Activity, AlertTriangle, Database, History, Home, LayoutGrid, FileText, Siren, SlidersHorizontal } from 'lucide-react';
 
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
   const [tenant, setTenant] = useState('...')
@@ -94,6 +94,11 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
           <Link href="/sistem-ayarlari" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
             <Settings className="w-4 h-4 text-slate-400" />
             <span>Sistem Ayarları</span>
+          </Link>
+
+          <Link href="/settings" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
+            <SlidersHorizontal className="w-4 h-4 text-[#E8C97A]" />
+            <span>Form Ayarları</span>
           </Link>
 
           <Link href="/board/ozet" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">

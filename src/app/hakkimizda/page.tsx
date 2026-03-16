@@ -267,8 +267,8 @@ export default function HakkimizdaPage() {
               </h2>
               <p style={{ color: MG, fontSize: 16, lineHeight: 1.85, marginBottom: 28 }}>
                 Omniversel, İstanbul Teknik Üniversitesi Afet Yönetimi Enstitüsü ile stratejik
-                akademik iş birliği çerçevesinde <strong style={{ color: N, fontWeight: 600 }}>HFER-720
-                metodolojisini geliştirmiş</strong> ve validasyon süreçlerini yürütmüştür.
+                akademik iş birliği çerçevesinde <strong style={{ color: N, fontWeight: 600 }}>omniRISK
+                modelini geliştirmiş</strong> ve validasyon süreçlerini yürütmüştür.
               </p>
               <p style={{ color: MG, fontSize: 15, lineHeight: 1.8, marginBottom: 32 }}>
                 Bu iş birliği; metodolojik titizlik, uluslararası standart uyumu ve sahaya
@@ -277,7 +277,7 @@ export default function HakkimizdaPage() {
                 sistematik biçimde entegre edilmektedir.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                {['HFER-720 Metodolojisi', 'Validasyon Çalışmaları', 'Akademik Yayınlar'].map(b => (
+                {['omniRISK Modeli', 'Validasyon Çalışmaları', 'Akademik Yayınlar'].map(b => (
                   <span key={b} style={{ background: `${T}12`, color: T, fontSize: 12,
                                           fontWeight: 600, padding: '6px 14px', borderRadius: 20,
                                           border: `1px solid ${T}25` }}>{b}</span>
