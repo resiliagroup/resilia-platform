@@ -844,7 +844,7 @@ export default function Page() {
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Logo */}
           <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
-            <OmniverselLogo width={180} height={46} light />
+            <OmniverselLogo width={240} height={60} light />
           </Link>
 
           {/* Desktop nav */}
