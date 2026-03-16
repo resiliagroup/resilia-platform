@@ -850,52 +850,6 @@ export default function Page() {
           {/* Desktop nav */}
           <nav style={{ display: isMobile ? 'none' : 'flex', gap: 32, alignItems: 'center' }}>
 
-            {/* Platform megamenu */}
-            <div className="mega-wrap"
-                 onMouseEnter={() => setMegaOpen('platform')}
-                 onMouseLeave={() => setMegaOpen(null)}>
-              <span className="nav-link" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                Platform
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d="M3 5l3 3 3-3" stroke={MG} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </span>
-              {megaOpen === 'platform' && (
-                <div className="mega-panel">
-                  <p style={{ fontSize: 10, fontWeight: 700, color: MG, letterSpacing: 2,
-                               textTransform: 'uppercase', marginBottom: 14 }}>Modüller</p>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
-                    {PLATFORM_ITEMS.map(item => (
-                      <Link key={item.code} href={item.href}
-                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
-                                 borderRadius: 10, transition: 'background .15s' }}
-                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = GR}
-                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}>
-                        <span style={{ width: 8, height: 8, borderRadius: '50%',
-                                       background: item.color, flexShrink: 0 }}/>
-                        <div>
-                          <div style={{ fontSize: 12, fontWeight: 700, color: N,
-                                         fontFamily: 'DM Mono,monospace', letterSpacing: 0.5 }}>{item.code}</div>
-                          <div style={{ fontSize: 11, color: MG, marginTop: 1 }}>{item.desc}</div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                  <div style={{ borderTop: `1px solid ${BORDER}`, marginTop: 14, paddingTop: 12 }}>
-                    <Link href="/hub" style={{ display: 'flex', alignItems: 'center', gap: 8,
-                                               fontSize: 13, fontWeight: 600, color: T, padding: '4px 12px' }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T} strokeWidth="2">
-                        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                        <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-                      </svg>
-                      Platform Hub&apos;ı Aç →
-                    </Link>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <a href="#bcm" className="nav-link">BCM Döngüsü</a>
 
             {/* Sektörler megamenu */}
             <div className="mega-wrap"
@@ -951,16 +905,6 @@ export default function Page() {
             <div style={{ paddingBottom: 8, marginBottom: 4 }}>
               <OmniverselLogo width={160} height={40} light />
             </div>
-            <Link href="/hub" onClick={() => setMenuOpen(false)}>Platform Hub</Link>
-            <div className="mob-sep"/>
-            <p style={{ fontSize: 10, fontWeight: 700, color: MG, letterSpacing: 2, textTransform: 'uppercase', padding: '4px 14px 2px' }}>Modüller</p>
-            {PLATFORM_ITEMS.map(item => (
-              <Link key={item.code} href={item.href} onClick={() => setMenuOpen(false)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8, fontSize: 14, color: N }}>
-                <span style={{ width: 7, height: 7, borderRadius: '50%', background: item.color, flexShrink: 0 }}/>
-                <span>{item.code}</span>
-              </Link>
-            ))}
             <div className="mob-sep"/>
             <a href="#bcm" onClick={() => setMenuOpen(false)}>BCM Döngüsü</a>
             <a href="#sectors-detail" onClick={() => setMenuOpen(false)}>Sektörler</a>
