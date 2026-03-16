@@ -1300,14 +1300,14 @@ export default function Page() {
             <div style={{ display: 'grid',
                           gridTemplateColumns: isMobile ? '1fr' : 'repeat(2,1fr)', gap: 20 }}>
             {[
-              { title: 'Bankacılık & Finans', desc: 'Operasyonel risk envanteri, İSYS kurulumu ve İSP geliştirme Basel III ve ISO 22301 uyum gereksinimleri doğrultusunda yürütülür.', standards: 'ISO 22301 · Basel III', iconBg: T },
-              { title: 'Sağlık & Hastane',    desc: 'Kritik hasta hizmetleri sürekliliği, tıbbi altyapı kırılganlık değerlendirmesi ve Olay Komuta Sistemi (OKS) entegrasyonu sağlanır.', standards: 'ISO 22301 · Sendai SF-3', iconBg: R_R },
-              { title: 'Sanayi & Üretim',     desc: 'NATECH kaskad senaryo analizi, tedarik zinciri kesintisi modellemesi ve ALARP ilkesiyle uyumlu risk müdahale planı üretilir.', standards: 'RAPID-N · ISO 31000', iconBg: R_O },
-              { title: 'Eğitim Kurumları',    desc: 'Afet Risk Yönetimi (ARM) planları, tatbikat yönetimi ve Sendai SF-2 kapsamında okul dirençlilik değerlendirmesi yapılır.', standards: 'AFAD · Sendai SF-2', iconBg: '#3B7EC8' },
-              { title: 'Kritik Altyapı',      desc: 'Enerji, su ve ulaşım sistemlerinde kademeli bozulma (N-1) analizi, bağımlılık haritalaması ve CIP standartlarına uyum sağlanır.', standards: 'CIP Standartları · ISO 22301', iconBg: R_Y },
-              { title: 'Kamu & Belediye',     desc: 'Kentsel ölçekte Tesis Kırılganlık ve Maruziyet Değerlendirmesi ile Sendai Çerçevesi önceliklerine göre yatırım planlaması gerçekleştirilir.', standards: 'Sendai · omniRISK', iconBg: T },
-              { title: 'Turizm & Konaklama',  desc: 'Misafir güvenliği protokolleri, tahliye planı ve sezon bazlı İSP geliştirme ISO 22301 ve NFPA 101 çerçevesinde yürütülür.', standards: 'ISO 22301 · NFPA 101', iconBg: '#7B5EA7' },
-              { title: 'Lojistik & Tedarik',  desc: 'Kritik tedarikçi kırılganlık skorlaması, alternatif tedarik rotası planlaması ve ISO 28000 kapsamında tedarik zinciri dayanıklılığı değerlendirilir.', standards: 'ISO 28000 · ISO 22301', iconBg: '#2D8A87' },
+              { icon: '/icons/Icon_PROTECT_10_Risk.png', title: 'Bankacılık & Finans', desc: 'Operasyonel risk envanteri, İSYS kurulumu ve İSP geliştirme Basel III ve ISO 22301 uyum gereksinimleri doğrultusunda yürütülür.', standards: 'ISO 22301 · Basel III', iconBg: T },
+              { icon: '/icons/Icon_REC_06_Health.png', title: 'Sağlık & Hastane',    desc: 'Kritik hasta hizmetleri sürekliliği, tıbbi altyapı kırılganlık değerlendirmesi ve Olay Komuta Sistemi (OKS) entegrasyonu sağlanır.', standards: 'ISO 22301 · Sendai SF-3', iconBg: R_R },
+              { icon: '/icons/Icon_RESP_04_Infrastructure.png', title: 'Sanayi & Üretim',     desc: 'NATECH kaskad senaryo analizi, tedarik zinciri kesintisi modellemesi ve ALARP ilkesiyle uyumlu risk müdahale planı üretilir.', standards: 'RAPID-N · ISO 31000', iconBg: R_O },
+              { icon: '/icons/Icon_MIT_04_Community.png', title: 'Eğitim Kurumları',    desc: 'Afet Risk Yönetimi (ARM) planları, tatbikat yönetimi ve Sendai SF-2 kapsamında okul dirençlilik değerlendirmesi yapılır.', standards: 'AFAD · Sendai SF-2', iconBg: '#3B7EC8' },
+              { icon: '/icons/Icon_PROTECT_09_Physical.png', title: 'Kritik Altyapı',      desc: 'Enerji, su ve ulaşım sistemlerinde kademeli bozulma (N-1) analizi, bağımlılık haritalaması ve CIP standartlarına uyum sağlanır.', standards: 'CIP Standartları · ISO 22301', iconBg: R_Y },
+              { icon: '/icons/Icon_MIT_01_Planning.png', title: 'Kamu & Belediye',     desc: 'Kentsel ölçekte Tesis Kırılganlık ve Maruziyet Değerlendirmesi ile Sendai Çerçevesi önceliklerine göre yatırım planlaması gerçekleştirilir.', standards: 'Sendai · omniRISK', iconBg: T },
+              { icon: '/icons/Icon_REC_08_Natural.png', title: 'Turizm & Konaklama',  desc: 'Misafir güvenliği protokolleri, tahliye planı ve sezon bazlı İSP geliştirme ISO 22301 ve NFPA 101 çerçevesinde yürütülür.', standards: 'ISO 22301 · NFPA 101', iconBg: '#7B5EA7' },
+              { icon: '/icons/Icon_PROTECT_11_Supply.png', title: 'Lojistik & Tedarik',  desc: 'Kritik tedarikçi kırılganlık skorlaması, alternatif tedarik rotası planlaması ve ISO 28000 kapsamında tedarik zinciri dayanıklılığı değerlendirilir.', standards: 'ISO 28000 · ISO 22301', iconBg: '#2D8A87' },
             ].map((sector, i) => (
               <div key={i}
                    style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 16,
@@ -1325,7 +1325,7 @@ export default function Page() {
                 <div style={{ width: 40, height: 40, borderRadius: 10, background: `${sector.iconBg}14`,
                                border: `1px solid ${sector.iconBg}30`, display: 'flex', alignItems: 'center',
                                justifyContent: 'center', marginBottom: 16 }}>
-                  <div style={{ width: 14, height: 14, borderRadius: '50%', background: sector.iconBg }}/>
+                  <img src={sector.icon} width={28} height={28} alt={sector.title} style={{ objectFit: 'contain' }}/>
                 </div>
                 <div style={{ color: N, fontWeight: 700, fontSize: 15, marginBottom: 10 }}>{sector.title}</div>
                 <p style={{ color: MG, fontSize: 13, lineHeight: 1.7, marginBottom: 16 }}>{sector.desc}</p>
