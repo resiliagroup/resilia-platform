@@ -254,24 +254,24 @@ export default function HakkimizdaPage() {
             {[
               {
                 title: 'Ar-Ge İş Birliği',
-                icon: '🔬',
+                icon: '/icons/ccds_arge.png',
                 desc: 'omniRISK metodolojisi İTÜ AYM akademik araştırmalarıyla ortak geliştirilmekte; saha çalışmaları ve veri validasyonu birlikte yürütülmektedir.',
               },
               {
                 title: 'Eğitim & Kapasite',
-                icon: '🎓',
+                icon: '/icons/ccds_egitim.png',
                 desc: 'Afet yönetimi, kentsel dayanıklılık ve ISO 22301 alanlarında ortak eğitim programları, sertifika çalışmaları ve kapasite geliştirme faaliyetleri.',
               },
               {
                 title: 'Danışmanlık',
-                icon: '🤝',
+                icon: '/icons/ccds_danismanlik.png',
                 desc: 'Kamu kurumları ve özel sektör için AFAD/Sendai uyumlu kurumsal dayanıklılık danışmanlığı, kentsel risk atlası üretimi ve politika desteği.',
               },
             ].map(k => (
               <div key={k.title} style={{ background: GR, border: `1px solid ${BORDER}`,
                                            borderTop: `4px solid ${T}`, borderRadius: 16,
                                            padding: '32px 28px' }}>
-                <div style={{ fontSize: 36, marginBottom: 14 }}>{k.icon}</div>
+                <div style={{ marginBottom: 14 }}><img src={k.icon} alt={k.title} width={48} height={48} style={{ objectFit: 'contain' }} /></div>
                 <h3 style={{ color: N, fontWeight: 700, fontSize: 17, marginBottom: 12 }}>{k.title}</h3>
                 <p style={{ color: MG, fontSize: 14, lineHeight: 1.75 }}>{k.desc}</p>
               </div>
