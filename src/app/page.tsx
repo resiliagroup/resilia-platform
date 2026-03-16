@@ -43,16 +43,31 @@ function useCounter(target: number, dur = 1800, go: boolean) {
   const [n, setN] = useState(0)
   useEffect(() => {
     if (!go) return
+    setN(0)
     let s: number | null = null
+    let raf: number
     const tick = (t: number) => {
-      if (!s) s = t
+      if (s === null) s = t
       const p = Math.min((t - s) / dur, 1)
       setN(Math.floor(p * target))
-      if (p < 1) requestAnimationFrame(tick)
+      if (p < 1) raf = requestAnimationFrame(tick)
     }
-    requestAnimationFrame(tick)
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
   }, [go, target, dur])
   return n
+}
+
+/* ─── useWindowWidth ─────────────────────────────────────────── */
+function useWindowWidth() {
+  const [w, setW] = useState(0)
+  useEffect(() => {
+    const fn = () => setW(window.innerWidth)
+    fn()
+    window.addEventListener('resize', fn)
+    return () => window.removeEventListener('resize', fn)
+  }, [])
+  return w
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -691,7 +706,7 @@ function LiveMetric({ target, suffix, label, sub, go }: {
 }) {
   const n = useCounter(target, 2000, go)
   return (
-    <div style={{ textAlign: 'center', padding: '0 24px' }}>
+    <div style={{ textAlign: 'center', padding: '0 8px' }}>
       <div style={{ fontSize: 'clamp(36px, 4vw, 52px)', fontWeight: 700, color: BG,
                     lineHeight: 1, fontFamily: 'DM Mono,monospace' }}>
         {n}{suffix}
@@ -710,6 +725,9 @@ export default function Page() {
   const [menuOpen,  setMenuOpen]  = useState(false)
   const [megaOpen,  setMegaOpen]  = useState<string | null>(null)
   const [metrics, setMetrics] = useState({ tesis: 782, kritik: 103, mahalle: 10, sektor: 6 })
+  const screenW  = useWindowWidth()
+  const isMobile = screenW > 0 && screenW < 768
+  const isTablet = screenW > 0 && screenW < 1024
 
   const statsSection    = useInView(0.1)
   const productsSection = useInView(0.15)
@@ -796,6 +814,18 @@ export default function Page() {
           background:${BG};border-radius:16px;border:1px solid ${BORDER};
           box-shadow:0 16px 48px rgba(10,22,40,.1);padding:20px;min-width:420px;z-index:300}
         .mega-panel-sm{min-width:260px}
+        /* mobile menu overlay */
+        .mob-overlay{position:fixed;inset:0;background:rgba(10,22,40,.55);z-index:198;backdrop-filter:blur(4px)}
+        .mob-menu{position:fixed;top:68px;left:0;right:0;background:${BG};z-index:199;
+          border-bottom:1px solid ${BORDER};box-shadow:0 8px 32px rgba(10,22,40,.12);
+          padding:20px 20px 28px;display:flex;flex-direction:column;gap:4px;
+          animation:fadeIn .18s ease both}
+        .mob-menu a,.mob-menu span{display:block;padding:12px 14px;border-radius:8px;
+          font-size:15px;font-weight:600;color:${N};transition:background .15s;cursor:pointer}
+        .mob-menu a:hover,.mob-menu span:hover{background:${GR}}
+        .mob-sep{height:1px;background:${BORDER};margin:8px 0}
+        .mob-cta{display:block;background:${T};color:#fff !important;font-weight:700 !important;
+          font-size:14px;padding:13px 20px !important;border-radius:6px;text-align:center;margin-top:8px}
       `}</style>
 
       {/* ══ NAV ══════════════════════════════════════════════════ */}
@@ -807,7 +837,7 @@ export default function Page() {
         borderBottom: scrolled ? `1px solid ${BORDER}` : '1px solid transparent',
         boxShadow: scrolled ? '0 2px 16px rgba(10,22,40,.07)' : 'none',
         transition: 'all .25s',
-        display: 'flex', alignItems: 'center', padding: '0 48px',
+        display: 'flex', alignItems: 'center', padding: isMobile ? '0 20px' : '0 48px',
       }}>
         <div style={{ maxWidth: 1200, width: '100%', margin: '0 auto',
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -825,7 +855,7 @@ export default function Page() {
           </div>
 
           {/* Desktop nav */}
-          <nav style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
+          <nav style={{ display: isMobile ? 'none' : 'flex', gap: 32, alignItems: 'center' }}>
 
             {/* Platform megamenu */}
             <div className="mega-wrap"
@@ -907,13 +937,48 @@ export default function Page() {
                                           padding: '10px 24px', borderRadius: 6, display: 'inline-block',
                                           transition: 'opacity .18s' }}>Demo Talep</Link>
           </nav>
+
+          {/* Hamburger — mobile only */}
+          {isMobile && (
+            <button onClick={() => setMenuOpen(o => !o)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px',
+                       display: 'flex', alignItems: 'center', justifyContent: 'center',
+                       color: N, fontSize: 22, lineHeight: 1 }}>
+              {menuOpen ? '✕' : '☰'}
+            </button>
+          )}
         </div>
       </header>
 
+      {/* Mobile menu */}
+      {isMobile && menuOpen && (
+        <>
+          <div className="mob-overlay" onClick={() => setMenuOpen(false)}/>
+          <div className="mob-menu">
+            <Link href="/hub" onClick={() => setMenuOpen(false)}>Platform Hub</Link>
+            <div className="mob-sep"/>
+            <p style={{ fontSize: 10, fontWeight: 700, color: MG, letterSpacing: 2, textTransform: 'uppercase', padding: '4px 14px 2px' }}>Modüller</p>
+            {PLATFORM_ITEMS.map(item => (
+              <Link key={item.code} href={item.href} onClick={() => setMenuOpen(false)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8, fontSize: 14, color: N }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: item.color, flexShrink: 0 }}/>
+                <span>{item.code}</span>
+              </Link>
+            ))}
+            <div className="mob-sep"/>
+            <a href="#bcm" onClick={() => setMenuOpen(false)}>BCM Döngüsü</a>
+            <a href="#sectors-detail" onClick={() => setMenuOpen(false)}>Sektörler</a>
+            <Link href="/hakkimizda" onClick={() => setMenuOpen(false)}>Hakkımızda</Link>
+            <Link href="/login" className="mob-cta" onClick={() => setMenuOpen(false)}>Demo Talep</Link>
+          </div>
+        </>
+      )}
+
       {/* ══ HERO ═════════════════════════════════════════════════ */}
-      <section style={{ padding: '140px 48px 100px', background: BG }}>
+      <section style={{ padding: isMobile ? '100px 20px 60px' : '140px 48px 100px', background: BG }}>
         <div style={{ maxWidth: 1200, margin: '0 auto',
-                      display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 72, alignItems: 'center' }}>
+                      display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                      gap: isMobile ? 36 : 72, alignItems: 'center' }}>
           {/* left */}
           <div style={{ animation: 'fadeUp .7s ease both' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -939,11 +1004,14 @@ export default function Page() {
               gerçek zamanlı Olay Komuta desteği için bütünleşik analitik platform.
             </p>
 
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 40 }}>
-              <Link href="/login" className="btn-teal" style={{ fontSize: 15, padding: '13px 32px' }}>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 40,
+                          flexDirection: isMobile ? 'column' : 'row' }}>
+              <Link href="/login" className="btn-teal" style={{ fontSize: 15, padding: '13px 32px',
+                textAlign: 'center' }}>
                 Ücretsiz Demo
               </Link>
-              <a href="#products" className="btn-outline" style={{ fontSize: 15, padding: '12px 32px' }}>
+              <a href="#products" className="btn-outline" style={{ fontSize: 15, padding: '12px 32px',
+                textAlign: 'center' }}>
                 Modülleri İncele
               </a>
             </div>
@@ -959,7 +1027,7 @@ export default function Page() {
           </div>
 
           {/* right: 2×2 infographic cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16,
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 16,
                         animation: 'fadeIn .9s ease .2s both' }}>
             <RiskGaugeCard />
             <PendulumCard />
@@ -970,7 +1038,7 @@ export default function Page() {
       </section>
 
       {/* ══ LOGO BAND ════════════════════════════════════════════ */}
-      <section style={{ background: GR, padding: '48px 48px',
+      <section style={{ background: GR, padding: isMobile ? '28px 20px' : '48px 48px',
                         borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <p style={{ textAlign: 'center', color: '#B5C4C3', fontSize: 12,
@@ -982,9 +1050,10 @@ export default function Page() {
       </section>
 
       {/* ══ PROBLEM TANIMI ═══════════════════════════════════════ */}
-      <section style={{ padding: '100px 48px', background: BG }}>
+      <section style={{ padding: isMobile ? '60px 20px' : '100px 48px', background: BG }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 72, alignItems: 'center' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                        gap: isMobile ? 32 : 72, alignItems: 'center' }}>
             {/* Left: VUCA Matrix */}
             <div>
               <VucaMatrix />
@@ -1043,7 +1112,7 @@ export default function Page() {
       </section>
 
       {/* ══ HOW IT WORKS ═════════════════════════════════════════ */}
-      <section ref={howSection.ref} style={{ padding: '100px 48px', background: GR }}>
+      <section ref={howSection.ref} style={{ padding: isMobile ? '60px 20px' : '100px 48px', background: GR }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <SectionLabel text="Metodoloji" />
@@ -1053,7 +1122,9 @@ export default function Page() {
               oradan ISO 22301 uyumlu İş Sürekliliği Yönetim Sistemi (İSYS) kurulumuna uzanan sistematik iş akışını destekler.
             </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+          <div style={{ display: 'grid',
+                        gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(2,1fr)' : 'repeat(4,1fr)',
+                        gap: 24 }}>
             {[
               { num: '01', title: 'Tesis Kırılganlık ve Maruziyet Değerlendirmesi', desc: 'CBS tabanlı coğrafi veri katmanları, tehlike haritaları, yapısal ve yapısal olmayan envanter standart veri modeliyle sisteme aktarılarak tesis bazlı kırılganlık ve maruziyet profili oluşturulur.', color: T },
               { num: '02', title: 'omniRISK Risk Değerlendirmesi (ISO 31000)', desc: 'omniRISK modeli; tehlike (H), kırılganlık (F), maruziyet (E) ve kapasite (C) parametrelerini ISO 31000 çerçevesinde işleyerek tesis bazlı URI (Unified Risk Index) skoru üretir.', color: R_Y },
@@ -1078,7 +1149,7 @@ export default function Page() {
       </section>
 
       {/* ══ PRODUCTS ═════════════════════════════════════════════ */}
-      <section id="products" ref={productsSection.ref} style={{ padding: '100px 48px', background: GR }}>
+      <section id="products" ref={productsSection.ref} style={{ padding: isMobile ? '60px 20px' : '100px 48px', background: GR }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <SectionLabel text="Modüler Platform" />
@@ -1089,8 +1160,11 @@ export default function Page() {
             </p>
           </div>
           {/* İSYS Maturity Ladder */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 48, marginBottom: 48,
-                        background: BG, border: `1px solid ${BORDER}`, borderRadius: 16, padding: '32px 40px' }}>
+          <div style={{ display: 'flex', alignItems: isMobile ? 'flex-start' : 'center',
+                        flexDirection: isMobile ? 'column' : 'row',
+                        gap: isMobile ? 24 : 48, marginBottom: 48,
+                        background: BG, border: `1px solid ${BORDER}`, borderRadius: 16,
+                        padding: isMobile ? '24px 20px' : '32px 40px' }}>
             <div style={{ flexShrink: 0 }}>
               <MaturityLadder />
             </div>
@@ -1108,7 +1182,9 @@ export default function Page() {
               </p>
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <div style={{ display: 'grid',
+                        gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(2,1fr)' : 'repeat(3,1fr)',
+                        gap: 24 }}>
             {products.map((p, i) => (
               <div key={i} className="card"
                    style={{
@@ -1137,10 +1213,10 @@ export default function Page() {
       </section>
 
       {/* ══ HFER FORMULA ═════════════════════════════════════════ */}
-      <section style={{ padding: '100px 48px', background: GR }}>
+      <section style={{ padding: isMobile ? '60px 20px' : '100px 48px', background: GR }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <div style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 20,
-                        padding: '56px 64px', textAlign: 'center',
+                        padding: isMobile ? '36px 20px' : '56px 64px', textAlign: 'center',
                         boxShadow: '0 4px 32px rgba(45,138,135,.08)' }}>
             <SectionLabel text="omniRISK — Sendai Çarpanı" />
             <h2 style={{ color: N, fontSize: 'clamp(24px, 3.5vw, 36px)', fontWeight: 700,
@@ -1207,10 +1283,11 @@ export default function Page() {
       </section>
 
       {/* ══ SECTORS ══════════════════════════════════════════════ */}
-      <section id="sectors-detail" style={{ padding: '100px 48px', background: BG }}>
+      <section id="sectors-detail" style={{ padding: isMobile ? '60px 20px' : '100px 48px', background: BG }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 64,
-                        alignItems: 'start', marginBottom: 56 }}>
+          <div style={{ display: 'grid',
+                        gridTemplateColumns: isMobile || isTablet ? '1fr' : '1fr 2fr',
+                        gap: isMobile ? 32 : 64, alignItems: 'start', marginBottom: 56 }}>
             <div>
               <SectionLabel text="Sektörel Çözümler" />
               <SectionTitle>Sektöre Özgü Afet Risk Yönetimi</SectionTitle>
@@ -1224,7 +1301,8 @@ export default function Page() {
                 Sektör bazlı risk toleransı konumlandırması (Olasılık × Etki Matrisi)
               </p>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}>
+            <div style={{ display: 'grid',
+                          gridTemplateColumns: isMobile ? '1fr' : 'repeat(2,1fr)', gap: 20 }}>
             {[
               { title: 'Bankacılık & Finans', desc: 'Operasyonel risk envanteri, İSYS kurulumu ve İSP geliştirme Basel III ve ISO 22301 uyum gereksinimleri doğrultusunda yürütülür.', standards: 'ISO 22301 · Basel III', iconBg: T },
               { title: 'Sağlık & Hastane',    desc: 'Kritik hasta hizmetleri sürekliliği, tıbbi altyapı kırılganlık değerlendirmesi ve Olay Komuta Sistemi (OKS) entegrasyonu sağlanır.', standards: 'ISO 22301 · Sendai SF-3', iconBg: R_R },
@@ -1270,9 +1348,10 @@ export default function Page() {
       </section>
 
       {/* ══ BCM CYCLE ════════════════════════════════════════════ */}
-      <section id="bcm" ref={bcmSection.ref} style={{ padding: '100px 48px', background: BG }}>
+      <section id="bcm" ref={bcmSection.ref} style={{ padding: isMobile ? '60px 20px' : '100px 48px', background: BG }}>
         <div style={{ maxWidth: 1200, margin: '0 auto',
-                      display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+                      display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                      gap: isMobile ? 32 : 80, alignItems: 'center' }}>
           <div style={{ opacity: bcmSection.inView ? 1 : 0, transform: bcmSection.inView ? 'scale(1)' : 'scale(0.93)', transition: 'all .8s ease' }}>
             <BcmCycle />
           </div>
@@ -1308,11 +1387,12 @@ export default function Page() {
       </section>
 
       {/* ══ STATS ════════════════════════════════════════════════ */}
-      <section id="sectors" ref={statsSection.ref} style={{ padding: '80px 48px', background: GR,
+      <section id="sectors" ref={statsSection.ref} style={{ padding: isMobile ? '48px 20px' : '80px 48px', background: GR,
                                                               borderTop: `1px solid ${BORDER}`,
                                                               borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 1000, margin: '0 auto', display: 'grid',
-                      gridTemplateColumns: 'repeat(4, 1fr)', gap: 40, textAlign: 'center' }}>
+                      gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(4,1fr)',
+                      gap: isMobile ? 24 : 40, textAlign: 'center' }}>
           {[
             { target: 720, suffix: '+', label: 'Analiz Parametresi' },
             { target: 39,  suffix: '',  label: 'İlçe Kapsamı' },
@@ -1329,7 +1409,7 @@ export default function Page() {
       </section>
 
       {/* ══ CASE STUDIES ═════════════════════════════════════════ */}
-      <section ref={caseSection.ref} style={{ padding: '100px 48px', background: GR }}>
+      <section ref={caseSection.ref} style={{ padding: isMobile ? '60px 20px' : '100px 48px', background: GR }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <SectionLabel text="Vaka Çalışmaları" />
@@ -1339,7 +1419,9 @@ export default function Page() {
               geçerliliğini ve kurumsal etkinliğini belgelemektedir.
             </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <div style={{ display: 'grid',
+                        gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(2,1fr)' : 'repeat(3,1fr)',
+                        gap: 24 }}>
             {[
               {
                 sektor: 'Kamu & Belediye', sektorRenk: T,
@@ -1410,7 +1492,7 @@ export default function Page() {
       </section>
 
       {/* ══ RESOURCES ════════════════════════════════════════════ */}
-      <section ref={resourceSection.ref} style={{ padding: '100px 48px', background: BG }}>
+      <section ref={resourceSection.ref} style={{ padding: isMobile ? '60px 20px' : '100px 48px', background: BG }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <SectionLabel text="Kaynaklar & Blog" />
@@ -1419,7 +1501,9 @@ export default function Page() {
               BCM, risk yönetimi ve afet dayanıklılığı hakkında derinlemesine okumalar.
             </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <div style={{ display: 'grid',
+                        gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(2,1fr)' : 'repeat(3,1fr)',
+                        gap: 24 }}>
             {[
               { kategori: 'Metodoloji', kategorRenk: T, baslik: 'omniRISK: Yapay Zeka Destekli Risk Modeli',
                 ozet: 'Tehlike, kırılganlık, kapasite ve maruziyet bileşenlerini tek bir URI skoruna nasıl dönüştürüyoruz?',
@@ -1468,13 +1552,15 @@ export default function Page() {
       </section>
 
       {/* ══ TESTIMONIALS ═════════════════════════════════════════ */}
-      <section id="about" ref={testiSection.ref} style={{ padding: '100px 48px', background: GR }}>
+      <section id="about" ref={testiSection.ref} style={{ padding: isMobile ? '60px 20px' : '100px 48px', background: GR }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <SectionLabel text="Müşteri Yorumları" />
             <SectionTitle>Liderler Ne Diyor?</SectionTitle>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <div style={{ display: 'grid',
+                        gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(2,1fr)' : 'repeat(3,1fr)',
+                        gap: 24 }}>
             {testimonials.map((t, i) => (
               <div key={i} className="card"
                    style={{ background: BG,
@@ -1506,13 +1592,15 @@ export default function Page() {
       </section>
 
       {/* ══ LIVE METRICS BAND ════════════════════════════════════ */}
-      <section ref={metricsSection.ref} style={{ background: T, padding: '64px 48px' }}>
+      <section ref={metricsSection.ref} style={{ background: T, padding: isMobile ? '40px 20px' : '64px 48px' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.6)', fontSize: 11, fontWeight: 700,
                       letterSpacing: 3, textTransform: 'uppercase', marginBottom: 44 }}>
             Canlı Platform Metrikleri · Supabase
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0 }}>
+          <div style={{ display: 'grid',
+                        gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(4,1fr)',
+                        gap: isMobile ? 20 : 0 }}>
             {[
               { target: metrics.tesis,   suffix: '',  label: 'Tesis Analiz Edildi',  sub: 'omniRISK skoru hesaplı'  },
               { target: metrics.kritik,  suffix: '',  label: 'Kritik Risk Tespit',    sub: 'H_score ≥ 4 seviyesi'   },
@@ -1523,7 +1611,7 @@ export default function Page() {
                 opacity: metricsSection.inView ? 1 : 0,
                 transform: metricsSection.inView ? 'translateY(0)' : 'translateY(20px)',
                 transition: `all .6s ease ${i * .12}s`,
-                borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.2)' : 'none',
+                borderLeft: !isMobile && i > 0 ? '1px solid rgba(255,255,255,0.2)' : 'none',
               }}>
                 <LiveMetric {...m} go={metricsSection.inView} />
               </div>
@@ -1533,9 +1621,9 @@ export default function Page() {
       </section>
 
       {/* ══ CTA ══════════════════════════════════════════════════ */}
-      <section style={{ padding: '80px 48px', background: BG }}>
+      <section style={{ padding: isMobile ? '48px 20px' : '80px 48px', background: BG }}>
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
-          <div style={{ background: N, borderRadius: 24, padding: '64px 56px', textAlign: 'center',
+          <div style={{ background: N, borderRadius: 24, padding: isMobile ? '40px 24px' : '64px 56px', textAlign: 'center',
                         boxShadow: '0 8px 48px rgba(10,22,40,.12)' }}>
             <p style={{ color: T, fontSize: 12, fontWeight: 700, letterSpacing: 3,
                         textTransform: 'uppercase', marginBottom: 16 }}>Başlayın</p>
@@ -1567,9 +1655,11 @@ export default function Page() {
       </section>
 
       {/* ══ FOOTER ═══════════════════════════════════════════════ */}
-      <footer style={{ background: N, padding: '64px 48px 36px' }}>
+      <footer style={{ background: N, padding: isMobile ? '40px 20px 24px' : '64px 48px 36px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 48, marginBottom: 56 }}>
+          <div style={{ display: 'grid',
+                        gridTemplateColumns: isMobile ? '1fr 1fr' : isTablet ? 'repeat(2,1fr)' : '2fr 1fr 1fr 1fr',
+                        gap: isMobile ? 32 : 48, marginBottom: isMobile ? 36 : 56 }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
                 <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
