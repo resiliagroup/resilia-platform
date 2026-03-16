@@ -97,7 +97,7 @@ export default function OmniverselLogo({ width = 220, height = 56, className, li
           letterSpacing="5"
         >OMNI</text>
         <text
-          x="122"
+          x="108"
           fontFamily="Arial, sans-serif"
           fontSize="38"
           fontWeight="400"
@@ -108,7 +108,7 @@ export default function OmniverselLogo({ width = 220, height = 56, className, li
           x="2"
           y="27"
           fontFamily="Arial, Helvetica, sans-serif"
-          fontSize="10"
+          fontSize="13"
           fontWeight="900"
           fill={s.sub}
           letterSpacing="5"
