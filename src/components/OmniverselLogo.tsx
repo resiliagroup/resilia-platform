@@ -29,21 +29,21 @@ export default function OmniverselLogo({ width = 220, height = 56, className, li
         </linearGradient>
       </defs>
 
-      {/* Geometrik sembol */}
+      {/* Geometrik sembol — kalın ve belirgin */}
       <g transform="translate(50, 50)">
-        <circle cx="0" cy="0" r="42" fill="none" stroke="#7B9FD4" strokeWidth="1" opacity="0.3" strokeDasharray="4 4"/>
-        <circle cx="0" cy="0" r="32" fill="none" stroke="url(#logoTeal)" strokeWidth="3"/>
+        <circle cx="0" cy="0" r="42" fill="none" stroke="#7B9FD4" strokeWidth="1.5" opacity="0.4" strokeDasharray="4 4"/>
+        <circle cx="0" cy="0" r="32" fill="none" stroke="url(#logoTeal)" strokeWidth="4"/>
         <polygon
           points="0,-22 13,-12 13,12 0,22 -13,12 -13,-12"
           fill="none"
           stroke="url(#logoGold)"
-          strokeWidth="2.2"
+          strokeWidth="3"
         />
-        <circle cx="0" cy="0" r="4.5" fill="#E8C97A"/>
-        <line x1="-47" y1="0" x2="-36" y2="0" stroke="#7B9FD4" strokeWidth="1.5" opacity="0.6"/>
-        <line x1="47" y1="0" x2="36" y2="0" stroke="#7B9FD4" strokeWidth="1.5" opacity="0.6"/>
-        <line x1="0" y1="-47" x2="0" y2="-36" stroke="#7B9FD4" strokeWidth="1.5" opacity="0.6"/>
-        <line x1="0" y1="47" x2="0" y2="36" stroke="#7B9FD4" strokeWidth="1.5" opacity="0.6"/>
+        <circle cx="0" cy="0" r="5.5" fill="#E8C97A"/>
+        <line x1="-47" y1="0" x2="-36" y2="0" stroke="#7B9FD4" strokeWidth="2.5" opacity="0.8"/>
+        <line x1="47" y1="0" x2="36" y2="0" stroke="#7B9FD4" strokeWidth="2.5" opacity="0.8"/>
+        <line x1="0" y1="-47" x2="0" y2="-36" stroke="#7B9FD4" strokeWidth="2.5" opacity="0.8"/>
+        <line x1="0" y1="47" x2="0" y2="36" stroke="#7B9FD4" strokeWidth="2.5" opacity="0.8"/>
       </g>
 
       {/* Metin grubu */}
@@ -67,10 +67,10 @@ export default function OmniverselLogo({ width = 220, height = 56, className, li
           x="2"
           y="28"
           fontFamily="Arial, Helvetica, sans-serif"
-          fontSize="10"
-          fontWeight="700"
+          fontSize="11"
+          fontWeight="900"
           fill="#7B9FD4"
-          opacity="0.8"
+          opacity="1"
           letterSpacing="5"
         >URBAN RESILIENCE OS</text>
       </g>
