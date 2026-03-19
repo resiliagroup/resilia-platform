@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import { createClient } from '@supabase/supabase-js'
 import { Loader2, WifiOff, AlertTriangle } from 'lucide-react'
+import { createAssessment, type OmniAssessment, RISK_CLASS_TR, RISK_CLASS_COLOR } from '@/lib/api'
 
 /* ══════════════════════════════════════════════════════════════
    SUPABASE — Beylikdüzü projesi (service role key)
@@ -23,7 +24,9 @@ type Sektor = 'MUNICIPALITY' | 'HOSPITAL' | 'EDUCATION' | 'INDUSTRIAL' | 'BANK' 
 interface ExtraData {
   neighborhood?: string
   H_score?:      number
+  F_score?:      number
   X_score?:      number
+  C_score?:      number
   hazmat_flag?:  boolean
   natech_risk?:  number
   sub_sector?:   string
@@ -31,6 +34,11 @@ interface ExtraData {
   risk_sel?:     number
   [k: string]:   unknown
 }
+
+type OmniSkorDurumu =
+  | { status: 'loading' }
+  | { status: 'error'; msg: string }
+  | { status: 'ok'; data: OmniAssessment }
 
 interface Facility {
   id:             string
@@ -948,6 +956,51 @@ export default function BeylikduzuKomuta() {
   const [senaryo, setSenaryo] = useState('deprem')
   const [siddet,  setSiddet]  = useState(6.5)
 
+  /* ── omniRISK canlı skorlar */
+  const [omniSkorlar, setOmniSkorlar] = useState<Record<string, OmniSkorDurumu>>({})
+
+  const omniRiskHesapla = async (f: Facility) => {
+    setOmniSkorlar(prev => ({ ...prev, [f.id]: { status: 'loading' } }))
+    const ex = f.extra_data ?? {}
+    const deprem     = (ex.risk_deprem  ?? ex.H_score ?? 2.5) as number
+    const sel        = (ex.risk_sel     ?? 1.5) as number
+    const natech     = (ex.natech_risk  ?? 1.0) as number
+    const primaryHaz = natech >= deprem && natech >= sel ? 'natech'
+                     : deprem >= sel ? 'deprem' : 'sel'
+    try {
+      const result = await createAssessment({
+        facility_id:     f.id,
+        bottleneck_score: ex.hazmat_flag ? 2.5 : 1.2,
+        near_miss_count: 0,
+        primary_hazard:  primaryHaz,
+        hazard: {
+          seismic:      Math.min(100, deprem  * 20),
+          flood:        Math.min(100, sel     * 20),
+          supply_chain: Math.min(100, natech  * 20),
+        },
+        fragility: ex.F_score != null ? {
+          building_age_score:  Math.min(100, (ex.F_score as number) * 20),
+          construction_quality:Math.min(100, (ex.F_score as number) * 20),
+        } : undefined,
+        exposure: {
+          population_at_risk:      f.employee_count ?? 100,
+          asset_criticality:       ex.X_score != null ? Math.min(1, (ex.X_score as number) / 5) : 0.5,
+          serves_critical_population: f.operates_24h,
+        },
+        response: ex.C_score != null ? {
+          bcm_plan_exists:        (ex.C_score as number) >= 2,
+          plan_tested_last_12m:   (ex.C_score as number) >= 3,
+          drill_frequency_per_year: Math.round((ex.C_score as number)),
+          crisis_team_exists:     (ex.C_score as number) >= 3,
+        } : undefined,
+      })
+      setOmniSkorlar(prev => ({ ...prev, [f.id]: { status: 'ok', data: result } }))
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Bağlantı hatası'
+      setOmniSkorlar(prev => ({ ...prev, [f.id]: { status: 'error', msg } }))
+    }
+  }
+
   /* ── Supabase veri çekme */
   useEffect(() => {
     let iptal = false
@@ -1355,8 +1408,8 @@ export default function BeylikduzuKomuta() {
               </div>
 
               {/* Tablo başlığı */}
-              <div className="hidden lg:grid grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] px-4 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-widest border-b border-gray-50">
-                <span>Tesis Adı</span><span>Mahalle</span><span>Sektör</span><span>H Skoru</span><span>Çalışan</span><span>Durum</span>
+              <div className="hidden lg:grid grid-cols-[2fr_1fr_1fr_1fr_1fr_auto_160px] px-4 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-widest border-b border-gray-50">
+                <span>Tesis Adı</span><span>Mahalle</span><span>Sektör</span><span>H Skoru</span><span>Çalışan</span><span>Durum</span><span>omniRISK</span>
               </div>
 
               {loading && <div className="p-8 flex justify-center"><Spinner/></div>}
@@ -1371,8 +1424,9 @@ export default function BeylikduzuKomuta() {
                   const h      = f.extra_data?.H_score ?? 0
                   const sm     = SEKTOR_META[f.sector] ?? SEKTOR_META.OTHER
                   const hazmat = f.extra_data?.hazmat_flag
+                  const skor   = omniSkorlar[f.id]
                   return (
-                    <div key={f.id} className="grid lg:grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] items-center px-4 py-3 hover:bg-gray-50 transition-colors gap-2">
+                    <div key={f.id} className="grid lg:grid-cols-[2fr_1fr_1fr_1fr_1fr_auto_160px] items-center px-4 py-3 hover:bg-gray-50 transition-colors gap-2">
                       <div className="flex items-center gap-2 min-w-0">
                         <span className="text-sm font-medium text-gray-900 truncate">{f.name}</span>
                         {hazmat && <span className="text-[10px] bg-orange-50 border border-orange-200 text-orange-600 px-1.5 py-0.5 rounded flex-shrink-0">⚠ NATECH</span>}
@@ -1386,6 +1440,51 @@ export default function BeylikduzuKomuta() {
                       <span className={`text-xs px-2 py-0.5 rounded-full border ${f.operates_24h ? 'text-emerald-600 bg-emerald-50 border-emerald-200' : 'text-gray-400 bg-gray-50 border-gray-200'}`}>
                         {f.operates_24h ? '24h' : 'Normal'}
                       </span>
+
+                      {/* ── omniRISK skor butonu + inline sonuç */}
+                      <div className="flex flex-col gap-1 min-w-0">
+                        {!skor || skor.status === 'error' ? (
+                          <button
+                            onClick={() => omniRiskHesapla(f)}
+                            className="text-[11px] px-2.5 py-1 rounded-lg border font-semibold transition-all whitespace-nowrap"
+                            style={{ borderColor: '#6366F1', color: '#6366F1', background: '#EEF2FF' }}
+                          >
+                            {skor?.status === 'error' ? '↺ Tekrar dene' : '⚡ omniRISK Hesapla'}
+                          </button>
+                        ) : skor.status === 'loading' ? (
+                          <span className="text-[11px] flex items-center gap-1 text-indigo-500 px-2">
+                            <Loader2 className="w-3 h-3 animate-spin"/> Hesaplanıyor…
+                          </span>
+                        ) : (
+                          <div className="flex flex-col gap-0.5">
+                            <div className="flex items-center gap-1.5">
+                              <span
+                                className="text-[11px] font-bold px-2 py-0.5 rounded-full border"
+                                style={{
+                                  color: RISK_CLASS_COLOR[skor.data.risk_class],
+                                  borderColor: RISK_CLASS_COLOR[skor.data.risk_class] + '50',
+                                  background:  RISK_CLASS_COLOR[skor.data.risk_class] + '15',
+                                }}
+                              >
+                                URI {skor.data.uri_score.toFixed(1)}
+                              </span>
+                              <span
+                                className="text-[10px] font-semibold"
+                                style={{ color: RISK_CLASS_COLOR[skor.data.risk_class] }}
+                              >
+                                {RISK_CLASS_TR[skor.data.risk_class]}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-gray-400 pl-1">
+                              HRO α={skor.data.hro_alpha?.toFixed(2) ?? '—'}
+                              {' · '}B={skor.data.bottleneck_score?.toFixed(1) ?? '—'}
+                            </span>
+                          </div>
+                        )}
+                        {skor?.status === 'error' && (
+                          <span className="text-[10px] text-red-400 truncate">{skor.msg}</span>
+                        )}
+                      </div>
                     </div>
                   )
                 })}

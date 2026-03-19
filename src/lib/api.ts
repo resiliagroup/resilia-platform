@@ -117,6 +117,8 @@ export interface OmniAssessment {
   classical_score: number
   ml_score: number | null
   assessed_at: string
+  hro_alpha?: number
+  bottleneck_score?: number
 }
 
 /** Tarihsel özet — RiskSummary */
@@ -143,6 +145,11 @@ export interface PortfolioSummary {
 export interface AssessmentCreatePayload {
   facility_id: string
   notes?: string
+  bottleneck_score?: number
+  near_miss_count?: number
+  tatbikat_var?: boolean
+  otonom_squad?: boolean
+  primary_hazard?: string
   hazard?: Partial<{
     seismic: number; flood: number; wildfire: number; cyber: number
     supply_chain: number; pandemic: number
