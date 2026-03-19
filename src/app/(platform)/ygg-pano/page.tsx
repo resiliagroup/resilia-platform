@@ -46,21 +46,41 @@ function uriRenk(uri: number) {
   if (uri < 75) return '#F59E0B'
   return '#22C55E'
 }
-function fazLabel(uri: number) {
-  if (uri > 70) return 'Azaltma'
-  if (uri > 50) return 'Hazırlık'
+function fazLabel(uri: number, isNatech = false) {
+  // NATECH tesisleri bir üst aciliyet seviyesine çekilir
+  const effectiveUri = isNatech ? uri - 7 : uri
+  if (effectiveUri > 85) return 'Önleme'
+  if (effectiveUri > 80) return 'Azaltma'
+  if (effectiveUri > 75) return 'Hazırlık'
   return 'Müdahale'
 }
-function fazRenk(uri: number) {
-  if (uri > 70) return { bg: '#F0FDF4', border: '#BBF7D0', text: '#15803D' }
-  if (uri > 50) return { bg: '#FFFBEB', border: '#FDE68A', text: '#B45309' }
+function fazRenk(uri: number, isNatech = false) {
+  const label = fazLabel(uri, isNatech)
+  if (label === 'Önleme')  return { bg: '#F0FDF4', border: '#BBF7D0', text: '#15803D' }
+  if (label === 'Azaltma') return { bg: '#ECFDF5', border: '#A7F3D0', text: '#047857' }
+  if (label === 'Hazırlık') return { bg: '#FFFBEB', border: '#FDE68A', text: '#B45309' }
   return { bg: '#FEF2F2', border: '#FECACA', text: '#B91C1C' }
 }
-function aksiyonOneri(uri: number, hroAlpha: number) {
-  if (hroAlpha < 1.0) return 'Near Miss Sistemi Kur'
-  if (uri < 50) return 'BCP Güncelle'
-  if (uri < 70) return 'Tatbikat Planla'
-  return 'Sürekli İyileştirme'
+function aksiyonOneri(uri: number, hroAlpha: number, sector: string, bScore: number, isNatech: boolean) {
+  // NATECH öncelikli
+  if (isNatech && uri < 85) return 'NATECH Acil Eylem Planı'
+  if (isNatech && uri >= 85) return 'NATECH Tatbikat Planla'
+  // Sektör bazlı
+  if (sector === 'HOSPITAL' && uri < 83) return 'Kritik Hasta Kapasitesi BCP'
+  if (sector === 'EDUCATION') return 'Tahliye Planı Güncelle'
+  if (sector === 'MUNICIPALITY' && bScore >= 1.5) return 'Darboğaz Analizi Yap'
+  if (sector === 'BANK') return 'RTO/RPO Hedef Revizyonu'
+  // URI eşikli
+  if (uri < 78) return 'Acil BCP Geliştir'
+  if (uri <= 82) return 'Tatbikat Planla'
+  if (uri <= 86) return 'Kapasite Yatırımı Değerlendir'
+  return 'Periyodik İzleme Yeterli'
+}
+function sektorCarpan(sector: string) {
+  if (sector === 'INDUSTRIAL') return 1.5
+  if (sector === 'HOSPITAL')   return 2.0
+  if (sector === 'BANK')       return 3.0
+  return 1.0
 }
 
 export default function YGGPano() {
@@ -150,7 +170,7 @@ export default function YGGPano() {
     const urilar = okSkorlar.map(s => s.data.uri_score)
     const avgUri = urilar.length ? urilar.reduce((a, b) => a + b, 0) / urilar.length : 0
     const kritikB = okSkorlar.filter(s => (s.data.bottleneck_score ?? 1) > 2.0).length
-    const toplamMtpd = facilities.reduce((sum, f) => sum + (f.employee_count ?? 0) * 850 * 8, 0)
+    const toplamMtpd = facilities.reduce((sum, f) => sum + (f.employee_count ?? 0) * 850 * 8 * sektorCarpan(f.sector), 0)
     const dusukHro = okSkorlar.filter(s => (s.data.hro_alpha ?? 0.8) < 1.0).length
     return { avgUri: Math.round(avgUri), kritikB, toplamMtpd, dusukHro }
   }, [okSkorlar, facilities])
@@ -204,7 +224,7 @@ export default function YGGPano() {
           {[
             { icon: <TrendingUp style={{ width: 18, height: 18 }}/>, label: 'Portföy URI Ortalaması', val: hesaplanan ? `${kpi.avgUri}` : '—', sub: `${hesaplanan}/${toplam} hesaplandı`, renk: uriRenk(kpi.avgUri), bg: '#F0FDF4' },
             { icon: <AlertTriangle style={{ width: 18, height: 18 }}/>, label: 'Kritik Darboğaz (B>2)', val: `${kpi.kritikB}`, sub: 'TOC çarpanı yüksek tesis', renk: '#F97316', bg: '#FFF7ED' },
-            { icon: <Zap style={{ width: 18, height: 18 }}/>, label: 'Toplam Günlük MTPD', val: kpi.toplamMtpd.toLocaleString('tr-TR') + ' ₺', sub: 'Çalışan × 850₺ × 8 saat', renk: '#6366F1', bg: '#EEF2FF' },
+            { icon: <Zap style={{ width: 18, height: 18 }}/>, label: 'Toplam Günlük MTPD', val: kpi.toplamMtpd.toLocaleString('tr-TR') + ' ₺', sub: 'Sektöre göre ağırlıklı', renk: '#6366F1', bg: '#EEF2FF' },
             { icon: <Shield style={{ width: 18, height: 18 }}/>, label: 'Düşük HRO Uyarısı', val: `${kpi.dusukHro}`, sub: 'α < 1.0 olan tesis', renk: '#EF4444', bg: '#FEF2F2' },
           ].map(k => (
             <div key={k.label} style={{ background: 'white', borderRadius: 16, padding: '20px 24px', boxShadow: '0 1px 3px rgba(0,0,0,.06)', border: '1px solid #F1F0EF' }}>
@@ -271,7 +291,9 @@ export default function YGGPano() {
               const hro     = isOk ? ((sk as Extract<SkorDurum,{s:'ok'}>).data.hro_alpha ?? 0.8) : null
               const bScore  = isOk ? ((sk as Extract<SkorDurum,{s:'ok'}>).data.bottleneck_score ?? 1.0) : null
               const rClass  = isOk ? (sk as Extract<SkorDurum,{s:'ok'}>).data.risk_class  : null
-              const mtpd    = (f.employee_count ?? 0) * 850 * 8
+              const isNatech = !!f.extra_data?.hazmat_flag
+              const carpan   = sektorCarpan(f.sector)
+              const mtpd     = (f.employee_count ?? 0) * 850 * 8 * carpan
               const kurtarilan = isOk && uri !== null ? Math.round(mtpd * (1 - uri / 100) * 0.1) : null
 
               return (
@@ -357,10 +379,10 @@ export default function YGGPano() {
                   {/* FEMA Fazı */}
                   <div>
                     {uri !== null ? (() => {
-                      const faz = fazRenk(uri)
+                      const faz = fazRenk(uri, isNatech)
                       return (
                         <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 6, background: faz.bg, border: `1px solid ${faz.border}`, color: faz.text }}>
-                          {fazLabel(uri)}
+                          {fazLabel(uri, isNatech)}
                         </span>
                       )
                     })() : <span style={{ fontSize: 12, color: '#D1D5DB' }}>—</span>}
@@ -370,7 +392,7 @@ export default function YGGPano() {
                   <div>
                     {uri !== null && hro !== null ? (
                       <span style={{ fontSize: 11, color: '#374151', background: '#F3F4F6', borderRadius: 6, padding: '3px 8px', display: 'inline-block' }}>
-                        {aksiyonOneri(uri, hro)}
+                        {aksiyonOneri(uri, hro, f.sector, bScore ?? 1.0, isNatech)}
                       </span>
                     ) : <span style={{ fontSize: 12, color: '#D1D5DB' }}>—</span>}
                   </div>
