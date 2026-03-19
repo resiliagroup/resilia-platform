@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { mevcutKullanici } from '@/lib/auth';
 import Link from 'next/link';
-import { BarChart3, Map, Building2, Settings, Activity, AlertTriangle, Database, History, Home, LayoutGrid, FileText, Siren, SlidersHorizontal, TableProperties, ClipboardList } from 'lucide-react';
+import { BarChart3, Map, Building2, Settings, Activity, AlertTriangle, Database, History, Home, LayoutGrid, FileText, Siren, SlidersHorizontal, TableProperties, ClipboardList, Zap } from 'lucide-react';
 import OmniverselLogo from '@/components/OmniverselLogo';
 
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
@@ -87,6 +87,11 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
           <Link href="/near-miss" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
             <ClipboardList className="w-4 h-4 text-[#F97316]" />
             <span>Near Miss</span>
+          </Link>
+
+          <Link href="/omni-sprint" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
+            <Zap className="w-4 h-4 text-[#A78BFA]" />
+            <span>omniSPRINT</span>
           </Link>
 
           <p className="px-3 mt-6 mb-3 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Yönetim</p>
