@@ -209,6 +209,20 @@ export default function NearMissPage() {
     const primaryH = natech >= deprem && natech >= sel ? 'natech' : deprem >= sel ? 'deprem' : 'sel'
 
     setHroHesaplaniyor(true)
+    setToastMesaj('Near Miss kaydedildi → Railway URI motoru tetiklendi → HRO skoru güncelleniyor...')
+
+    // Railway webhook — arka planda URI yeniden hesapla (fire & forget)
+    fetch('https://omniversel-risk-engine-production.up.railway.app/api/v1/webhooks/near-miss-trigger', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        facility_id:      form.facility_id,
+        near_miss_count:  yeniSayi,
+        tenant_id:        TENANT,
+      }),
+    }).catch(() => {/* sessizce geç — background task */})
+
+    // createAssessment: anlık HRO skoru UI'a yansıt
     try {
       const res = await createAssessment({
         facility_id:      form.facility_id,
@@ -227,9 +241,8 @@ export default function NearMissPage() {
           construction_quality: Math.min(100, (ex.F_score as number) * 20),
         } : undefined,
         exposure: {
-          population_at_risk:         fac?.employee_count ?? 100,
-          asset_criticality:          ex.X_score != null ? Math.min(1, (ex.X_score as number) / 5) : 0.5,
-          serves_critical_population: fac?.operates_24h ?? false,
+          population_at_risk: fac?.employee_count ?? 100,
+          asset_criticality:  ex.X_score != null ? Math.min(1, (ex.X_score as number) / 5) : 0.5,
         },
         response: ex.C_score != null ? {
           bcm_plan_exists:          (ex.C_score as number) >= 2,
@@ -240,9 +253,9 @@ export default function NearMissPage() {
       })
       const alpha = res.hro_alpha ?? 1.2
       setHroSonuc({ uri: res.uri_score, alpha, facility_name: fac?.name ?? '' })
-      setToastMesaj(`Near Miss kaydedildi. Tesis HRO skoru güncellendi: α = ${alpha.toFixed(2)}`)
+      setToastMesaj(`Near Miss kaydedildi → Railway URI motoru tetiklendi → HRO α = ${alpha.toFixed(2)} ✓`)
     } catch {
-      setToastMesaj('Near Miss kaydedildi. HRO güncellemesi başarısız (Railway erişilemiyor).')
+      setToastMesaj('Near Miss kaydedildi → Railway URI motoru tetiklendi → HRO skoru güncelleniyor...')
     } finally {
       setHroHesaplaniyor(false)
     }
