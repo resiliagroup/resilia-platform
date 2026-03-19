@@ -200,6 +200,9 @@ export default function FormPage() {
   const [ilKodu, setIlKodu] = useState('')
   const [oneriGoster, setOneriGoster] = useState(false)
   const [tesisTamam, setTesisTamam] = useState(false)
+  // HRO soruları
+  const [hroYanitlar, setHroYanitlar] = useState<Record<string, string | number>>({})
+  const hroSet = (k: string, v: string | number) => setHroYanitlar(p => ({ ...p, [k]: v }))
   // Adres
   const [konumModu, setKonumModu] = useState<null|'harita'|'koordinat'>(null)
   const [manuelLat, setManuelLat] = useState('')
@@ -901,6 +904,97 @@ export default function FormPage() {
                 </div>
               )
             })}
+
+            {/* ── HRO BÖLÜMÜ ──────────────────────────────────── */}
+            <div style={{marginBottom:24}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12}}>
+                <div>
+                  <h2 style={{fontSize:14,fontWeight:700,color:NAVY}}>HRO Değerlendirmesi</h2>
+                  <p style={{fontSize:11,color:'#9CA3AF',marginTop:2}}>Yüksek Güvenilirlik Organizasyonu olgunluk düzeyini değerlendirin.</p>
+                </div>
+                <span style={{fontSize:11,color:'#9CA3AF',background:'#F1F0EF',padding:'4px 10px',borderRadius:99,flexShrink:0}}>
+                  {Object.keys(hroYanitlar).length}/5
+                </span>
+              </div>
+              <div style={{display:'flex',flexDirection:'column',gap:10}}>
+
+                {/* Q_HRO_1 — Near Miss sayısı */}
+                <div style={{borderRadius:16,border:`1px solid ${hroYanitlar['Q_HRO_1']!==undefined?'#A7F3D0':'#E5E3E1'}`,padding:16,background:hroYanitlar['Q_HRO_1']!==undefined?'#F0FDFA':'white',transition:'all .15s'}}>
+                  <p style={{fontSize:13,fontWeight:500,color:'#374151',marginBottom:10,lineHeight:1.55}}>
+                    HRO-1. Son 12 ayda kaç &quot;Ramak Kala&quot; (Near Miss) olayı resmi olarak raporlandı?
+                  </p>
+                  <input
+                    type="number" min={0} max={50}
+                    value={hroYanitlar['Q_HRO_1'] ?? ''}
+                    onChange={e => hroSet('Q_HRO_1', Math.min(50, Math.max(0, Number(e.target.value))))}
+                    placeholder="0 – 50 arası sayı giriniz"
+                    style={{width:'100%',boxSizing:'border-box',padding:'10px 12px',borderRadius:12,border:`1px solid ${hroYanitlar['Q_HRO_1']!==undefined?TEAL:'#E5E3E1'}`,fontSize:13,fontFamily:"'DM Sans',sans-serif",outline:'none'}}
+                  />
+                </div>
+
+                {/* Q_HRO_2 — Uyarı iletim süresi */}
+                <div style={{borderRadius:16,border:`1px solid ${hroYanitlar['Q_HRO_2']!==undefined?'#A7F3D0':'#E5E3E1'}`,padding:16,background:hroYanitlar['Q_HRO_2']!==undefined?'#F0FDFA':'white',transition:'all .15s'}}>
+                  <p style={{fontSize:13,fontWeight:500,color:'#374151',marginBottom:10,lineHeight:1.55}}>
+                    HRO-2. Güvenlik veya operasyon uyarıları üst yönetime kaç saat içinde iletiliyor?
+                  </p>
+                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+                    {['<1 saat','1-4 saat','4-24 saat','>24 saat'].map(opt=>(
+                      <button key={opt} onClick={()=>hroSet('Q_HRO_2',opt)}
+                        style={{fontSize:12,padding:'10px 12px',borderRadius:12,border:`1px solid ${hroYanitlar['Q_HRO_2']===opt?TEAL:'#E5E3E1'}`,background:hroYanitlar['Q_HRO_2']===opt?TEAL:'white',color:hroYanitlar['Q_HRO_2']===opt?'white':'#4B5563',cursor:'pointer',textAlign:'left',lineHeight:1.4,fontFamily:"'DM Sans',sans-serif",fontWeight:hroYanitlar['Q_HRO_2']===opt?600:400,transition:'all .15s'}}>
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Q_HRO_3 — Otonom karar */}
+                <div style={{borderRadius:16,border:`1px solid ${hroYanitlar['Q_HRO_3']!==undefined?'#A7F3D0':'#E5E3E1'}`,padding:16,background:hroYanitlar['Q_HRO_3']!==undefined?'#F0FDFA':'white',transition:'all .15s'}}>
+                  <p style={{fontSize:13,fontWeight:500,color:'#374151',marginBottom:10,lineHeight:1.55}}>
+                    HRO-3. Kriz anında saha ekibi merkezi onay beklemeden acil karar alabiliyor mu?
+                  </p>
+                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
+                    {['Evet','Hayır','Kısmen'].map(opt=>(
+                      <button key={opt} onClick={()=>hroSet('Q_HRO_3',opt)}
+                        style={{fontSize:12,padding:'10px 12px',borderRadius:12,border:`1px solid ${hroYanitlar['Q_HRO_3']===opt?TEAL:'#E5E3E1'}`,background:hroYanitlar['Q_HRO_3']===opt?TEAL:'white',color:hroYanitlar['Q_HRO_3']===opt?'white':'#4B5563',cursor:'pointer',textAlign:'center',lineHeight:1.4,fontFamily:"'DM Sans',sans-serif",fontWeight:hroYanitlar['Q_HRO_3']===opt?600:400,transition:'all .15s'}}>
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Q_HRO_4 — Başarısızlığa takıntı (1-5 skala) */}
+                <div style={{borderRadius:16,border:`1px solid ${hroYanitlar['Q_HRO_4']!==undefined?'#A7F3D0':'#E5E3E1'}`,padding:16,background:hroYanitlar['Q_HRO_4']!==undefined?'#F0FDFA':'white',transition:'all .15s'}}>
+                  <p style={{fontSize:13,fontWeight:500,color:'#374151',marginBottom:4,lineHeight:1.55}}>
+                    HRO-4. Tesis personeli &quot;hiçbir şey olmuyor çünkü sistemimiz güvenli&quot; varsayımından kaçınıyor mu?
+                  </p>
+                  <p style={{fontSize:11,color:'#9CA3AF',marginBottom:10}}>1 = Hiç kaçınmıyor (yüksek risk) · 5 = Tam farkındalık (HRO başarısızlığa takıntı ilkesi)</p>
+                  <div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:8}}>
+                    {[1,2,3,4,5].map(n=>(
+                      <button key={n} onClick={()=>hroSet('Q_HRO_4',n)}
+                        style={{fontSize:13,padding:'10px 0',borderRadius:12,border:`1px solid ${hroYanitlar['Q_HRO_4']===n?TEAL:'#E5E3E1'}`,background:hroYanitlar['Q_HRO_4']===n?TEAL:'white',color:hroYanitlar['Q_HRO_4']===n?'white':'#4B5563',cursor:'pointer',textAlign:'center',fontFamily:"'DM Sans',sans-serif",fontWeight:hroYanitlar['Q_HRO_4']===n?700:400,transition:'all .15s'}}>
+                        {n}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Q_HRO_5 — Anormallik kaydı */}
+                <div style={{borderRadius:16,border:`1px solid ${hroYanitlar['Q_HRO_5']!==undefined?'#A7F3D0':'#E5E3E1'}`,padding:16,background:hroYanitlar['Q_HRO_5']!==undefined?'#F0FDFA':'white',transition:'all .15s'}}>
+                  <p style={{fontSize:13,fontWeight:500,color:'#374151',marginBottom:10,lineHeight:1.55}}>
+                    HRO-5. Operasyonel anormallikler (küçük de olsa) kayıt altına alınıp analiz ediliyor mu?
+                  </p>
+                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
+                    {['Evet','Hayır','Kısmen'].map(opt=>(
+                      <button key={opt} onClick={()=>hroSet('Q_HRO_5',opt)}
+                        style={{fontSize:12,padding:'10px 12px',borderRadius:12,border:`1px solid ${hroYanitlar['Q_HRO_5']===opt?TEAL:'#E5E3E1'}`,background:hroYanitlar['Q_HRO_5']===opt?TEAL:'white',color:hroYanitlar['Q_HRO_5']===opt?'white':'#4B5563',cursor:'pointer',textAlign:'center',lineHeight:1.4,fontFamily:"'DM Sans',sans-serif",fontWeight:hroYanitlar['Q_HRO_5']===opt?600:400,transition:'all .15s'}}>
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            </div>
 
             <div style={{display:'flex',gap:10,paddingTop:8}}>
               <button onClick={()=>formuGonder('gonderildi')} disabled={gonderiyor||cevaplanan===0}
