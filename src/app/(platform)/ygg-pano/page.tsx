@@ -49,16 +49,18 @@ function uriRenk(uri: number) {
 function fazLabel(uri: number, isNatech = false) {
   // NATECH tesisleri bir üst aciliyet seviyesine çekilir
   const effectiveUri = isNatech ? uri - 7 : uri
-  if (effectiveUri > 85) return 'Önleme'
-  if (effectiveUri > 80) return 'Azaltma'
-  if (effectiveUri > 75) return 'Hazırlık'
-  return 'Müdahale'
+  if (effectiveUri > 90) return 'Önleme'        // Prevention
+  if (effectiveUri > 85) return 'Koruma'         // Protection
+  if (effectiveUri > 80) return 'Zarar Azaltma'  // Mitigation
+  if (effectiveUri > 75) return 'Müdahale'       // Response
+  return 'İyileştirme'                           // Recovery
 }
 function fazRenk(uri: number, isNatech = false) {
   const label = fazLabel(uri, isNatech)
-  if (label === 'Önleme')  return { bg: '#F0FDF4', border: '#BBF7D0', text: '#15803D' }
-  if (label === 'Azaltma') return { bg: '#ECFDF5', border: '#A7F3D0', text: '#047857' }
-  if (label === 'Hazırlık') return { bg: '#FFFBEB', border: '#FDE68A', text: '#B45309' }
+  if (label === 'Önleme')       return { bg: '#F0FDF4', border: '#BBF7D0', text: '#15803D' }
+  if (label === 'Koruma')       return { bg: '#ECFDF5', border: '#A7F3D0', text: '#0F766E' }
+  if (label === 'Zarar Azaltma') return { bg: '#FFFBEB', border: '#FDE68A', text: '#B45309' }
+  if (label === 'Müdahale')     return { bg: '#FFF7ED', border: '#FED7AA', text: '#C2410C' }
   return { bg: '#FEF2F2', border: '#FECACA', text: '#B91C1C' }
 }
 function aksiyonOneri(uri: number, hroAlpha: number, sector: string, bScore: number, isNatech: boolean) {

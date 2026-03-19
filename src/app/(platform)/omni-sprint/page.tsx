@@ -20,7 +20,7 @@ const SPRINT_BITIS     = new Date('2026-04-03')
 const SPRINT_SURE      = 15 // gün
 
 type KanbanSutun  = 'backlog' | 'yapiliyor' | 'incelemede' | 'tamamlandi'
-type FemaFaz      = 'Önleme' | 'Azaltma' | 'Hazırlık' | 'Müdahale'
+type FemaFaz      = 'Önleme' | 'Koruma' | 'Zarar Azaltma' | 'Müdahale' | 'İyileştirme'
 type Oncelik      = 'Kritik' | 'Yüksek' | 'Orta'
 
 interface SprintKarti {
@@ -47,10 +47,11 @@ const SUTUNLAR: { id: KanbanSutun; label: string; renk: string }[] = [
 ]
 
 const FEMA_RENKLER: Record<FemaFaz, { bg: string; text: string }> = {
-  'Önleme':  { bg: '#DCFCE7', text: '#15803D' },
-  'Azaltma': { bg: '#DBEAFE', text: '#1D4ED8' },
-  'Hazırlık':{ bg: '#FEF3C7', text: '#92400E' },
-  'Müdahale':{ bg: '#FEE2E2', text: '#B91C1C' },
+  'Önleme':       { bg: '#DCFCE7', text: '#15803D' },
+  'Koruma':       { bg: '#CCFBF1', text: '#0F766E' },
+  'Zarar Azaltma':{ bg: '#FEF3C7', text: '#92400E' },
+  'Müdahale':     { bg: '#FFEDD5', text: '#C2410C' },
+  'İyileştirme':  { bg: '#FEE2E2', text: '#B91C1C' },
 }
 const ONCELIK_RENKLER: Record<Oncelik, { bg: string; text: string; dot: string }> = {
   'Kritik': { bg: '#FEE2E2', text: '#B91C1C', dot: '#EF4444' },
@@ -159,7 +160,7 @@ function YeniKartModal({
   const [form, setForm] = useState({
     tesis_adi: '', facility_id: '',
     b_degeri: 1.2, squad: 'A',
-    fema_faz: 'Azaltma' as FemaFaz,
+    fema_faz: 'Zarar Azaltma' as FemaFaz,
     oncelik: 'Orta' as Oncelik,
     uri_etki: 5,
     near_miss_kaynakli: false,
@@ -242,7 +243,7 @@ function YeniKartModal({
           <div>
             <label style={lbl}>FEMA Yetkinlik Fazı</label>
             <select style={sel} value={form.fema_faz} onChange={e => f('fema_faz', e.target.value as FemaFaz)}>
-              {(['Önleme', 'Azaltma', 'Hazırlık', 'Müdahale'] as FemaFaz[]).map(fz => <option key={fz}>{fz}</option>)}
+              {(['Önleme', 'Koruma', 'Zarar Azaltma', 'Müdahale', 'İyileştirme'] as FemaFaz[]).map(fz => <option key={fz}>{fz}</option>)}
             </select>
           </div>
 
@@ -314,7 +315,7 @@ export default function OmniSprintPage() {
           facility_id: f.id,
           b_degeri: 2.5,
           squad: 'A',
-          fema_faz: 'Azaltma' as FemaFaz,
+          fema_faz: 'Zarar Azaltma' as FemaFaz,
           oncelik: 'Kritik' as Oncelik,
           uri_etki: 8,
           sutun: 'backlog' as KanbanSutun,
@@ -576,10 +577,10 @@ export default function OmniSprintPage() {
   const donusumOrani  = kartlar.length > 0 ? Math.round((nearMissKarti / kartlar.length) * 100) : 0
 
   // FEMA dağılımı (bu sprint tüm kartlar)
-  const femaDagilim: Record<FemaFaz, number> = { 'Önleme': 0, 'Azaltma': 0, 'Hazırlık': 0, 'Müdahale': 0 }
+  const femaDagilim: Record<FemaFaz, number> = { 'Önleme': 0, 'Koruma': 0, 'Zarar Azaltma': 0, 'Müdahale': 0, 'İyileştirme': 0 }
   for (const k of kartlar) femaDagilim[k.fema_faz]++
   const femaRenkler: Record<FemaFaz, string> = {
-    'Önleme': '#22C55E', 'Azaltma': '#3B82F6', 'Hazırlık': '#F59E0B', 'Müdahale': '#EF4444',
+    'Önleme': '#22C55E', 'Koruma': '#14B8A6', 'Zarar Azaltma': '#F59E0B', 'Müdahale': '#F97316', 'İyileştirme': '#EF4444',
   }
   const femaData = Object.entries(femaDagilim).map(([label, value]) => ({
     label, value, renk: femaRenkler[label as FemaFaz],

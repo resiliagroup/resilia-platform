@@ -319,7 +319,7 @@ export default function MetodolojiPage() {
                   { faz:'Koruma', color:'#3B7EC8', icon:'🔒',
                     desc:'Tehditler gerçekleşmeden fiziksel ve siber altyapıyı, kritik değerleri koruma.',
                     caps:['Siber Güvenlik', 'Erişim Kontrol', 'Tedarik Zinciri Güvencesi', 'Kamu Sağlığı Koruması'] },
-                  { faz:'Azaltma', color:R_Y, icon:'📉',
+                  { faz:'Zarar Azaltma', color:R_Y, icon:'📉',
                     desc:'Uzun vadeli kırılganlık azaltma, risk transferi ve topluluk dayanıklılığı inşası.',
                     caps:['Topluluk Dayanıklılığı', 'Uzun Vadeli Kırılganlık Azaltma', 'Risk ve Kapasite Değerlendirmesi', 'Tehdit ve Tehlike Tanımlaması'] },
                   { faz:'Müdahale', color:R_O, icon:'🚨',
@@ -357,8 +357,8 @@ export default function MetodolojiPage() {
                 <p style={{ fontSize:14, fontWeight:600, color:N, lineHeight:1.75 }}>
                   <strong style={{ color:'#3B7EC8' }}>HIFYEA Entegrasyonu:</strong>{' '}
                   Bankacılık ve Sanayi HIFYEA soru setlerinin YÖNETİLEBİLİRLİK bölümü
-                  doğrudan FEMA Core Capabilities fazlarına eşlenmiştir: Y1-Y6 Önleme,
-                  Y7-Y13 Koruma, Y14-Y23 Azaltma, Y24-Y36 Müdahale, Y37-Y45 İyileştirme.
+                  doğrudan FEMA Core Capabilities fazlarına eşlenmiştir: Y1-Y6 Prevention,
+                  Y7-Y13 Protection, Y14-Y23 Mitigation, Y24-Y36 Response, Y37-Y45 Recovery.
                 </p>
               </div>
             </div>
