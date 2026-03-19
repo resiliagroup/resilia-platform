@@ -49,25 +49,27 @@ const BOSH = {
 }
 
 async function ensureTable() {
-  await sb.rpc('exec_sql', {
-    sql: `CREATE TABLE IF NOT EXISTS near_miss_events (
-      id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-      tenant_id UUID,
-      facility_id UUID,
-      event_date TIMESTAMPTZ,
-      category TEXT,
-      location TEXT,
-      description TEXT,
-      potential_outcome TEXT,
-      root_cause_1 TEXT,
-      root_cause_2 TEXT,
-      root_cause_3 TEXT,
-      repeated BOOLEAN DEFAULT false,
-      urgency TEXT,
-      status TEXT DEFAULT 'open',
-      created_at TIMESTAMPTZ DEFAULT now()
-    );`,
-  }).catch(() => {/* rpc olmayabilir — table zaten varsa sorun yok */})
+  try {
+    await sb.rpc('exec_sql', {
+      sql: `CREATE TABLE IF NOT EXISTS near_miss_events (
+        id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+        tenant_id UUID,
+        facility_id UUID,
+        event_date TIMESTAMPTZ,
+        category TEXT,
+        location TEXT,
+        description TEXT,
+        potential_outcome TEXT,
+        root_cause_1 TEXT,
+        root_cause_2 TEXT,
+        root_cause_3 TEXT,
+        repeated BOOLEAN DEFAULT false,
+        urgency TEXT,
+        status TEXT DEFAULT 'open',
+        created_at TIMESTAMPTZ DEFAULT now()
+      );`,
+    })
+  } catch {/* rpc olmayabilir — tablo zaten varsa sorun yok */}
 }
 
 export default function NearMissPage() {
