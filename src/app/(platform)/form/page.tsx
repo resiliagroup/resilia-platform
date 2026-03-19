@@ -7,6 +7,7 @@ import { SORULAR_SANAYI, SANAYI_SORU_META } from '@/lib/sorular-sanayi'
 import { SORULAR_SAGLIK, SAGLIK_SORU_META } from '@/lib/sorular-saglik'
 import { SORULAR_KONAKLAMA, KONAKLAMA_SORU_META } from '@/lib/sorular-konaklama'
 import { SORULAR_BELEDIYE, BELEDIYE_SORU_META } from '@/lib/sorular-belediye'
+import { SORULAR_BANKACI, BANKACILIK_SORU_META, type SoruBankaci } from '@/lib/sorular-bankaci'
 import { skorHesapla, type HFESkor } from '@/lib/bcm-hesapla'
 import { getSektorSenaryolari } from '@/lib/senaryolar'
 import { mevcutKullanici, oturumKapat } from '@/lib/auth'
@@ -151,6 +152,7 @@ function buildRailwayPayload(
 
 const getSektorSorular = (sektor: Sektor) => {
   switch (sektor) {
+    case 'bankacilik': return SORULAR_BANKACI as unknown as typeof SORULAR
     case 'uretim':    return SORULAR_SANAYI
     case 'saglik':    return SORULAR_SAGLIK
     case 'konaklama': return SORULAR_KONAKLAMA
@@ -159,6 +161,7 @@ const getSektorSorular = (sektor: Sektor) => {
   }
 }
 const SEKTOR_KAYNAK: Partial<Record<Sektor, string>> = {
+  bankacilik: `HIFYEA v2 · BDDK İSP · Basel III · ISO 22301 · FEMA — ${BANKACILIK_SORU_META.toplam} soru`,
   uretim:    `HIFYEA v2 · ISO 22301 · AFAD AADY 2025 · TOC/HRO — ${SANAYI_SORU_META.toplam} soru`,
   saglik:    `HAP + JCI + İTÜ AYM HFE-360 — ${SAGLIK_SORU_META.toplam} soru`,
   konaklama: `TÜRSAB + Yangın Yön. + HFE-360 — ${KONAKLAMA_SORU_META.toplam} soru`,
@@ -871,13 +874,22 @@ export default function FormPage() {
             {BOLUMLER.map((bolum,bi)=>{
               const bs=sorular.filter(s=>s.bolum===bolum && !s.kod.startsWith('HRO'))
               const bc=bs.filter(s=>puanlar[s.kod]!==undefined).length
-              const isHifyea = sektor === 'uretim'
+              const isHifyea = sektor === 'uretim' || sektor === 'bankacilik'
+              const isBanka = sektor === 'bankacilik'
               const bT=isHifyea
-                ? ['BÖLÜM 1 — TEHLİKE (H)','BÖLÜM 2 — SAVUNMASIZLIK / Maruziyet (F×E)','BÖLÜM 3 — YÖNETİLEBİLİRLİK / Kapasite (C)'][bi]
+                ? isBanka
+                  ? ['BÖLÜM 1 — TEHLİKE (H) · ISO 31000 / ISO 22327','BÖLÜM 2 — SAVUNMASIZLIK · BDDK Basel III','BÖLÜM 3 — YÖNETİLEBİLİRLİK · ISO 22301 · BDDK Basel III'][bi]
+                  : ['BÖLÜM 1 — TEHLİKE (H)','BÖLÜM 2 — SAVUNMASIZLIK / Maruziyet (F×E)','BÖLÜM 3 — YÖNETİLEBİLİRLİK / Kapasite (C)'][bi]
                 : ['Tehlike Değerlendirmesi','Kırılganlık Değerlendirmesi','Kapasite Değerlendirmesi'][bi]
               const bA=isHifyea
-                ? ['Dış tehlike kaynaklarını ve tesisin maruz kaldığı risk yoğunluğunu değerlendirin.','İç yapısal kırılganlıkları ve tehlikeye maruz kalma düzeyini değerlendirin.','Tesisin hazırlık, müdahale ve iş sürekliliği kapasitesini değerlendirin.'][bi]
+                ? isBanka
+                  ? ['Şubenin maruz kaldığı dış tehlike kaynaklarını ve tekerrür sıklığını değerlendirin.','Kurumun iç yapısal kırılganlıklarını ve tehlikeye maruz kalma düzeyini değerlendirin.','Kurumun hazırlık, müdahale ve iş sürekliliği kapasitesini BDDK İSP çerçevesinde değerlendirin.'][bi]
+                  : ['Dış tehlike kaynaklarını ve tesisin maruz kaldığı risk yoğunluğunu değerlendirin.','İç yapısal kırılganlıkları ve tehlikeye maruz kalma düzeyini değerlendirin.','Tesisin hazırlık, müdahale ve iş sürekliliği kapasitesini değerlendirin.'][bi]
                 : ['Birimin maruz kaldığı dış tehlikeleri değerlendirin.','Birimin iç yapısal zayıflıklarını değerlendirin.','Birimin hazırlık ve müdahale kapasitesini değerlendirin.'][bi]
+              // Bölüm soru sayısı sayacı (doğru numaralama için)
+              const tehlikeSorulari = mainSorular.filter(s=>s.bolum==='TEHLİKE')
+              const kirilganlikSorulari = mainSorular.filter(s=>s.bolum==='KIRILGANLIK')
+              const soruOffset = bi===0 ? 0 : bi===1 ? tehlikeSorulari.length : tehlikeSorulari.length + kirilganlikSorulari.length
               return (
                 <div key={bolum} style={{marginBottom:24}}>
                   <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12}}>
@@ -890,19 +902,32 @@ export default function FormPage() {
                   <div style={{display:'flex',flexDirection:'column',gap:10}}>
                     {bs.map((soru,idx)=>{
                       const sel=puanlar[soru.kod]
+                      const bankaciSoru = isBanka ? (soru as unknown as SoruBankaci) : null
+                      const hasSecenekler = bankaciSoru && bankaciSoru.secenekler && bankaciSoru.secenekler.length > 0
                       return (
                         <div key={soru.kod} style={{borderRadius:16,border:`1px solid ${sel!==undefined?'#A7F3D0':'#E5E3E1'}`,padding:16,background:sel!==undefined?'#F0FDFA':'white',transition:'all .15s'}}>
                           <p style={{fontSize:13,fontWeight:500,color:'#374151',marginBottom:12,lineHeight:1.55}}>
-                            {bi===0?idx+1:bi===1?SORULAR.filter(s=>s.bolum==='TEHLİKE').length+idx+1:SORULAR.filter(s=>s.bolum!=='KAPASİTE').length+idx+1}. {soru.soru}
+                            {soruOffset+idx+1}. {soru.soru}
                           </p>
-                          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
-                            {[0,1,2,3].map(p=>(
-                              <button key={p} onClick={()=>setPuanlar(prev=>({...prev,[soru.kod]:p}))}
-                                style={{fontSize:12,padding:'10px 12px',borderRadius:12,border:`1px solid ${sel===p?TEAL:'#E5E3E1'}`,background:sel===p?TEAL:'white',color:sel===p?'white':'#4B5563',cursor:'pointer',textAlign:'left',lineHeight:1.4,fontFamily:"'DM Sans',sans-serif",fontWeight:sel===p?600:400,transition:'all .15s'}}>
-                                {soru.rehber[p]}
-                              </button>
-                            ))}
-                          </div>
+                          {hasSecenekler ? (
+                            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
+                              {bankaciSoru!.secenekler.map(s=>(
+                                <button key={s.puan} onClick={()=>setPuanlar(prev=>({...prev,[soru.kod]:s.puan}))}
+                                  style={{fontSize:12,padding:'10px 12px',borderRadius:12,border:`1px solid ${sel===s.puan?TEAL:'#E5E3E1'}`,background:sel===s.puan?TEAL:'white',color:sel===s.puan?'white':'#4B5563',cursor:'pointer',textAlign:'left',lineHeight:1.4,fontFamily:"'DM Sans',sans-serif",fontWeight:sel===s.puan?600:400,transition:'all .15s'}}>
+                                  {s.label}
+                                </button>
+                              ))}
+                            </div>
+                          ) : (
+                            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+                              {[0,1,2,3].map(p=>(
+                                <button key={p} onClick={()=>setPuanlar(prev=>({...prev,[soru.kod]:p}))}
+                                  style={{fontSize:12,padding:'10px 12px',borderRadius:12,border:`1px solid ${sel===p?TEAL:'#E5E3E1'}`,background:sel===p?TEAL:'white',color:sel===p?'white':'#4B5563',cursor:'pointer',textAlign:'left',lineHeight:1.4,fontFamily:"'DM Sans',sans-serif",fontWeight:sel===p?600:400,transition:'all .15s'}}>
+                                  {soru.rehber[p]}
+                                </button>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       )
                     })}
@@ -912,6 +937,43 @@ export default function FormPage() {
             })}
 
             {/* ── HRO BÖLÜMÜ ──────────────────────────────────── */}
+            {sektor === 'bankacilik' ? (() => {
+              const hroSorular = sorular.filter(s => s.kod.startsWith('HRO')) as unknown as SoruBankaci[]
+              const hroTamamlanan = hroSorular.filter(s => puanlar[s.kod] !== undefined).length
+              return (
+                <div style={{marginBottom:24}}>
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12}}>
+                    <div>
+                      <h2 style={{fontSize:14,fontWeight:700,color:NAVY}}>HRO Değerlendirmesi — Bankacılık</h2>
+                      <p style={{fontSize:11,color:'#9CA3AF',marginTop:2}}>Yüksek Güvenilirlik Organizasyonu olgunluk düzeyini bankacılık bağlamında değerlendirin.</p>
+                    </div>
+                    <span style={{fontSize:11,color:'#9CA3AF',background:'#F1F0EF',padding:'4px 10px',borderRadius:99,flexShrink:0}}>
+                      {hroTamamlanan}/{hroSorular.length}
+                    </span>
+                  </div>
+                  <div style={{display:'flex',flexDirection:'column',gap:10}}>
+                    {hroSorular.map((soru, idx) => {
+                      const sel = puanlar[soru.kod]
+                      return (
+                        <div key={soru.kod} style={{borderRadius:16,border:`1px solid ${sel!==undefined?'#A7F3D0':'#E5E3E1'}`,padding:16,background:sel!==undefined?'#F0FDFA':'white',transition:'all .15s'}}>
+                          <p style={{fontSize:13,fontWeight:500,color:'#374151',marginBottom:12,lineHeight:1.55}}>
+                            HRO-{idx+1}. {soru.soru}
+                          </p>
+                          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
+                            {soru.secenekler.map(s => (
+                              <button key={s.puan} onClick={() => setPuanlar(prev => ({...prev, [soru.kod]: s.puan}))}
+                                style={{fontSize:12,padding:'10px 12px',borderRadius:12,border:`1px solid ${sel===s.puan?TEAL:'#E5E3E1'}`,background:sel===s.puan?TEAL:'white',color:sel===s.puan?'white':'#4B5563',cursor:'pointer',textAlign:'left',lineHeight:1.4,fontFamily:"'DM Sans',sans-serif",fontWeight:sel===s.puan?600:400,transition:'all .15s'}}>
+                                {s.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })() : (
             <div style={{marginBottom:24}}>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12}}>
                 <div>
@@ -1001,6 +1063,7 @@ export default function FormPage() {
 
               </div>
             </div>
+            )}
 
             <div style={{display:'flex',gap:10,paddingTop:8}}>
               <button onClick={()=>formuGonder('gonderildi')} disabled={gonderiyor||cevaplanan===0}
