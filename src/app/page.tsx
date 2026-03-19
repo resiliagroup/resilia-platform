@@ -399,13 +399,18 @@ const products = [
   { code: 'omniRISK',
     title: 'Yapay Zeka Destekli Risk Değerlendirme Sistemi (ISO 31000)',
     color: T, href: '/products/omnirisk',
-    desc: 'Tehlike (H), kırılganlık (F), maruziyet (E) ve kapasite (C) parametrelerini omniRISK modeliyle bütünleştirerek tesis kırılganlık ve maruziyet değerlendirmesi gerçekleştiren, kurumsal risk envanterini gerçek zamanlı izleyen karar destek modülü.',
+    desc: 'Tehlike (H), kırılganlık (F), maruziyet (E) ve kapasite (C) parametrelerini HFER-720 modeliyle bütünleştiren risk değerlendirme modülü. TOC Darboğaz Analizi — sistemi kilitleyecek tekil başarısızlık noktalarını otomatik tespit eder.',
     icon: <IconRisk size={52}/> },
   { code: 'omniIMPACT',
     title: 'İş Etki Analizi ve Kritiklik Modeli (ISO 22301 Md. 8.2)',
     color: '#C8A84A', href: '/products/omniimpact',
-    desc: 'ISO 22301 Madde 8.2 kapsamında kritik iş süreçlerinin bağımlılık yapısını, Maksimum Tolere Edilebilir Kesinti Süresi (MTD), Kurtarma Süresi Hedefi (RTO) ve Kurtarma Noktası Hedefini (RPO) sistematik biçimde modelleyen İş Etki Analizi modülü.',
+    desc: 'ISO 22301 Madde 8.2 kapsamında kritik iş süreçlerinin bağımlılık yapısını modelleyen BIA modülü. MTPD Maliyet Hesabı — saatlik operasyonel kayıp ve kaldıraç etkisi hesaplaması ile yatırım önceliklerini netleştirir.',
     icon: <IconImpact size={52}/> },
+  { code: 'omniHRO',
+    title: 'Near Miss Yönetimi ve HRO Olgunluk Modülü',
+    color: '#F97316', href: '/near-miss',
+    desc: 'Saha sinyallerini kayıt altına alır, HRO olgunluk skorunu günceller, otonom kriz squad kapasitesini ölçer. Near Miss raporlama döngüsüyle organizasyonun yüksek güvenilirlik eşiğine ulaşmasını sistematik olarak destekler.',
+    icon: <IconAudit size={52}/> },
   { code: 'omniPLAN',
     title: 'İş Sürekliliği Planı Yönetimi (ISO 22301 Md. 8.4)',
     color: '#3B7EC8', href: '/products/omniplan',
@@ -927,7 +932,7 @@ export default function Page() {
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: T,
                               display: 'inline-block' }}/>
               <span style={{ color: T, fontSize: 12, fontWeight: 600, letterSpacing: 1 }}>
-                omniRISK modeli Aktif · ISO 22301 · ISO 31000 · ISO 22316
+                omniRISK modeli Aktif · TOC · HRO · Lean · Agile
               </span>
             </div>
 
@@ -939,9 +944,8 @@ export default function Page() {
 
             <p style={{ color: MG, fontSize: 16, lineHeight: 1.85,
                         maxWidth: 540, marginBottom: 40, fontWeight: 400 }}>
-              Değişken, belirsiz, karmaşık ve muğlak (VUCA) risk ortamında; kentsel tesis ağlarının
-              nicel dayanıklılık değerlendirmesi, İş Sürekliliği Yönetimi (ISO 22301) ve
-              gerçek zamanlı Olay Komuta desteği için bütünleşik analitik platform.
+              TOC darboğaz odaklılık, HRO saha hassasiyeti ve Lean finansal etki analizi ile
+              kurumunuzun çevik dayanıklılık kapasitesini ölçün, yönetin ve geliştirin.
             </p>
 
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 40,
@@ -958,7 +962,7 @@ export default function Page() {
 
             {/* trust badges */}
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {['ISO 22301', 'ISO 31000', 'ISO 22316', 'UNDRR Sendai', 'AFAD'].map(b => (
+              {['ISO 22301', 'ISO 31000', 'HRO', 'TOC', 'FEMA', 'AFAD'].map(b => (
                 <span key={b} style={{ background: `${T}10`, color: T, fontSize: 10,
                                         fontWeight: 700, letterSpacing: 0.8, padding: '5px 12px',
                                         borderRadius: 20, border: `1px solid ${T}25` }}>{b}</span>
@@ -1022,18 +1026,18 @@ export default function Page() {
                 {[
                   {
                     icon: R_R,
-                    title: 'NATECH Kaskad Etkileri',
-                    desc: 'Doğa Kaynaklı Teknolojik Kaza (NATECH) senaryolarında kaskad etkiler, izole hazırlanan planları geçersiz kılmaktadır. Bağımlılık analizi yapılmaksızın üretilen İSP\'ler, gerçek kesinti koşullarında işlevselliğini yitirmektedir.',
+                    title: 'Statik 5×5 Risk Matrisleri',
+                    desc: '500 riski eşit ağırlıkla işleyen geleneksel yaklaşımlar, sistemi kilitleyecek darboğazları tespit edememektedir. TOC odaklı değerlendirme olmadan kaynak tahsisi verimsiz kalır.',
                   },
                   {
                     icon: R_O,
-                    title: 'Silolu Planlama Yaklaşımı',
-                    desc: 'Kurumlar arası bağımlılıklar göz ardı edilerek hazırlanan tekil İş Sürekliliği Planları (İSP), sistem genelinde domino etkisiyle yayılan arızaları önleyememektedir.',
+                    title: 'Kimsenin Okumadığı EAP Klasörleri',
+                    desc: '400 sayfalık acil durum planları gerçek kesinti koşullarında işlevini yitirmektedir. Çevik sprint tabanlı planlama zorunludur.',
                   },
                   {
                     icon: R_Y,
-                    title: 'Nicel Değerlendirme Eksikliği',
-                    desc: 'Nitel risk tanımlamalarından üretilen öncelik sıralamaları, kaynak tahsisinde veri odaklı karar desteği sağlayamamakta; ALARP ilkesiyle uyumlu risk müdahale hiyerarşisi kurulamamaktadır.',
+                    title: 'Reaktif Kriz Yönetimi',
+                    desc: 'Near Miss sinyallerini göz ardı eden organizasyonlar, HRO ilkelerine göre yüksek güvenilirlik eşiğine ulaşamamaktadır. Saha uyarılarını sistemle kayıt altına almak kritiktir.',
                   },
                 ].map((item, i) => (
                   <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
@@ -1158,10 +1162,10 @@ export default function Page() {
           <div style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 20,
                         padding: isMobile ? '36px 20px' : '56px 64px', textAlign: 'center',
                         boxShadow: '0 4px 32px rgba(45,138,135,.08)' }}>
-            <SectionLabel text="omniRISK — Sendai Çarpanı" />
+            <SectionLabel text="omniRISK — HFER-720 Formülü" />
             <h2 style={{ color: N, fontSize: 'clamp(24px, 3.5vw, 36px)', fontWeight: 700,
                           lineHeight: 1.2, marginBottom: 8 }}>
-              Kapasite Yatırımının Üstel Dayanıklılık Getirisi
+              Kapasite Yatırımının Üstel Getirisi — C² Etkisi
             </h2>
             <p style={{ color: T, fontSize: 13, fontWeight: 600, marginBottom: 20 }}>
               omniRISK Modeli — ALARP (As Low as is Reasonably Practicable) İlkesiyle Uyumlu
@@ -1170,23 +1174,25 @@ export default function Page() {
             <div style={{ background: `${N}06`, border: `1.5px solid ${T}30`, borderRadius: 14,
                           padding: '18px 24px', marginBottom: 28, display: 'inline-block' }}>
               <span style={{ fontSize: 20, fontWeight: 800, fontFamily: 'DM Mono,monospace', color: N, letterSpacing: 1 }}>
-                omniRISK = (H × F × E) / (1 + k·C²)
+                URI = (H × F × E × B) / (1 + k(s,t) × C²) × HRO_α
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
                           gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
               {[
-                { sym: 'H', label: 'Tehlike',    color: R_R },
-                { sym: 'F', label: 'Kırılganlık', color: R_O },
-                { sym: 'E', label: 'Maruziyet',  color: R_Y },
-                { sym: 'C', label: 'Kapasite',   color: R_G },
-                { sym: 'k', label: 'Düzeltme',   color: T },
+                { sym: 'H',     label: 'Tehlike',    color: R_R },
+                { sym: 'F',     label: 'Kırılganlık', color: R_O },
+                { sym: 'E',     label: 'Maruziyet',  color: R_Y },
+                { sym: 'B',     label: 'Darboğaz',   color: '#8B5CF6' },
+                { sym: 'C²',    label: 'Kapasite',   color: R_G },
+                { sym: 'k(s,t)', label: 'Sektör/Tehlike', color: T },
+                { sym: 'HRO_α', label: 'HRO Olgunluk', color: '#F97316' },
               ].map((f) => (
                 <div key={f.sym} style={{ textAlign: 'center' }}>
                   <div style={{ width: 52, height: 52, borderRadius: 12, background: `${f.color}14`,
                                  border: `2px solid ${f.color}30`, display: 'flex', alignItems: 'center',
                                  justifyContent: 'center', margin: '0 auto 6px' }}>
-                    <span style={{ fontSize: 18, fontWeight: 800, color: f.color,
+                    <span style={{ fontSize: f.sym.length > 2 ? 10 : 18, fontWeight: 800, color: f.color,
                                     fontFamily: 'DM Mono,monospace' }}>{f.sym}</span>
                   </div>
                   <span style={{ fontSize: 9, color: MG, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase' }}>{f.label}</span>
@@ -1196,14 +1202,15 @@ export default function Page() {
             <p style={{ fontSize: 11, color: T, fontWeight: 600, marginBottom: 24,
                         background: `${T}10`, border: `1px solid ${T}25`, borderRadius: 8,
                         padding: '6px 16px', display: 'inline-block' }}>
-              k: sektöre özgü düzeltme katsayısı
+              k(s,t): sektör × tehlike türü katsayısı
             </p>
-            <p style={{ color: MG, fontSize: 15, lineHeight: 1.85, maxWidth: 620, margin: '0 auto 28px' }}>
-              omniRISK formülündeki <strong style={{ color: N }}>C² (kapasite kare)</strong> terimi,
-              ISO 31000 risk müdahale hiyerarşisiyle uyumlu olarak, kurumsal kapasite artışının
-              <strong style={{ color: N }}> doğrusal olmayan (nonlinear) risk azaltma etkisini</strong>{' '}
-              matematiksel olarak ifade etmektedir. Model; coğrafi, yapısal, operasyonel
-              ve sosyal boyutları bütünleştirerek tek bir ölçülebilir URI skoru üretir.
+            <p style={{ color: MG, fontSize: 15, lineHeight: 1.85, maxWidth: 640, margin: '0 auto 28px' }}>
+              <strong style={{ color: N }}>k(s,t) katsayısı</strong> sektöre ve tehlike türüne göre değişir.
+              Sağlık sektöründe NATECH için <strong style={{ color: R_R }}>k=3.5</strong>, finans sektöründe
+              siber için <strong style={{ color: '#3B7EC8' }}>k=5.1</strong>. Bu, aynı kapasite yatırımının
+              farklı sektörlerde farklı risk azaltma getirisi sağladığı anlamına gelir.
+              <strong style={{ color: N }}> HRO_α</strong> near miss kayıt ve tatbikat faaliyetleriyle
+              1.0&apos;ın üzerine çıkarak formülde bir dayanıklılık çarpanı işlevi görür.
             </p>
             {/* Capacity Effect Chart */}
             <div style={{ margin: '0 auto 28px', maxWidth: 480 }}>
@@ -1326,18 +1333,82 @@ export default function Page() {
         </div>
       </section>
 
+      {/* ══ ÇEVİK DAYANIKLILIK DÖNGÜSÜ ══════════════════════════ */}
+      <section style={{ padding: isMobile ? '60px 20px' : '100px 48px', background: GR }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+            <SectionLabel text="Metodoloji" />
+            <h2 style={{ color: N, fontSize: 'clamp(22px, 3vw, 34px)', fontWeight: 700, lineHeight: 1.2, marginBottom: 12 }}>
+              Çevik Dayanıklılık Döngüsü
+            </h2>
+            <p style={{ color: MG, fontSize: 15, maxWidth: 580, margin: '0 auto' }}>
+              TOC, HRO, Lean ve Agile metodolojilerini birleştiren dört aşamalı sürekli iyileştirme çerçevesi.
+            </p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4,1fr)', gap: 20 }}>
+            {[
+              {
+                method: 'TOC',
+                label: 'Darboğazı Bul',
+                icon: '🔍',
+                color: R_R,
+                desc: 'Sistemi kilitleyecek tek noktayı tespit et. 500 riski değil, kritik kısıtı yönet.',
+              },
+              {
+                method: 'HRO',
+                label: 'Sinyali Yakala',
+                icon: '📡',
+                color: '#F97316',
+                desc: 'Near miss raporla, saha uyarılarını dinle. Küçük sinyaller büyük arızaların habercisidir.',
+              },
+              {
+                method: 'LEAN',
+                label: 'İsrafı Kes',
+                icon: '✂️',
+                color: R_Y,
+                desc: 'Sadece kritik risklere yatırım yap. k(s,t) katsayısı en yüksek kaldıraç noktasını gösterir.',
+              },
+              {
+                method: 'AGILE',
+                label: 'Sprint Yönet',
+                icon: '⚡',
+                color: R_G,
+                desc: '15 günlük aksiyon döngüsü. BCP&apos;yi bir kez yazıp bırakmak değil, sprint bazlı güncellemek.',
+              },
+            ].map((item, i) => (
+              <div key={i} style={{
+                background: BG, borderRadius: 16, padding: '28px 24px',
+                border: `1px solid ${BORDER}`, borderTop: `4px solid ${item.color}`,
+                boxShadow: '0 2px 12px rgba(0,0,0,.05)',
+              }}>
+                <div style={{ fontSize: 32, marginBottom: 12 }}>{item.icon}</div>
+                <div style={{ display: 'inline-block', fontSize: 10, fontWeight: 800, letterSpacing: 2,
+                               color: item.color, background: `${item.color}14`, border: `1px solid ${item.color}30`,
+                               borderRadius: 20, padding: '3px 10px', marginBottom: 10 }}>
+                  {item.method}
+                </div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: N, marginBottom: 8 }}>{item.label}</div>
+                <p style={{ fontSize: 13, color: MG, lineHeight: 1.7 }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ══ STATS ════════════════════════════════════════════════ */}
       <section id="sectors" ref={statsSection.ref} style={{ padding: isMobile ? '48px 20px' : '80px 48px', background: GR,
                                                               borderTop: `1px solid ${BORDER}`,
                                                               borderBottom: `1px solid ${BORDER}` }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto', display: 'grid',
-                      gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(4,1fr)',
-                      gap: isMobile ? 24 : 40, textAlign: 'center' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid',
+                      gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(6,1fr)',
+                      gap: isMobile ? 24 : 32, textAlign: 'center' }}>
           {[
-            { target: 720, suffix: '+', label: 'Analiz Parametresi' },
-            { target: 39,  suffix: '',  label: 'İlçe Kapsamı' },
-            { target: 6,   suffix: '',  label: 'Sektör Desteği' },
-            { target: 98,  suffix: '%', label: 'Platform Uptime' },
+            { target: 720, suffix: '+',  label: 'Analiz Parametresi' },
+            { target: 39,  suffix: '',   label: 'İlçe Kapsamı' },
+            { target: 6,   suffix: '',   label: 'Sektör Desteği' },
+            { target: 98,  suffix: '%',  label: 'Platform Uptime' },
+            { target: 150, suffix: 'M+', label: '₺ MTPD Korunan Değer' },
+            { target: 199, suffix: '',   label: 'HRO Analizi' },
           ].map((s, i) => (
             <div key={i} style={{ opacity: statsSection.inView ? 1 : 0,
                                    transform: statsSection.inView ? 'translateY(0)' : 'translateY(20px)',
