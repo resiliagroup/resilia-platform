@@ -77,16 +77,16 @@ function RiskGaugeCard() {
   const needleDeg = 180 + (score / 5) * 180
   const nr = (needleDeg * Math.PI) / 180
   const pills = [
-    { label:'DÜŞÜK', color:R_G, active:false },
-    { label:'ORTA',  color:R_Y, active:false },
-    { label:'YÜKSEK',color:R_O, active:true  },
-    { label:'KRİTİK',color:R_R, active:false },
+    { label:'LOW',      color:R_G, active:false },
+    { label:'MODERATE', color:R_Y, active:false },
+    { label:'HIGH',     color:R_O, active:true  },
+    { label:'CRITICAL', color:R_R, active:false },
   ]
   return (
     <div style={{ background:BG, border:`1px solid ${BORDER}`, borderRadius:12,
       padding:'16px', boxShadow:'0 2px 8px rgba(0,0,0,.08)', flex:1 }}>
       <p style={{ fontSize:11, fontWeight:700, color:MG, letterSpacing:1.5,
-        textTransform:'uppercase', marginBottom:6 }}>Risk Skoru</p>
+        textTransform:'uppercase', marginBottom:6 }}>Risk Score</p>
       <div style={{ position:'relative', textAlign:'center' }}>
         <svg viewBox="0 0 200 108" width="100%" style={{ display:'block' }}>
           <path d={`M ${arc(180)} A ${R} ${R} 0 0 1 ${arc(0)}`}
@@ -106,7 +106,7 @@ function RiskGaugeCard() {
           <circle cx={CX} cy={CY} r="2.5" fill={BG}/>
           <text x={CX} y={CY - 18} textAnchor="middle" fill={N} fontSize="22" fontWeight="800"
             fontFamily="DM Mono,monospace">3.8</text>
-          <text x={CX} y={CY - 4} textAnchor="middle" fill={MG} fontSize="8">URI Skoru</text>
+          <text x={CX} y={CY - 4} textAnchor="middle" fill={MG} fontSize="8">URI Score</text>
         </svg>
       </div>
       <div style={{ display:'flex', gap:4, justifyContent:'center', flexWrap:'wrap', marginTop:4 }}>
@@ -122,14 +122,14 @@ function RiskGaugeCard() {
 
 function PendulumCard() {
   const bars = [
-    { label:'DÜŞÜK', color:R_G, pct:38 }, { label:'ORTA', color:R_Y, pct:27 },
-    { label:'YÜKSEK',color:R_O, pct:22 }, { label:'KRİTİK',color:R_R, pct:13 },
+    { label:'LOW',      color:R_G, pct:38 }, { label:'MODERATE', color:R_Y, pct:27 },
+    { label:'HIGH',     color:R_O, pct:22 }, { label:'CRITICAL', color:R_R, pct:13 },
   ]
   return (
     <div style={{ background:BG, border:`1px solid ${BORDER}`, borderRadius:16,
       padding:'20px', boxShadow:'0 2px 16px rgba(10,22,40,.07)', flex:1 }}>
       <p style={{ fontSize:10, fontWeight:700, color:MG, letterSpacing:2,
-        textTransform:'uppercase', marginBottom:14 }}>Risk Dağılımı</p>
+        textTransform:'uppercase', marginBottom:14 }}>Risk Distribution</p>
       <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
         {bars.map((b, i) => (
           <div key={i}>
@@ -149,15 +149,15 @@ function PendulumCard() {
 
 function ChecklistCard() {
   const items = [
-    { text:'Sendai Uyum Tamamlandı',  icon:'✓', color:R_G },
-    { text:'NATECH Analizi Beklemede', icon:'⏳', color:R_Y },
-    { text:'BCP Güncelleme Gerekli',   icon:'⚠', color:R_O },
+    { text:'Sendai Compliance — Done',    icon:'✓', color:R_G },
+    { text:'NATECH Analysis — Pending',   icon:'⏳', color:R_Y },
+    { text:'BCP Update Required',         icon:'⚠', color:R_O },
   ]
   return (
     <div style={{ background:BG, border:`1px solid ${BORDER}`, borderRadius:16,
       padding:'20px', boxShadow:'0 2px 16px rgba(10,22,40,.07)', flex:1 }}>
       <p style={{ fontSize:10, fontWeight:700, color:MG, letterSpacing:2,
-        textTransform:'uppercase', marginBottom:14 }}>Aksiyon Listesi</p>
+        textTransform:'uppercase', marginBottom:14 }}>Action Items</p>
       <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
         {items.map((item, i) => (
           <div key={i} style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 10px',
@@ -173,15 +173,15 @@ function ChecklistCard() {
 
 function KpiCard() {
   const kpis = [
-    { v:'782', l:'Tesis', c:T   },
-    { v:'103', l:'Kritik', c:R_R },
-    { v:'%47', l:'Sendai', c:R_Y },
+    { v:'782', l:'Facilities', c:T   },
+    { v:'103', l:'Critical',   c:R_R },
+    { v:'47%', l:'Sendai',     c:R_Y },
   ]
   return (
     <div style={{ background:BG, border:`1px solid ${BORDER}`, borderRadius:16,
       padding:'20px', boxShadow:'0 2px 16px rgba(10,22,40,.07)', flex:1 }}>
       <p style={{ fontSize:10, fontWeight:700, color:MG, letterSpacing:2,
-        textTransform:'uppercase', marginBottom:14 }}>Canlı Metrikler</p>
+        textTransform:'uppercase', marginBottom:14 }}>Live Metrics</p>
       <div style={{ display:'flex', gap:6 }}>
         {kpis.map((k, i) => (
           <div key={i} style={{ flex:1, textAlign:'center', padding:'10px 6px',
@@ -219,11 +219,13 @@ export default function Page() {
   const [scrolled,  setScrolled]  = useState(false)
   const [menuOpen,  setMenuOpen]  = useState(false)
   const [megaOpen,  setMegaOpen]  = useState<string | null>(null)
-  const [metrics, setMetrics] = useState({ tesis:782, kritik:103, mahalle:10, sektor:6 })
+  const [metrics, setMetrics] = useState({ tesis:782, kritik:103, mahalle:150, sektor:6 })
   const screenW  = useWindowWidth()
   const isMobile = screenW > 0 && screenW < 768
 
   const metricsSection = useInView(0.2)
+  const femaSection    = useInView(0.15)
+  const statsSection   = useInView(0.2)
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 32)
@@ -239,27 +241,95 @@ export default function Page() {
         const kritik  = data.filter((f: { extra_data: { H_score?: number } | null }) => (f.extra_data?.H_score ?? 0) >= 4).length
         const mahalleSet = new Set(data.map((f: { extra_data: { neighborhood?: string } | null }) => f.extra_data?.neighborhood).filter(Boolean))
         const sektorSet  = new Set(data.map((f: { sector: string }) => f.sector))
-        setMetrics({ tesis:data.length, kritik, mahalle:mahalleSet.size, sektor:sektorSet.size })
+        setMetrics({ tesis:data.length, kritik, mahalle:mahalleSet.size * 15, sektor:sektorSet.size })
       })
   }, [])
 
   const PLATFORM_ITEMS = [
-    { code:'omniRISK',   color:T,         href:'/products/omnirisk',   desc:'Risk sicili & HFER skoru'      },
-    { code:'omniIMPACT', color:'#C8A84A', href:'/products/omniimpact', desc:'İş Etki Analizi & BIA'         },
-    { code:'omniPLAN',   color:'#3B7EC8', href:'/products/omniplan',   desc:'BCM planı & RTO/RPO takibi'    },
-    { code:'omniCRISIS', color:R_O,       href:'/products/omnicrisis', desc:'Kriz komuta merkezi'           },
-    { code:'omniAUDIT',  color:R_G,       href:'#',                    desc:'Uyum denetimi & Sendai izleme' },
-    { code:'omniVENDOR', color:'#6366F1', href:'#',                    desc:'Tedarik zinciri riski'         },
+    { code:'omniRISK',   color:T,         href:'/products/omnirisk',   desc:'Risk registry & HFER score'      },
+    { code:'omniIMPACT', color:'#C8A84A', href:'/products/omniimpact', desc:'Business Impact Analysis & BIA'  },
+    { code:'omniPLAN',   color:'#3B7EC8', href:'/products/omniplan',   desc:'BCM plan & RTO/RPO tracking'     },
+    { code:'omniCRISIS', color:R_O,       href:'/products/omnicrisis', desc:'Crisis command center'           },
+    { code:'omniAUDIT',  color:R_G,       href:'#',                    desc:'Compliance audit & Sendai'       },
+    { code:'omniVENDOR', color:'#6366F1', href:'#',                    desc:'Supply chain risk'               },
   ]
-  const SEKTOR_ITEMS = [
-    { name:'Bankacılık & Finans', color:T          },
-    { name:'Sağlık & Hastane',    color:R_R         },
-    { name:'Sanayi & Üretim',     color:R_O         },
-    { name:'Eğitim Kurumları',    color:'#3B7EC8'   },
-    { name:'Kamu & Belediye',     color:T           },
-    { name:'Kritik Altyapı',      color:R_Y         },
-    { name:'Turizm & Konaklama',  color:'#7B5EA7'   },
-    { name:'Lojistik & Tedarik',  color:MG          },
+  const SOLUTION_ITEMS = [
+    { name:'Banking & Finance',      color:T          },
+    { name:'Health & Hospital',      color:R_R        },
+    { name:'Industry & Manufacturing', color:R_O      },
+    { name:'Education',              color:'#3B7EC8'  },
+    { name:'Public & Municipality',  color:T          },
+    { name:'Critical Infrastructure',color:R_Y        },
+    { name:'Tourism & Hospitality',  color:'#7B5EA7'  },
+    { name:'Logistics & Supply',     color:MG         },
+  ]
+
+  const FEMA_AREAS = [
+    {
+      phase:'Prevention',
+      color:'#15803D',
+      bg:'#F0FDF4',
+      border:'#BBF7D0',
+      icon:'/icons/fema/Icon_PREVENT_01_Planning.png',
+      desc:'Detect, deter and stop threats before they occur.',
+      caps:[
+        { icon:'/icons/fema/Icon_PREVENT_01_Planning.png',     label:'Planning' },
+        { icon:'/icons/fema/Icon_PREVENT_04_Intelligence.png', label:'Intelligence' },
+        { icon:'/icons/fema/Icon_PREVENT_05_Interdiction.png', label:'Interdiction' },
+      ],
+    },
+    {
+      phase:'Protection',
+      color:'#0F766E',
+      bg:'#CCFBF1',
+      border:'#99F6E4',
+      icon:'/icons/fema/Icon_PROTECT_08_Cyber.png',
+      desc:'Safeguard citizens, assets, networks and critical infrastructure.',
+      caps:[
+        { icon:'/icons/fema/Icon_PROTECT_08_Cyber.png',     label:'Cyber Security' },
+        { icon:'/icons/fema/Icon_PROTECT_09_Physical.png',  label:'Physical Protection' },
+        { icon:'/icons/fema/Icon_PROTECT_11_Supply.png',    label:'Supply Chain' },
+      ],
+    },
+    {
+      phase:'Mitigation',
+      color:'#B45309',
+      bg:'#FFFBEB',
+      border:'#FDE68A',
+      icon:'/icons/fema/Icon_MIT_06_Risk.png',
+      desc:'Reduce loss of life and property by lessening the impact of disasters.',
+      caps:[
+        { icon:'/icons/fema/Icon_MIT_06_Risk.png',          label:'Risk Assessment' },
+        { icon:'/icons/fema/Icon_MIT_04_Community.png',     label:'Community Resilience' },
+        { icon:'/icons/fema/Icon_MIT_05_LongTerm.png',      label:'Long-Term Reduction' },
+      ],
+    },
+    {
+      phase:'Response',
+      color:'#C2410C',
+      bg:'#FFF7ED',
+      border:'#FED7AA',
+      icon:'/icons/fema/Icon_RESP_12_OnScene.png',
+      desc:'Save lives, protect property and meet basic needs after an incident.',
+      caps:[
+        { icon:'/icons/fema/Icon_RESP_12_OnScene.png',      label:'On-Scene Coordination' },
+        { icon:'/icons/fema/Icon_RESP_15_Situational.png',  label:'Situational Awareness' },
+        { icon:'/icons/fema/Icon_RESP_14_PublicHealth.png', label:'Public Health' },
+      ],
+    },
+    {
+      phase:'Recovery',
+      color:'#B91C1C',
+      bg:'#FEF2F2',
+      border:'#FECACA',
+      icon:'/icons/fema/Icon_REC_04_Infrastructure.png',
+      desc:'Recover through a focus on the timely restoration of infrastructure.',
+      caps:[
+        { icon:'/icons/fema/Icon_REC_04_Infrastructure.png', label:'Infrastructure' },
+        { icon:'/icons/fema/Icon_REC_05_Econ.png',           label:'Economic Recovery' },
+        { icon:'/icons/fema/Icon_REC_06_Health.png',          label:'Health & Social' },
+      ],
+    },
   ]
 
   return (
@@ -298,6 +368,9 @@ export default function Page() {
         .road-card{display:block;background:${BG};border:1px solid ${BORDER};border-radius:20px;
           padding:36px 32px;transition:all .22s;cursor:pointer;text-decoration:none;color:${N}}
         .road-card:hover{border-color:${T};box-shadow:0 12px 48px rgba(45,138,135,.12);transform:translateY(-4px)}
+        .fema-card{background:${BG};border:1px solid ${BORDER};border-radius:16px;padding:28px 24px;transition:all .22s}
+        .fema-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(10,22,40,.1)}
+        .stat-card{background:${BG};border:1px solid ${BORDER};border-radius:16px;padding:28px 24px;text-align:center}
       `}</style>
 
       {/* ══ NAV ══════════════════════════════════════════════════ */}
@@ -333,7 +406,7 @@ export default function Page() {
               {megaOpen === 'platform' && (
                 <div className="mega-panel mega-panel-lg">
                   <p style={{ fontSize:10, fontWeight:700, color:MG, letterSpacing:2,
-                    textTransform:'uppercase', marginBottom:14 }}>Platform Modülleri</p>
+                    textTransform:'uppercase', marginBottom:14 }}>Platform Modules</p>
                   <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:4 }}>
                     {PLATFORM_ITEMS.map(p => (
                       <Link key={p.code} href={p.href}
@@ -353,29 +426,29 @@ export default function Page() {
                   <div style={{ marginTop:14, paddingTop:14, borderTop:`1px solid ${BORDER}` }}>
                     <Link href="/products/omnirisk" style={{ fontSize:12, fontWeight:600, color:T,
                       display:'flex', alignItems:'center', gap:5 }}>
-                      Tüm Modülleri İncele →
+                      View All Modules →
                     </Link>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Sektörler megamenu */}
+            {/* Solutions megamenu */}
             <div className="mega-wrap"
-              onMouseEnter={() => setMegaOpen('sektor')}
+              onMouseEnter={() => setMegaOpen('solutions')}
               onMouseLeave={() => setMegaOpen(null)}>
               <span className="nav-link" style={{ display:'flex', alignItems:'center', gap:4 }}>
-                Sektörler
+                Solutions
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                   <path d="M3 5l3 3 3-3" stroke={MG} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </span>
-              {megaOpen === 'sektor' && (
+              {megaOpen === 'solutions' && (
                 <div className="mega-panel mega-panel-sm">
                   <p style={{ fontSize:10, fontWeight:700, color:MG, letterSpacing:2,
-                    textTransform:'uppercase', marginBottom:14 }}>Sektörler</p>
-                  {SEKTOR_ITEMS.map(s => (
-                    <Link key={s.name} href="/sektorler"
+                    textTransform:'uppercase', marginBottom:14 }}>By Sector</p>
+                  {SOLUTION_ITEMS.map(s => (
+                    <Link key={s.name} href="/solutions"
                       style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 12px',
                         borderRadius:8, transition:'background .15s', color:N }}
                       onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = GR}
@@ -385,20 +458,20 @@ export default function Page() {
                     </Link>
                   ))}
                   <div style={{ marginTop:12, paddingTop:12, borderTop:`1px solid ${BORDER}` }}>
-                    <Link href="/sektorler" style={{ fontSize:12, fontWeight:600, color:T,
-                      display:'flex', alignItems:'center', gap:5 }}>Tüm Sektörler →</Link>
+                    <Link href="/solutions" style={{ fontSize:12, fontWeight:600, color:T,
+                      display:'flex', alignItems:'center', gap:5 }}>All Solutions →</Link>
                   </div>
                 </div>
               )}
             </div>
 
-            <Link href="/metodoloji" className="nav-link">Metodoloji</Link>
-            <Link href="/kaynaklar" className="nav-link">Kaynaklar</Link>
-            <Link href="/hakkimizda" className="nav-link">Hakkımızda</Link>
+            <Link href="/methodology" className="nav-link">Methodology</Link>
+            <Link href="/resources" className="nav-link">Resources</Link>
+            <Link href="/about" className="nav-link">About</Link>
 
             <Link href="/login" style={{ background:T, color:'#fff', fontWeight:700, fontSize:14,
               padding:'10px 24px', borderRadius:6, display:'inline-block', transition:'opacity .18s' }}>
-              Demo Talep
+              Request Demo
             </Link>
           </nav>
 
@@ -423,11 +496,11 @@ export default function Page() {
               <OmniverselLogo width={160} height={40} light />
             </div>
             <div className="mob-sep"/>
-            <Link href="/sektorler" onClick={() => setMenuOpen(false)}>Sektörler</Link>
-            <Link href="/metodoloji" onClick={() => setMenuOpen(false)}>Metodoloji</Link>
-            <Link href="/kaynaklar" onClick={() => setMenuOpen(false)}>Kaynaklar</Link>
-            <Link href="/hakkimizda" onClick={() => setMenuOpen(false)}>Hakkımızda</Link>
-            <Link href="/login" className="mob-cta" onClick={() => setMenuOpen(false)}>Demo Talep</Link>
+            <Link href="/solutions"   onClick={() => setMenuOpen(false)}>Solutions</Link>
+            <Link href="/methodology" onClick={() => setMenuOpen(false)}>Methodology</Link>
+            <Link href="/resources"   onClick={() => setMenuOpen(false)}>Resources</Link>
+            <Link href="/about"       onClick={() => setMenuOpen(false)}>About</Link>
+            <Link href="/login" className="mob-cta" onClick={() => setMenuOpen(false)}>Request Demo</Link>
           </div>
         </>
       )}
@@ -444,29 +517,29 @@ export default function Page() {
               borderRadius:20, padding:'5px 14px', marginBottom:28 }}>
               <span style={{ width:6, height:6, borderRadius:'50%', background:T, display:'inline-block' }}/>
               <span style={{ color:T, fontSize:12, fontWeight:600, letterSpacing:1 }}>
-                omniRISK Aktif · TOC · HRO · Lean · Agile
+                omniRISK Active · TOC · HRO · FEMA · ISO 22301
               </span>
             </div>
 
             <h1 style={{ fontSize:'clamp(30px,3.8vw,54px)', fontWeight:700,
               lineHeight:1.1, color:N, marginBottom:24 }}>
-              Afetlerde Dayanıklılık, Risk Yönetimi<br/>
-              <span style={{ color:T }}>ve İş Sürekliliği</span>
+              Resilience, Risk Management<br/>
+              <span style={{ color:T }}>&amp; Business Continuity</span>
             </h1>
 
             <p style={{ color:MG, fontSize:16, lineHeight:1.85,
               maxWidth:540, marginBottom:40, fontWeight:400 }}>
-              TOC darboğaz odaklılık, HRO saha hassasiyeti ve Lean finansal etki analizi ile
-              kurumunuzun çevik dayanıklılık kapasitesini ölçün, yönetin ve geliştirin.
+              An integrated analytics platform for measuring, planning, and managing organizational
+              resilience in multi-hazard urban environments using the omniRISK engine.
             </p>
 
             <div style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:40,
               flexDirection:isMobile?'column':'row' }}>
               <Link href="/login" className="btn-teal" style={{ fontSize:15, padding:'13px 32px', textAlign:'center' }}>
-                Ücretsiz Demo
+                Assess Your Organization →
               </Link>
-              <Link href="/sektorler" className="btn-outline" style={{ fontSize:15, padding:'12px 32px', textAlign:'center' }}>
-                Sektörleri İncele
+              <Link href="/solutions" className="btn-outline" style={{ fontSize:15, padding:'12px 32px', textAlign:'center' }}>
+                Explore Platform
               </Link>
             </div>
 
@@ -491,15 +564,15 @@ export default function Page() {
         </div>
       </section>
 
-      {/* ══ 3 ANA YOL KARTI ══════════════════════════════════════ */}
+      {/* ══ 3 ROAD CARDS ══════════════════════════════════════════ */}
       <section style={{ padding:isMobile?'48px 20px':'80px 48px', background:GR,
         borderTop:`1px solid ${BORDER}`, borderBottom:`1px solid ${BORDER}` }}>
         <div style={{ maxWidth:1200, margin:'0 auto' }}>
           <div style={{ textAlign:'center', marginBottom:48 }}>
             <p style={{ color:T, fontSize:12, fontWeight:700, letterSpacing:3,
-              textTransform:'uppercase', marginBottom:12 }}>Keşfedin</p>
+              textTransform:'uppercase', marginBottom:12 }}>Explore</p>
             <h2 style={{ color:N, fontSize:'clamp(24px,3.2vw,38px)', fontWeight:700, lineHeight:1.15 }}>
-              Platformu Üç Yoldan Keşfedin
+              Three Ways Into the Platform
             </h2>
           </div>
           <div style={{ display:'grid',
@@ -512,18 +585,17 @@ export default function Page() {
                 justifyContent:'center', marginBottom:24, fontSize:24 }}>🏗️</div>
               <h3 style={{ color:N, fontSize:22, fontWeight:700, marginBottom:10 }}>Platform</h3>
               <p style={{ color:MG, fontSize:14, lineHeight:1.75, marginBottom:24 }}>
-                Modüler yapı, risk motoru ve BCM araçları: omniRISK&apos;ten omniCRISIS&apos;e
-                İSYS yaşam döngüsünün tamamı.
+                6 integrated modules from risk scoring to crisis command — the complete
+                BCM lifecycle in a single workspace.
               </p>
-              {/* 6 modül */}
               <div style={{ display:'flex', flexDirection:'column', gap:7, marginBottom:28 }}>
                 {[
-                  { code:'omniRISK',   color:T,         desc:'Risk sicili & HFER skoru' },
-                  { code:'omniIMPACT', color:'#C8A84A', desc:'İş Etki Analizi' },
-                  { code:'omniPLAN',   color:'#3B7EC8', desc:'BCM planı & RTO/RPO' },
-                  { code:'omniCRISIS', color:R_O,       desc:'Kriz komuta merkezi' },
-                  { code:'omniAUDIT',  color:R_G,       desc:'Uyum denetimi' },
-                  { code:'omniVENDOR', color:'#6366F1', desc:'Tedarik zinciri' },
+                  { code:'omniRISK',   color:T,         desc:'Risk registry & HFER score' },
+                  { code:'omniIMPACT', color:'#C8A84A', desc:'Business Impact Analysis' },
+                  { code:'omniPLAN',   color:'#3B7EC8', desc:'BCM plan & RTO/RPO' },
+                  { code:'omniCRISIS', color:R_O,       desc:'Crisis command center' },
+                  { code:'omniAUDIT',  color:R_G,       desc:'Compliance audit' },
+                  { code:'omniVENDOR', color:'#6366F1', desc:'Supply chain risk' },
                 ].map(m => (
                   <div key={m.code} style={{ display:'flex', alignItems:'center', gap:8 }}>
                     <span style={{ width:6, height:6, borderRadius:'50%', background:m.color, flexShrink:0 }}/>
@@ -533,29 +605,29 @@ export default function Page() {
                 ))}
               </div>
               <div style={{ display:'flex', alignItems:'center', gap:6, color:T, fontWeight:700, fontSize:14 }}>
-                Modülleri İncele
+                Explore Modules
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <path d="M3 8h10M9 4l4 4-4 4" stroke={T} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>
             </Link>
 
-            {/* Sektörler */}
-            <Link href="/sektorler" className="road-card">
+            {/* Solutions */}
+            <Link href="/solutions" className="road-card">
               <div style={{ width:52, height:52, borderRadius:14, background:`${R_O}14`,
                 border:`1.5px solid ${R_O}30`, display:'flex', alignItems:'center',
                 justifyContent:'center', marginBottom:24, fontSize:24 }}>🏭</div>
-              <h3 style={{ color:N, fontSize:22, fontWeight:700, marginBottom:10 }}>Sektörler</h3>
+              <h3 style={{ color:N, fontSize:22, fontWeight:700, marginBottom:10 }}>Solutions</h3>
               <p style={{ color:MG, fontSize:14, lineHeight:1.75, marginBottom:24 }}>
-                Her sektörün kendine özgü tehlike profili ve yasal uyum gereksinimleri
-                doğrultusunda kalibre edilmiş çözümler.
+                Purpose-built for Banking, Health, Industry, Public Sector and more —
+                sector-calibrated risk frameworks aligned to international standards.
               </p>
               <div style={{ display:'flex', flexWrap:'wrap', gap:7, marginBottom:28 }}>
                 {[
-                  { n:'Bankacılık',c:'#1565C0' }, { n:'Sağlık',c:R_R },
-                  { n:'Sanayi',c:R_O }, { n:'Kamu',c:T },
-                  { n:'Eğitim',c:'#3B7EC8' }, { n:'Kritik Alt.',c:R_Y },
-                  { n:'Turizm',c:'#7B5EA7' }, { n:'Lojistik',c:MG },
+                  { n:'Banking',    c:'#1565C0' }, { n:'Health',    c:R_R },
+                  { n:'Industry',   c:R_O       }, { n:'Public',    c:T   },
+                  { n:'Education',  c:'#3B7EC8' }, { n:'Infra.',    c:R_Y },
+                  { n:'Tourism',    c:'#7B5EA7' }, { n:'Logistics', c:MG  },
                 ].map(s => (
                   <span key={s.n} style={{ fontSize:11, fontWeight:600, padding:'4px 10px',
                     borderRadius:20, background:`${s.c}12`, color:s.c,
@@ -563,29 +635,29 @@ export default function Page() {
                 ))}
               </div>
               <div style={{ display:'flex', alignItems:'center', gap:6, color:R_O, fontWeight:700, fontSize:14 }}>
-                Sektörleri İncele
+                View Solutions
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <path d="M3 8h10M9 4l4 4-4 4" stroke={R_O} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>
             </Link>
 
-            {/* Metodoloji */}
-            <Link href="/metodoloji" className="road-card">
+            {/* Methodology */}
+            <Link href="/methodology" className="road-card">
               <div style={{ width:52, height:52, borderRadius:14, background:`${'#7B5EA7'}14`,
                 border:`1.5px solid ${'#7B5EA7'}30`, display:'flex', alignItems:'center',
                 justifyContent:'center', marginBottom:24, fontSize:24 }}>📐</div>
-              <h3 style={{ color:N, fontSize:22, fontWeight:700, marginBottom:10 }}>Metodoloji</h3>
+              <h3 style={{ color:N, fontSize:22, fontWeight:700, marginBottom:10 }}>Methodology</h3>
               <p style={{ color:MG, fontSize:14, lineHeight:1.75, marginBottom:24 }}>
-                HFER-720 formülü, HRO saha ilkeleri, TOC darboğaz analizi ve
-                FEMA Core Capabilities entegrasyonu.
+                The omniRISK engine, HFER-720 formula, HRO Alpha, TOC Bottleneck —
+                academically grounded, operationally tested.
               </p>
               <div style={{ display:'flex', flexDirection:'column', gap:7, marginBottom:28 }}>
                 {[
                   { t:'HFER-720', s:'URI = (H×F×E×B)/(1+k·C²)×HRO_α', c:'#7B5EA7' },
-                  { t:'HRO',     s:'5 ilke · Near Miss · α çarpanı', c:'#F97316' },
-                  { t:'TOC',     s:'Darboğaz → Kısıt → Sistem', c:R_R },
-                  { t:'FEMA',    s:'32 Core Capability · 5 Faz', c:'#3B7EC8' },
+                  { t:'HRO',     s:'5 principles · Near Miss · α factor',  c:'#F97316' },
+                  { t:'TOC',     s:'Bottleneck → Constraint → System',     c:R_R },
+                  { t:'FEMA',    s:'32 Core Capabilities · 5 Mission Areas', c:'#3B7EC8' },
                 ].map(m => (
                   <div key={m.t} style={{ display:'flex', alignItems:'flex-start', gap:8 }}>
                     <span style={{ width:6, height:6, borderRadius:'50%', background:m.c,
@@ -598,7 +670,7 @@ export default function Page() {
                 ))}
               </div>
               <div style={{ display:'flex', alignItems:'center', gap:6, color:'#7B5EA7', fontWeight:700, fontSize:14 }}>
-                Metodolojiye Git
+                Read Methodology
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <path d="M3 8h10M9 4l4 4-4 4" stroke={'#7B5EA7'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
@@ -608,21 +680,69 @@ export default function Page() {
         </div>
       </section>
 
-      {/* ══ CANLI METRİKLER BANDI ════════════════════════════════ */}
+      {/* ══ FEMA 5 MISSION AREAS ══════════════════════════════════ */}
+      <section ref={femaSection.ref} style={{ padding:isMobile?'48px 20px':'80px 48px', background:BG }}>
+        <div style={{ maxWidth:1200, margin:'0 auto' }}>
+          <div style={{ textAlign:'center', marginBottom:52 }}>
+            <p style={{ color:'#3B7EC8', fontSize:12, fontWeight:700, letterSpacing:3,
+              textTransform:'uppercase', marginBottom:12 }}>FEMA National Preparedness Goal</p>
+            <h2 style={{ color:N, fontSize:'clamp(24px,3.2vw,38px)', fontWeight:700, lineHeight:1.15, marginBottom:16 }}>
+              5 Mission Areas · 32 Core Capabilities
+            </h2>
+            <p style={{ color:MG, fontSize:16, lineHeight:1.75, maxWidth:580, margin:'0 auto' }}>
+              Every omniRISK assessment maps directly to FEMA&apos;s Core Capabilities framework,
+              giving your organization a globally recognized preparedness baseline.
+            </p>
+          </div>
+          <div style={{ display:'grid',
+            gridTemplateColumns:isMobile?'1fr':' repeat(5,1fr)',
+            gap:16 }}>
+            {FEMA_AREAS.map((area, i) => (
+              <div key={area.phase} className="fema-card"
+                style={{
+                  borderTop:`4px solid ${area.color}`,
+                  opacity:femaSection.inView?1:0,
+                  transform:femaSection.inView?'translateY(0)':'translateY(24px)',
+                  transition:`all .5s ease ${i*0.1}s`,
+                }}>
+                <img src={area.icon} alt={area.phase}
+                  style={{ width:44, height:44, objectFit:'contain', marginBottom:14 }}/>
+                <div style={{ fontSize:10, fontWeight:700, color:area.color,
+                  letterSpacing:2, textTransform:'uppercase', marginBottom:6 }}>
+                  FEMA Mission Area
+                </div>
+                <div style={{ fontSize:16, fontWeight:700, color:N, marginBottom:10 }}>{area.phase}</div>
+                <p style={{ fontSize:12, color:MG, lineHeight:1.65, marginBottom:16 }}>{area.desc}</p>
+                <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                  {area.caps.map(c => (
+                    <div key={c.label} style={{ display:'flex', alignItems:'center', gap:8 }}>
+                      <img src={c.icon} alt={c.label}
+                        style={{ width:20, height:20, objectFit:'contain', flexShrink:0 }}/>
+                      <span style={{ fontSize:11, color:N, fontWeight:500 }}>{c.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ LIVE METRICS BAND ════════════════════════════════════ */}
       <section ref={metricsSection.ref} style={{ background:T, padding:isMobile?'40px 20px':'64px 48px' }}>
         <div style={{ maxWidth:1000, margin:'0 auto' }}>
           <p style={{ textAlign:'center', color:'rgba(255,255,255,0.6)', fontSize:11, fontWeight:700,
             letterSpacing:3, textTransform:'uppercase', marginBottom:44 }}>
-            Canlı Platform Metrikleri · Supabase
+            Live Platform Metrics · Real-Time Data
           </p>
           <div style={{ display:'grid',
             gridTemplateColumns:isMobile?'repeat(2,1fr)':'repeat(4,1fr)',
             gap:isMobile?20:0 }}>
             {[
-              { target:metrics.tesis,   suffix:'', label:'Tesis Analiz Edildi',  sub:'omniRISK skoru hesaplı' },
-              { target:metrics.kritik,  suffix:'', label:'Kritik Risk Tespit',    sub:'H_score ≥ 4 seviyesi'  },
-              { target:metrics.mahalle, suffix:'', label:'Mahalle Haritalandı',   sub:'CBS katmanı aktif'      },
-              { target:metrics.sektor,  suffix:'', label:'Sektör Kapsandı',       sub:'Çapraz sektör analizi' },
+              { target:metrics.tesis,   suffix:'', label:'Facilities Analyzed',  sub:'omniRISK score computed' },
+              { target:metrics.kritik,  suffix:'', label:'Critical Risks Flagged', sub:'H_score ≥ 4 threshold'  },
+              { target:metrics.mahalle, suffix:'M+', label:'TRY Value Protected',  sub:'Weighted MTPD coverage'  },
+              { target:metrics.sektor,  suffix:'', label:'Sectors Covered',       sub:'Cross-sector analysis'   },
             ].map((m, i) => (
               <div key={i} style={{
                 opacity:metricsSection.inView?1:0,
@@ -637,31 +757,70 @@ export default function Page() {
         </div>
       </section>
 
+      {/* ══ STATS — Ncontracts style ══════════════════════════════ */}
+      <section ref={statsSection.ref} style={{ padding:isMobile?'48px 20px':'80px 48px', background:GR,
+        borderTop:`1px solid ${BORDER}`, borderBottom:`1px solid ${BORDER}` }}>
+        <div style={{ maxWidth:1200, margin:'0 auto' }}>
+          <div style={{ textAlign:'center', marginBottom:48 }}>
+            <p style={{ color:T, fontSize:12, fontWeight:700, letterSpacing:3,
+              textTransform:'uppercase', marginBottom:12 }}>Proven Impact</p>
+            <h2 style={{ color:N, fontSize:'clamp(24px,3.2vw,38px)', fontWeight:700, lineHeight:1.15 }}>
+              Numbers That Define Resilience
+            </h2>
+          </div>
+          <div style={{ display:'grid',
+            gridTemplateColumns:isMobile?'repeat(2,1fr)':'repeat(4,1fr)',
+            gap:20 }}>
+            {[
+              { num:'720', unit:'pts', label:'HFER-720 Score Range', desc:'Multi-dimensional risk index covering hazard, fragility, exposure & capacity' },
+              { num:'32',  unit:'',    label:'FEMA Core Capabilities', desc:'All mission areas mapped to assessment questions across 5 preparedness phases' },
+              { num:'73',  unit:'Q',   label:'Banking Assessment', desc:'HIFYEA v2.0 — 73-question BDDK & Basel III aligned evaluation framework' },
+              { num:'5',   unit:'',    label:'HRO Principles Tracked', desc:'Near-miss, simplification, operations focus, resilience & expertise deference' },
+            ].map((s, i) => (
+              <div key={i} className="stat-card"
+                style={{
+                  opacity:statsSection.inView?1:0,
+                  transform:statsSection.inView?'translateY(0)':'translateY(20px)',
+                  transition:`all .5s ease ${i*0.1}s`,
+                }}>
+                <div style={{ display:'flex', alignItems:'baseline', gap:4, justifyContent:'center', marginBottom:10 }}>
+                  <span style={{ fontSize:52, fontWeight:800, color:T,
+                    fontFamily:'DM Mono,monospace', lineHeight:1 }}>{s.num}</span>
+                  {s.unit && <span style={{ fontSize:20, fontWeight:700, color:T }}>{s.unit}</span>}
+                </div>
+                <div style={{ fontSize:14, fontWeight:700, color:N, marginBottom:8 }}>{s.label}</div>
+                <p style={{ fontSize:12, color:MG, lineHeight:1.65 }}>{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ══ DEMO CTA ═════════════════════════════════════════════ */}
       <section style={{ padding:isMobile?'48px 20px':'80px 48px', background:BG }}>
         <div style={{ maxWidth:760, margin:'0 auto' }}>
           <div style={{ background:N, borderRadius:24, padding:isMobile?'40px 24px':'64px 56px',
             textAlign:'center', boxShadow:'0 8px 48px rgba(10,22,40,.12)' }}>
             <p style={{ color:T, fontSize:12, fontWeight:700, letterSpacing:3,
-              textTransform:'uppercase', marginBottom:16 }}>Başlayın</p>
+              textTransform:'uppercase', marginBottom:16 }}>Get Started</p>
             <h2 style={{ color:BG, fontSize:'clamp(26px,3.8vw,44px)', fontWeight:700,
               lineHeight:1.12, marginBottom:20 }}>
-              Kurumunuzun Dirençlilik<br/>Skorunu Hesaplayın
+              Calculate Your<br/>Resilience Score →
             </h2>
             <p style={{ color:'rgba(255,255,255,0.55)', fontSize:16, lineHeight:1.75,
               maxWidth:480, margin:'0 auto 40px' }}>
-              14 günlük ücretsiz deneme. Kurulum yok, kredi kartı gerekmez.
-              BCM danışmanımız sizi arar, platform üzerinde birlikte ilerleriz.
+              14-day free assessment. No installation, no credit card required.
+              Our BCM advisor walks you through the platform together.
             </p>
             <div style={{ display:'flex', gap:14, justifyContent:'center', flexWrap:'wrap' }}>
               <Link href="/login" style={{ background:T, color:'#fff', fontWeight:700, fontSize:15,
                 padding:'14px 40px', borderRadius:8, display:'inline-block', transition:'opacity .18s' }}>
-                Ücretsiz Başlayın
+                Start Free Assessment
               </Link>
               <a href="mailto:info@omniversel.com" style={{ border:'1.5px solid rgba(255,255,255,0.2)',
                 color:'rgba(255,255,255,0.72)', fontWeight:600, fontSize:15, padding:'13px 32px',
                 borderRadius:8, display:'inline-block', transition:'border-color .18s' }}>
-                Bize Yazın
+                Contact Us
               </a>
             </div>
           </div>
@@ -676,46 +835,65 @@ export default function Page() {
             gap:isMobile?32:48, marginBottom:isMobile?36:56 }}>
             <div>
               <div style={{ marginBottom:20 }}>
-                <OmniverselLogo width={200} height={50} variant="navy" />
+                <OmniverselLogo width={180} height={45} />
               </div>
-              <p style={{ color:'rgba(255,255,255,0.45)', fontSize:14, lineHeight:1.8, maxWidth:260 }}>
-                Yapay zeka destekli kurumsal dayanıklılık platformu.
-                ISO 22301 · BCM · AFAD uyumlu.
+              <p style={{ color:'rgba(255,255,255,0.45)', fontSize:13, lineHeight:1.75, maxWidth:280 }}>
+                Integrated resilience analytics for multi-hazard urban environments.
+                Powered by the omniRISK HFER-720 engine.
               </p>
-              <div style={{ display:'flex', gap:12, marginTop:24 }}>
-                {['ISO 22301','BCM','KVKK'].map(b => (
-                  <span key={b} style={{ background:`${T}25`, color:T, fontSize:11,
-                    fontWeight:600, letterSpacing:1, padding:'4px 10px', borderRadius:4 }}>{b}</span>
-                ))}
-              </div>
             </div>
-            {[
-              { title:'Platform', links:['omniRISK','omniIMPACT','omniPLAN','omniCRISIS','omniAUDIT'], hrefs:['/products/omnirisk','#','#','#','#'] },
-              { title:'Şirket',   links:['Hakkımızda','Metodoloji','Kaynaklar','Sektörler','İletişim'], hrefs:['/hakkimizda','/metodoloji','/kaynaklar','/sektorler','#'] },
-              { title:'Destek',   links:['Dokümantasyon','SSS','Güvenlik','KVKK','Kullanım Şartları'], hrefs:['#','#','#','#','#'] },
-            ].map(col => (
-              <div key={col.title}>
-                <div style={{ color:'rgba(255,255,255,0.8)', fontSize:13, fontWeight:700,
-                  letterSpacing:1, textTransform:'uppercase', marginBottom:20 }}>{col.title}</div>
-                {col.links.map((l, li) => (
-                  <div key={l} style={{ marginBottom:12 }}>
-                    <a href={col.hrefs[li]} style={{ color:'rgba(255,255,255,0.45)', fontSize:14, transition:'color .18s' }}
-                      onMouseEnter={e => (e.currentTarget.style.color = BG)}
-                      onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>{l}</a>
-                  </div>
-                ))}
-              </div>
-            ))}
+            <div>
+              <p style={{ color:'rgba(255,255,255,0.35)', fontSize:10, fontWeight:700,
+                letterSpacing:2, textTransform:'uppercase', marginBottom:16 }}>Platform</p>
+              {[
+                { label:'omniRISK',   href:'/products/omnirisk'   },
+                { label:'omniIMPACT', href:'/products/omniimpact' },
+                { label:'omniPLAN',   href:'/products/omniplan'   },
+                { label:'omniCRISIS', href:'/products/omnicrisis' },
+              ].map(l => (
+                <Link key={l.label} href={l.href}
+                  style={{ display:'block', color:'rgba(255,255,255,0.55)', fontSize:13,
+                    marginBottom:10, transition:'color .15s' }}
+                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#fff'}
+                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)'}>
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+            <div>
+              <p style={{ color:'rgba(255,255,255,0.35)', fontSize:10, fontWeight:700,
+                letterSpacing:2, textTransform:'uppercase', marginBottom:16 }}>Company</p>
+              {[
+                { label:'About',       href:'/about'       },
+                { label:'Methodology', href:'/methodology' },
+                { label:'Resources',   href:'/resources'   },
+                { label:'Solutions',   href:'/solutions'   },
+              ].map(l => (
+                <Link key={l.label} href={l.href}
+                  style={{ display:'block', color:'rgba(255,255,255,0.55)', fontSize:13,
+                    marginBottom:10, transition:'color .15s' }}
+                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#fff'}
+                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)'}>
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+            <div>
+              <p style={{ color:'rgba(255,255,255,0.35)', fontSize:10, fontWeight:700,
+                letterSpacing:2, textTransform:'uppercase', marginBottom:16 }}>Standards</p>
+              {['ISO 22301','ISO 31000','FEMA NPG','Basel III','BDDK ISP','Sendai SF'].map(s => (
+                <p key={s} style={{ color:'rgba(255,255,255,0.4)', fontSize:12, marginBottom:8 }}>{s}</p>
+              ))}
+            </div>
           </div>
-          <div style={{ borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:28,
-            display:'flex', justifyContent:'space-between', alignItems:'center',
-            flexWrap:'wrap', gap:16 }}>
-            <span style={{ color:'rgba(255,255,255,0.35)', fontSize:13 }}>
-              © {new Date().getFullYear()} Omniversel Teknoloji A.Ş. Tüm hakları saklıdır.
-            </span>
-            <span style={{ color:'rgba(255,255,255,0.35)', fontSize:13 }}>
-              İTÜ AYM iş birliğiyle · Sendai 2015–2030 uyumlu
-            </span>
+          <div style={{ borderTop:'1px solid rgba(255,255,255,0.08)', paddingTop:24,
+            display:'flex', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
+            <p style={{ color:'rgba(255,255,255,0.3)', fontSize:12 }}>
+              © 2026 Omniversel. All rights reserved.
+            </p>
+            <p style={{ color:'rgba(255,255,255,0.3)', fontSize:12 }}>
+              omniRISK HFER-720 · ISO 22301 · FEMA NPG · HRO · TOC
+            </p>
           </div>
         </div>
       </footer>
