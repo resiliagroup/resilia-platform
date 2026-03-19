@@ -83,12 +83,19 @@ function sektorCarpan(sector: string) {
   return 1.0
 }
 
+// Turkish character transliteration for PDF (helvetica doesn't support Turkish)
+const trPdf = (s: string) => String(s ?? '')
+  .replace(/ş/g,'s').replace(/Ş/g,'S').replace(/ğ/g,'g').replace(/Ğ/g,'G')
+  .replace(/ü/g,'u').replace(/Ü/g,'U').replace(/ö/g,'o').replace(/Ö/g,'O')
+  .replace(/ı/g,'i').replace(/İ/g,'I').replace(/ç/g,'c').replace(/Ç/g,'C')
+
 export default function YGGPano() {
   const [facilities, setFacilities] = useState<Facility[]>([])
   const [loading, setLoading]       = useState(true)
   const [skorlar, setSkorlar]       = useState<Record<string, SkorDurum>>({})
   const [filtre, setFiltre]         = useState<Filtre>('hepsi')
   const [autoCalc, setAutoCalc]     = useState(false)
+  const [indiriyor, setIndiriyor]   = useState(false)
 
   useEffect(() => {
     sb.from('facilities')
@@ -147,6 +154,159 @@ export default function YGGPano() {
     facilities.forEach((f, i) => {
       setTimeout(() => hesapla(f), i * 300)
     })
+  }
+
+  async function pdfIndir() {
+    setIndiriyor(true)
+    try {
+      const { jsPDF } = await import('jspdf')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { default: autoTable } = await import('jspdf-autotable') as any
+      const doc = new jsPDF('p', 'mm', 'a4')
+      const W = 210; const H = 297; const ml = 18; const mr = 18
+
+      // ── KAPAK SAYFASI ──────────────────────────────────────────
+      doc.setFillColor(10, 22, 40)
+      doc.rect(0, 0, W, H, 'F')
+      doc.setFillColor(0, 155, 141)
+      doc.rect(0, H / 2 - 45, W, 2.5, 'F')
+
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(30)
+      doc.setTextColor(232, 201, 122)
+      doc.text('OMNIVERSEL', W / 2, 80, { align: 'center' })
+
+      doc.setFillColor(0, 155, 141)
+      doc.rect(65, 88, 80, 1.2, 'F')
+
+      doc.setFontSize(16)
+      doc.setTextColor(255, 255, 255)
+      doc.text('YGG Yonetici Panosu Raporu', W / 2, 102, { align: 'center' })
+
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(9.5)
+      doc.setTextColor(148, 163, 184)
+      doc.text('TOC Darboğaz · HRO Olgunluk · MTPD · FEMA Fazlama · omniRISK HFER-720', W / 2, 113, { align: 'center' })
+
+      doc.setFontSize(11)
+      doc.setTextColor(255, 255, 255)
+      doc.text(new Date().toLocaleDateString('tr-TR'), W / 2, 140, { align: 'center' })
+      doc.setFontSize(8.5)
+      doc.setTextColor(100, 116, 139)
+      doc.text('Omniversel Platform · omniRISK Motoru', W / 2, 151, { align: 'center' })
+
+      // Kapak alt bandı
+      doc.setFillColor(0, 155, 141)
+      doc.rect(0, H - 28, W, 28, 'F')
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(8)
+      doc.setTextColor(255, 255, 255)
+      doc.text('Omniversel · omniRISK Motoru · ISO 22301 · HFER-720', W / 2, H - 14, { align: 'center' })
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(7.5)
+      doc.setTextColor(186, 230, 253)
+      doc.text(`Olusturma: ${new Date().toLocaleString('tr-TR')}`, W / 2, H - 7, { align: 'center' })
+
+      // ── SAYFA 2: KPI ÖZETİ ──────────────────────────────────
+      doc.addPage()
+
+      // Sayfa başlığı
+      doc.setFillColor(10, 22, 40)
+      doc.rect(0, 0, W, 18, 'F')
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(232, 201, 122)
+      doc.text('OMNIVERSEL', ml, 12)
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(148, 163, 184)
+      doc.text('YGG Yonetici Panosu', W - mr, 12, { align: 'right' })
+
+      let y = 28
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(10, 22, 40)
+      doc.text('Portfoy Ozeti', ml, y); y += 3
+      doc.setFillColor(0, 155, 141); doc.rect(ml, y, 42, 0.8, 'F'); y += 9
+
+      // KPI kutuları
+      const kpiList = [
+        { label: 'Portfoy URI', value: `${kpi.avgUri}`, sub: `${hesaplanan}/${toplam} hesaplandi` },
+        { label: 'Kritik Darboğaz', value: `${kpi.kritikB}`, sub: 'B > 2.0 tesis' },
+        { label: 'Toplam MTPD', value: `${(kpi.toplamMtpd / 1e6).toFixed(1)}M`, sub: 'TL gunluk koruma' },
+        { label: 'HRO Uyarisi', value: `${kpi.dusukHro}`, sub: 'Dusuk HRO (α<1.0)' },
+      ]
+      const kW = 40; const kH = 26; const kGap = 5
+      kpiList.forEach((item, i) => {
+        const x = ml + i * (kW + kGap)
+        doc.setFillColor(248, 249, 250)
+        doc.roundedRect(x, y, kW, kH, 2, 2, 'F')
+        doc.setFillColor(0, 155, 141)
+        doc.rect(x, y, kW, 2.5, 'F')
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.setTextColor(10, 22, 40)
+        doc.text(trPdf(item.value), x + kW / 2, y + 16, { align: 'center' })
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(107, 114, 128)
+        doc.text(trPdf(item.label), x + kW / 2, y + 21, { align: 'center' })
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5); doc.setTextColor(156, 163, 175)
+        doc.text(trPdf(item.sub), x + kW / 2, y + 25, { align: 'center' })
+      })
+      y += kH + 14
+
+      // ── Tesis Tablosu ────────────────────────────────────────
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(10, 22, 40)
+      doc.text('Tesis Degerlendirme Tablosu', ml, y); y += 3
+      doc.setFillColor(0, 155, 141); doc.rect(ml, y, 55, 0.8, 'F'); y += 5
+
+      const tableRows = satirlar
+        .filter(f => skorlar[f.id]?.s === 'ok')
+        .map(f => {
+          const sk = skorlar[f.id] as Extract<SkorDurum, { s: 'ok' }>
+          const uri = Math.round(sk.data.uri_score)
+          const isNatech = !!f.extra_data?.hazmat_flag
+          const mtpd = ((f.employee_count ?? 0) * 850 * 8 * sektorCarpan(f.sector) / 1_000_000).toFixed(1)
+          return [
+            trPdf(f.name),
+            uri.toString(),
+            trPdf(sk.data.risk_class || '—'),
+            `${mtpd}M`,
+            trPdf(fazLabel(uri, isNatech)),
+            trPdf(aksiyonOneri(uri, sk.data.hro_alpha ?? 0.8, f.sector, sk.data.bottleneck_score ?? 1, isNatech)),
+          ]
+        })
+
+      if (tableRows.length === 0) {
+        doc.setFont('helvetica', 'italic'); doc.setFontSize(9); doc.setTextColor(156, 163, 175)
+        doc.text('Hesaplanmis tesis bulunamadi. Once portfoyu hesaplayin.', ml, y + 8)
+      } else {
+        autoTable(doc, {
+          startY: y,
+          margin: { left: ml, right: mr },
+          head: [['Tesis Adi', 'URI', 'Risk Sinifi', 'MTPD', 'FEMA Fazi', 'Onerilen Aksiyon']],
+          body: tableRows,
+          headStyles: { fillColor: [10, 22, 40], textColor: [255, 255, 255], fontSize: 8, fontStyle: 'bold' },
+          bodyStyles: { fontSize: 7.5, cellPadding: 2.5 },
+          alternateRowStyles: { fillColor: [248, 249, 250] },
+          styles: { font: 'helvetica', overflow: 'linebreak' },
+          columnStyles: {
+            0: { cellWidth: 38 },
+            1: { cellWidth: 11, halign: 'center' },
+            2: { cellWidth: 24 },
+            3: { cellWidth: 16, halign: 'right' },
+            4: { cellWidth: 18 },
+            5: { cellWidth: 'auto' },
+          },
+        })
+      }
+
+      // Alt bilgi tüm sayfalara
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const pc = (doc as any).getNumberOfPages()
+      for (let i = 2; i <= pc; i++) {
+        doc.setPage(i)
+        doc.setFontSize(7); doc.setTextColor(156, 163, 175)
+        doc.text('Omniversel · omniRISK · ISO 22301 · HFER-720', W / 2, H - 8, { align: 'center' })
+        doc.text(`Sayfa ${i}/${pc}`, W - mr, H - 8, { align: 'right' })
+        doc.text(new Date().toLocaleDateString('tr-TR'), ml, H - 8)
+      }
+
+      doc.save(`YGG-Raporu-${new Date().toISOString().slice(0, 10)}.pdf`)
+    } finally {
+      setIndiriyor(false)
+    }
   }
 
   const satirlar = useMemo(() => {
@@ -208,10 +368,11 @@ export default function YGGPano() {
               {autoCalc ? '⏳ Hesaplanıyor…' : '⚡ Tüm Portföyü Hesapla'}
             </button>
             <button
-              onClick={() => alert('PDF raporu yakında — YGG raporlama modülü geliştiriliyor.')}
-              style={{ background: 'transparent', color: '#E8C97A', border: '1px solid rgba(232,201,122,.3)', borderRadius: 10, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+              onClick={pdfIndir}
+              disabled={indiriyor}
+              style={{ background: 'transparent', color: '#E8C97A', border: '1px solid rgba(232,201,122,.3)', borderRadius: 10, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: indiriyor ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6, opacity: indiriyor ? 0.7 : 1 }}
             >
-              <Download style={{ width: 14, height: 14 }}/> YGG Raporu İndir
+              <Download style={{ width: 14, height: 14 }}/> {indiriyor ? 'Hazirlaniyor…' : 'YGG Raporu Indir'}
             </button>
           </div>
         </div>

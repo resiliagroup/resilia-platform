@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
-import { Loader2, CheckCircle, AlertTriangle, TrendingUp, Building2, Shield } from 'lucide-react'
+import { Loader2, CheckCircle, AlertTriangle, TrendingUp, Building2, Shield, Download } from 'lucide-react'
 import { createAssessment } from '@/lib/api'
 
 const sb = createClient(
@@ -86,6 +86,7 @@ export default function NearMissPage() {
   const [kaydediyor, setKaydediyor] = useState(false)
   const [hata,       setHata]       = useState<string | null>(null)
   const [listeleme,  setListeleme]  = useState(true)
+  const [indiriyor,  setIndiriyor]  = useState(false)
 
   // HRO yeniden hesaplama sonucu
   const [hroSonuc,       setHroSonuc]       = useState<HroSonuc | null>(null)
@@ -161,6 +162,186 @@ export default function NearMissPage() {
         return sum + (benzersizNearMiss.has(fac.id) ? 1.2 : 0.8)
       }, 0)
       setKpiHroOrtalama(Math.round((hroTopla / tumFac.length) * 100) / 100)
+    }
+  }
+
+  async function pdfIndir() {
+    setIndiriyor(true)
+    try {
+      const { jsPDF } = await import('jspdf')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { default: autoTable } = await import('jspdf-autotable') as any
+      const doc = new jsPDF('p', 'mm', 'a4')
+      const W = 210; const H = 297; const ml = 18; const mr = 18
+      const trP = (s: string) => String(s ?? '')
+        .replace(/ş/g,'s').replace(/Ş/g,'S').replace(/ğ/g,'g').replace(/Ğ/g,'G')
+        .replace(/ü/g,'u').replace(/Ü/g,'U').replace(/ö/g,'o').replace(/Ö/g,'O')
+        .replace(/ı/g,'i').replace(/İ/g,'I').replace(/ç/g,'c').replace(/Ç/g,'C')
+
+      // Kök neden verisi için ek sorgu
+      const { data: detaylar } = await sb.from('near_miss_events')
+        .select('id,root_cause_1,root_cause_2,root_cause_3,description')
+        .eq('tenant_id', TENANT)
+        .order('created_at', { ascending: false })
+        .limit(50)
+      const detayMap: Record<string, { rc1?: string; rc2?: string; rc3?: string; desc?: string }> = {}
+      for (const d of (detaylar ?? [])) {
+        detayMap[d.id] = { rc1: d.root_cause_1, rc2: d.root_cause_2, rc3: d.root_cause_3, desc: d.description }
+      }
+
+      // ── KAPAK ────────────────────────────────────────────────
+      doc.setFillColor(10, 22, 40)
+      doc.rect(0, 0, W, H, 'F')
+      doc.setFillColor(0, 155, 141)
+      doc.rect(0, H / 2 - 40, W, 2, 'F')
+
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(30); doc.setTextColor(232, 201, 122)
+      doc.text('OMNIVERSEL', W / 2, 80, { align: 'center' })
+      doc.setFillColor(249, 115, 22); doc.rect(65, 87, 80, 1.2, 'F')
+
+      doc.setFontSize(15); doc.setTextColor(255, 255, 255)
+      doc.text('HRO Near Miss Analiz Raporu', W / 2, 100, { align: 'center' })
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(148, 163, 184)
+      doc.text('Yuksek Guvenilirlik Organizasyonu · Basarisizliğa Hassasiyet · Ramak Kala', W / 2, 111, { align: 'center' })
+
+      doc.setFontSize(11); doc.setTextColor(255, 255, 255)
+      doc.text(new Date().toLocaleDateString('tr-TR'), W / 2, 140, { align: 'center' })
+
+      doc.setFillColor(0, 155, 141); doc.rect(0, H - 26, W, 26, 'F')
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(255, 255, 255)
+      doc.text('Omniversel · omniRISK Motoru · ISO 22301 · HFER-720', W / 2, H - 13, { align: 'center' })
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(186, 230, 253)
+      doc.text(`Olusturma: ${new Date().toLocaleString('tr-TR')}`, W / 2, H - 7, { align: 'center' })
+
+      // ── SAYFA 2: KPI + LİSTE ─────────────────────────────────
+      doc.addPage()
+
+      // Header
+      doc.setFillColor(10, 22, 40); doc.rect(0, 0, W, 18, 'F')
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(232, 201, 122)
+      doc.text('OMNIVERSEL', ml, 12)
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(148, 163, 184)
+      doc.text('HRO Near Miss Analiz Raporu', W - mr, 12, { align: 'right' })
+
+      let y = 28
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(10, 22, 40)
+      doc.text('HRO KPI Ozeti', ml, y); y += 3
+      doc.setFillColor(249, 115, 22); doc.rect(ml, y, 35, 0.8, 'F'); y += 9
+
+      // KPI kutular
+      const kpiNm = [
+        { label: 'Bu Ay Near Miss', value: `${kpiAy}`, sub: 'Ayin kayit sayisi' },
+        { label: 'En Cok Raporlayan', value: trP(kpiFacility).slice(0, 12), sub: 'Tesis adi' },
+        { label: 'Ort. HRO alfa', value: kpiHroOrtalama !== null ? kpiHroOrtalama.toFixed(2) : '—', sub: 'Portfoy ortalamasi' },
+        { label: 'Toplam Kayit', value: `${kayitlar.length}`, sub: 'Tum zamanlar' },
+      ]
+      const kW = 40; const kH = 24; const kGap = 5
+      kpiNm.forEach((item, i) => {
+        const x = ml + i * (kW + kGap)
+        doc.setFillColor(248, 249, 250); doc.roundedRect(x, y, kW, kH, 2, 2, 'F')
+        doc.setFillColor(249, 115, 22); doc.rect(x, y, kW, 2.5, 'F')
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(10, 22, 40)
+        doc.text(trP(item.value), x + kW / 2, y + 14, { align: 'center' })
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(6.5); doc.setTextColor(107, 114, 128)
+        doc.text(trP(item.label), x + kW / 2, y + 19.5, { align: 'center' })
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(6); doc.setTextColor(156, 163, 175)
+        doc.text(trP(item.sub), x + kW / 2, y + 23, { align: 'center' })
+      })
+      y += kH + 12
+
+      // Near Miss Listesi tablosu
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(10, 22, 40)
+      doc.text('Near Miss Kayit Listesi', ml, y); y += 3
+      doc.setFillColor(249, 115, 22); doc.rect(ml, y, 45, 0.8, 'F'); y += 5
+
+      const facMap: Record<string, string> = {}
+      for (const f of facilities) facMap[f.id] = f.name
+
+      const nmRows = kayitlar.map(k => [
+        trP(new Date(k.event_date).toLocaleDateString('tr-TR')),
+        trP(facMap[k.facility_id] ?? k.facility_id.slice(0, 8)),
+        trP(k.category),
+        trP(k.urgency),
+        trP(DURUM_TR[k.status] ?? k.status),
+        trP(k.description?.slice(0, 60) ?? ''),
+      ])
+
+      autoTable(doc, {
+        startY: y,
+        margin: { left: ml, right: mr },
+        head: [['Tarih', 'Tesis', 'Kategori', 'Aciliyet', 'Durum', 'Aciklama']],
+        body: nmRows,
+        headStyles: { fillColor: [10, 22, 40], textColor: [255, 255, 255], fontSize: 8, fontStyle: 'bold' },
+        bodyStyles: { fontSize: 7, cellPadding: 2 },
+        alternateRowStyles: { fillColor: [248, 249, 250] },
+        styles: { font: 'helvetica', overflow: 'linebreak' },
+        columnStyles: {
+          0: { cellWidth: 18 },
+          1: { cellWidth: 30 },
+          2: { cellWidth: 25 },
+          3: { cellWidth: 16 },
+          4: { cellWidth: 18 },
+          5: { cellWidth: 'auto' },
+        },
+      })
+
+      // ── SAYFA 3: 5WHY KÖK NEDEN ANALİZİ ──────────────────────
+      doc.addPage()
+      doc.setFillColor(10, 22, 40); doc.rect(0, 0, W, 18, 'F')
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(232, 201, 122)
+      doc.text('OMNIVERSEL', ml, 12)
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(148, 163, 184)
+      doc.text('Kok Neden Analizi', W - mr, 12, { align: 'right' })
+
+      let y3 = 28
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(10, 22, 40)
+      doc.text('5WHY Ozeti — Kok Neden Analizi', ml, y3); y3 += 3
+      doc.setFillColor(249, 115, 22); doc.rect(ml, y3, 60, 0.8, 'F'); y3 += 5
+
+      const whyRows = kayitlar
+        .filter(k => detayMap[k.id]?.rc1 || detayMap[k.id]?.rc2 || detayMap[k.id]?.rc3)
+        .map(k => {
+          const d = detayMap[k.id]
+          return [
+            trP(new Date(k.event_date).toLocaleDateString('tr-TR')),
+            trP(facMap[k.facility_id] ?? '—'),
+            trP(k.category),
+            trP(d?.rc1 ?? '—'),
+            trP(d?.rc2 ?? '—'),
+            trP(d?.rc3 ?? '—'),
+          ]
+        })
+
+      if (whyRows.length === 0) {
+        doc.setFont('helvetica', 'italic'); doc.setFontSize(9); doc.setTextColor(156, 163, 175)
+        doc.text('Henuz kok neden girilmis kayit bulunmamaktadir.', ml, y3 + 8)
+      } else {
+        autoTable(doc, {
+          startY: y3,
+          margin: { left: ml, right: mr },
+          head: [['Tarih', 'Tesis', 'Kategori', 'Neden 1', 'Neden 2', 'Neden 3']],
+          body: whyRows,
+          headStyles: { fillColor: [10, 22, 40], textColor: [255, 255, 255], fontSize: 8 },
+          bodyStyles: { fontSize: 7, cellPadding: 2 },
+          alternateRowStyles: { fillColor: [255, 247, 237] },
+          styles: { font: 'helvetica', overflow: 'linebreak' },
+        })
+      }
+
+      // Alt bilgi
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const pc = (doc as any).getNumberOfPages()
+      for (let i = 2; i <= pc; i++) {
+        doc.setPage(i)
+        doc.setFontSize(7); doc.setTextColor(156, 163, 175)
+        doc.text('Omniversel · omniRISK · ISO 22301 · HFER-720', W / 2, H - 8, { align: 'center' })
+        doc.text(`Sayfa ${i}/${pc}`, W - mr, H - 8, { align: 'right' })
+        doc.text(new Date().toLocaleDateString('tr-TR'), ml, H - 8)
+      }
+
+      doc.save(`NearMiss-Raporu-${new Date().toISOString().slice(0, 10)}.pdf`)
+    } finally {
+      setIndiriyor(false)
     }
   }
 
@@ -320,6 +501,10 @@ export default function NearMissPage() {
                 {s === 'form' ? '+ Yeni Kayıt' : `📋 Son Kayıtlar (${kayitlar.length})`}
               </button>
             ))}
+            <button onClick={pdfIndir} disabled={indiriyor}
+              style={{ fontSize: 12, padding: '7px 14px', borderRadius: 8, cursor: indiriyor ? 'not-allowed' : 'pointer', background: 'transparent', color: '#E8C97A', border: '1px solid rgba(232,201,122,.3)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 5, opacity: indiriyor ? 0.7 : 1 }}>
+              <Download size={13} /> {indiriyor ? 'Hazirlaniyor…' : 'PDF Raporu'}
+            </button>
           </div>
         </div>
       </div>

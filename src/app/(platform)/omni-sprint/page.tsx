@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import {
   ChevronLeft, ChevronRight, Plus, X,
-  AlertTriangle, Zap, Target, Clock, TrendingUp, Flame,
+  AlertTriangle, Zap, Target, Clock, TrendingUp, Flame, Download,
 } from 'lucide-react'
 
 const sb = createClient(
@@ -271,6 +271,7 @@ export default function OmniSprintPage() {
   const [modalAcik,   setModalAcik]   = useState(false)
   const [sprintHedef, setSprintHedef] = useState('Yakuplu NATECH darboğazlarını azalt')
   const [hedefDuzenle,setHedefDuzenle]= useState(false)
+  const [indiriyor,   setIndiriyor]   = useState(false)
 
   // localStorage'dan yükle
   useEffect(() => {
@@ -365,6 +366,198 @@ export default function OmniSprintPage() {
     setModalAcik(false)
   }
 
+  async function pdfIndir() {
+    setIndiriyor(true)
+    try {
+      const { jsPDF } = await import('jspdf')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { default: autoTable } = await import('jspdf-autotable') as any
+      const doc = new jsPDF('p', 'mm', 'a4')
+      const W = 210; const H = 297; const ml = 18; const mr = 18
+      const trP = (s: string) => String(s ?? '')
+        .replace(/ş/g,'s').replace(/Ş/g,'S').replace(/ğ/g,'g').replace(/Ğ/g,'G')
+        .replace(/ü/g,'u').replace(/Ü/g,'U').replace(/ö/g,'o').replace(/Ö/g,'O')
+        .replace(/ı/g,'i').replace(/İ/g,'I').replace(/ç/g,'c').replace(/Ç/g,'C')
+
+      // ── KAPAK ────────────────────────────────────────────────
+      doc.setFillColor(10, 22, 40); doc.rect(0, 0, W, H, 'F')
+      doc.setFillColor(139, 92, 246); doc.rect(0, H / 2 - 40, W, 2, 'F')
+
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(30); doc.setTextColor(232, 201, 122)
+      doc.text('OMNIVERSEL', W / 2, 80, { align: 'center' })
+      doc.setFillColor(139, 92, 246); doc.rect(65, 87, 80, 1.2, 'F')
+
+      doc.setFontSize(16); doc.setTextColor(255, 255, 255)
+      doc.text('omniSPRINT Agile Dayaniklilik Raporu', W / 2, 100, { align: 'center' })
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(148, 163, 184)
+      doc.text('TOC Darboğaz · HRO · FEMA Fazlama · Kanban Sprint Panosu', W / 2, 111, { align: 'center' })
+
+      doc.setFontSize(11); doc.setTextColor(255, 255, 255)
+      doc.text('Sprint 1 — 19 Mart · 3 Nisan 2026', W / 2, 135, { align: 'center' })
+      doc.setFontSize(9); doc.setTextColor(148, 163, 184)
+      doc.text(`Hedef: "${trP(sprintHedef)}"`, W / 2, 147, { align: 'center' })
+      doc.text(new Date().toLocaleDateString('tr-TR'), W / 2, 160, { align: 'center' })
+
+      doc.setFillColor(139, 92, 246); doc.rect(0, H - 26, W, 26, 'F')
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(255, 255, 255)
+      doc.text('Omniversel · omniRISK Motoru · ISO 22301 · HFER-720', W / 2, H - 13, { align: 'center' })
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(221, 214, 254)
+      doc.text(`Olusturma: ${new Date().toLocaleString('tr-TR')}`, W / 2, H - 7, { align: 'center' })
+
+      // ── SAYFA 2: SPRINT DURUMU ───────────────────────────────
+      doc.addPage()
+      doc.setFillColor(10, 22, 40); doc.rect(0, 0, W, 18, 'F')
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(232, 201, 122)
+      doc.text('OMNIVERSEL', ml, 12)
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(148, 163, 184)
+      doc.text('omniSPRINT Raporu', W - mr, 12, { align: 'right' })
+
+      let y = 28
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(10, 22, 40)
+      doc.text('Sprint Ozeti', ml, y); y += 3
+      doc.setFillColor(139, 92, 246); doc.rect(ml, y, 35, 0.8, 'F'); y += 9
+
+      // Sprint bilgi kutuları
+      const sutunSayilari = SUTUNLAR.map(s => ({
+        label: s.label,
+        value: kartlar.filter(k => k.sutun === s.id).length,
+      }))
+      const kW = 35; const kH = 24; const kGap = 5
+      const sprintInfo = [
+        { label: 'Toplam Aksiyon', value: `${kartlar.length}`, sub: 'Tum kartlar' },
+        { label: 'Tamamlandi', value: `${tamamlananlar.length}`, sub: `%${kartlar.length ? Math.round(tamamlananlar.length/kartlar.length*100) : 0} velocity` },
+        { label: 'WIP Durumu', value: `${yapiliyorlar.length}/3`, sub: wipIhlal ? 'IHLAL!' : 'Normal' },
+        { label: 'Kalan Gun', value: `${Math.max(0, SPRINT_SURE - bugunSprintGunu)}`, sub: `${SPRINT_SURE} gunluk sprint` },
+      ]
+      sprintInfo.forEach((item, i) => {
+        const x = ml + i * (kW + kGap)
+        const isAlert = item.label === 'WIP Durumu' && wipIhlal
+        doc.setFillColor(isAlert ? 254 : 248, isAlert ? 226 : 249, isAlert ? 226 : 250)
+        doc.roundedRect(x, y, kW, kH, 2, 2, 'F')
+        doc.setFillColor(isAlert ? 239 : 139, isAlert ? 68 : 92, isAlert ? 68 : 246)
+        doc.rect(x, y, kW, 2.5, 'F')
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(16)
+        doc.setTextColor(isAlert ? 185 : 10, isAlert ? 28 : 22, isAlert ? 28 : 40)
+        doc.text(trP(item.value), x + kW / 2, y + 14, { align: 'center' })
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(6.5); doc.setTextColor(107, 114, 128)
+        doc.text(trP(item.label), x + kW / 2, y + 19.5, { align: 'center' })
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(6); doc.setTextColor(156, 163, 175)
+        doc.text(trP(item.sub), x + kW / 2, y + 23, { align: 'center' })
+      })
+      y += kH + 12
+
+      // Kanban dağılımı tablosu
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(10, 22, 40)
+      doc.text('Kanban Sutun Durumu', ml, y); y += 3
+      doc.setFillColor(139, 92, 246); doc.rect(ml, y, 48, 0.8, 'F'); y += 5
+
+      autoTable(doc, {
+        startY: y,
+        margin: { left: ml, right: mr },
+        head: [['Sutun', 'Kart Sayisi', 'Kritik', 'Yuksek', 'Orta']],
+        body: SUTUNLAR.map(s => {
+          const sc = kartlar.filter(k => k.sutun === s.id)
+          return [
+            trP(s.label),
+            sc.length.toString(),
+            sc.filter(k => k.oncelik === 'Kritik').length.toString(),
+            sc.filter(k => k.oncelik === 'Yüksek').length.toString(),
+            sc.filter(k => k.oncelik === 'Orta').length.toString(),
+          ]
+        }),
+        headStyles: { fillColor: [10, 22, 40], textColor: [255, 255, 255], fontSize: 9 },
+        bodyStyles: { fontSize: 8.5, cellPadding: 3 },
+        alternateRowStyles: { fillColor: [248, 249, 250] },
+        styles: { font: 'helvetica' },
+        columnStyles: {
+          0: { cellWidth: 40 },
+          1: { cellWidth: 25, halign: 'center' },
+          2: { cellWidth: 20, halign: 'center' },
+          3: { cellWidth: 20, halign: 'center' },
+          4: { cellWidth: 20, halign: 'center' },
+        },
+      })
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const afterKanban = (doc as any).lastAutoTable?.finalY ?? y + 30
+      y = afterKanban + 12
+
+      // Burndown verisi tablosu
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(10, 22, 40)
+      if (y > H - 80) { doc.addPage(); y = 28 }
+      doc.text('Burndown Ozeti', ml, y); y += 3
+      doc.setFillColor(0, 155, 141); doc.rect(ml, y, 36, 0.8, 'F'); y += 5
+
+      autoTable(doc, {
+        startY: y,
+        margin: { left: ml, right: mr },
+        head: [['Metrik', 'Deger']],
+        body: [
+          ['Sprint Suresi', `${SPRINT_SURE} gun`],
+          ['Bugun Sprint Gunu', `${bugunSprintGunu}. gun`],
+          ['Baslagic Kart Sayisi', kartlar.length.toString()],
+          ['Tamamlanan', tamamlananlar.length.toString()],
+          ['Kalan', (kartlar.length - tamamlananlar.length).toString()],
+          ['Ort. Cycle Time', ortCycleTime !== null ? `${ortCycleTime} gun` : 'Veri yok'],
+          ['Near Miss → Sprint', `%${donusumOrani} (${nearMissKarti}/${kartlar.length} kart)`],
+        ],
+        headStyles: { fillColor: [10, 22, 40], textColor: [255, 255, 255], fontSize: 9 },
+        bodyStyles: { fontSize: 8.5, cellPadding: 3 },
+        alternateRowStyles: { fillColor: [248, 249, 250] },
+        styles: { font: 'helvetica' },
+        columnStyles: { 0: { cellWidth: 60 }, 1: { cellWidth: 'auto' } },
+      })
+
+      // ── SAYFA 3: TAMAMLANAN AKSİYONLAR ──────────────────────
+      if (tamamlananlar.length > 0) {
+        doc.addPage()
+        doc.setFillColor(10, 22, 40); doc.rect(0, 0, W, 18, 'F')
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(232, 201, 122)
+        doc.text('OMNIVERSEL', ml, 12)
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(148, 163, 184)
+        doc.text('Tamamlanan Aksiyonlar', W - mr, 12, { align: 'right' })
+
+        let y3 = 28
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(10, 22, 40)
+        doc.text('Tamamlanan Aksiyonlar Listesi', ml, y3); y3 += 3
+        doc.setFillColor(34, 197, 94); doc.rect(ml, y3, 55, 0.8, 'F'); y3 += 5
+
+        autoTable(doc, {
+          startY: y3,
+          margin: { left: ml, right: mr },
+          head: [['Risk ID', 'Tesis', 'FEMA Fazi', 'Squad', 'URI Etkisi', 'Bitis Tarihi']],
+          body: tamamlananlar.map(k => [
+            k.risk_id,
+            trP(k.tesis_adi),
+            trP(k.fema_faz),
+            k.squad,
+            `+${k.uri_etki} puan`,
+            k.bitis_tarihi ? new Date(k.bitis_tarihi).toLocaleDateString('tr-TR') : '—',
+          ]),
+          headStyles: { fillColor: [10, 22, 40], textColor: [255, 255, 255], fontSize: 8 },
+          bodyStyles: { fontSize: 7.5, cellPadding: 2.5 },
+          alternateRowStyles: { fillColor: [240, 253, 244] },
+          styles: { font: 'helvetica' },
+        })
+      }
+
+      // Alt bilgi
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const pc = (doc as any).getNumberOfPages()
+      for (let i = 2; i <= pc; i++) {
+        doc.setPage(i)
+        doc.setFontSize(7); doc.setTextColor(156, 163, 175)
+        doc.text('Omniversel · omniRISK · ISO 22301 · HFER-720', W / 2, H - 8, { align: 'center' })
+        doc.text(`Sayfa ${i}/${pc}`, W - mr, H - 8, { align: 'right' })
+        doc.text(new Date().toLocaleDateString('tr-TR'), ml, H - 8)
+      }
+
+      doc.save(`omniSPRINT-Raporu-${new Date().toISOString().slice(0, 10)}.pdf`)
+    } finally {
+      setIndiriyor(false)
+    }
+  }
+
   // ── Metrikler ─────────────────────────────────────────────
   const tamamlananlar  = kartlar.filter(k => k.sutun === 'tamamlandi')
   const yapiliyorlar   = kartlar.filter(k => k.sutun === 'yapiliyor')
@@ -421,10 +614,16 @@ export default function OmniSprintPage() {
           </div>
           <p style={{ fontSize: 12, color: '#9CA3AF' }}>Çevik Dayanıklılık Sprint Panosu — TOC · HRO · FEMA</p>
         </div>
-        <button onClick={() => setModalAcik(true)}
-          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', background: TEAL, color: 'white', border: 'none', borderRadius: 12, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}>
-          <Plus size={15} /> Kart Ekle
-        </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={pdfIndir} disabled={indiriyor}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', background: 'transparent', color: '#6B7280', border: '1px solid #E5E3E1', borderRadius: 12, fontSize: 13, fontWeight: 600, cursor: indiriyor ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans',sans-serif", opacity: indiriyor ? 0.7 : 1 }}>
+            <Download size={14} /> {indiriyor ? 'Hazirlaniyor…' : 'Sprint Raporu'}
+          </button>
+          <button onClick={() => setModalAcik(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', background: TEAL, color: 'white', border: 'none', borderRadius: 12, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}>
+            <Plus size={15} /> Kart Ekle
+          </button>
+        </div>
       </div>
 
       {/* ── BÖLÜM 1: SPRINT PLANLAMA ─────────────────────────── */}
