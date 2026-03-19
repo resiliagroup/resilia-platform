@@ -1,587 +1,709 @@
 // ═══════════════════════════════════════════════════════════════
-//  OMNI Platform — Sanayi Tesisleri HFE-360 Soru Seti
-//  İSO Afet Yönetimi Şubesi AADY Kontrol Listesi (2025) +
-//  İTÜ AYM HFE-360 Metodolojisi Sentezi
-//  H (Tehlike/Hazard) · F (Kırılganlık/Fragility) · E (Kapasite/Enabler)
-//  Toplam: 54 soru — H:10, F:18, E:26
+//  OMNI Platform — Sanayi Tesisleri HIFYEA Soru Seti
+//  HIFYEA Metodolojisi: H·F×E·Y·A (Tehlike·Savunmasızlık·Yönetilebilirlik)
+//  ISO 22301 · AFAD AADY 2025 · TOC · HRO Sentezi
+//  Toplam: 63 soru — H:8, F×E:15, C:35, HRO:5
 // ═══════════════════════════════════════════════════════════════
 
 import type { Soru } from './sorular'
 export type { Soru }
 
-export const SORULAR_SANAYI: Soru[] = [
+// Genişletilmiş tip — formun Soru[] uyumluluğunu korur
+export type SoruSanayi = Soru & {
+  boyut: 'H' | 'F' | 'E' | 'C' | 'HRO'
+  natech_flag?: boolean
+}
+
+export const SORULAR_SANAYI: SoruSanayi[] = [
 
   // ══════════════════════════════════════════════════════════════
-  // H — TEHLİKE (10 soru)
-  // Kaynak: HFE-360 H1-H8 + AADY ISG Tehlike Sınıfı / NACE / Süreç Riskleri
+  // BÖLÜM 1 — TEHLİKE (T1-T8)  ·  boyut: H
+  // Dış tehlike kaynakları ve tesisin maruz kaldığı risk yoğunluğu
   // ══════════════════════════════════════════════════════════════
 
   {
-    kod: 'H1', bolum: 'TEHLİKE', agirlik: 3, kritik: false, ters: true,
-    soru: 'Tesisin bulunduğu bölgede afet/acil durum tarihsel tekerrür sıklığı nedir?',
+    kod: 'T1', bolum: 'TEHLİKE', boyut: 'H', agirlik: 5, kritik: true, ters: true,
+    natech_flag: true,
+    soru: 'Tesisin bulunduğu bölgenin deprem tehlike haritasındaki ivme değeri ve tarihsel deprem tekerrür sıklığı nedir?',
     rehber: [
-      'Nadir — 20 yılda bir veya daha az',
-      'Seyrek — 10-20 yılda bir',
-      'Mümkün — 5-10 yılda bir',
-      'Sık — 5 yıldan kısa aralıklarla',
+      'DD-2 ivmesi < 0.1g, son 50 yılda hiç M5+ deprem yok',
+      'DD-2 ivmesi 0.1–0.3g, seyrek M5+ deprem geçmişi',
+      'DD-2 ivmesi 0.3–0.5g, bölgede M6+ deprem deneyimi var',
+      'DD-2 ivmesi > 0.5g, aktif fay hattı yakınında, M7+ deprem riski yüksek',
     ],
   },
   {
-    kod: 'H2', bolum: 'TEHLİKE', agirlik: 5, kritik: true, ters: true,
-    soru: 'Olası bir afetin tesise vereceği fiziksel hasar ve üretim duruşu etkisi ne olur?',
+    kod: 'T2', bolum: 'TEHLİKE', boyut: 'H', agirlik: 4, kritik: false, ters: true,
+    soru: 'Tesisin bulunduğu havzanın taşkın/sel tehlike derecesi ve tekerrür periyodu nedir?',
     rehber: [
-      'Hissedilmez, üretim devam eder',
-      'Hafif hasar, kısa süreli duruş',
-      'Yapısal hasar, haftalarca duruş',
-      'Yıkıcı, uzun süreli/kalıcı duruş',
+      'Taşkın alanı dışında, Q500 sınırının ötesinde',
+      'Q100 dışında ama Q500 içinde',
+      'Q100 taşkın alanı içinde',
+      'Q50 veya daha sık tekerrürlü taşkın alanında',
     ],
   },
   {
-    kod: 'H3', bolum: 'TEHLİKE', agirlik: 2, kritik: false, ters: true,
-    soru: 'Tehlike başlamadan önce uyarı için ne kadar süreniz olur?',
+    kod: 'T3', bolum: 'TEHLİKE', boyut: 'H', agirlik: 5, kritik: true, ters: true,
+    natech_flag: true,
+    soru: 'Tesiste üretilen, kullanılan veya depolanan tehlikeli maddelerin NATECH (Doğal Afet Kaynaklı Teknolojik Kaza) potansiyeli nedir?',
     rehber: [
-      'Günler öncesinden uyarı alınabilir',
-      'Saatler öncesinden uyarı alınabilir',
-      'Yalnızca dakikalar önce fark edilir',
-      'Ani gelişir, hiç uyarı olmaz',
+      'Tehlikeli madde yok, NATECH riski minimal',
+      'Küçük miktarda tehlikeli madde var, Seveso eşiği altında',
+      'Önemli miktarda tehlikeli madde, alt eşik Seveso',
+      'Büyük miktarda tehlikeli madde, üst eşik Seveso / COMAH kapsamında',
     ],
   },
   {
-    kod: 'H4', bolum: 'TEHLİKE', agirlik: 2, kritik: false, ters: true,
-    soru: 'Olayın tesisin faaliyetleri üzerindeki etkisi ne kadar süre devam eder?',
+    kod: 'T4', bolum: 'TEHLİKE', boyut: 'H', agirlik: 5, kritik: true, ters: true,
+    natech_flag: true,
+    soru: 'Tesis içi yangın ve patlama tehlikesi yoğunluğu nasıldır? (NACE kodu, proses sıcaklığı, basınçlı ekipman)',
     rehber: [
-      '1 saatten kısa',
-      '1-24 saat',
-      '1-7 gün',
-      '1 haftadan uzun',
+      'Yangın/patlama tehlikesi yok veya ihmal edilebilir düzeyde',
+      'Sınırlı yanıcı madde, düşük basınçlı proses',
+      'Önemli yangın/patlama potansiyeli, orta basınçlı sistem',
+      'Yüksek tehlikeli proses, parlayıcı/patlayıcı madde depolaması, yüksek basınç',
     ],
   },
   {
-    kod: 'H5', bolum: 'TEHLİKE', agirlik: 4, kritik: true, ters: true,
-    soru: 'Tesiste kullanılan/üretilen/depolanan parlayıcı, patlayıcı, yanıcı veya zehirli madde riski nedir? (AADY Süreç Riskleri)',
+    kod: 'T5', bolum: 'TEHLİKE', boyut: 'H', agirlik: 3, kritik: false, ters: true,
+    soru: 'Komşu tesisler veya çevreden kaynaklanabilecek baskı, kaza ve kirlilik tehdidi var mı?',
     rehber: [
-      'Riskli madde yok',
-      'Küçük miktarda, güvenli depolama var',
-      'Önemli miktarda, önlemler kısmen yeterli',
-      'Yüksek risk, Seveso/COMAH kapsamında',
+      'İzole konum, çevresel tehdit yok',
+      'Düşük riskli komşular, etki minimal',
+      'OSB içinde riskli komşu tesis mevcut',
+      'Seveso tesisi veya yüksek riskli proses komşuluğu, domino etkisi var',
     ],
   },
   {
-    kod: 'H6', bolum: 'TEHLİKE', agirlik: 3, kritik: false, ters: true,
-    soru: 'Tesisin ISG tehlike sınıfı ve NACE koduna göre sektörel risk profili nedir?',
+    kod: 'T6', bolum: 'TEHLİKE', boyut: 'H', agirlik: 3, kritik: false, ters: true,
+    soru: 'Kritik hammadde, enerji veya lojistik tedarikçisinin kesintiye uğrama sıklığı ve olası etki büyüklüğü?',
     rehber: [
-      'Az tehlikeli sınıf',
-      'Tehlikeli sınıf',
-      'Çok tehlikeli sınıf',
-      'Çok tehlikeli + stratejik ürün/ihracat',
+      'Çoklu tedarikçi, kesinti hiç yaşanmadı',
+      'Ara sıra kısa süreli aksama',
+      'Yılda birkaç kez, üretimi etkiliyor',
+      'Tek tedarikçi bağımlılığı, kesinti üretimi tamamen durduruyor',
     ],
   },
   {
-    kod: 'H7', bolum: 'TEHLİKE', agirlik: 3, kritik: false, ters: true,
-    soru: 'Komşu tesislerden veya çevreden kaynaklanabilecek dışsal risk bilinip yönetiliyor mu? (AADY Md.69-70)',
+    kod: 'T7', bolum: 'TEHLİKE', boyut: 'H', agirlik: 4, kritik: true, ters: true,
+    soru: 'Endüstriyel kontrol sistemleri (SCADA/PLC/DCS) ve BT altyapısına yönelik siber saldırı tehdidi seviyesi nedir?',
     rehber: [
-      'Çevresel risk yok',
-      'Risk biliniyor, önlem var',
-      'Risk kısmen biliniyor',
-      'Risk bilinmiyor veya önlem yok',
+      'Kapalı ağ, internet erişimi yok, tehdit minimal',
+      'Kısmi internet bağlantısı, standart güvenlik önlemleri mevcut',
+      'Uzaktan erişim var, güvenlik açıkları tespit edilmiş',
+      'OT/IT ağları birleşik, daha önce siber olay yaşandı veya kritik açık mevcut',
     ],
   },
   {
-    kod: 'H8', bolum: 'TEHLİKE', agirlik: 3, kritik: false, ters: true,
-    soru: 'Üretim kesintisinin tedarik zinciri ve müşterilere zincirleme etkisi ne düzeyde?',
+    kod: 'T8', bolum: 'TEHLİKE', boyut: 'H', agirlik: 3, kritik: false, ters: true,
+    soru: 'Üretim kesintisinin tedarik zinciri ve stratejik müşterilere zincirleme etkisi ne düzeyde? (TOC darboğaz kritikliği)',
     rehber: [
-      'İzole, yayılım yok',
-      'Sınırlı yayılım',
-      'Bölgesel tedarik zinciri etkisi',
-      'Ulusal/global stratejik üretim etkisi',
-    ],
-  },
-  {
-    kod: 'H9', bolum: 'TEHLİKE', agirlik: 4, kritik: true, ters: true,
-    soru: 'Tesisteki basınçlı tank, kazan dairesi, kimyasal depolama gibi ek tehlike üniteleri mevcut mu? (AADY Md.58-63)',
-    rehber: [
-      'Hiç yok',
-      'Var, periyodik kontrolü yapılıyor',
-      'Var, kontroller eksik',
-      'Var, hiç kontrol yapılmıyor',
-    ],
-  },
-  {
-    kod: 'H10', bolum: 'TEHLİKE', agirlik: 2, kritik: false, ters: true,
-    soru: 'Olayın çalışanlar ve çevre üzerinde panik/toplu tahliye riski ne düzeyde?',
-    rehber: [
-      'Panik riski yok',
-      'Düşük düzeyde olasılık',
-      'Orta düzeyde risk',
-      'Yüksek panik / kitlesel tahliye riski',
+      'Tesis yerel tedarikçi, ikame kolayca bulunabilir',
+      'Bölgesel önemi var, alternatif temin süresi 1-4 hafta',
+      'Ulusal tedarik zincirinde kritik, ikamesi zor',
+      'Stratejik / ihracat ürünü, global tedarik zinciri etkisi',
     ],
   },
 
   // ══════════════════════════════════════════════════════════════
-  // F — KIRILGANLIK (18 soru)
-  // Kaynak: HFE-360 F1-F14 + AADY Yapısal Durum / Zemin / Altyapı
+  // BÖLÜM 2 — SAVUNMASIZLIK / MARUZİYET (S1-S15)  ·  boyut: F/E
+  // İç yapısal kırılganlıklar ve tehlikeye maruz kalma düzeyi
   // ══════════════════════════════════════════════════════════════
 
   {
-    kod: 'F1', bolum: 'KIRILGANLIK', agirlik: 10, kritik: true, ters: true,
-    soru: 'Olası bir olayda çalışanların fiziksel olarak zarar görme riski nedir?',
+    kod: 'S1', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 5, kritik: true, ters: true,
+    soru: 'Binanın inşa yılı, deprem yönetmeliği uyumu ve yapısal hasar riski nasıl değerlendirilir? (AADY Md.11-25)',
     rehber: [
-      'Fiziksel risk yok',
-      'Hafif yaralanma olasılığı',
-      'Ağır yaralanma riski',
-      'Can kaybı riski mevcut',
+      '2019 sonrası, TBDY uyumlu, yapısal değerlendirme tamam',
+      '2007-2018 arası, deprem yönetmeliğine uygun',
+      '1999-2007 arası, güçlendirme planı var',
+      '1999 öncesi, hasarlı veya güçlendirme yapılmamış, yüksek yıkılma riski',
     ],
   },
   {
-    kod: 'F2', bolum: 'KIRILGANLIK', agirlik: 5, kritik: true, ters: true,
-    soru: 'Binanın inşa yılı, yapı tipi (betonarme/çelik/prefabrik) ve yapısal durum değerlendirmesi nasıl? (AADY Md.11-25)',
+    kod: 'S2', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 4, kritik: true, ters: true,
+    soru: 'Zemin sınıflaması, sıvılaşma ve oturma potansiyeli nasıl? (AADY Md.23-24)',
     rehber: [
-      'Yeni bina, deprem yönetmeliğine uygun',
-      'İyi durumda, periyodik kontrolü yapılmış',
-      'Eski bina, güçlendirme gerekebilir',
-      'Çok eski veya hasarlı, yüksek yıkılma riski',
+      'ZA/ZB zemin, sıvılaşma riski yok, etüt raporu mükemmel',
+      'ZC zemin, etüt raporu mevcut, risk düşük',
+      'ZD zemin, sıvılaşma olasılığı var, önlem kısmi',
+      'ZE/ZF zemin veya etüt yok, sıvılaşma/göçük riski yüksek',
     ],
   },
   {
-    kod: 'F3', bolum: 'KIRILGANLIK', agirlik: 4, kritik: true, ters: true,
-    soru: 'Zemin sınıflaması, zemin etüt raporu ve yeraltı suyu seviyesi nasıl? (AADY Md.23-24)',
+    kod: 'S3', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 5, kritik: true, ters: true,
+    soru: 'Afet veya kaza anında çalışanların fiziksel zarar görme riski ve olası can kaybı ihtimali nedir?',
     rehber: [
-      'Sağlam zemin, etüt raporu var ve iyi',
-      'Orta zemin, etüt raporu mevcut',
-      'Zayıf zemin veya etüt eksik',
-      'Zemin etüdü yok, sıvılaşma/göçük riski',
+      'Personel afet anında tesis dışında, risk minimal',
+      'Hafif yaralanma olasılığı var, tahliyelerde yetişilebilir',
+      'Ağır yaralanma riski mevcut, geç kalınırsa kritik',
+      'Can kaybı riski yüksek, 7/24 çalışan var ve kaçış yolu yetersiz',
     ],
   },
   {
-    kod: 'F4', bolum: 'KIRILGANLIK', agirlik: 5, kritik: true, ters: true,
-    soru: 'Tesisin konumu (fay hattı, taşkın ovası, sanayi bölgesi) açısından coğrafi risk var mı?',
+    kod: 'S4', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 4, kritik: false, ters: true,
+    soru: 'Kritik üretim ekipmanı ve makinelerin afet anında hasar görme riski nasıl? (AADY Md.65)',
     rehber: [
-      'Güvenli konum, risk yok',
-      'Düşük riskli konum',
-      'Orta riskli konum',
-      'Çok riskli konum (fay hattı yakını, taşkın alanı)',
+      'Tüm kritik ekipman ankrajlı, titreşim izolatörlü',
+      'Büyük ekipman sabitlenmiş, küçükler kısmen',
+      'Ekipmanların çoğu sabitlenmemiş, devrilme/hasar riski var',
+      'Ağır ekipman zemine tutturulmamış, domino etkisi riski yüksek',
     ],
   },
   {
-    kod: 'F5', bolum: 'KIRILGANLIK', agirlik: 4, kritik: false, ters: true,
-    soru: 'Makine-teçhizat ve kritik üretim ekipmanının afet anında hasar görme riski? (AADY Md.65)',
+    kod: 'S5', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 5, kritik: true, ters: true,
+    natech_flag: true,
+    soru: 'Tehlikeli kimyasal maddelerin depolanma koşulları ve afet anında sızıntı/yayılım riski?',
     rehber: [
-      'Sabitlenmiş, hasar riski düşük',
-      'Kısmen sabitlenmiş',
-      'Çoğu sabitlenmemiş',
-      'Hiç sabitlenmemiş, devrilme/hasar riski yüksek',
+      'Güvenli depolama, sekonder kap, otomatik kesme vanası mevcut',
+      'Depolama alanı uygun, prosedür var, manuel kesme yapılabiliyor',
+      'Depolama koşulları kısmen yeterli, acil müdahale eksik',
+      'Güvensiz depolama, acil prosedür yok, sızıntı riski kritik',
     ],
   },
   {
-    kod: 'F6', bolum: 'KIRILGANLIK', agirlik: 5, kritik: true, ters: true,
-    soru: 'Bina altyapı sistemleri (elektrik, gaz, su, telekom) durumu ve iyileştirme ihtiyacı? (AADY Md.26-29)',
+    kod: 'S6', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 4, kritik: true, ters: true,
+    soru: 'Enerji altyapısı (elektrik, gaz, basınçlı hava) kırılganlığı ve tek hat bağımlılığı?',
     rehber: [
-      'Tüm sistemler iyi durumda',
-      'Küçük iyileştirme gerekiyor',
-      'Önemli iyileştirme ihtiyacı var',
-      'Ciddi altyapı sorunları mevcut',
+      'Çift besleme hattı, jeneratör ve UPS, tam yedekli',
+      'Tek hat ama yedek jeneratör var',
+      'Tek hat, yedek enerji kısmen yeterli',
+      'Tek hatta tam bağımlı, herhangi bir kesinti üretimi durdurur',
     ],
   },
   {
-    kod: 'F7', bolum: 'KIRILGANLIK', agirlik: 4, kritik: false, ters: true,
-    soru: 'Operasyonun tek bir makine, sistem veya kilit kişiye bağımlılık düzeyi nedir?',
+    kod: 'S7', bolum: 'KIRILGANLIK', boyut: 'E', agirlik: 4, kritik: true, ters: true,
+    soru: 'OT/BT sistemleri (SCADA, PLC, MES) eski nesil cihaz oranı ve güvenlik açığı seviyesi?',
     rehber: [
-      'Dağıtık yapı, tam yedekli',
-      'Kısmi bağımlılık var',
-      'Yüksek bağımlılık',
-      'Tek noktaya tam bağımlı, yedek yok',
+      'Sistemler < 5 yıl, güncel yamalar, segmentasyon uygulanmış',
+      'Sistemlerin büyük çoğunluğu modern, az sayıda eski cihaz',
+      'Önemli oranda eski sistem, yama desteği sona ermiş',
+      'Legacy SCADA/PLC yaygın, internet bağlantılı, güvenlik açığı kritik',
     ],
   },
   {
-    kod: 'F8', bolum: 'KIRILGANLIK', agirlik: 3, kritik: false, ters: true,
-    soru: 'Riskli hammadde/girdi/ürün/atığın depolanma güvenliği ve acil durumda kontrolü? (AADY Md.81-87)',
+    kod: 'S8', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 3, kritik: false, ters: true,
+    soru: 'Kritik hammadde veya girdi tedarikçisi sayısı ve coğrafi çeşitliliği (tedarik zinciri kırılganlığı)?',
     rehber: [
-      'Güvenli depolama, acil prosedür var',
-      'Kısmen güvenli',
-      'Yetersiz depolama koşulları',
-      'Güvensiz, acil prosedür yok',
+      '3+ onaylı tedarikçi, farklı coğrafyada, stok 30+ gün',
+      '2 tedarikçi, makul stok rezervi',
+      'Tek onaylı tedarikçi, yedek arayışı başlatılmış',
+      'Tek tedarikçi, ikame yok, afet/grev durumunda üretim durur',
     ],
   },
   {
-    kod: 'F9', bolum: 'KIRILGANLIK', agirlik: 3, kritik: false, ters: true,
-    soru: 'Olay sonrası yasal uyum (6331 İSG, Seveso III, ISO 22301) eksikliğinden kaynaklı risk?',
+    kod: 'S9', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 4, kritik: false, ters: true,
+    soru: 'Tesisin coğrafi konumu açısından kümülatif risk: fay hattı, taşkın ovası, akarsu yatağı mesafesi?',
     rehber: [
-      'Tam uyumlu, risk yok',
-      'Küçük eksikler var',
-      'Orta düzeyde uyumsuzluk',
-      'Büyük uyumsuzluk, yaptırım riski',
+      'Fay hattına > 5 km, sel ovası dışında, güvenli yükseklik',
+      'Fay hattına 2-5 km, Q100 alanı dışında',
+      'Fay hattına 1-2 km veya Q100 alanına yakın',
+      'Aktif fay hattına < 1 km ve/veya Q50 taşkın alanı içinde',
     ],
   },
   {
-    kod: 'F10', bolum: 'KIRILGANLIK', agirlik: 5, kritik: true, ters: true,
-    soru: 'IT sistemleri ve endüstriyel kontrol sistemleri (SCADA/PLC) siber güvenlik durumu? (AADY Md.49-52)',
+    kod: 'S10', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 4, kritik: true, ters: true,
+    soru: 'Operasyonun tek bir makine, sistem, process veya kilit kişiye bağımlılık düzeyi (TOC SPOF analizi)?',
     rehber: [
-      'Modern, güncel ve güvenli',
-      'Minör açıklar mevcut',
-      'Eski sistemler, önemli zafiyet',
-      'Çok eski, kritik açıklar mevcut',
+      'Tam paralel kapasite, hiçbir SPOF tespit edilmedi',
+      'Kısmi bağımlılık, yedek plan mevcut',
+      'Kritik SPOF var, yedek plan hazırlanıyor',
+      'Birden fazla kritik SPOF, üretimi tek hata durdurabilir',
     ],
   },
   {
-    kod: 'F11', bolum: 'KIRILGANLIK', agirlik: 4, kritik: true, ters: true,
-    soru: 'Üretim ve operasyon verilerinin yedekleme ve kurtarma durumu? (AADY Md.49)',
+    kod: 'S11', bolum: 'KIRILGANLIK', boyut: 'E', agirlik: 3, kritik: false, ters: true,
+    soru: 'Kilit teknik personelin (operatör, usta, mühendis) ani yokluğunda üretim sürekliliği riski?',
     rehber: [
-      'Tam yedekli, recovery planı test edilmiş',
-      'Yedekleme var, test edilmemiş',
-      'Kısmi yedekleme',
-      'Yedekleme yok',
+      'Çapraz eğitim tam, tüm pozisyonlar 2+ kişi tarafından yapılabiliyor',
+      'Çoğu kritik pozisyon yedekli, birkaç boşluk var',
+      'Kritik becerilerde tek kişi bağımlılığı yaygın',
+      'Çoğu kritik bilgi tek kişide, işten ayrılma/kaza durumunda üretim durur',
     ],
   },
   {
-    kod: 'F12', bolum: 'KIRILGANLIK', agirlik: 3, kritik: false, ters: true,
-    soru: 'Üretim kesintisinde nakit akışı ve acil operasyonel ihtiyaçları karşılama kapasitesi?',
+    kod: 'S12', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 3, kritik: false, ters: true,
+    soru: 'Üretim kesintisinde nakit akışı ve acil operasyonel giderleri karşılama kapasitesi?',
     rehber: [
-      'Güçlü rezerv, 3+ ay idare eder',
-      '1-3 ay idare eder',
-      'Birkaç hafta idare eder',
-      'Nakit rezervi yok',
+      'Güçlü likidite, 3+ aylık gideri karşılayacak rezerv',
+      '1-3 aylık rezerv, kredi imkânı mevcut',
+      '2-4 haftalık rezerv, mevcut',
+      'Nakit rezervi yok, kısa süreli kesinti bile finansal krize yol açar',
     ],
   },
   {
-    kod: 'F13', bolum: 'KIRILGANLIK', agirlik: 3, kritik: false, ters: true,
-    soru: 'Tesisin itibar ve marka değerine, müşteri/iş ortağı güvenine olası etkisi?',
+    kod: 'S13', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 3, kritik: false, ters: true,
+    soru: 'Tesis sigortası kapsamı (yangın, deprem, iş durması, 3. şahıs sorumluluk) yeterliliği?',
     rehber: [
-      'Güven sağlam, etki yok',
-      'Geçici güven kaybı',
-      'Ciddi itibar hasarı',
-      'Kalıcı müşteri/ortak kaybı',
+      'Kapsamlı sigorta, iş durması ve 3. şahıs dahil, makul muafiyet',
+      'Temel tesis sigortası var, iş durması kısmen var',
+      'Yalnızca zorunlu sigorta, önemli boşluklar',
+      'Sigorta yetersiz veya hiç yok, risk tamamen tesisin üzerinde',
     ],
   },
   {
-    kod: 'F14', bolum: 'KIRILGANLIK', agirlik: 4, kritik: false, ters: true,
-    soru: 'Bölgeye fiziksel erişim (yol kapanması, OSB altyapısı) ne kadar zorlaşabilir?',
+    kod: 'S14', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 3, kritik: false, ters: true,
+    soru: 'Yürürlükteki yasal düzenlemelere (6331 İSG, Seveso III, ISO standartları, AFAD mevzuatı) uyum durumu?',
     rehber: [
-      'Erişim sorunu beklenmez',
-      'Alternatif güzergah mevcut',
-      'Erişim ciddi şekilde zorlaşabilir',
-      'Tamamen erişilemez hale gelebilir',
+      'Tam uyumlu, bağımsız denetimden geçmiş',
+      'Küçük eksikler var, giderilme sürecinde',
+      'Orta düzey uyumsuzluk, idari ceza alındı',
+      'Büyük uyumsuzluk, faaliyet durdurma riski veya süregelen ihlal',
     ],
   },
   {
-    kod: 'F15', bolum: 'KIRILGANLIK', agirlik: 3, kritik: false, ters: true,
-    soru: 'Dijital/endüstriyel sistemler çöktüğünde üretim manuel olarak sürdürülebilir mi?',
+    kod: 'S15', bolum: 'KIRILGANLIK', boyut: 'E', agirlik: 2, kritik: false, ters: true,
+    soru: 'Olası bir afet veya kaza sonrası tesisin itibar kaybı, müşteri/ortak güven erozyonu riski?',
     rehber: [
-      'Kolayca manuel devam edilebilir',
-      'Mümkün ama verimlilik düşer',
-      'Çok zor, büyük kayıp',
-      'Manuel üretim imkansız',
-    ],
-  },
-  {
-    kod: 'F16', bolum: 'KIRILGANLIK', agirlik: 3, kritik: false, ters: true,
-    soru: 'Kilit teknik personelin (vardiya ustabaşı, makine operatörü) görev yapamaması durumunda?',
-    rehber: [
-      'Tam yedekli, sorun yaşanmaz',
-      'Kısa süreli aksama olur',
-      'Ciddi ve uzun süreli aksama',
-      'Üretim tamamen durur',
-    ],
-  },
-  {
-    kod: 'F17', bolum: 'KIRILGANLIK', agirlik: 4, kritik: false, ters: true,
-    soru: 'Tesis sigortası kapsamı (yangın, deprem, iş durması, 3. şahıs) yeterli mi? (AADY Md.91)',
-    rehber: [
-      'Kapsamlı sigorta, iş durması dahil',
-      'Temel sigorta var',
-      'Yetersiz kapsamlı sigorta',
-      'Sigorta yok',
-    ],
-  },
-  {
-    kod: 'F18', bolum: 'KIRILGANLIK', agirlik: 2, kritik: false, ters: true,
-    soru: 'Sözleşme yükümlülüklerinin yerine getirilememesinden doğan tazminat ve ihracat riski?',
-    rehber: [
-      'Mücbir sebep koruması mevcut',
-      'Düşük tazminat riski',
-      'Orta düzey risk',
-      'Yüksek tazminat ve ihracat cezası riski',
+      'Güçlü itibar, müşteriler çeşitlendirilmiş, etki minimal',
+      'Geçici güven kaybı, 3 ay içinde telafi edilebilir',
+      'Ciddi itibar hasarı, uzun süreli müşteri kaybı riski',
+      'Kalıcı marka hasarı, kritik kontrat iptali, piyasadan çekilme riski',
     ],
   },
 
   // ══════════════════════════════════════════════════════════════
-  // E — KAPASİTE (26 soru)
-  // Kaynak: HFE-360 E1-E23 + AADY Sistemler / Plan / Personel
+  // BÖLÜM 3 — YÖNETİLEBİLİRLİK / KAPASİTE (Y1-Y35)  ·  boyut: C
+  // Tesisin hazırlık, müdahale ve süreklilik kapasitesi
   // ══════════════════════════════════════════════════════════════
 
+  // ── Liderlik ve Yönetim (Y1-Y5) ──────────────────────────
   {
-    kod: 'E1', bolum: 'KAPASİTE', agirlik: 5, kritik: true, ters: false,
-    soru: 'Üst yönetim afet/acil durum yönetimine liderlik ediyor ve kaynak sağlıyor mu?',
+    kod: 'Y1', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
+    soru: 'Üst yönetim afet/acil durum ve iş sürekliliği yönetimine liderlik ediyor, kaynak ve bütçe sağlıyor mu?',
     rehber: [
-      'İlgisiz, destek yok',
-      'Kağıt üzerinde destek var',
-      'Kısmen ilgili ve destekleyici',
-      'Tam liderlik, bütçe ve kaynak sağlıyor',
+      'Liderlik ilgisiz, bütçe ve destek yok',
+      'Kağıt üzerinde destek var, kaynak minimal',
+      'Kısmen ilgili, bütçe ayrılmış ama yetersiz',
+      'Tam liderlik, risk komitesi aktif, yeterli bütçe tahsis edilmiş',
     ],
   },
   {
-    kod: 'E2', bolum: 'KAPASİTE', agirlik: 5, kritik: true, ters: false,
-    soru: 'Afet ve Acil Durum Yönetim Planı (AADYP) güncel, düzenli güncelleniyor ve uygulanabilir mi? (AADY Md.67-68)',
+    kod: 'Y2', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: false, ters: false,
+    soru: 'Entegre risk yönetim politikası ve risk iştahı belgesi kurumsal düzeyde onaylanmış ve uygulanıyor mu?',
     rehber: [
-      'Plan yok',
-      'Var ama hiç güncellenmemiş',
-      'Var, kısmen güncel',
-      'Güncel, test edilmiş, tüm personel biliyor',
+      'Politika yok',
+      'Taslak hazırlandı, onaylanmadı',
+      'Onaylandı, kısmi uygulama',
+      'Onaylandı, düzenli gözden geçiriliyor, tüm birimlere yayıldı',
     ],
   },
   {
-    kod: 'E3', bolum: 'KAPASİTE', agirlik: 4, kritik: false, ters: false,
-    soru: 'Deprem yapısal önlemleri: geoteknik rapor, deprem dayanıklılık raporu, sismik izolatör durumu? (AADY Md.30-32)',
-    rehber: [
-      'Hiçbiri yok',
-      'Yalnızca geoteknik rapor var',
-      'Raporlar var, iyi durumda',
-      'Tümü var, sismik izolatör dahil, güncel',
-    ],
-  },
-  {
-    kod: 'E4', bolum: 'KAPASİTE', agirlik: 5, kritik: true, ters: false,
-    soru: 'Yangın algılama, ihbar, sprinkler ve söndürme sistemleri mevcut ve periyodik kontrollü mu? (AADY Md.33-39)',
-    rehber: [
-      'Hiç yok',
-      'Yalnızca söndürücü var',
-      'Algılama + kısmi söndürme sistemi var',
-      'Tam otomatik sistem, periyodik bakım yapılıyor',
-    ],
-  },
-  {
-    kod: 'E5', bolum: 'KAPASİTE', agirlik: 4, kritik: true, ters: false,
-    soru: 'Sel/su baskını algılama, su geçirmez kapı ve tahliye pompası sistemleri var mı? (AADY Md.40-42)',
-    rehber: [
-      'Hiç yok',
-      'Yalnızca pompa var',
-      'Pompa + su geçirmez kapı var',
-      'Tam sistem, algılama dahil, periyodik kontrollü',
-    ],
-  },
-  {
-    kod: 'E6', bolum: 'KAPASİTE', agirlik: 5, kritik: true, ters: false,
-    soru: 'Enerji güvenliği: trafo, topraklama, kaçak akım koruması, jeneratör ve alternatif güç kaynağı? (AADY Md.43-48)',
-    rehber: [
-      'Hiçbiri yok',
-      'Yalnızca jeneratör var',
-      'Jeneratör + topraklama ve kaçak akım koruma var',
-      'Tüm sistem mevcut, çift beslemeli hat dahil, bakımlı',
-    ],
-  },
-  {
-    kod: 'E7', bolum: 'KAPASİTE', agirlik: 4, kritik: true, ters: false,
-    soru: 'Makine koruma sistemleri: emniyetli durdurma ve aşırı ısınmaya karşı soğutma sistemi? (AADY Md.53-54)',
-    rehber: [
-      'Hiç yok',
-      'Yalnızca manual durdurma',
-      'Otomatik durdurma var',
-      'Tam koruma, soğutma sistemi dahil, periyodik bakım',
-    ],
-  },
-  {
-    kod: 'E8', bolum: 'KAPASİTE', agirlik: 4, kritik: false, ters: false,
-    soru: 'IT güvenlik: veri yedekleme, ağ güvenliği, şifreleme ve loglama sistemleri? (AADY Md.49-52)',
-    rehber: [
-      'Hiçbiri yok',
-      'Yalnızca temel firewall',
-      'Yedekleme + ağ güvenliği var',
-      'Tüm önlemler, periyodik kontrol ve sızma testi',
-    ],
-  },
-  {
-    kod: 'E9', bolum: 'KAPASİTE', agirlik: 4, kritik: false, ters: false,
-    soru: 'Acil durum yönlendirme, aydınlatma ve push-bar acil çıkış kapıları mevcut ve çalışır durumda mu? (AADY Md.55-57)',
-    rehber: [
-      'Hiç yok',
-      'Yalnızca yönlendirme tabelası var',
-      'Yönlendirme + acil aydınlatma var',
-      'Tümü mevcut, periyodik test ediliyor',
-    ],
-  },
-  {
-    kod: 'E10', bolum: 'KAPASİTE', agirlik: 5, kritik: true, ters: false,
-    soru: 'Afet operasyon personeli: ilkyardım, hafif arama-kurtarma, yangın müdahale ekipleri mevcut mu? (AADY Md.138-145)',
-    rehber: [
-      'Hiç yok',
-      'Yalnızca temel ilkyardım var',
-      'İlkyardım + yangın müdahale ekibi var',
-      'Tam ekip: ilkyardım, USAR, yangın, telsiz sertifikalı',
-    ],
-  },
-  {
-    kod: 'E11', bolum: 'KAPASİTE', agirlik: 5, kritik: true, ters: false,
-    soru: 'Planlama personeli: ISO 22301 uzmanı, afet yöneticisi veya risk analizi uzmanı var mı? (AADY Md.146-149)',
-    rehber: [
-      'Hiç yok',
-      'Görevlendirilen bir yönetici var',
-      'Eğitimli uzman var',
-      'ISO 22301 sertifikalı uzman ve denetçi mevcut',
-    ],
-  },
-  {
-    kod: 'E12', bolum: 'KAPASİTE', agirlik: 3, kritik: false, ters: false,
-    soru: 'Yönetici ve personele yönelik düzenli afet yönetimi eğitimi yapılıyor mu? (AADY Md.71)',
-    rehber: [
-      'Hiç yapılmıyor',
-      'İşe girişte bir kez yapılıyor',
-      'Yılda bir yapılıyor',
-      'Yılda birden fazla, kapsamlı ve sertifikalı',
-    ],
-  },
-  {
-    kod: 'E13', bolum: 'KAPASİTE', agirlik: 4, kritik: true, ters: false,
-    soru: 'Düzenli tatbikat yapılıyor mu? Masa başı ve saha tatbikatları gerçekleştiriliyor mu? (AADY Md.72)',
-    rehber: [
-      'Hiç yapılmıyor',
-      'Yılda bir masa başı',
-      'Yılda bir saha tatbikatı',
-      'Yılda birden fazla, farklı senaryo, kayıt altında',
-    ],
-  },
-  {
-    kod: 'E14', bolum: 'KAPASİTE', agirlik: 3, kritik: false, ters: false,
-    soru: 'Aktif Acil Durum Ekipleri oluşturulmuş, görev tanımları ve iletişim hiyerarşisi netleştirilmiş mi? (AADY Md.73)',
-    rehber: [
-      'Ekip yok',
-      'Ekip var ama görev tanımı belirsiz',
-      'Ekip ve görev tanımı var, tatbikat yapılmamış',
-      'Aktif ekip, tatbikat yapılmış, 7/24 ulaşılabilir',
-    ],
-  },
-  {
-    kod: 'E15', bolum: 'KAPASİTE', agirlik: 4, kritik: false, ters: false,
-    soru: 'ISO 9001, 14001, 22301, 45001 gibi ilgili kalite/güvenlik sertifikasyonları var mı? (AADY Md.74)',
+    kod: 'Y3', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: false, ters: false,
+    soru: 'ISO 9001, 14001, 22301, 45001 gibi ilgili yönetim sistemi sertifikasyonları güncel mi?',
     rehber: [
       'Hiç sertifikasyon yok',
       'Yalnızca ISO 9001 var',
-      'Birden fazla sertifikasyon var',
-      'ISO 22301 dahil kapsamlı sertifikasyon',
+      'Birden fazla sertifikasyon, 22301 yok',
+      'ISO 22301 dahil kapsamlı sertifikasyon, güncel denetimler tamam',
     ],
   },
   {
-    kod: 'E16', bolum: 'KAPASİTE', agirlik: 5, kritik: true, ters: false,
-    soru: 'İş Sürekliliği Planları (BCP): üretim duruşu, tedarik zinciri ve kilit personel senaryoları için hazırlanmış mı? (AADY Md.75-77)',
+    kod: 'Y4', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
+    soru: 'Yasal ve düzenleyici denetimlerden elde edilen bulgular sistematik olarak takip ediliyor mu?',
     rehber: [
-      'Hiç yok',
-      'Genel BCP var, senaryo özelleşmemiş',
-      'Bazı senaryolar için var',
-      'Tüm kritik senaryolar için özelleşmiş ve test edilmiş',
+      'Takip mekanizması yok',
+      'Bulgular kaydediliyor, kapatma süreci yok',
+      'Bulgular kaydediliyor, kısmi kapatma',
+      'Tüm bulgular kaydedildi, kapandı, yeniden denetlendi',
     ],
   },
   {
-    kod: 'E17', bolum: 'KAPASİTE', agirlik: 4, kritik: true, ters: false,
-    soru: 'Alternatif üretim yeri belirlenmiş, planlanmış ve test edilmiş mi? (AADY Md.77)',
+    kod: 'Y5', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
+    soru: 'TOC mantığıyla kısıt/darboğaz analizi yapılıp üretim süreklilik planı hazırlandı mı?',
     rehber: [
-      'Hiç yok, plan da yok',
-      'Fikir aşamasında',
-      'Yer belirlendi, hazırlanmadı',
-      'Alternatif tesis hazır ve test edilmiş',
+      'Darboğaz analizi yapılmamış',
+      'Kısıtlar belirlendi, plan yok',
+      'Kısıtlar ve yedek kapasite planı var',
+      'TOC döngüsü aktif, darboğaz izleme ve müdahale SOP mevcut',
+    ],
+  },
+
+  // ── Acil Durum Planlaması (Y6-Y10) ────────────────────────
+  {
+    kod: 'Y6', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
+    soru: 'Afet ve Acil Durum Yönetim Planı (AADYP) güncel, test edilmiş ve tüm personele duyurulmuş mu? (AADY Md.67-68)',
+    rehber: [
+      'Plan yok',
+      'Var ama hiç güncellenmemiş ve tatbikat yapılmamış',
+      'Plan var, kısmen güncel, tatbikat bekliyor',
+      'Güncel, yılda bir test edilmiş, tüm personel biliyor ve erişebiliyor',
     ],
   },
   {
-    kod: 'E18', bolum: 'KAPASİTE', agirlik: 4, kritik: false, ters: false,
-    soru: 'Kritik tedarikçi devre dışı kalırsa onaylı ve sözleşmeli alternatif tedarikçi hazır mı?',
+    kod: 'Y7', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
+    soru: 'İş Sürekliliği Planları (BCP): kritik üretim duruşu, tedarik zinciri ve kilit personel senaryoları için hazırlanmış mı?',
     rehber: [
-      'Hiç yok',
-      'Araştırılıyor',
-      'Alternatif belirlendi',
-      'Onaylı, sözleşmeli ve stok desteği var',
+      'BCP yok',
+      'Genel BCP var, senaryo bazlı değil',
+      'Bazı kritik senaryolar için BCP mevcut',
+      'Tüm kritik senaryolar için özelleşmiş BCP, en az yılda bir test edilmiş',
     ],
   },
   {
-    kod: 'E19', bolum: 'KAPASİTE', agirlik: 4, kritik: false, ters: false,
-    soru: 'IT Felaket Kurtarma Planı (DRP) ve endüstriyel kontrol sistemi kurtarma prosedürü mevcut ve test edilmiş mi?',
+    kod: 'Y8', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
+    soru: 'Alternatif üretim yeri (yedek tesis) veya fason üretim anlaşması belirlenmiş ve aktif mi? (AADY Md.77)',
     rehber: [
-      'Hiç yok',
+      'Alternatif tesis veya anlaşma yok',
+      'Fikir aşamasında, somut adım atılmamış',
+      'Alternatif tesis belirlendi, hazırlanmamış',
+      'Alternatif tesis hazır, MoU imzalı ve test edilmiş',
+    ],
+  },
+  {
+    kod: 'Y9', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: false, ters: false,
+    soru: 'IT Felaket Kurtarma Planı (DRP) ve OT/SCADA kurtarma prosedürü mevcut ve test edilmiş mi? (RTO/RPO tanımlı)',
+    rehber: [
+      'DRP yok',
       'Plan var, hiç test edilmedi',
       'Masa başı tatbikatı yapıldı',
-      'Gerçek ortamda test edildi, RTO/RPO tanımlı',
+      'Gerçek ortamda test edildi, RTO/RPO hedefleri karşılandı',
     ],
   },
   {
-    kod: 'E20', bolum: 'KAPASİTE', agirlik: 3, kritik: false, ters: false,
-    soru: 'Kriz iletişim stratejisi, medya sözcüsü ve paydaş bilgilendirme planı hazır mı?',
+    kod: 'Y10', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: false, ters: false,
+    soru: 'Kritik tedarikçi arızasına karşı onaylı alternatif tedarikçi ve emniyet stoğu stratejisi hazır mı?',
+    rehber: [
+      'Alternatif tedarikçi veya stok stratejisi yok',
+      'Araştırılıyor, henüz somutlaşmadı',
+      'Alternatif tedarikçi belirlendi, stok kısmen yeterli',
+      'Onaylı 2+ alternatif tedarikçi, sözleşmeli, stok tamlığı izleniyor',
+    ],
+  },
+
+  // ── Fiziksel Güvenlik Sistemleri (Y11-Y18) ─────────────────
+  {
+    kod: 'Y11', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
+    soru: 'Yangın algılama, ihbar, sprinkler ve söndürme sistemleri mevcut ve periyodik kontrollü mu? (AADY Md.33-39)',
     rehber: [
       'Hiç yok',
-      'Sözcü belirsiz',
-      'Strateji var, sözcü yok',
-      'Strateji, sözcü ve şablon mesajlar hazır',
+      'Yalnızca taşınabilir söndürücü var',
+      'Algılama + kısmi söndürme sistemi, periyodik kontrol eksik',
+      'Tam otomatik sistem (algılama+ihbar+sprinkler), yılda 1+ bakım yapılıyor',
     ],
   },
   {
-    kod: 'E21', bolum: 'KAPASİTE', agirlik: 3, kritik: false, ters: false,
-    soru: 'Erken uyarı sistemleri (deprem, yangın, sel, kimyasal sızıntı) merkeze entegre çalışıyor mu?',
+    kod: 'Y12', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
+    soru: 'Enerji güvenliği: çift besleme, topraklama, kaçak akım koruması, yedek jeneratör ve UPS mevcut mu? (AADY Md.43-48)',
+    rehber: [
+      'Hiçbiri yok',
+      'Yalnızca jeneratör var',
+      'Jeneratör + UPS + kaçak akım koruması var',
+      'Çift besleme hattı dahil tüm sistem mevcut, periyodik bakımlı',
+    ],
+  },
+  {
+    kod: 'Y13', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: false, ters: false,
+    soru: 'Sel/taşkın önlemleri: su geçirmez bariyer, tahliye pompası, algılama sistemi var mı? (AADY Md.40-42)',
+    rehber: [
+      'Hiç yok',
+      'Yalnızca pompa var',
+      'Pompa + su geçirmez kapı mevcut',
+      'Tam sistem: algılama + bariyer + pompa, periyodik test',
+    ],
+  },
+  {
+    kod: 'Y14', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
+    natech_flag: true,
+    soru: 'NATECH önlem sistemi: kimyasal sızıntı detektörü, otomatik kesme vanası ve güvenli tahliye havalandırması var mı?',
+    rehber: [
+      'Hiç yok',
+      'Yalnızca manuel kesme vanası var',
+      'Algılama + manuel kesme mevcut',
+      'Otomatik kesme + sızıntı algılama + entegre havalandırma, test edilmiş',
+    ],
+  },
+  {
+    kod: 'Y15', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
+    soru: 'Makine koruma: emniyetli durdurma (ESD), aşırı ısınma koruması ve basınç tahliye valfi mevcut mu? (AADY Md.53-54)',
+    rehber: [
+      'Hiç yok',
+      'Yalnızca manuel durdurma',
+      'Otomatik ESD var, diğerleri eksik',
+      'Tam koruma sistemi: ESD + basınç tahliye + sıcaklık koruma, periyodik bakımlı',
+    ],
+  },
+  {
+    kod: 'Y16', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
+    soru: 'Deprem dayanıklılık önlemleri: geoteknik rapor, deprem izolasyon sistemi, raf ve ekipman ankrajları var mı?',
+    rehber: [
+      'Hiçbiri yok',
+      'Yalnızca geoteknik rapor var',
+      'Geoteknik + yapısal değerlendirme + kısmi ankraj var',
+      'Tümü mevcut: geoteknik + izolasyon + ekipman ankrajları, güncel',
+    ],
+  },
+  {
+    kod: 'Y17', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
+    soru: 'Acil durum yönlendirme, kaçış yolu aydınlatması ve push-bar acil çıkış kapıları periyodik test ediliyor mu? (AADY Md.55-57)',
+    rehber: [
+      'Hiç yok',
+      'Yalnızca tabelalar var',
+      'Yönlendirme + acil aydınlatma var, test eksik',
+      'Tam sistem, yılda 1+ saha tatbikatıyla test ediliyor',
+    ],
+  },
+  {
+    kod: 'Y18', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
+    soru: 'Erken uyarı sistemleri (deprem erken uyarı, kimyasal sızıntı, yangın, sel) merkez sistemle entegre mi?',
     rehber: [
       'Hiç yok',
       'Yalnızca lokal alarm',
-      'Merkeze bildirim yapılıyor',
-      'Tam entegre, otomatik devreye giriyor',
+      'Merkeze bildirim yapılıyor, otomasyon yok',
+      'Tam entegre, otomatik alarm ve kapatma devreye giriyor',
     ],
   },
+
+  // ── Personel ve Eğitim (Y19-Y24) ──────────────────────────
   {
-    kod: 'E22', bolum: 'KAPASİTE', agirlik: 4, kritik: false, ters: false,
-    soru: 'Afet için finansal koruma: kapsamlı tesis sigortası, iş durması sigortası ve acil fon rezervi var mı?',
+    kod: 'Y19', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
+    soru: 'Afet operasyon personeli: ilkyardım, hafif USAR (arama-kurtarma) ve yangın müdahale ekipleri aktif mi? (AADY Md.138-145)',
     rehber: [
       'Hiç yok',
-      'Yalnızca temel sigorta',
-      'Kapsamlı sigorta var',
-      'Sigorta + nakit fon rezervi, iş durması dahil',
+      'Yalnızca temel ilkyardım sertifikalı personel var',
+      'İlkyardım + yangın müdahale ekibi var',
+      'Tam ekip: ilkyardım + USAR + yangın + telsiz/sertifikalı, tatbikat yapılmış',
     ],
   },
   {
-    kod: 'E23', bolum: 'KAPASİTE', agirlik: 2, kritik: false, ters: false,
-    soru: 'Tesisin topluma sağlayabileceği afet sonrası destek kapasitesi (lokasyon, ekipman, personel) belirlenmiş mi? (AADY Md.92-169)',
+    kod: 'Y20', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
+    soru: 'Planlama personeli: ISO 22301 uzmanı, afet yöneticisi veya risk analizi sertifikalı uzman görevlendirilmiş mi?',
     rehber: [
-      'Hiç belirlenmemiş',
-      'Fikir aşamasında',
-      'Kayıt altına alınmış',
-      'Resmi koordinasyon anlaşması yapılmış (AFAD/Kızılay)',
+      'Hiç yok',
+      'Görevlendirilen yönetici var, eğitim almamış',
+      'Eğitimli uzman var, sertifika yok',
+      'ISO 22301 / CBCP sertifikalı uzman ve iç denetçi mevcut',
     ],
   },
   {
-    kod: 'E24', bolum: 'KAPASİTE', agirlik: 3, kritik: false, ters: false,
-    soru: 'Geçmiş olaylar, yakın-miss vakalar ve tatbikatlardan kurumsal ders çıkarma süreci işliyor mu?',
+    kod: 'Y21', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
+    soru: 'Yönetici ve personele yönelik düzenli afet yönetimi eğitimi ve farkındalık programı uygulanıyor mu? (AADY Md.71)',
     rehber: [
-      'Hayır, yapılmıyor',
-      'Nadiren yapılıyor',
-      'Raporlanıyor ama takibi yok',
-      'Kurumsal hafıza ve düzeltici aksiyon sistemi aktif',
+      'Hiç yapılmıyor',
+      'İşe girişte tek seferlik yapılıyor',
+      'Yılda bir kez kapsamlı eğitim',
+      'Yılda 2+ kez farklı senaryo, kayıt altında, katılım takip ediliyor',
     ],
   },
   {
-    kod: 'E25', bolum: 'KAPASİTE', agirlik: 3, kritik: false, ters: false,
-    soru: 'Afet anında dezavantajlı çalışanları (engelli, hamile, yabancı uyruklu) kapsayan özel tahliye prosedürü var mı?',
+    kod: 'Y22', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
+    soru: 'Düzenli tatbikat: masa başı ve tam saha tatbikatları yapılıyor, öğrenilen dersler kayıt altına alınıyor mu? (AADY Md.72)',
+    rehber: [
+      'Hiç tatbikat yapılmıyor',
+      'Yılda bir masa başı tatbikatı',
+      'Yılda bir saha tatbikatı',
+      'Yılda 2+ farklı senaryo, AAR (tatbikat sonrası değerlendirme) kayıtlı',
+    ],
+  },
+  {
+    kod: 'Y23', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: false, ters: false,
+    soru: 'Aktif Acil Durum Ekipleri (ADE): görev tanımı, iletişim hiyerarşisi ve 7/24 ulaşılabilirlik sağlanmış mı? (AADY Md.73)',
+    rehber: [
+      'ADE yok',
+      'ADE var, görev tanımı belirsiz',
+      'ADE ve görev tanımı var, tatbikat yapılmamış',
+      'ADE aktif, tatbikat yapılmış, iletişim hiyerarşisi 7/24 geçerli',
+    ],
+  },
+  {
+    kod: 'Y24', bolum: 'KAPASİTE', boyut: 'C', agirlik: 2, kritik: false, ters: false,
+    soru: 'Dezavantajlı çalışanları kapsayan özel tahliye prosedürü (engelli, hamile, yabancı uyruklu) var mı?',
     rehber: [
       'Hiç yok',
       'Yalnızca sözlü taahhüt',
-      'Yazılı prosedür var',
-      'Uygulamalı tatbikat yapılmış, aktif politika var',
+      'Yazılı prosedür var, uygulanmamış',
+      'Uygulamalı tatbikat yapılmış, aktif politika',
+    ],
+  },
+
+  // ── BT ve Veri Güvenliği (Y25-Y27) ────────────────────────
+  {
+    kod: 'Y25', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
+    soru: 'OT/BT siber güvenlik: ağ segmentasyonu, yama yönetimi, sızma testi ve olay müdahale planı mevcut mu?',
+    rehber: [
+      'Hiçbiri yok',
+      'Temel firewall, yama yönetimi eksik',
+      'Segmentasyon + yama yönetimi var, sızma testi yok',
+      'Tüm önlemler + ICS/SCADA özel güvenlik, yılda 1+ sızma testi',
     ],
   },
   {
-    kod: 'E26', bolum: 'KAPASİTE', agirlik: 2, kritik: false, ters: false,
-    soru: 'Risk yönetiminde PDCA döngüsü ve sürekli iyileştirme kültürü tesiste yerleşmiş mi?',
+    kod: 'Y26', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: false, ters: false,
+    soru: 'Üretim ve operasyon verilerinin yedekleme sıklığı, saklama konumu (offsite/bulut) ve kurtarma testi durumu?',
+    rehber: [
+      'Yedekleme yok',
+      'Yedekleme var, test edilmemiş, aynı lokasyonda',
+      'Yedekleme var, offsite/bulut, kurtarma testi yapılmadı',
+      'Günlük yedekleme, offsite + bulut, RTO test edildi ve karşılandı',
+    ],
+  },
+  {
+    kod: 'Y27', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
+    soru: 'Dijital sistemler arızasında üretimin manuel olarak belirli bir kapasitede sürdürülmesi için prosedür var mı?',
+    rehber: [
+      'Manuel üretim imkânsız, prosedür yok',
+      'Teorik olarak mümkün ama nasıl yapılacağı bilinmiyor',
+      'Prosedür var, personel eğitilmemiş',
+      'Prosedür var, personel eğitilmiş ve tatbikat yapılmış',
+    ],
+  },
+
+  // ── İletişim ve Koordinasyon (Y28-Y31) ────────────────────
+  {
+    kod: 'Y28', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
+    soru: 'Kriz iletişim stratejisi, medya sözcüsü ve paydaş bilgilendirme şablonları hazır mı?',
     rehber: [
       'Hiç yok',
-      'Kesintili uygulanıyor',
+      'Sözcü belirsiz, strateji yok',
+      'Strateji var, sözcü atanmamış',
+      'Strateji + sözcü + hazır şablon mesajlar, tatbikat yapılmış',
+    ],
+  },
+  {
+    kod: 'Y29', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
+    soru: 'AFAD, OSB Yönetimi, belediye ve sağlık kuruluşlarıyla aktif koordinasyon ve karşılıklı yardım protokolleri var mı?',
+    rehber: [
+      'Hiç koordinasyon yok',
+      'Koordinasyon bilinci var, resmi protokol yok',
+      'Bazı kurumlarla iletişim kurulmuş',
+      'Resmi MoU/protokoller imzalanmış, ortak tatbikat yapılmış',
+    ],
+  },
+  {
+    kod: 'Y30', bolum: 'KAPASİTE', boyut: 'C', agirlik: 2, kritik: false, ters: false,
+    soru: 'Tesisin topluma sağlayabileceği afet sonrası destek kapasitesi (alan, ekipman, araç) tanımlanmış mı?',
+    rehber: [
+      'Hiç belirlenmemiş',
+      'Fikir aşamasında',
+      'Kayıt altına alınmış, resmi protokol yok',
+      'AFAD/Kızılay ile resmi koordinasyon anlaşması imzalanmış',
+    ],
+  },
+  {
+    kod: 'Y31', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
+    soru: 'Afet için finansal koruma mekanizmaları: kapsamlı sigorta, iş durması sigortası ve acil nakit fon rezervi var mı?',
+    rehber: [
+      'Hiç yok',
+      'Yalnızca temel bina sigortası',
+      'Kapsamlı sigorta var, iş durması dahil değil',
+      'Sigorta + iş durması + nakit fon rezervi, aktif izleme',
+    ],
+  },
+
+  // ── Öğrenen Organizasyon ve Sürekli İyileştirme (Y32-Y35) ─
+  {
+    kod: 'Y32', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
+    soru: 'Geçmiş olaylar, tatbikat bulguları ve dış denetim önerilerinden sistematik ders çıkarma süreci aktif mi?',
+    rehber: [
+      'Hiç yapılmıyor',
+      'Nadiren yapılıyor, takip yok',
+      'Raporlanıyor, düzeltici aksiyon süreci başlatılıyor',
+      'Kurumsal hafıza sistemi aktif, PDCA döngüsü kapanıyor',
+    ],
+  },
+  {
+    kod: 'Y33', bolum: 'KAPASİTE', boyut: 'C', agirlik: 2, kritik: false, ters: false,
+    soru: 'Risk yönetiminde PDCA (Planla-Uygula-Kontrol Et-Önlem Al) döngüsü ve sürekli iyileştirme kültürü yerleşmiş mi?',
+    rehber: [
+      'PDCA kavramı bilinmiyor',
+      'Kısmen uygulanıyor, döngü tamamlanmıyor',
       'Çoğunlukla uygulanıyor',
-      'Tam döngü, KPI izleme ile sürekli iyileştirme',
+      'Tam döngü, KPI izleme ve yönetim gözden geçirmesiyle sürekli iyileştirme',
+    ],
+  },
+  {
+    kod: 'Y34', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
+    soru: 'Çalışanlar "neredeyse kaza/near-miss" olaylarını raporlamaktan çekinmeden bildiriyor mu? (Suçlamayan kültür)',
+    rehber: [
+      'Raporlama yok, kültür suçlama odaklı',
+      'Nadiren bildiriliyor, sistem var ama işlemiyor',
+      'Raporlama var, kısmi geri bildirim sağlanıyor',
+      'Aktif near-miss kültürü, her olay analiz ediliyor, geri bildirim hızlı',
+    ],
+  },
+  {
+    kod: 'Y35', bolum: 'KAPASİTE', boyut: 'C', agirlik: 2, kritik: false, ters: false,
+    soru: 'Tedarikçi ve taşeron firmaların afet/acil durum hazırlık düzeyi değerlendiriliyor ve izleniyor mu?',
+    rehber: [
+      'Hiç değerlendirilmiyor',
+      'Farkındalık var, resmi değerlendirme yok',
+      'Anket veya öz bildirim bazlı değerlendirme yapılıyor',
+      'Bağımsız denetim veya sertifika şartı uygulanıyor',
+    ],
+  },
+
+  // ══════════════════════════════════════════════════════════════
+  // HRO BÖLÜMÜ — Yüksek Güvenilirlik (H1-H5)  ·  boyut: HRO
+  // Tesis içi HRO olgunluk düzeyi — ayrı bölüm olarak render edilir
+  // ══════════════════════════════════════════════════════════════
+
+  {
+    kod: 'HRO1', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 5, kritik: true, ters: false,
+    soru: 'Başarısızlığa takıntı: personel "sistemimiz güvenli, sorun olmaz" varsayımından kaçınıyor mu? (HRO İlke 1)',
+    rehber: [
+      'Aşırı güven yaygın, uyarı sinyalleri görmezden geliniyor',
+      'Kısmi farkındalık, bazı ekiplerde iyilik',
+      'Çoğunlukla dikkatli, kör nokta analizi yapılıyor',
+      'Tam farkındalık, zayıf sinyaller aktif olarak aranıyor ve raporlanıyor',
+    ],
+  },
+  {
+    kod: 'HRO2', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
+    soru: 'Basitleştirmeye direnç: tesis, karmaşık sorunları tek bir nedene indirgemekten kaçınıyor mu? (HRO İlke 2)',
+    rehber: [
+      'Kök neden analizi yapılmıyor, tek nedene bağlanıyor',
+      'Bazen çok nedenli analiz yapılıyor',
+      'Çoğunlukla kök neden analizi uygulanıyor',
+      'Sistematik RCA/5-Why uygulanıyor, bulgular paylaşılıyor',
+    ],
+  },
+  {
+    kod: 'HRO3', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
+    soru: 'Operasyona duyarlılık: saha çalışanları anormallik gördüklerinde üretimi durdurma yetkisine sahip mi? (HRO İlke 3)',
+    rehber: [
+      'Saha yetkisi yok, üretim her şeyin önünde',
+      'Teorik yetki var, uygulanmıyor',
+      'Kısmi yetki, bazı koşullarda kullanılabiliyor',
+      'Tam yetki, saha durdurma kararları destekleniyor ve ödüllendiriliyor',
+    ],
+  },
+  {
+    kod: 'HRO4', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
+    soru: 'Dayanıklılığa bağlılık: tesis beklenmedik olaylardan hızlı toparlanma kapasitesi geliştiriyor mu? (HRO İlke 4)',
+    rehber: [
+      'Toparlanma planı yok, reaktif yaklaşım',
+      'Kısmi toparlanma planı',
+      'Toparlanma planı var, test edilmemiş',
+      'Toparlanma planı test edilmiş, çabuk toparlanma tatbikatları yapılıyor',
+    ],
+  },
+  {
+    kod: 'HRO5', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
+    soru: 'Uzmanlığa saygı: kriz anında karar en üst kademeden değil en bilgili kişiden mi alınıyor? (HRO İlke 5)',
+    rehber: [
+      'Her zaman hiyerarşi, uzman görüşü görmezden geliniyor',
+      'Bazen uzman görüşüne başvuruluyor',
+      'Genellikle uzman öncülüğünde karar',
+      'Kriz anında karar her zaman en yetkili uzmana devrediliyor, kültür yerleşmiş',
     ],
   },
 ]
 
-export const SORULAR_SANAYI_H = SORULAR_SANAYI.filter(s => s.bolum === 'TEHLİKE')
-export const SORULAR_SANAYI_F = SORULAR_SANAYI.filter(s => s.bolum === 'KIRILGANLIK')
-export const SORULAR_SANAYI_E = SORULAR_SANAYI.filter(s => s.bolum === 'KAPASİTE')
+// Bölüm filtreleri (form rendering için)
+export const SORULAR_SANAYI_H    = SORULAR_SANAYI.filter(s => s.bolum === 'TEHLİKE')
+export const SORULAR_SANAYI_F    = SORULAR_SANAYI.filter(s => s.bolum === 'KIRILGANLIK')
+export const SORULAR_SANAYI_C    = SORULAR_SANAYI.filter(s => s.bolum === 'KAPASİTE' && s.boyut !== 'HRO')
+export const SORULAR_SANAYI_HRO  = SORULAR_SANAYI.filter(s => s.boyut === 'HRO')
 
-// Özet bilgi
+// Meta bilgi
 export const SANAYI_SORU_META = {
-  toplam: 54,
-  h: 10,
-  f: 18,
-  e: 26,
-  kaynaklar: ['İSO Afet Yönetimi Şubesi AADY Kontrol Listesi 2025', 'İTÜ AYM HFE-360 Metodolojisi'],
+  toplam: 63,
+  h:  8,
+  fe: 15,
+  c:  35,
+  hro: 5,
+  kaynaklar: ['HIFYEA Metodolojisi', 'ISO 22301:2019', 'AFAD AADY 2025', 'TOC / HRO Sentezi'],
   sektor: 'uretim',
-  versiyon: '1.0',
-  tarih: '2025-03-08',
+  versiyon: '2.0',
+  tarih: '2026-03-19',
 }

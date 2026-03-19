@@ -159,7 +159,7 @@ const getSektorSorular = (sektor: Sektor) => {
   }
 }
 const SEKTOR_KAYNAK: Partial<Record<Sektor, string>> = {
-  uretim:    `İSO AADY 2025 + İTÜ AYM HFE-360 — ${SANAYI_SORU_META.toplam} soru`,
+  uretim:    `HIFYEA v2 · ISO 22301 · AFAD AADY 2025 · TOC/HRO — ${SANAYI_SORU_META.toplam} soru`,
   saglik:    `HAP + JCI + İTÜ AYM HFE-360 — ${SAGLIK_SORU_META.toplam} soru`,
   konaklama: `TÜRSAB + Yangın Yön. + HFE-360 — ${KONAKLAMA_SORU_META.toplam} soru`,
   belediye:  `5393 BelK. + AFAD + Sendai + HFE-360 — ${BELEDIYE_SORU_META.toplam} soru`,
@@ -224,8 +224,9 @@ export default function FormPage() {
   const senaryolar = getSektorSenaryolari(sektor)
   const sorular = getSektorSorular(sektor)
   const kaynak = SEKTOR_KAYNAK[sektor] || `İTÜ AYM HFE-360 — ${SORULAR.length} soru`
-  const cevaplanan = Object.keys(puanlar).length
-  const toplamSoru = sorular.length
+  const mainSorular = sorular.filter(s => !s.kod.startsWith('HRO'))
+  const cevaplanan = mainSorular.filter(s => puanlar[s.kod] !== undefined).length
+  const toplamSoru = mainSorular.length
   const yuzde = Math.round(cevaplanan / toplamSoru * 100)
   const bolgeRisk = ilKodu ? bolgeRiskOzeti(ilKodu) : null
   const tesisZorunlu = !!(tesis.yapi_yili && tesis.kat_adeti && tesis.sube_muduru && tesis.mudur_tel)
@@ -868,10 +869,15 @@ export default function FormPage() {
             </div>
 
             {BOLUMLER.map((bolum,bi)=>{
-              const bs=sorular.filter(s=>s.bolum===bolum)
+              const bs=sorular.filter(s=>s.bolum===bolum && !s.kod.startsWith('HRO'))
               const bc=bs.filter(s=>puanlar[s.kod]!==undefined).length
-              const bT=['Tehlike Değerlendirmesi','Kırılganlık Değerlendirmesi','Kapasite Değerlendirmesi'][bi]
-              const bA=['Birimin maruz kaldığı dış tehlikeleri değerlendirin.','Birimin iç yapısal zayıflıklarını değerlendirin.','Birimin hazırlık ve müdahale kapasitesini değerlendirin.'][bi]
+              const isHifyea = sektor === 'uretim'
+              const bT=isHifyea
+                ? ['BÖLÜM 1 — TEHLİKE (H)','BÖLÜM 2 — SAVUNMASIZLIK / Maruziyet (F×E)','BÖLÜM 3 — YÖNETİLEBİLİRLİK / Kapasite (C)'][bi]
+                : ['Tehlike Değerlendirmesi','Kırılganlık Değerlendirmesi','Kapasite Değerlendirmesi'][bi]
+              const bA=isHifyea
+                ? ['Dış tehlike kaynaklarını ve tesisin maruz kaldığı risk yoğunluğunu değerlendirin.','İç yapısal kırılganlıkları ve tehlikeye maruz kalma düzeyini değerlendirin.','Tesisin hazırlık, müdahale ve iş sürekliliği kapasitesini değerlendirin.'][bi]
+                : ['Birimin maruz kaldığı dış tehlikeleri değerlendirin.','Birimin iç yapısal zayıflıklarını değerlendirin.','Birimin hazırlık ve müdahale kapasitesini değerlendirin.'][bi]
               return (
                 <div key={bolum} style={{marginBottom:24}}>
                   <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12}}>
