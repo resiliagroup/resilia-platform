@@ -60,7 +60,7 @@ export default function AboutPage() {
               resilient institutions.
             </p>
             <p style={{ color:MG, fontSize:16, lineHeight:1.85 }}>
-              The omniRISK HFER-720 engine was developed in collaboration with ITU AYM
+              The Omniversel platform was developed in collaboration with ITU AYM
               (Istanbul Technical University Disaster Management Center) and validated across
               real-world implementations in Istanbul, Beylikdüzü and multiple Turkish municipalities.
             </p>
@@ -103,8 +103,7 @@ export default function AboutPage() {
               { label:'Basel III', desc:'Operational Risk' },
               { label:'BDDK ISP', desc:'Banking Continuity' },
               { label:'RAPID-N', desc:'NATECH Assessment' },
-              { label:'HRO', desc:'Weick & Sutcliffe' },
-              { label:'TOC', desc:'Goldratt (1984)' },
+              { label:'JCI', desc:'Healthcare Standards' },
               { label:'AFAD', desc:'Turkish NECD' },
             ].map(s => (
               <div key={s.label} style={{ background:BG, border:`1px solid ${BORDER}`, borderRadius:10,
@@ -122,7 +121,7 @@ export default function AboutPage() {
         <h2 style={{ fontSize:'clamp(22px,3vw,34px)', fontWeight:800, color:'#FFFFFF',
           marginBottom:16, lineHeight:1.2 }}>Start Your Resilience Journey</h2>
         <p style={{ color:'rgba(255,255,255,0.75)', fontSize:16, marginBottom:32, lineHeight:1.65 }}>
-          Join the organizations using omniRISK to measure, plan and improve resilience.
+          Join the organizations using Omniversel to measure, plan and improve resilience.
         </p>
         <div style={{ display:'flex', gap:14, justifyContent:'center', flexWrap:'wrap' }}>
           <Link href="/login" style={{ background:'#FFFFFF', color:N, fontWeight:700, fontSize:15,

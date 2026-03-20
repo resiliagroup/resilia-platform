@@ -3,12 +3,79 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import OmniverselLogo from '@/components/OmniverselLogo'
 
-const N = '#0A1628'; const T = '#2D8A87'; const G = '#E8C97A'
+const N = '#0A1628'; const T = '#2D8A87'
 const GR = '#F4F7F6'; const MG = '#566B66'; const BG = '#FFFFFF'; const BORDER = '#E8EDED'
-const R_R = '#E30613'; const R_O = '#E56A04'; const R_Y = '#FFC801'; const R_G = '#2D8A87'
+const R_R = '#E30613'; const R_O = '#E56A04'; const R_G = '#2D8A87'
+
+const TABS = [
+  { key: 'risk',        label: 'Risk Assessment' },
+  { key: 'continuity',  label: 'Business Continuity' },
+  { key: 'crisis',      label: 'Crisis Management' },
+  { key: 'compliance',  label: 'Compliance' },
+] as const
+
+type TabKey = typeof TABS[number]['key']
+
+const TAB_CONTENT: Record<TabKey, { color: string; heading: string; intro: string; points: { title: string; desc: string }[] }> = {
+  risk: {
+    color: R_R,
+    heading: 'Risk Assessment',
+    intro: 'We quantify organizational risk across multiple parameters — hazard exposure, structural fragility, operational capacity and supply-chain dependencies. The result is a facility-level resilience score that prioritizes where action matters most.',
+    points: [
+      { title: 'Multi-parameter scoring', desc: 'Risk is evaluated across hazard, fragility, exposure, capacity and bottleneck dimensions — not as a single qualitative rating but as a structured, measurable index.' },
+      { title: 'Bottleneck identification', desc: 'Inspired by Theory of Constraints, our model identifies the single constraint that would halt system throughput — allowing focused, high-leverage interventions.' },
+      { title: 'Sector calibration', desc: 'Scoring weights are calibrated by sector and hazard type. A hospital facing NATECH risk is scored differently from a bank facing cyber exposure — because the stakes differ.' },
+      { title: 'FEMA mission area alignment', desc: 'Assessments are structured around Prevention, Protection, Mitigation, Response and Recovery — enabling direct comparison to international preparedness standards.' },
+    ],
+  },
+  continuity: {
+    color: T,
+    heading: 'Business Continuity',
+    intro: 'We help organizations build, test and maintain continuity plans that work under real-world conditions. Our approach integrates ISO 22301 requirements with operational reality — not just documentation compliance.',
+    points: [
+      { title: 'Business impact analysis', desc: 'Critical functions are identified, prioritized by recovery timeline and mapped to their dependencies — staff, systems, suppliers and infrastructure.' },
+      { title: 'RTO / RPO / MTD tracking', desc: 'Recovery objectives are defined at function level and tracked continuously. Gaps between target and current capability are surfaced automatically.' },
+      { title: 'Plan lifecycle management', desc: 'Continuity plans move through draft → review → approval stages. Drill results and lessons learned feed directly into plan revisions.' },
+      { title: 'ISO 22301 gap analysis', desc: 'Clause-by-clause maturity assessment against ISO 22301:2019. Evidence is linked to requirements, and corrective actions are tracked to closure.' },
+    ],
+  },
+  crisis: {
+    color: R_O,
+    heading: 'Crisis Management',
+    intro: 'When an incident occurs, response speed and coordination determine outcomes. Our crisis management approach is built on ICS principles — clear command structure, role clarity and real-time situational awareness.',
+    points: [
+      { title: 'Incident Command System', desc: 'Crisis response is organized around ICS roles: Incident Commander, Operations, Logistics, Finance/Admin and Planning sections — adaptable to any incident scale.' },
+      { title: 'Near-miss culture', desc: 'Drawing on High Reliability Organization research (Weick & Sutcliffe, 2007), we embed systematic near-miss reporting as the primary early-warning mechanism.' },
+      { title: 'Escalation protocols', desc: 'Incidents move through defined severity levels with clear escalation triggers. Notifications, documentation and resource requests follow the same structure every time.' },
+      { title: 'After-action learning', desc: 'Every exercise and real incident generates lessons that are tracked, assigned and closed. The organization learns systematically rather than informally.' },
+    ],
+  },
+  compliance: {
+    color: '#6366F1',
+    heading: 'Compliance',
+    intro: 'Regulatory compliance is not a destination — it is a continuous operational posture. Our compliance framework tracks requirements across multiple standards simultaneously, with evidence collection built into daily workflows.',
+    points: [
+      { title: 'Multi-framework tracking', desc: 'ISO 22301, Sendai Framework, BDDK, Basel III, JCI and FEMA requirements are mapped in a single compliance matrix — eliminating duplicate effort across teams.' },
+      { title: 'Evidence collection', desc: 'Compliance evidence is captured at the point of activity — drill records, audit reports, near-miss logs — and linked directly to the relevant requirement clause.' },
+      { title: 'Gap identification', desc: 'Automated gap analysis surfaces non-conformances before audits occur. Each gap generates a corrective action with owner, deadline and closure criteria.' },
+      { title: 'Audit readiness', desc: 'Compliance scorecards are maintained in real time. When an auditor arrives, evidence packages are ready — not assembled under deadline pressure.' },
+    ],
+  },
+}
+
+const REFS = [
+  'UNDRR (2015). Sendai Framework for Disaster Risk Reduction 2015–2030. United Nations.',
+  'ISO 22301:2019. Business Continuity Management Systems – Requirements.',
+  'ISO 31000:2018. Risk Management – Guidelines.',
+  'Goldratt, E.M. (1984). The Goal: A Process of Ongoing Improvement. Theory of Constraints.',
+  'Weick, K.E. & Sutcliffe, K.M. (2007). Managing the Unexpected: Resilient Performance in an Age of Uncertainty.',
+  'FEMA (2019). National Preparedness Goal – Core Capabilities. U.S. Department of Homeland Security.',
+  'RAPID-N (2021). Natech Risk Assessment and Management Tool. European Commission JRC.',
+]
 
 export default function MethodologyPage() {
-  const [activeTab, setActiveTab] = useState<'hfer' | 'hro' | 'toc' | 'fema'>('hfer')
+  const [activeTab, setActiveTab] = useState<TabKey>('risk')
+  const content = TAB_CONTENT[activeTab]
 
   return (
     <>
@@ -38,34 +105,21 @@ export default function MethodologyPage() {
       <section style={{ background:`linear-gradient(135deg, ${N} 0%, #0F2847 100%)`,
         padding:'80px 48px 64px', textAlign:'center' }}>
         <p style={{ color:T, fontSize:12, fontWeight:700, letterSpacing:3,
-          textTransform:'uppercase', marginBottom:16 }}>Scientific Methodology</p>
+          textTransform:'uppercase', marginBottom:16 }}>Our Approach</p>
         <h1 style={{ color:'#fff', fontSize:'clamp(32px,4.5vw,56px)', fontWeight:700,
           lineHeight:1.1, marginBottom:20, maxWidth:800, margin:'0 auto 20px' }}>
-          HFER-720 &amp; Agile<br/>
-          <span style={{ color:T }}>Resilience Framework</span>
+          Methodology
         </h1>
         <p style={{ color:'rgba(255,255,255,0.6)', fontSize:17, lineHeight:1.8,
-          maxWidth:600, margin:'0 auto 40px' }}>
-          TOC bottleneck analysis, HRO field sensitivity, Lean financial focus and
-          FEMA Core Capabilities — integrated in one academic methodology.
+          maxWidth:600, margin:'0 auto' }}>
+          A multi-parameter, academically grounded approach to organizational resilience —
+          developed in collaboration with ITU AYM.
         </p>
-        <div style={{ display:'inline-block', background:'rgba(255,255,255,0.06)',
-          border:`1.5px solid ${T}50`, borderRadius:16, padding:'20px 32px' }}>
-          <span style={{ fontSize:'clamp(16px,2.2vw,24px)', fontWeight:800,
-            fontFamily:'DM Mono,monospace', color:'#fff', letterSpacing:1 }}>
-            URI = (H × F × E × B) / (1 + k(s,t) × C²) × HRO_α
-          </span>
-        </div>
       </section>
 
       <section style={{ background:GR, borderBottom:`1px solid ${BORDER}` }}>
         <div style={{ maxWidth:1100, margin:'0 auto', display:'flex', overflowX:'auto' }}>
-          {([
-            { key:'hfer', label:'HFER-720 Formula' },
-            { key:'hro',  label:'HRO Methodology' },
-            { key:'toc',  label:'TOC Bottleneck Analysis' },
-            { key:'fema', label:'FEMA Core Capabilities' },
-          ] as const).map(tab => (
+          {TABS.map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               style={{ flexShrink:0, padding:'18px 28px', border:'none', background:'transparent',
                 fontSize:14, fontWeight:activeTab===tab.key?700:500,
@@ -80,295 +134,40 @@ export default function MethodologyPage() {
 
       <section style={{ padding:'64px 48px', background:BG }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
+          <p style={{ color:content.color, fontSize:12, fontWeight:700, letterSpacing:3,
+            textTransform:'uppercase', marginBottom:12 }}>Core Methodology</p>
+          <h2 style={{ color:N, fontSize:'clamp(26px,3.5vw,40px)', fontWeight:700,
+            lineHeight:1.15, marginBottom:16 }}>
+            {content.heading}
+          </h2>
+          <p style={{ color:MG, fontSize:16, lineHeight:1.85, maxWidth:680, marginBottom:48 }}>
+            {content.intro}
+          </p>
 
-          {activeTab === 'hfer' && (
-            <div>
-              <p style={{ color:T, fontSize:12, fontWeight:700, letterSpacing:3,
-                textTransform:'uppercase', marginBottom:12 }}>omniRISK Core Model</p>
-              <h2 style={{ color:N, fontSize:'clamp(26px,3.5vw,40px)', fontWeight:700,
-                lineHeight:1.15, marginBottom:16 }}>
-                HFER-720: Unified Risk Index
-              </h2>
-              <p style={{ color:MG, fontSize:16, lineHeight:1.85, maxWidth:680, marginBottom:48 }}>
-                Developed in collaboration with ITU AYM, the HFER-720 model integrates hazard (H),
-                fragility (F), exposure (E) and capacity (C²) components with sector calibration
-                to produce a facility-level Unified Risk Index (URI).
-              </p>
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',
-                gap:20, marginBottom:56 }}>
-                {[
-                  { sym:'H', name:'Hazard', color:R_R, desc:'Seismic zone, flood area, NATECH hazard density and recurrence periods.' },
-                  { sym:'F', name:'Fragility', color:R_O, desc:'Structural weakness, personnel dependency and single-point-of-failure risk.' },
-                  { sym:'E', name:'Exposure', color:R_Y, desc:'Affected population, critical asset concentration and service dependency depth.' },
-                  { sym:'B', name:'Bottleneck', color:'#8B5CF6', desc:'TOC-based constraint point that can lock the entire system — chain-break risk.' },
-                  { sym:'C²', name:'Capacity', color:R_G, desc:'Preparedness, response and recovery capacity with exponential (nonlinear) contribution.' },
-                  { sym:'k(s,t)', name:'Sector Factor', color:T, desc:'Calibration by sector and hazard type. Health-NATECH: k=3.5 · Finance-Cyber: k=5.1' },
-                  { sym:'HRO_α', name:'HRO Multiplier', color:'#F97316', desc:'Resilience multiplier exceeding 1.0 driven by near-miss reporting and drill completion.' },
-                ].map(f => (
-                  <div key={f.sym} style={{ background:GR, border:`1px solid ${BORDER}`,
-                    borderTop:`4px solid ${f.color}`, borderRadius:12, padding:'24px 20px' }}>
-                    <div style={{ fontSize:28, fontWeight:800, fontFamily:'DM Mono,monospace',
-                      color:f.color, marginBottom:10 }}>{f.sym}</div>
-                    <div style={{ fontSize:14, fontWeight:700, color:N, marginBottom:8 }}>{f.name}</div>
-                    <p style={{ fontSize:13, color:MG, lineHeight:1.7 }}>{f.desc}</p>
-                  </div>
-                ))}
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',
+            gap:24, marginBottom:56 }}>
+            {content.points.map((p, i) => (
+              <div key={i} style={{ background:GR, border:`1px solid ${BORDER}`,
+                borderLeft:`4px solid ${content.color}`, borderRadius:12, padding:'28px 24px' }}>
+                <div style={{ fontSize:15, fontWeight:700, color:N, marginBottom:10 }}>{p.title}</div>
+                <p style={{ fontSize:13, color:MG, lineHeight:1.75 }}>{p.desc}</p>
               </div>
-              <div style={{ background:GR, border:`1px solid ${BORDER}`, borderRadius:16,
-                padding:'32px', marginBottom:48 }}>
-                <h3 style={{ color:N, fontSize:18, fontWeight:700, marginBottom:24 }}>
-                  k(s,t) Sector × Hazard Calibration Matrix
-                </h3>
-                <div style={{ overflowX:'auto' }}>
-                  <table style={{ width:'100%', borderCollapse:'collapse', fontSize:13 }}>
-                    <thead>
-                      <tr style={{ background:N, color:'#fff' }}>
-                        {['Sector','Earthquake','Flood','NATECH','Cyber','Operational'].map(h => (
-                          <th key={h} style={{ padding:'10px 14px', textAlign:'left', fontWeight:600, fontSize:12 }}>{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[
-                        ['Banking',     '2.1','1.8','1.5','5.1','4.2'],
-                        ['Health',      '3.8','2.9','3.5','2.8','3.1'],
-                        ['Industry',    '2.6','3.1','4.8','2.2','2.4'],
-                        ['Public',      '3.2','3.4','2.8','3.0','2.6'],
-                        ['Education',   '3.0','2.6','1.9','1.8','2.0'],
-                        ['Crit. Infra.','4.1','3.8','4.2','4.5','3.8'],
-                      ].map((row, i) => (
-                        <tr key={i} style={{ background:i%2===0?BG:GR }}>
-                          {row.map((cell, j) => (
-                            <td key={j} style={{ padding:'10px 14px', color:j===0?N:T,
-                              fontWeight:j===0?600:700,
-                              fontFamily:j>0?'DM Mono,monospace':'inherit',
-                              borderBottom:`1px solid ${BORDER}` }}>{cell}</td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+            ))}
+          </div>
+
+          <div style={{ background:`${T}08`, border:`1px solid ${T}25`, borderRadius:12, padding:'24px 28px' }}>
+            <p style={{ fontSize:12, fontWeight:700, color:T, letterSpacing:2,
+              textTransform:'uppercase', marginBottom:14 }}>Academic References</p>
+            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+              {REFS.map((ref, i) => (
+                <div key={i} style={{ display:'flex', gap:10 }}>
+                  <span style={{ color:T, fontWeight:700, flexShrink:0, fontSize:12,
+                    fontFamily:'DM Mono,monospace', marginTop:2 }}>[{i+1}]</span>
+                  <span style={{ fontSize:13, color:MG, lineHeight:1.65 }}>{ref}</span>
                 </div>
-              </div>
-              <div style={{ background:`${T}08`, border:`1px solid ${T}25`, borderRadius:12, padding:'24px 28px' }}>
-                <p style={{ fontSize:12, fontWeight:700, color:T, letterSpacing:2,
-                  textTransform:'uppercase', marginBottom:14 }}>Academic References</p>
-                <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-                  {[
-                    'UNDRR (2015). Sendai Framework for Disaster Risk Reduction 2015–2030. United Nations.',
-                    'ISO 22301:2019. Business Continuity Management Systems – Requirements.',
-                    'ISO 31000:2018. Risk Management – Guidelines.',
-                    'Goldratt, E.M. (1984). The Goal: A Process of Ongoing Improvement. Theory of Constraints.',
-                    'Weick, K.E. & Sutcliffe, K.M. (2007). Managing the Unexpected: Resilient Performance in an Age of Uncertainty.',
-                    'FEMA (2019). National Preparedness Goal – Core Capabilities. U.S. Department of Homeland Security.',
-                    'RAPID-N (2021). Natech Risk Assessment and Management Tool. European Commission JRC.',
-                  ].map((ref, i) => (
-                    <div key={i} style={{ display:'flex', gap:10 }}>
-                      <span style={{ color:T, fontWeight:700, flexShrink:0, fontSize:12,
-                        fontFamily:'DM Mono,monospace', marginTop:2 }}>[{i+1}]</span>
-                      <span style={{ fontSize:13, color:MG, lineHeight:1.65 }}>{ref}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              ))}
             </div>
-          )}
-
-          {activeTab === 'hro' && (
-            <div>
-              <p style={{ color:'#F97316', fontSize:12, fontWeight:700, letterSpacing:3,
-                textTransform:'uppercase', marginBottom:12 }}>High Reliability Organization</p>
-              <h2 style={{ color:N, fontSize:'clamp(26px,3.5vw,40px)', fontWeight:700,
-                lineHeight:1.15, marginBottom:16 }}>
-                High Reliability Organization Theory
-              </h2>
-              <p style={{ color:MG, fontSize:16, lineHeight:1.85, maxWidth:680, marginBottom:48 }}>
-                Derived by Weick &amp; Sutcliffe (2007) from analysis of nuclear energy, aviation and
-                naval operations, HRO methodology measures the capacity to manage unexpected events
-                through five core principles.
-              </p>
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:24, marginBottom:48 }}>
-                {[
-                  { no:'01', title:'Preoccupation with Failure', color:'#F97316',
-                    desc:'Small anomalies and near-miss events are systematically reported. The assumption of success is rejected; every signal is a potential warning.',
-                    hro:'Preoccupation with Failure' },
-                  { no:'02', title:'Reluctance to Simplify', color:R_R,
-                    desc:'Complex situations are not reduced to a single explanation. Different perspectives are evaluated and contextual diversity is maintained.',
-                    hro:'Reluctance to Simplify' },
-                  { no:'03', title:'Sensitivity to Operations', color:R_O,
-                    desc:'Real-time operational status is monitored. The situational awareness of field personnel is prioritized over hierarchy.',
-                    hro:'Sensitivity to Operations' },
-                  { no:'04', title:'Commitment to Resilience', color:R_G,
-                    desc:'The capacity to rapidly adapt to unexpected situations is developed. Authority is delegated to expert personnel, not surrendered to ritual procedures.',
-                    hro:'Commitment to Resilience' },
-                  { no:'05', title:'Deference to Expertise', color:T,
-                    desc:'In a crisis, expertise — not hierarchy — takes precedence. Decision authority is delegated to the person closest to the issue.',
-                    hro:'Deference to Expertise' },
-                ].map(p => (
-                  <div key={p.no} style={{ background:GR, border:`1px solid ${BORDER}`,
-                    borderLeft:`4px solid ${p.color}`, borderRadius:12, padding:'28px 24px' }}>
-                    <div style={{ fontSize:32, fontWeight:800, color:`${p.color}30`,
-                      fontFamily:'DM Mono,monospace', lineHeight:1, marginBottom:8 }}>{p.no}</div>
-                    <div style={{ fontSize:16, fontWeight:700, color:N, marginBottom:6 }}>{p.title}</div>
-                    <div style={{ fontSize:10, fontWeight:600, color:p.color, letterSpacing:1,
-                      textTransform:'uppercase', marginBottom:12 }}>{p.hro}</div>
-                    <p style={{ fontSize:13, color:MG, lineHeight:1.75 }}>{p.desc}</p>
-                  </div>
-                ))}
-              </div>
-              <div style={{ background:`${'#F97316'}0D`, border:`1px solid ${'#F97316'}30`,
-                borderRadius:12, padding:'24px 28px' }}>
-                <p style={{ fontSize:14, fontWeight:600, color:N, lineHeight:1.75 }}>
-                  <strong style={{ color:'#F97316' }}>HRO_α Multiplier:</strong>{' '}
-                  Calculated from near-miss reporting rate, drill completion score and command maturity
-                  values in the platform. When HRO_α exceeds 1.0, it acts as a risk-reducing multiplier
-                  in the URI formula. An organization with zero near-miss reports gets α = 1.20
-                  (high but invisible risk). An active reporting organization gets α = 0.85
-                  (risk systematically under control).
-                </p>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'toc' && (
-            <div>
-              <p style={{ color:R_R, fontSize:12, fontWeight:700, letterSpacing:3,
-                textTransform:'uppercase', marginBottom:12 }}>Theory of Constraints</p>
-              <h2 style={{ color:N, fontSize:'clamp(26px,3.5vw,40px)', fontWeight:700,
-                lineHeight:1.15, marginBottom:16 }}>
-                TOC Bottleneck Analysis
-              </h2>
-              <p style={{ color:MG, fontSize:16, lineHeight:1.85, maxWidth:680, marginBottom:48 }}>
-                Goldratt&apos;s (1984) Theory of Constraints addresses the inadequacy of traditional
-                approaches that treat 500 risks with equal weight. By identifying the single constraint
-                point that will lock the system, resource allocation is maximized.
-              </p>
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',
-                gap:20, marginBottom:48 }}>
-                {[
-                  { step:'1', title:'Identify the Constraint', color:R_R, desc:'Identify the single bottleneck that most limits system throughput across the facility network. B (Bottleneck) score is auto-calculated.' },
-                  { step:'2', title:'Exploit the Constraint', color:R_O, desc:'Maximize the use of existing bottleneck capacity at full efficiency. Optimize output with existing resources before additional investment.' },
-                  { step:'3', title:'Subordinate Everything Else', color:R_Y, desc:'Adjust all non-constraint processes to the speed of the bottleneck. System optimization rather than local optimization.' },
-                  { step:'4', title:'Elevate the Constraint', color:R_G, desc:'Eliminate the bottleneck through necessary investment and action plans. Manage with 15-day action cycles via omniSPRINT.' },
-                  { step:'5', title:'Repeat', color:T, desc:'When the old bottleneck is resolved, the system finds a new constraint. Continuous improvement cycle increases HRO maturity.' },
-                ].map(s => (
-                  <div key={s.step} style={{ background:GR, border:`1px solid ${BORDER}`,
-                    borderRadius:12, padding:'24px 20px', position:'relative', overflow:'hidden' }}>
-                    <div style={{ position:'absolute', top:12, right:16, fontSize:48, fontWeight:800,
-                      color:`${s.color}15`, fontFamily:'DM Mono,monospace', lineHeight:1 }}>{s.step}</div>
-                    <div style={{ width:32, height:32, borderRadius:8, background:`${s.color}14`,
-                      border:`2px solid ${s.color}30`, display:'flex', alignItems:'center',
-                      justifyContent:'center', marginBottom:14 }}>
-                      <span style={{ fontSize:14, fontWeight:800, color:s.color, fontFamily:'DM Mono,monospace' }}>{s.step}</span>
-                    </div>
-                    <div style={{ fontSize:15, fontWeight:700, color:N, marginBottom:8 }}>{s.title}</div>
-                    <p style={{ fontSize:13, color:MG, lineHeight:1.7, position:'relative', zIndex:1 }}>{s.desc}</p>
-                  </div>
-                ))}
-              </div>
-              <div style={{ background:`${R_R}0D`, border:`1px solid ${R_R}30`,
-                borderRadius:12, padding:'24px 28px' }}>
-                <p style={{ fontSize:14, fontWeight:600, color:N, lineHeight:1.75 }}>
-                  <strong style={{ color:R_R }}>Application in omniRISK:</strong>{' '}
-                  The B (Bottleneck) parameter automatically identifies the single failure point
-                  (Single Point of Failure) within the facility network that would halt the entire system.
-                  Dependency chain analysis is calculated using a graph algorithm that models cascade effects
-                  including supply chain and critical infrastructure connections.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'fema' && (
-            <div>
-              <p style={{ color:'#3B7EC8', fontSize:12, fontWeight:700, letterSpacing:3,
-                textTransform:'uppercase', marginBottom:12 }}>FEMA National Preparedness Goal</p>
-              <h2 style={{ color:N, fontSize:'clamp(26px,3.5vw,40px)', fontWeight:700,
-                lineHeight:1.15, marginBottom:16 }}>
-                32 Core Capabilities Framework
-              </h2>
-              <p style={{ color:MG, fontSize:16, lineHeight:1.85, maxWidth:680, marginBottom:48 }}>
-                The 32 Core Capability areas of FEMA&apos;s (2019) National Preparedness Goal form
-                the backbone of omniRISK&apos;s Manageability (C) dimension.
-                HIFYEA question sets are designed according to this framework.
-              </p>
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))',
-                gap:24, marginBottom:48 }}>
-                {[
-                  { faz:'Prevention', color:'#15803D', icon:'/icons/fema/Icon_PREVENT_01_Planning.png',
-                    desc:'Detect, deter and stop threats before they occur.',
-                    caps:[
-                      { icon:'/icons/fema/Icon_PREVENT_01_Planning.png',     label:'Planning' },
-                      { icon:'/icons/fema/Icon_PREVENT_04_Intelligence.png', label:'Intelligence & Information Sharing' },
-                      { icon:'/icons/fema/Icon_PREVENT_05_Interdiction.png', label:'Interdiction & Disruption' },
-                      { icon:'/icons/fema/Icon_PREVENT_06_Screening.png',    label:'Screening, Search & Detection' },
-                    ] },
-                  { faz:'Protection', color:'#0F766E', icon:'/icons/fema/Icon_PROTECT_08_Cyber.png',
-                    desc:'Safeguard the homeland against acts of terrorism and man-made or natural disasters.',
-                    caps:[
-                      { icon:'/icons/fema/Icon_PROTECT_08_Cyber.png',    label:'Cybersecurity' },
-                      { icon:'/icons/fema/Icon_PROTECT_09_Physical.png', label:'Physical Protective Measures' },
-                      { icon:'/icons/fema/Icon_PROTECT_11_Supply.png',   label:'Supply Chain Integrity' },
-                      { icon:'/icons/fema/Icon_PROTECT_10_Risk.png',     label:'Risk Management' },
-                    ] },
-                  { faz:'Mitigation', color:'#B45309', icon:'/icons/fema/Icon_MIT_06_Risk.png',
-                    desc:'Reduce loss of life and property by lessening the impact of disasters.',
-                    caps:[
-                      { icon:'/icons/fema/Icon_MIT_06_Risk.png',      label:'Risk & Hazard Identification' },
-                      { icon:'/icons/fema/Icon_MIT_04_Community.png', label:'Community Resilience' },
-                      { icon:'/icons/fema/Icon_MIT_05_LongTerm.png',  label:'Long-Term Vulnerability Reduction' },
-                      { icon:'/icons/fema/Icon_MIT_01_Planning.png',  label:'Mitigation Planning' },
-                    ] },
-                  { faz:'Response', color:'#C2410C', icon:'/icons/fema/Icon_RESP_12_OnScene.png',
-                    desc:'Save lives, protect property and meet basic needs immediately after an incident.',
-                    caps:[
-                      { icon:'/icons/fema/Icon_RESP_12_OnScene.png',      label:'On-scene Security & Protection' },
-                      { icon:'/icons/fema/Icon_RESP_15_Situational.png',  label:'Situational Assessment' },
-                      { icon:'/icons/fema/Icon_RESP_14_PublicHealth.png', label:'Public Health & Medical' },
-                      { icon:'/icons/fema/Icon_RESP_09_Logistics.png',    label:'Logistics & Supply Chain' },
-                    ] },
-                  { faz:'Recovery', color:'#B91C1C', icon:'/icons/fema/Icon_REC_04_Infrastructure.png',
-                    desc:'Recover through timely restoration, strengthening and revitalization.',
-                    caps:[
-                      { icon:'/icons/fema/Icon_REC_04_Infrastructure.png', label:'Infrastructure Systems' },
-                      { icon:'/icons/fema/Icon_REC_05_Econ.png',           label:'Economic Recovery' },
-                      { icon:'/icons/fema/Icon_REC_06_Health.png',         label:'Health & Social Services' },
-                      { icon:'/icons/fema/Icon_REC_08_Natural.png',        label:'Natural & Cultural Resources' },
-                    ] },
-                ].map(f => (
-                  <div key={f.faz} style={{ background:GR, border:`1px solid ${BORDER}`,
-                    borderRadius:16, padding:'28px', borderTop:`4px solid ${f.color}` }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:16 }}>
-                      <img src={f.icon} alt={f.faz} style={{ width:36, height:36, objectFit:'contain' }}/>
-                      <div>
-                        <div style={{ fontSize:10, fontWeight:700, color:f.color,
-                          letterSpacing:2, textTransform:'uppercase' }}>FEMA Mission Area</div>
-                        <div style={{ fontSize:18, fontWeight:700, color:N }}>{f.faz}</div>
-                      </div>
-                    </div>
-                    <p style={{ fontSize:13, color:MG, lineHeight:1.7, marginBottom:16 }}>{f.desc}</p>
-                    <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-                      {f.caps.map(c => (
-                        <div key={c.label} style={{ display:'flex', alignItems:'center', gap:8 }}>
-                          <img src={c.icon} alt={c.label} style={{ width:20, height:20, objectFit:'contain', flexShrink:0 }}/>
-                          <span style={{ fontSize:12, color:N, fontWeight:500 }}>{c.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div style={{ background:`${'#3B7EC8'}0D`, border:`1px solid ${'#3B7EC8'}30`,
-                borderRadius:12, padding:'24px 28px' }}>
-                <p style={{ fontSize:14, fontWeight:600, color:N, lineHeight:1.75 }}>
-                  <strong style={{ color:'#3B7EC8' }}>HIFYEA Integration:</strong>{' '}
-                  The Manageability section of Banking and Industry HIFYEA question sets is directly
-                  mapped to FEMA Core Capabilities phases: Y1-Y6 Prevention,
-                  Y7-Y13 Protection, Y14-Y23 Mitigation, Y24-Y36 Response, Y37-Y45 Recovery.
-                </p>
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       </section>
 
@@ -377,12 +176,12 @@ export default function MethodologyPage() {
           textTransform:'uppercase', marginBottom:16 }}>Access the Platform</p>
         <h2 style={{ color:'#fff', fontSize:'clamp(26px,3.5vw,40px)', fontWeight:700,
           lineHeight:1.15, marginBottom:20 }}>
-          Download Methodology Documents
+          See the methodology in action
         </h2>
         <p style={{ color:'rgba(255,255,255,0.55)', fontSize:16, lineHeight:1.75,
           maxWidth:480, margin:'0 auto 40px' }}>
-          HFER-720 technical documentation, sector calibration guide and
-          HIFYEA question set design methodology.
+          Our approach is embedded directly into the Omniversel platform.
+          For methodology inquiries, contact our team.
         </p>
         <div style={{ display:'flex', gap:14, justifyContent:'center', flexWrap:'wrap' }}>
           <Link href="/login" style={{ background:T, color:'#fff', fontWeight:700, fontSize:15,
@@ -392,7 +191,7 @@ export default function MethodologyPage() {
           <a href="mailto:info@omniversel.com" style={{ border:'1.5px solid rgba(255,255,255,0.2)',
             color:'rgba(255,255,255,0.72)', fontWeight:600, fontSize:15, padding:'13px 32px',
             borderRadius:8, display:'inline-block', transition:'border-color .18s' }}>
-            Technical Inquiry
+            Contact Methodology Team
           </a>
         </div>
       </section>

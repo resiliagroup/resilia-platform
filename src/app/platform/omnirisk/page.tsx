@@ -34,20 +34,20 @@ function PageNav() {
 const FEATURES = [
   {
     icon: 'Icon_MIT_06_Risk.png',
-    title: 'TOC Bottleneck Detection',
-    desc: 'Theory of Constraints B-value analysis identifies the critical constraint in your resilience chain — the single point of failure that limits overall system performance.',
+    title: 'Multi-Dimensional Risk Scoring',
+    desc: 'Risk is evaluated across hazard, fragility, exposure, capacity and supply-chain bottleneck dimensions — producing a single, actionable facility-level resilience index.',
     color: '#EF4444',
   },
   {
     icon: 'Icon_PREVENT_04_Intelligence.png',
-    title: 'HRO Alpha Scoring',
-    desc: 'High Reliability Organization principles translated into a measurable α coefficient. Near-miss events, simplification, and expertise deference all feed the URI score.',
+    title: 'Operational Reliability Tracking',
+    desc: 'Near-miss reporting, drill completion and command maturity are continuously tracked — translating operational behavior into measurable resilience performance.',
     color: '#F97316',
   },
   {
     icon: 'Icon_MIT_03_Operational.png',
-    title: 'Sector-Calibrated k(s,t) Matrix',
-    desc: 'A 6×4 cross-sector hazard interaction matrix calibrated to Turkish building stock, AFAD seismic zones, and sectoral criticality weights (Banking: k=5.1, Hospital: k=4.2).',
+    title: 'Sector & Hazard Calibration',
+    desc: 'Scoring is calibrated per sector and hazard type. A hospital facing NATECH risk is assessed differently from a bank facing cyber exposure — because the stakes differ.',
     color: '#3B82F6',
   },
 ]
@@ -71,26 +71,17 @@ export default function OmniRiskPage() {
             <span style={{ color:'#F87171' }}>Quantitative Risk Intelligence</span>
           </h1>
           <p style={{ color:'rgba(255,255,255,0.65)', fontSize:18, lineHeight:1.7, maxWidth:600, margin:'0 auto 40px' }}>
-            The HFER-720 URI engine transforms facility-level data into a single, actionable resilience score —
-            mapped to FEMA mission areas and Sendai Framework targets.
+            omniRISK transforms facility-level data into a single, actionable resilience score —
+            structured around FEMA mission areas and Sendai Framework targets.
           </p>
-          {/* Formula display */}
-          <div style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.12)',
-            borderRadius:16, padding:'24px 32px', display:'inline-block', maxWidth:600, width:'100%' }}>
-            <p style={{ color:'rgba(255,255,255,0.4)', fontSize:11, fontWeight:700,
-              letterSpacing:2, textTransform:'uppercase', marginBottom:12 }}>HFER-720 URI Formula</p>
-            <div style={{ fontFamily:'DM Mono,monospace', color:'#F87171', fontSize:'clamp(14px,2vw,20px)',
-              fontWeight:600, letterSpacing:0.5, lineHeight:1.6 }}>
-              URI = (H × F × E × B)<br/>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/ (1 + k(s,t) × C²) × HRO_α
-            </div>
-            <div style={{ display:'flex', gap:16, flexWrap:'wrap', marginTop:16, justifyContent:'center' }}>
-              {[['H','Hazard'],['F','Fragility'],['E','Exposure'],['B','Bottleneck'],['C','Capacity'],['α','HRO Alpha']].map(([k,v]) => (
-                <span key={k} style={{ fontSize:11, color:'rgba(255,255,255,0.5)' }}>
-                  <span style={{ color:'#F87171', fontWeight:700, fontFamily:'DM Mono,monospace' }}>{k}</span> = {v}
-                </span>
-              ))}
-            </div>
+          <div style={{ display:'flex', gap:24, justifyContent:'center', flexWrap:'wrap' }}>
+            {[['Hazard','Physical & environmental threat level'],['Fragility','Structural & operational weakness'],['Exposure','Affected population & asset concentration'],['Capacity','Preparedness & recovery capability']].map(([k,v]) => (
+              <div key={k} style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.1)',
+                borderRadius:10, padding:'14px 20px', textAlign:'left', minWidth:160 }}>
+                <div style={{ fontSize:13, fontWeight:700, color:'#F87171', marginBottom:4 }}>{k}</div>
+                <div style={{ fontSize:11, color:'rgba(255,255,255,0.5)', lineHeight:1.5 }}>{v}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -114,7 +105,7 @@ export default function OmniRiskPage() {
       {/* METRICS ROW */}
       <section style={{ padding:'48px', background:'#fff', borderTop:`1px solid ${BORDER}`, borderBottom:`1px solid ${BORDER}` }}>
         <div style={{ maxWidth:900, margin:'0 auto', display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:24, textAlign:'center' }}>
-          {[['720','pts','HFER Score Range'],['32','','FEMA Core Capabilities'],['6','×4','k(s,t) Matrix'],['5','','HRO Principles']].map(([n,u,l]) => (
+          {[['Multi','','Dimensional scoring'],['32','','FEMA Core Capabilities'],['5','','Mission areas covered'],['5','','HRO reliability principles']].map(([n,u,l]) => (
             <div key={l}>
               <div style={{ fontSize:40, fontWeight:800, color:'#EF4444', fontFamily:'DM Mono,monospace', lineHeight:1 }}>{n}<span style={{ fontSize:20 }}>{u}</span></div>
               <div style={{ fontSize:12, color:MG, marginTop:8, fontWeight:600 }}>{l}</div>
@@ -132,7 +123,7 @@ export default function OmniRiskPage() {
 
       {/* FOOTER */}
       <footer style={{ background:'#080F1C', padding:'24px 48px', textAlign:'center' }}>
-        <p style={{ color:'rgba(255,255,255,0.3)', fontSize:12 }}>© 2026 Omniversel · omniRISK HFER-720 · ISO 22301 · FEMA NPG</p>
+        <p style={{ color:'rgba(255,255,255,0.3)', fontSize:12 }}>© 2026 Omniversel · omniRISK · ISO 22301 · FEMA NPG</p>
       </footer>
     </div>
   )

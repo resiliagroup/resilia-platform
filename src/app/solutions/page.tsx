@@ -93,17 +93,8 @@ function SectorCard({ sector }: { sector: typeof SECTORS[number] }) {
         transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
         boxShadow: hovered ? '0 12px 32px rgba(45,138,135,0.14)' : '0 2px 8px rgba(10,22,40,0.06)',
       }}>
-      {/* main icon */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{ width: 44, height: 44, flexShrink: 0 }}>
-          <img src={sector.icon} alt={sector.title} style={{ width: 44, height: 44, objectFit: 'contain' }}/>
-        </div>
-        {/* fema sub-icons */}
-        <div style={{ display: 'flex', gap: 6 }}>
-          {sector.femaIcons.map((ic, i) => (
-            <img key={i} src={ic} alt="" style={{ width: 22, height: 22, objectFit: 'contain', opacity: 0.6 }}/>
-          ))}
-        </div>
+      <div style={{ width: 44, height: 44 }}>
+        <img src={sector.icon} alt={sector.title} style={{ width: 44, height: 44, objectFit: 'contain' }}/>
       </div>
 
       <h3 style={{ fontFamily:"'DM Sans',sans-serif", fontSize: 17, fontWeight: 700, color: N, margin: 0, lineHeight: 1.3 }}>
@@ -113,14 +104,6 @@ function SectorCard({ sector }: { sector: typeof SECTORS[number] }) {
       <p style={{ fontFamily:"'DM Sans',sans-serif", fontSize: 14, color: MG, margin: 0, lineHeight: 1.6, flexGrow: 1 }}>
         {sector.desc}
       </p>
-
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-        {sector.standards.map((s) => (
-          <span key={s} style={{ fontFamily:"'DM Sans',sans-serif", fontSize: 11, fontWeight: 600,
-            color: MG, background: GR, border: `1px solid ${BORDER}`, borderRadius: 4,
-            padding: '2px 8px', letterSpacing: '0.02em' }}>{s}</span>
-        ))}
-      </div>
 
       <div style={{ marginTop: 4 }}>
         <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize: 13, fontWeight: 600, color: T,
@@ -166,12 +149,12 @@ export default function SolutionsPage() {
         <h1 style={{ fontFamily:"'DM Sans',sans-serif", fontSize:'clamp(28px,5vw,48px)',
           fontWeight:800, color:'#FFFFFF', lineHeight:1.15, marginBottom:20,
           maxWidth:700, margin:'0 auto 20px' }}>
-          Sector-Specific Disaster Risk Management
+          Sector Solutions
         </h1>
         <p style={{ fontFamily:"'DM Sans',sans-serif", fontSize:17, color:'rgba(255,255,255,0.65)',
           maxWidth:580, margin:'0 auto', lineHeight:1.7 }}>
-          Every sector has its own hazard profile, vulnerability structure and regulatory compliance requirements.
-          omniRISK calibrates to each.
+          Every sector has a distinct risk profile, regulatory framework and operational vulnerability structure.
+          Omniversel calibrates to each.
         </p>
       </section>
 

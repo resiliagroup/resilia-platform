@@ -10,9 +10,9 @@ const R_R = '#E30613'; const R_O = '#E56A04'; const R_Y = '#FFC801'
 const blogPosts = [
   {
     category: 'Methodology', categoryColor: T,
-    title: 'omniRISK: AI-Assisted Unified Risk Index (URI)',
-    summary: 'How do we integrate hazard (H), fragility (F), exposure (E) and capacity (C²) components through the HFER-720 model? The meaning of the ALARP principle and k(s,t) sector coefficients.',
-    readTime: '8 min', date: 'March 2026', tag: 'HFER-720',
+    title: 'Quantitative Risk Scoring: A Multi-Parameter Approach',
+    summary: 'How multi-dimensional scoring integrates hazard exposure, structural fragility, operational capacity and supply-chain bottlenecks into a single actionable resilience index.',
+    readTime: '8 min', date: 'March 2026', tag: 'Risk Assessment',
   },
   {
     category: 'Concept', categoryColor: R_O,
@@ -50,7 +50,7 @@ const caseStudies = [
   {
     sehir: 'Beylikdüzü, Istanbul',
     sektor: 'Multi-Sector Urban',
-    baslik: 'HFER-720 Urban Resilience Scoring',
+    baslik: 'Urban Resilience Scoring — Multi-Sector Assessment',
     metrikler: [
       { v:'782', l:'Facilities Scored' },
       { v:'103', l:'Critical Risk Flagged' },
@@ -89,10 +89,10 @@ const caseStudies = [
 ]
 
 const reports = [
-  { title:'HFER-720 Technical Documentation',    size:'2.4 MB', pages:'48', tag:'Whitepaper', icon:'/icons/fema/Icon_MIT_06_Risk.png' },
-  { title:'HIFYEA Banking Assessment Guide',      size:'1.8 MB', pages:'36', tag:'Framework', icon:'/icons/fema/Icon_PROTECT_10_Risk.png' },
-  { title:'FEMA Core Capabilities Integration',  size:'3.1 MB', pages:'64', tag:'Reference',  icon:'/icons/fema/Icon_PREVENT_01_Planning.png' },
-  { title:'NATECH Risk Assessment Methodology',  size:'2.0 MB', pages:'52', tag:'Methodology',icon:'/icons/fema/Icon_RESP_08_Fire.png' },
+  { title:'Organizational Resilience Assessment Guide', size:'2.4 MB', pages:'48', tag:'Whitepaper',  icon:'/icons/fema/Icon_MIT_06_Risk.png' },
+  { title:'Banking Sector BCM Assessment Guide',        size:'1.8 MB', pages:'36', tag:'Framework',  icon:'/icons/fema/Icon_PROTECT_10_Risk.png' },
+  { title:'International Standards Alignment Guide',    size:'3.1 MB', pages:'64', tag:'Reference',   icon:'/icons/fema/Icon_PREVENT_01_Planning.png' },
+  { title:'NATECH Risk Assessment Methodology',         size:'2.0 MB', pages:'52', tag:'Methodology', icon:'/icons/fema/Icon_RESP_08_Fire.png' },
 ]
 
 export default function ResourcesPage() {
@@ -132,7 +132,7 @@ export default function ResourcesPage() {
         </h1>
         <p style={{ fontSize:17, color:'rgba(255,255,255,0.65)', maxWidth:560,
           margin:'0 auto', lineHeight:1.7 }}>
-          Technical reports, case studies and methodology articles from the omniRISK team.
+          Technical reports, case studies and methodology articles from the Omniversel team.
         </p>
       </section>
 
@@ -226,7 +226,7 @@ export default function ResourcesPage() {
         <h2 style={{ fontSize:'clamp(22px,3vw,34px)', fontWeight:800, color:'#FFFFFF',
           marginBottom:16, lineHeight:1.2 }}>Ready to Get Started?</h2>
         <p style={{ color:'rgba(255,255,255,0.75)', fontSize:16, marginBottom:32, lineHeight:1.65 }}>
-          Schedule a free demo and see how omniRISK maps to your sector requirements.
+          Schedule a free demo and see how Omniversel maps to your sector requirements.
         </p>
         <div style={{ display:'flex', gap:14, justifyContent:'center', flexWrap:'wrap' }}>
           <Link href="/login" style={{ background:'#FFFFFF', color:N, fontWeight:700, fontSize:15,

@@ -41,7 +41,7 @@ const PLANS = [
     accent: '#F3F4F6',
     features: [
       '1 facility assessment',
-      'omniRISK URI score',
+      'Resilience score & report',
       'FEMA mission area mapping',
       'PDF report export',
       '14-day access',
@@ -60,7 +60,7 @@ const PLANS = [
     accent: `${T}10`,
     features: [
       'Up to 50 facilities',
-      'All 6 omniRISK modules',
+      'All 6 platform modules',
       'omniSPRINT agile board',
       'Near-miss event tracking',
       'omniPLAN BCM templates',
@@ -85,7 +85,6 @@ const PLANS = [
       'All modules incl. omniPIPE + omniHRO',
       'White-label deployment',
       'REST API access',
-      'Custom k(s,t) matrix calibration',
       'Dedicated account manager',
       'SLA guarantee',
       'On-site training',
@@ -172,7 +171,7 @@ export default function PricingPage() {
             All plans include
           </h2>
           <div style={{ display:'flex', gap:12, flexWrap:'wrap', justifyContent:'center' }}>
-            {['FEMA NPG alignment','ISO 22301 templates','Sendai SF tracking','AFAD compatible','Turkish language support','GDPR compliant data storage'].map(item => (
+            {['International standards alignment','ISO 22301 templates','Sendai SF tracking','AFAD compatible','Turkish language support','GDPR compliant data storage'].map(item => (
               <span key={item} style={{ fontSize:12, fontWeight:600, padding:'6px 14px',
                 borderRadius:20, background:`${T}10`, color:T, border:`1px solid ${T}25` }}>
                 {item}
