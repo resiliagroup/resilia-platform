@@ -68,7 +68,7 @@ export default function OmniRiskPage() {
   const standards = [
     { code: 'ISO 31000:2018',    desc: 'Risk yönetimi — İlkeler ve kılavuzlar. omniRISK metodolojisinin temel çerçevesi.' },
     { code: 'Sendai 2015–2030',  desc: 'BM Afet Riski Azaltma Çerçevesi. 4 öncelik alanı ve 7 küresel hedef ile uyum.' },
-    { code: 'HFER-720',          desc: 'İTÜ AYM iş birliğiyle geliştirilen 720 parametreli Tehlike-Frekans-Etki-Risk motoru.' },
+    { code: 'HFER-720',          desc: 'ITU AYM iş birliğiyle geliştirilen 720 parametreli Tehlike-Frekans-Etki-Risk motoru.' },
     { code: 'RAPID-N',           desc: 'NATECH (Doğal Afet Kaynaklı Teknolojik Kaza) risk değerlendirme metodolojisi.' },
     { code: 'ISO 31010',         desc: 'Risk değerlendirme teknikleri. Senaryo analizi ve olasılık-etki matrisi.' },
     { code: 'TUCBS',             desc: 'Türkiye Ulusal Coğrafi Bilgi Sistemi standartlarıyla uyumlu veri modeli.' },
@@ -449,7 +449,7 @@ export default function OmniRiskPage() {
           <div style={{ paddingTop: 24, display: 'flex', justifyContent: 'space-between',
                         alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
             <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>
-              © {new Date().getFullYear()} Omniversel Teknoloji A.Ş. · İTÜ AYM iş birliğiyle · Sendai 2015–2030 uyumlu
+              © {new Date().getFullYear()} Omniversel Teknoloji A.Ş. · ITU AYM iş birliğiyle · Sendai 2015–2030 uyumlu
             </p>
             <div style={{ display: 'flex', gap: 16 }}>
               {['ISO 22301', 'BCM', 'KVKK'].map(tag => (

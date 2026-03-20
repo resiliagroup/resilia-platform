@@ -521,7 +521,7 @@ export default function BIAHub() {
         </div>
 
         <div style={{ textAlign: 'center', marginTop: 36, fontSize: 11, color: '#D1CEC9' }}>
-          OMNI · İTÜ AYM iş birliğiyle · BIA Metodolojisi ISO 22301 · 2025-2026
+          OMNI · ITU AYM iş birliğiyle · BIA Metodolojisi ISO 22301 · 2025-2026
         </div>
       </div>
     </div>

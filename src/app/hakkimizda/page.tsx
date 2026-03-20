@@ -115,7 +115,7 @@ const standards = [
   { name: 'AFAD',                   sub: 'T.C. Afet ve Acil Durum Yönetimi' },
   { name: 'TUCBS',                  sub: 'Türkiye Ulusal CBS Standartları' },
   { name: 'EU Horizon Europe',      sub: 'Ar-Ge & İnovasyon Çerçeve Programı' },
-  { name: 'İTÜ AYM',               sub: 'Afet Yönetimi Enstitüsü Metodolojisi' },
+  { name: 'ITU AYM',               sub: 'Afet Yönetimi Enstitüsü Metodolojisi' },
 ]
 
 /* ═══════════════════════════════════════════════════════════════
@@ -242,8 +242,8 @@ export default function HakkimizdaPage() {
             </h2>
             <p style={{ color: MG, fontSize: 16, lineHeight: 1.85, maxWidth: 780, margin: '0 auto 16px' }}>
               Omniversel, İstanbul Teknik Üniversitesi Afet Yönetim Araştırma ve Uygulama Merkezi
-              (İTÜ AYM) ile stratejik Ar-Ge iş birliği çerçevesinde faaliyet göstermektedir.{' '}
-              <strong style={{ color: N }}>omniRISK metodolojisinin bilimsel temeli</strong>, İTÜ AYM
+              (ITU AYM) ile stratejik Ar-Ge iş birliği çerçevesinde faaliyet göstermektedir.{' '}
+              <strong style={{ color: N }}>omniRISK metodolojisinin bilimsel temeli</strong>, ITU AYM
               bünyesinde yürütülen akademik araştırmalar ve saha çalışmaları ile geliştirilmiş ve
               validasyon süreçleri tamamlanmıştır.
             </p>
@@ -255,7 +255,7 @@ export default function HakkimizdaPage() {
               {
                 title: 'Ar-Ge İş Birliği',
                 icon: '/icons/ccds_arge.png',
-                desc: 'omniRISK metodolojisi İTÜ AYM akademik araştırmalarıyla ortak geliştirilmekte; saha çalışmaları ve veri validasyonu birlikte yürütülmektedir.',
+                desc: 'omniRISK metodolojisi ITU AYM akademik araştırmalarıyla ortak geliştirilmekte; saha çalışmaları ve veri validasyonu birlikte yürütülmektedir.',
               },
               {
                 title: 'Eğitim & Kapasite',
@@ -320,7 +320,7 @@ export default function HakkimizdaPage() {
               </div>
             </div>
 
-            {/* İTÜ AYM kartı */}
+            {/* ITU AYM kartı */}
             <div style={{ background: BG, border: `2px solid ${BORDER}`, borderRadius: 24,
                           padding: '48px 40px', textAlign: 'center',
                           boxShadow: '0 4px 24px rgba(45,138,135,.08)' }}>
@@ -330,7 +330,7 @@ export default function HakkimizdaPage() {
                 <span style={{ fontSize: 24, fontWeight: 900, color: N, fontFamily: 'DM Sans,sans-serif',
                                 letterSpacing: -1 }}>İTÜ</span>
               </div>
-              <h3 style={{ color: N, fontWeight: 800, fontSize: 22, marginBottom: 8 }}>İTÜ AYM</h3>
+              <h3 style={{ color: N, fontWeight: 800, fontSize: 22, marginBottom: 8 }}>ITU AYM</h3>
               <p style={{ color: T, fontSize: 13, fontWeight: 600, marginBottom: 16 }}>
                 Afet Yönetim Araştırma ve Uygulama Merkezi
               </p>
@@ -382,7 +382,7 @@ export default function HakkimizdaPage() {
               </div>
             ))}
           </div>
-          {/* İTÜ AYM link */}
+          {/* ITU AYM link */}
           <div style={{ background: `${T}08`, border: `1px solid ${T}25`, borderRadius: 12,
                         padding: '16px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T} strokeWidth="2" strokeLinecap="round">
@@ -390,7 +390,7 @@ export default function HakkimizdaPage() {
               <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
             </svg>
             <span style={{ color: MG, fontSize: 14 }}>
-              İTÜ AYM hakkında daha fazla bilgi:{' '}
+              ITU AYM hakkında daha fazla bilgi:{' '}
               <a href="https://aym.itu.edu.tr" target="_blank" rel="noopener noreferrer"
                  style={{ color: T, fontWeight: 700, textDecoration: 'underline' }}>
                 aym.itu.edu.tr

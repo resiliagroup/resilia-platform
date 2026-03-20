@@ -310,7 +310,7 @@ export default function UzmanDashboard() {
 
         <div className="mt-8 pt-6 border-t border-stone-200 flex justify-between">
           <span className="text-xs text-stone-400">OMNI Kurumsal Dayanıklılık Platformu</span>
-          <span className="text-xs text-stone-300">İTÜ AYM iş birliğiyle geliştirilmiştir</span>
+          <span className="text-xs text-stone-300">ITU AYM iş birliğiyle geliştirilmiştir</span>
         </div>
       </div>
     </div>

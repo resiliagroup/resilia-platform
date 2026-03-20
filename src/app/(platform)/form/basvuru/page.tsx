@@ -410,7 +410,7 @@ export default function BasvuruPage() {
             </button>
 
             <p style={{ fontSize: 11, color: '#C4C2BF', marginTop: 16 }}>
-              OMNI · Beylikdüzü Belediyesi · İTÜ AYM iş birliği
+              OMNI · Beylikdüzü Belediyesi · ITU AYM iş birliği
             </p>
           </div>
         )}

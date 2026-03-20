@@ -723,7 +723,7 @@ function SendaiTab() {
       isim: 'JICA Earthquake Cooperation', tur: 'Japan International Cooperation',
       butce: 'Technical credit', durum: 'Technical Support', logoHarf: 'JI',
       aciklama: 'İTÜ partnership required',
-      gereklilikler: ['İTÜ AYM official partnership', 'Earthquake facility risk analysis', 'Japan–Turkey framework agreement'],
+      gereklilikler: ['ITU AYM official partnership', 'Earthquake facility risk analysis', 'Japan–Turkey framework agreement'],
       tarih: '2027',
     },
     {
@@ -747,7 +747,7 @@ function SendaiTab() {
       isim: 'TÜBİTAK 1001 / TEYDEB', tur: 'R&D Project Support',
       butce: '2–5M TL', durum: 'Planning', logoHarf: 'TB',
       aciklama: 'İTÜ partnership, 12–18 months',
-      gereklilikler: ['İTÜ AYM as executing institution', 'HFER-720 R&D plan', 'Academic publication commitment'],
+      gereklilikler: ['ITU AYM as executing institution', 'HFER-720 R&D plan', 'Academic publication commitment'],
       tarih: 'Q3 2026',
     },
     {
@@ -845,7 +845,7 @@ function SendaiTab() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 16 }}>
           {[
             { isim: 'Beylikdüzü Municipality', rol: 'Pilot site + Owner',    ikon: '/icons/Icon_MIT_04_Community.png',    renk: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE' },
-            { isim: 'İTÜ AYM',                rol: 'Academic Partner',      ikon: '/icons/Icon_PREVENT_01_Planning.png', renk: '#8B5CF6', bg: '#F5F3FF', border: '#DDD6FE' },
+            { isim: 'ITU AYM',                rol: 'Academic Partner',      ikon: '/icons/Icon_PREVENT_01_Planning.png', renk: '#8B5CF6', bg: '#F5F3FF', border: '#DDD6FE' },
             { isim: 'Omniversel',              rol: 'Technology Provider',   ikon: '/icons/Icon_PROTECT_08_Cyber.png',   renk: '#059669', bg: '#F0FDF4', border: '#BBF7D0' },
           ].map(k => (
             <div key={k.isim} style={{ background: k.bg, border: `1px solid ${k.border}`, borderRadius: 12,
@@ -878,7 +878,7 @@ function SendaiTab() {
             { tarih: 'Mar 2026',  baslik: 'Beylikdüzü Pilot Launch',        aciklama: 'OMNI platform went live. 782 facilities loaded into Supabase. HFER-720 v2.0 calculation engine active.', durum: 'tamamlandı' },
             { tarih: 'Apr 2026',  baslik: 'İSTKA Application',              aciklama: 'Municipal application for Spatial Transformation Project grant. 10–20M TL financing target.', durum: 'devam' },
             { tarih: 'Jun 2026',  baslik: '39 Districts Expansion',         aciklama: 'All Istanbul districts to be included in the OMNI platform. Pilot success is a prerequisite.', durum: 'planlandı' },
-            { tarih: 'Sep 2026',  baslik: 'EU Horizon Europe Application',  aciklama: 'Cluster 3 consortium application. €5–15M funding target with İTÜ AYM + 2 EU partners.', durum: 'planlandı' },
+            { tarih: 'Sep 2026',  baslik: 'EU Horizon Europe Application',  aciklama: 'Cluster 3 consortium application. €5–15M funding target with ITU AYM + 2 EU partners.', durum: 'planlandı' },
             { tarih: 'Dec 2026',  baslik: '75% Sendai Alignment Target',    aciklama: 'To be raised from current 47% to 75%. SF-3 and SF-4 are priority intervention areas.', durum: 'planlandı' },
             { tarih: '2027',      baslik: '81 Province Scale-Up',           aciklama: 'Roll-out of the OMNI platform nationwide across all of Turkey. AFAD national integration.', durum: 'planlandı' },
           ]
@@ -1646,7 +1646,7 @@ export default function BeylikduzuKomuta() {
 
         {/* FOOTER */}
         <div className="mt-10 pt-5 border-t border-gray-200 flex flex-wrap items-center justify-between gap-2">
-          <p className="text-xs text-gray-300">OMNI Resilience Platform · HFER-720 v2.0 · İTÜ AYM · © 2026</p>
+          <p className="text-xs text-gray-300">OMNI Resilience Platform · HFER-720 v2.0 · ITU AYM · © 2026</p>
           <p className="text-xs text-gray-300">Sendai 2015–2030 · ISO 22301 · AFAD · RAPID-N</p>
         </div>
       </div>

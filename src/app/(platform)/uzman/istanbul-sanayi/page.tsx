@@ -599,7 +599,7 @@ export default function IstanbulSanayiDashboard() {
         )}
 
         <div style={{textAlign:'center',fontSize:11,color:'#D1CEC9',marginTop:40}}>
-          OMNI · İTÜ AYM iş birliğiyle · ISO Fabrika Üyeleri Dayanıklılık Platformu · 2025
+          OMNI · ITU AYM iş birliğiyle · ISO Fabrika Üyeleri Dayanıklılık Platformu · 2025
         </div>
       </div>
     </div>

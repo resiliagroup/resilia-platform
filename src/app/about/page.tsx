@@ -60,9 +60,7 @@ export default function AboutPage() {
               resilient institutions.
             </p>
             <p style={{ color:MG, fontSize:16, lineHeight:1.85 }}>
-              The Omniversel platform was developed in collaboration with ITU AYM
-              (Istanbul Technical University Disaster Management Center) and validated across
-              real-world implementations in Istanbul, Beylikdüzü and multiple Turkish municipalities.
+              The Omniversel platform was developed in collaboration with the Istanbul Technical University Disaster Management Research and Implementation Center (hereinafter referred to as ITU AYM) and validated across real-world implementations in Istanbul, Beylikdüzü and multiple Turkish municipalities.
             </p>
           </div>
           <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
@@ -102,7 +100,7 @@ export default function AboutPage() {
             <p style={{ color:T, fontSize:12, fontWeight:700, letterSpacing:3,
               textTransform:'uppercase', marginBottom:16 }}>Academic Partnership</p>
             <p style={{ color:MG, fontSize:16, lineHeight:1.85, marginBottom:20 }}>
-              Omniversel was developed in collaboration with the Istanbul Technical University Disaster Management Research and Application Center (ITU AYM). Our methodology is grounded in peer-reviewed disaster risk science and validated through field implementations across urban multi-hazard environments.
+              Omniversel was developed in collaboration with the Istanbul Technical University Disaster Management Research and Implementation Center (hereinafter referred to as ITU AYM). Our methodology is grounded in peer-reviewed disaster risk science and validated through field implementations across urban multi-hazard environments.
             </p>
             <p style={{ color:MG, fontSize:16, lineHeight:1.85 }}>
               The platform has been applied across 782 facilities in metropolitan Istanbul, spanning banking, healthcare, industrial and public sector institutions. Each implementation contributes to a growing evidence base for quantitative urban resilience assessment.

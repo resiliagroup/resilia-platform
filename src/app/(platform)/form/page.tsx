@@ -163,7 +163,7 @@ const getSektorSorular = (sektor: Sektor) => {
 const SEKTOR_KAYNAK: Partial<Record<Sektor, string>> = {
   bankacilik: `HIFYEA v2 · BDDK İSP · Basel III · ISO 22301 · FEMA — ${BANKACILIK_SORU_META.toplam} soru`,
   uretim:    `HIFYEA v2 · ISO 22301 · AFAD AADY 2025 · TOC/HRO — ${SANAYI_SORU_META.toplam} soru`,
-  saglik:    `HAP + JCI + İTÜ AYM HFE-360 — ${SAGLIK_SORU_META.toplam} soru`,
+  saglik:    `HAP + JCI + ITU AYM HFE-360 — ${SAGLIK_SORU_META.toplam} soru`,
   konaklama: `TÜRSAB + Yangın Yön. + HFE-360 — ${KONAKLAMA_SORU_META.toplam} soru`,
   belediye:  `5393 BelK. + AFAD + Sendai + HFE-360 — ${BELEDIYE_SORU_META.toplam} soru`,
 }
@@ -226,7 +226,7 @@ export default function FormPage() {
   const sektor = (kullanici?.sektor || 'bankacilik') as Sektor
   const senaryolar = getSektorSenaryolari(sektor)
   const sorular = getSektorSorular(sektor)
-  const kaynak = SEKTOR_KAYNAK[sektor] || `İTÜ AYM HFE-360 — ${SORULAR.length} soru`
+  const kaynak = SEKTOR_KAYNAK[sektor] || `ITU AYM HFE-360 — ${SORULAR.length} soru`
   const mainSorular = sorular.filter(s => !s.kod.startsWith('HRO'))
   const cevaplanan = mainSorular.filter(s => puanlar[s.kod] !== undefined).length
   const toplamSoru = mainSorular.length
@@ -472,7 +472,7 @@ export default function FormPage() {
           </button>
 
           <p style={{textAlign:'center',fontSize:11,color:'#D1CEC9',paddingTop:20}}>
-            OMNI · Railway HFER-720 Engine · İTÜ AYM
+            OMNI · Railway HFER-720 Engine · ITU AYM
           </p>
         </div>
       </div>
@@ -1084,7 +1084,7 @@ export default function FormPage() {
         )}
 
         <p style={{textAlign:'center',fontSize:11,color:'#D1CEC9',paddingTop:28,paddingBottom:8}}>
-          OMNI · İTÜ AYM iş birliğiyle geliştirilmiştir
+          OMNI · ITU AYM iş birliğiyle geliştirilmiştir
         </p>
       </div>
     </div>

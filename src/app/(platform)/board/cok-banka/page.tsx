@@ -696,7 +696,7 @@ export default function BoardCokBankaDashboard() {
 
         {/* Footer */}
         <div style={{ textAlign: 'center', fontSize: 11, color: '#D1CEC9', marginTop: 40 }}>
-          OMNI · İTÜ AYM iş birliğiyle geliştirilmiştir · {new Date().getFullYear()}
+          OMNI · ITU AYM iş birliğiyle geliştirilmiştir · {new Date().getFullYear()}
         </div>
       </div>
     </div>
