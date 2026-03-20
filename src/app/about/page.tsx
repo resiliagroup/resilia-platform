@@ -38,7 +38,7 @@ export default function AboutPage() {
         </h1>
         <p style={{ fontSize:17, color:'rgba(255,255,255,0.65)', maxWidth:580,
           margin:'0 auto', lineHeight:1.7 }}>
-          Omniversel is a resilience analytics company developing the omniRISK platform —
+          Omniversel is a resilience analytics company developing a resilience analytics platform —
           an academically grounded, operationally tested business continuity and disaster risk
           management system for multi-hazard environments.
         </p>
@@ -67,9 +67,9 @@ export default function AboutPage() {
           </div>
           <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
             {[
-              { icon:'/icons/fema/Icon_PREVENT_01_Planning.png', title:'Academic Foundation', desc:'Rooted in Sendai Framework, FEMA NPG, ISO 22301 and peer-reviewed disaster risk research.' },
-              { icon:'/icons/fema/Icon_RESP_15_Situational.png', title:'Field Validated', desc:'Tested across 782+ facilities in urban multi-hazard environments with real-time Supabase data.' },
-              { icon:'/icons/fema/Icon_REC_05_Econ.png',         title:'Operationally Trusted', desc:'Used by banking, healthcare, industrial and public sector organizations for regulatory compliance.' },
+              { icon:'/icons/fema/Icon_PREVENT_01_Planning.png', title:'Academic Foundation', desc:'Grounded in peer-reviewed disaster risk science, international standards and field-validated methodology.' },
+              { icon:'/icons/fema/Icon_RESP_15_Situational.png', title:'Field Validated', desc:'Tested across 782+ facilities in urban multi-hazard environments across metropolitan Istanbul.' },
+              { icon:'/icons/fema/Icon_REC_05_Econ.png',         title:'Operationally Trusted', desc:'Applied across banking, healthcare, industrial and public sector organizations in Turkey.' },
             ].map((v, i) => (
               <div key={i} style={{ background:GR, border:`1px solid ${BORDER}`, borderRadius:12,
                 padding:'20px', display:'flex', gap:16, alignItems:'flex-start' }}>
@@ -84,34 +84,29 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Standards */}
+      {/* Approach + Partnership */}
       <section style={{ background:GR, borderTop:`1px solid ${BORDER}`, borderBottom:`1px solid ${BORDER}`,
-        padding:'64px 40px' }}>
-        <div style={{ maxWidth:1100, margin:'0 auto', textAlign:'center' }}>
-          <p style={{ color:T, fontSize:12, fontWeight:700, letterSpacing:3,
-            textTransform:'uppercase', marginBottom:16 }}>Standards &amp; Frameworks</p>
-          <h2 style={{ fontSize:'clamp(22px,3vw,34px)', fontWeight:700, color:N,
-            lineHeight:1.2, marginBottom:40 }}>
-            Aligned to International Excellence
-          </h2>
-          <div style={{ display:'flex', flexWrap:'wrap', gap:12, justifyContent:'center' }}>
-            {[
-              { label:'ISO 22301', desc:'Business Continuity' },
-              { label:'ISO 31000', desc:'Risk Management' },
-              { label:'FEMA NPG', desc:'National Preparedness' },
-              { label:'Sendai SF', desc:'2015–2030 Framework' },
-              { label:'Basel III', desc:'Operational Risk' },
-              { label:'BDDK ISP', desc:'Banking Continuity' },
-              { label:'RAPID-N', desc:'NATECH Assessment' },
-              { label:'JCI', desc:'Healthcare Standards' },
-              { label:'AFAD', desc:'Turkish NECD' },
-            ].map(s => (
-              <div key={s.label} style={{ background:BG, border:`1px solid ${BORDER}`, borderRadius:10,
-                padding:'14px 20px', textAlign:'center', minWidth:120 }}>
-                <div style={{ fontSize:14, fontWeight:700, color:N }}>{s.label}</div>
-                <div style={{ fontSize:11, color:MG, marginTop:4 }}>{s.desc}</div>
-              </div>
-            ))}
+        padding:'72px 40px' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto', display:'grid', gridTemplateColumns:'1fr 1fr', gap:64 }}>
+          <div>
+            <p style={{ color:T, fontSize:12, fontWeight:700, letterSpacing:3,
+              textTransform:'uppercase', marginBottom:16 }}>Our Approach</p>
+            <p style={{ color:MG, fontSize:16, lineHeight:1.85, marginBottom:20 }}>
+              Omniversel is built on a fundamental conviction: that organizational resilience can be measured, not merely described. Our platform applies quantitative risk analysis methods — drawing from process safety, disaster science and business continuity management — to produce defensible, auditable resilience scores that support real decisions.
+            </p>
+            <p style={{ color:MG, fontSize:16, lineHeight:1.85 }}>
+              We work across sectors where the cost of failure is high: critical infrastructure, healthcare, financial services and public administration. In each domain, we calibrate our methodology to the regulatory environment, hazard profile and operational structure of the institution — rather than applying a single generic framework.
+            </p>
+          </div>
+          <div>
+            <p style={{ color:T, fontSize:12, fontWeight:700, letterSpacing:3,
+              textTransform:'uppercase', marginBottom:16 }}>Academic Partnership</p>
+            <p style={{ color:MG, fontSize:16, lineHeight:1.85, marginBottom:20 }}>
+              Omniversel was developed in collaboration with the Istanbul Technical University Disaster Management Research and Application Center (ITU AYM). Our methodology is grounded in peer-reviewed disaster risk science and validated through field implementations across urban multi-hazard environments.
+            </p>
+            <p style={{ color:MG, fontSize:16, lineHeight:1.85 }}>
+              The platform has been applied across 782 facilities in metropolitan Istanbul, spanning banking, healthcare, industrial and public sector institutions. Each implementation contributes to a growing evidence base for quantitative urban resilience assessment.
+            </p>
           </div>
         </div>
       </section>
@@ -121,7 +116,7 @@ export default function AboutPage() {
         <h2 style={{ fontSize:'clamp(22px,3vw,34px)', fontWeight:800, color:'#FFFFFF',
           marginBottom:16, lineHeight:1.2 }}>Start Your Resilience Journey</h2>
         <p style={{ color:'rgba(255,255,255,0.75)', fontSize:16, marginBottom:32, lineHeight:1.65 }}>
-          Join the organizations using Omniversel to measure, plan and improve resilience.
+          Organizations that take resilience seriously choose Omniversel.
         </p>
         <div style={{ display:'flex', gap:14, justifyContent:'center', flexWrap:'wrap' }}>
           <Link href="/login" style={{ background:'#FFFFFF', color:N, fontWeight:700, fontSize:15,
