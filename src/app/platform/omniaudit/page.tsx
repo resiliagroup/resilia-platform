@@ -76,11 +76,11 @@ export default function OmniAuditPage() {
           </div>
           <h1 style={{ fontSize:'clamp(32px,4.5vw,58px)', fontWeight:800, color:'#fff', lineHeight:1.1, marginBottom:20, letterSpacing:'-0.02em' }}>
             omniAUDIT —<br/>
-            <span style={{ color:'#6EE7B7' }}>Compliance & Audit Management</span>
+            <span style={{ color:'#6EE7B7' }}>Compliance & Audit Intelligence</span>
           </h1>
           <p style={{ color:'rgba(255,255,255,0.65)', fontSize:18, lineHeight:1.7, maxWidth:620, margin:'0 auto 48px' }}>
-            Track your Sendai Framework progress, ISO 22301 compliance gaps, and regulatory audit readiness —
-            all in one dashboard.
+            Continuous compliance monitoring across Sendai Framework, ISO 22301, BDDK and Basel III —
+            with automated gap analysis and audit-ready reporting.
           </p>
 
           {/* Scorecard with progress bars */}
@@ -138,7 +138,7 @@ export default function OmniAuditPage() {
             Frameworks Supported
           </p>
           <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap' }}>
-            {['Sendai Framework', 'ISO 22301', 'BDDK', 'Basel III', 'JCI', 'FEMA NPG'].map(b => (
+            {['Sendai Framework', 'ISO 22301', 'BDDK', 'Basel III', 'JCI'].map(b => (
               <span key={b} style={{ background:GR, border:`1px solid ${BORDER}`, borderRadius:20,
                 padding:'6px 18px', fontSize:13, fontWeight:600, color:N }}>{b}</span>
             ))}
@@ -166,7 +166,7 @@ export default function OmniAuditPage() {
         </p>
         <Link href="/login" style={{ background:ACCENT, color:'#fff', fontWeight:700, fontSize:15,
           padding:'14px 40px', borderRadius:8, display:'inline-block' }}>
-          Run Gap Analysis
+          Start Compliance Review
         </Link>
       </section>
 

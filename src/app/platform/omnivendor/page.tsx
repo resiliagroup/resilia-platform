@@ -96,8 +96,8 @@ export default function OmniVendorPage() {
             <span style={{ color:'#A5B4FC' }}>Supply Chain Resilience</span>
           </h1>
           <p style={{ color:'rgba(255,255,255,0.65)', fontSize:18, lineHeight:1.7, maxWidth:620, margin:'0 auto 48px' }}>
-            Score, monitor and tier your third-party suppliers against disruption risk —
-            from NATECH cascades to cyber dependencies.
+            Score, monitor and tier your critical suppliers against disruption risk —
+            from natural hazard cascades to cyber dependencies.
           </p>
 
           {/* Supplier Risk Table */}
@@ -163,7 +163,7 @@ export default function OmniVendorPage() {
             Coverage Areas
           </p>
           <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap' }}>
-            {['NATECH Risk', 'Cyber Dependencies', 'Geographic Risk', 'Tier 1–3 Mapping', 'ISO 28000', 'BDDK TPRM'].map(b => (
+            {['ISO 28000', 'BDDK TPRM', 'ISO 22301'].map(b => (
               <span key={b} style={{ background:GR, border:`1px solid ${BORDER}`, borderRadius:20,
                 padding:'6px 18px', fontSize:13, fontWeight:600, color:N }}>{b}</span>
             ))}
@@ -174,7 +174,7 @@ export default function OmniVendorPage() {
       {/* METRICS */}
       <section style={{ padding:'48px', background:'#F8F9FA' }}>
         <div style={{ maxWidth:900, margin:'0 auto', display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:24, textAlign:'center' }}>
-          {[['3','','Supplier Tiers Mapped'],['360','°','Risk View'],['NATECH','','Cascade Modeling'],['RT','','Live Monitoring']].map(([n,u,l]) => (
+          {[['3','','Supplier Tiers Mapped'],['360','°','Risk View'],['NATECH','','Cascade Modeling'],['Real-Time','','Live Monitoring']].map(([n,u,l]) => (
             <div key={l} style={{ background:'#fff', border:`1px solid ${BORDER}`, borderRadius:12, padding:'28px 16px' }}>
               <div style={{ fontSize:36, fontWeight:800, color:ACCENT, fontFamily:'DM Mono,monospace', lineHeight:1 }}>{n}<span style={{ fontSize:16 }}>{u}</span></div>
               <div style={{ fontSize:12, color:MG, marginTop:8, fontWeight:600 }}>{l}</div>
