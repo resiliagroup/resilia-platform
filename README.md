@@ -138,3 +138,4 @@ src/
 ---
 
 *RESILIA © 2025-2026 · İTÜ AYM iş birliğiyle geliştirilmiştir*
+# cache bust 20 Mar 2026 Cum +03 23:26:52
