@@ -49,34 +49,34 @@ function uriRenk(uri: number) {
 function fazLabel(uri: number, isNatech = false) {
   // NATECH tesisleri bir üst aciliyet seviyesine çekilir
   const effectiveUri = isNatech ? uri - 7 : uri
-  if (effectiveUri > 90) return 'Önleme'        // Prevention
-  if (effectiveUri > 85) return 'Koruma'         // Protection
-  if (effectiveUri > 80) return 'Zarar Azaltma'  // Mitigation
-  if (effectiveUri > 75) return 'Müdahale'       // Response
-  return 'İyileştirme'                           // Recovery
+  if (effectiveUri > 90) return 'Prevention'
+  if (effectiveUri > 85) return 'Protection'
+  if (effectiveUri > 80) return 'Mitigation'
+  if (effectiveUri > 75) return 'Response'
+  return 'Recovery'
 }
 function fazRenk(uri: number, isNatech = false) {
   const label = fazLabel(uri, isNatech)
-  if (label === 'Önleme')       return { bg: '#F0FDF4', border: '#BBF7D0', text: '#15803D' }
-  if (label === 'Koruma')       return { bg: '#ECFDF5', border: '#A7F3D0', text: '#0F766E' }
-  if (label === 'Zarar Azaltma') return { bg: '#FFFBEB', border: '#FDE68A', text: '#B45309' }
-  if (label === 'Müdahale')     return { bg: '#FFF7ED', border: '#FED7AA', text: '#C2410C' }
+  if (label === 'Prevention')  return { bg: '#F0FDF4', border: '#BBF7D0', text: '#15803D' }
+  if (label === 'Protection')  return { bg: '#ECFDF5', border: '#A7F3D0', text: '#0F766E' }
+  if (label === 'Mitigation')  return { bg: '#FFFBEB', border: '#FDE68A', text: '#B45309' }
+  if (label === 'Response')    return { bg: '#FFF7ED', border: '#FED7AA', text: '#C2410C' }
   return { bg: '#FEF2F2', border: '#FECACA', text: '#B91C1C' }
 }
 function aksiyonOneri(uri: number, hroAlpha: number, sector: string, bScore: number, isNatech: boolean) {
   // NATECH öncelikli
-  if (isNatech && uri < 85) return 'NATECH Acil Eylem Planı'
-  if (isNatech && uri >= 85) return 'NATECH Tatbikat Planla'
+  if (isNatech && uri < 85) return 'NATECH Emergency Action Plan'
+  if (isNatech && uri >= 85) return 'Schedule NATECH Drill'
   // Sektör bazlı
-  if (sector === 'HOSPITAL' && uri < 83) return 'Kritik Hasta Kapasitesi BCP'
-  if (sector === 'EDUCATION') return 'Tahliye Planı Güncelle'
-  if (sector === 'MUNICIPALITY' && bScore >= 1.5) return 'Darboğaz Analizi Yap'
-  if (sector === 'BANK') return 'RTO/RPO Hedef Revizyonu'
+  if (sector === 'HOSPITAL' && uri < 83) return 'Critical Patient Capacity BCP'
+  if (sector === 'EDUCATION') return 'Update Evacuation Plan'
+  if (sector === 'MUNICIPALITY' && bScore >= 1.5) return 'Conduct Bottleneck Analysis'
+  if (sector === 'BANK') return 'Revise RTO/RPO Targets'
   // URI eşikli
-  if (uri < 78) return 'Acil BCP Geliştir'
-  if (uri <= 82) return 'Tatbikat Planla'
-  if (uri <= 86) return 'Kapasite Yatırımı Değerlendir'
-  return 'Periyodik İzleme Yeterli'
+  if (uri < 78) return 'Develop Emergency BCP'
+  if (uri <= 82) return 'Schedule Drill'
+  if (uri <= 86) return 'Evaluate Capacity Investment'
+  return 'Periodic Monitoring Sufficient'
 }
 function sektorCarpan(sector: string) {
   if (sector === 'INDUSTRIAL') return 1.5
@@ -347,15 +347,15 @@ export default function YGGPano() {
       <div style={{ background: NAVY, padding: '20px 32px' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <h1 style={{ color: 'white', fontSize: 20, fontWeight: 700, margin: 0 }}>YGG Yönetici Panosu</h1>
+            <h1 style={{ color: 'white', fontSize: 20, fontWeight: 700, margin: 0 }}>Executive Dashboard (YGG)</h1>
             <p style={{ color: '#94A3B8', fontSize: 11, marginTop: 3 }}>
-              TOC Darboğaz · HRO Olgunluk · MTPD · FEMA Fazlama — omniRISK HFER-720
+              Facility-based URI Score · FEMA Phase Mapping · Action Recommendations
             </p>
           </div>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
             {loading ? (
               <span style={{ color: '#94A3B8', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Loader2 style={{ width: 14, height: 14 }} className="animate-spin"/> Yükleniyor…
+                <Loader2 style={{ width: 14, height: 14 }} className="animate-spin"/> Loading…
               </span>
             ) : (
               <span style={{ color: '#4ADE80', fontSize: 12, background: 'rgba(34,197,94,.1)', border: '1px solid rgba(34,197,94,.2)', borderRadius: 8, padding: '4px 12px' }}>
@@ -367,14 +367,14 @@ export default function YGGPano() {
               disabled={loading || autoCalc}
               style={{ background: TEAL, color: 'white', border: 'none', borderRadius: 10, padding: '8px 18px', fontSize: 13, fontWeight: 700, cursor: loading || autoCalc ? 'not-allowed' : 'pointer', opacity: autoCalc ? 0.7 : 1 }}
             >
-              {autoCalc ? '⏳ Hesaplanıyor…' : '⚡ Tüm Portföyü Hesapla'}
+              {autoCalc ? '⏳ Calculating…' : '⚡ Auto Calculate'}
             </button>
             <button
               onClick={pdfIndir}
               disabled={indiriyor}
               style={{ background: 'transparent', color: '#E8C97A', border: '1px solid rgba(232,201,122,.3)', borderRadius: 10, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: indiriyor ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6, opacity: indiriyor ? 0.7 : 1 }}
             >
-              <Download style={{ width: 14, height: 14 }}/> {indiriyor ? 'Hazirlaniyor…' : 'YGG Raporu Indir'}
+              <Download style={{ width: 14, height: 14 }}/> {indiriyor ? 'Preparing…' : 'PDF Report'}
             </button>
           </div>
         </div>
@@ -385,10 +385,10 @@ export default function YGGPano() {
         {/* KPI Kartları */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 24 }}>
           {[
-            { icon: <TrendingUp style={{ width: 18, height: 18 }}/>, label: 'Portföy URI Ortalaması', val: hesaplanan ? `${kpi.avgUri}` : '—', sub: `${hesaplanan}/${toplam} hesaplandı`, renk: uriRenk(kpi.avgUri), bg: '#F0FDF4' },
-            { icon: <AlertTriangle style={{ width: 18, height: 18 }}/>, label: 'Kritik Darboğaz (B>2)', val: `${kpi.kritikB}`, sub: 'TOC çarpanı yüksek tesis', renk: '#F97316', bg: '#FFF7ED' },
-            { icon: <Zap style={{ width: 18, height: 18 }}/>, label: 'Toplam Günlük MTPD', val: kpi.toplamMtpd.toLocaleString('tr-TR') + ' ₺', sub: 'Sektöre göre ağırlıklı', renk: '#6366F1', bg: '#EEF2FF' },
-            { icon: <Shield style={{ width: 18, height: 18 }}/>, label: 'Düşük HRO Uyarısı', val: `${kpi.dusukHro}`, sub: 'α < 1.0 olan tesis', renk: '#EF4444', bg: '#FEF2F2' },
+            { icon: <TrendingUp style={{ width: 18, height: 18 }}/>, label: 'Portfolio URI Average', val: hesaplanan ? `${kpi.avgUri}` : '—', sub: `${hesaplanan}/${toplam} scored`, renk: uriRenk(kpi.avgUri), bg: '#F0FDF4' },
+            { icon: <AlertTriangle style={{ width: 18, height: 18 }}/>, label: 'Critical Bottleneck (B>2)', val: `${kpi.kritikB}`, sub: 'High TOC multiplier facility', renk: '#F97316', bg: '#FFF7ED' },
+            { icon: <Zap style={{ width: 18, height: 18 }}/>, label: 'Total Daily MTPD', val: kpi.toplamMtpd.toLocaleString('tr-TR') + ' ₺', sub: 'Sector-weighted', renk: '#6366F1', bg: '#EEF2FF' },
+            { icon: <Shield style={{ width: 18, height: 18 }}/>, label: 'Low HRO Warning', val: `${kpi.dusukHro}`, sub: 'Facilities with α < 1.0', renk: '#EF4444', bg: '#FEF2F2' },
           ].map(k => (
             <div key={k.label} style={{ background: 'white', borderRadius: 16, padding: '20px 24px', boxShadow: '0 1px 3px rgba(0,0,0,.06)', border: '1px solid #F1F0EF' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
@@ -404,10 +404,10 @@ export default function YGGPano() {
         {/* Filtre bar */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 16, alignItems: 'center' }}>
           {([
-            { key: 'hepsi',    label: 'Tümü' },
-            { key: 'kritik',   label: '🔴 Kritik (URI<50)' },
+            { key: 'hepsi',    label: 'All' },
+            { key: 'kritik',   label: '🔴 Critical (URI<50)' },
             { key: 'natech',   label: '⚠ NATECH' },
-            { key: 'dusuk_hro', label: '🛡 Düşük HRO (α<1.0)' },
+            { key: 'dusuk_hro', label: '🛡 Low HRO (α<1.0)' },
           ] as { key: Filtre; label: string }[]).map(f => (
             <button key={f.key} onClick={() => setFiltre(f.key)}
               style={{
@@ -420,7 +420,7 @@ export default function YGGPano() {
               {f.label}
             </button>
           ))}
-          <span style={{ marginLeft: 'auto', fontSize: 12, color: '#9CA3AF' }}>{satirlar.length} tesis gösteriliyor</span>
+          <span style={{ marginLeft: 'auto', fontSize: 12, color: '#9CA3AF' }}>{satirlar.length} facilities shown</span>
         </div>
 
         {/* Ana Tablo */}
@@ -428,7 +428,7 @@ export default function YGGPano() {
 
           {/* Tablo başlığı */}
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 90px 130px 90px 110px 110px 160px 140px', padding: '10px 20px', background: '#F8F9FA', borderBottom: '1px solid #F1F0EF', gap: 8 }}>
-            {['Kısıt Noktası','HRO Sinyali','MTPD (Günlük)','Darboğaz B','URI Skoru','FEMA Fazı','Önerilen Aksiyon','Kurtarılan Değer'].map(h => (
+            {['Facility','HRO Signal','MTPD (Daily)','Bottleneck B','URI Score','FEMA Phase','Action','Recovered Value'].map(h => (
               <span key={h} style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</span>
             ))}
           </div>
@@ -436,13 +436,13 @@ export default function YGGPano() {
           {loading && (
             <div style={{ padding: 48, textAlign: 'center', color: '#9CA3AF' }}>
               <Loader2 style={{ width: 24, height: 24, margin: '0 auto 8px' }} className="animate-spin"/>
-              <p style={{ fontSize: 13 }}>Tesis verileri yükleniyor…</p>
+              <p style={{ fontSize: 13 }}>Loading facility data…</p>
             </div>
           )}
 
           {!loading && satirlar.length === 0 && (
             <div style={{ padding: 48, textAlign: 'center', color: '#9CA3AF', fontSize: 13 }}>
-              Filtreye uyan tesis bulunamadı.
+              No facilities match the selected filter.
             </div>
           )}
 
@@ -486,13 +486,13 @@ export default function YGGPano() {
                           α {hro.toFixed(2)}
                         </span>
                         <div style={{ fontSize: 10, color: hro >= 1.0 ? '#16A34A' : '#DC2626' }}>
-                          {hro >= 1.3 ? '● Olgun' : hro >= 1.0 ? '● İyi' : '● Uyarı'}
+                          {hro >= 1.3 ? '● Mature' : hro >= 1.0 ? '● Good' : '● Warning'}
                         </div>
                       </div>
                     ) : (
                       <button onClick={() => hesapla(f)}
                         style={{ fontSize: 11, color: '#6366F1', background: '#EEF2FF', border: '1px solid #C7D2FE', borderRadius: 6, padding: '3px 8px', cursor: 'pointer' }}>
-                        Hesapla
+                        Calculate
                       </button>
                     )}
                   </div>
@@ -502,7 +502,7 @@ export default function YGGPano() {
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#4B5563', fontFamily: 'monospace' }}>
                       {mtpd.toLocaleString('tr-TR')} ₺
                     </span>
-                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>{f.employee_count ?? 0} çalışan</div>
+                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>{f.employee_count ?? 0} employees</div>
                   </div>
 
                   {/* Darboğaz B */}

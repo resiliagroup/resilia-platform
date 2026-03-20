@@ -10,210 +10,340 @@ const sbBD = createClient(
 )
 const TENANT_BD = '11111111-0000-0000-0000-000000000001'
 
-const MODULES = [
-  {
-    key: 'omnirisk',
-    name: 'omniRISK',
-    desc: 'HFER-720 tehlike & risk analizi, URI skoru, tesis bazlı puanlama',
-    href: '/beylikduzu-komuta',
-    color: '#EF4444',
-    bg: '#FEF2F2',
-    border: '#FCA5A5',
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-        <line x1="12" y1="9" x2="12" y2="13"/>
-        <line x1="12" y1="17" x2="12.01" y2="17"/>
-      </svg>
-    ),
-  },
-  {
-    key: 'omniimpact',
-    name: 'omniIMPACT',
-    desc: 'İş etkisi analizi, BIA raporlama, kritik fonksiyon değerlendirmesi',
-    href: '/omni-dashboard',
-    color: '#F97316',
-    bg: '#FFF7ED',
-    border: '#FDBA74',
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-      </svg>
-    ),
-  },
-  {
-    key: 'omniplan',
-    name: 'omniPLAN',
-    desc: 'BCM planlaması, RTO/RPO takibi, iş sürekliliği tatbikatları',
-    href: '/omniplan',
-    color: '#3B82F6',
-    bg: '#EFF6FF',
-    border: '#93C5FD',
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <line x1="16" y1="13" x2="8" y2="13"/>
-        <line x1="16" y1="17" x2="8" y2="17"/>
-        <polyline points="10 9 9 9 8 9"/>
-      </svg>
-    ),
-  },
-  {
-    key: 'omnicrisis',
-    name: 'omniCRISIS',
-    desc: 'Kriz yönetimi, olay takibi, post-mortem raporlama',
-    href: '/omnicrisis',
-    color: '#8B5CF6',
-    bg: '#F5F3FF',
-    border: '#C4B5FD',
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="8" x2="12" y2="12"/>
-        <line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
-    ),
-  },
-  {
-    key: 'omniaudit',
-    name: 'omniAUDIT',
-    desc: 'Uyum denetimi, ISO 22301 kontrolü, Sendai çerçeve izleme',
-    href: '/beylikduzu-komuta',
-    color: '#10B981',
-    bg: '#F0FDF4',
-    border: '#6EE7B7',
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        <polyline points="9 12 11 14 15 10"/>
-      </svg>
-    ),
-  },
-  {
-    key: 'omnivendor',
-    name: 'omniVENDOR',
-    desc: 'Tedarik zinciri riski, üçüncü taraf değerlendirmesi, vendor skoru',
-    href: '/tesis-agi',
-    color: '#6366F1',
-    bg: '#EEF2FF',
-    border: '#A5B4FC',
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-      </svg>
-    ),
-  },
+const NAVY   = '#0A1628'
+const TEAL   = '#009B8D'
+const GOLD   = '#E8C97A'
+const BORDER = '#E2E8F0'
+
+function CcdsIcon({ file, size = 24 }: { file: string; size?: number }) {
+  return <img src={`/icons/${file}`} width={size} height={size} alt="" style={{ objectFit: 'contain', flexShrink: 0 }} />
+}
+
+const QUICK_MODULES = [
+  { key: 'omnirisk',   name: 'omniRISK',   icon: 'Icon_MIT_06_Risk.png',            color: '#EF4444', bg: '#FEF2F2', border: '#FCA5A5', href: '/beylikduzu-komuta', desc: 'Hazard & risk analysis' },
+  { key: 'omniimpact', name: 'omniIMPACT', icon: 'Icon_RESP_15_Situational.png',    color: '#F97316', bg: '#FFF7ED', border: '#FDBA74', href: '/omni-dashboard',    desc: 'Business Impact Analysis' },
+  { key: 'omniplan',   name: 'omniPLAN',   icon: 'Icon_PREVENT_01_Planning.png',    color: '#3B82F6', bg: '#EFF6FF', border: '#93C5FD', href: '/omniplan',          desc: 'BCM planning & RTO/RPO' },
+  { key: 'omnicrisis', name: 'omniCRISIS', icon: 'Icon_RESP_12_OnScene.png',        color: '#8B5CF6', bg: '#F5F3FF', border: '#C4B5FD', href: '/omnicrisis',        desc: 'Crisis command center' },
+  { key: 'omniaudit',  name: 'omniAUDIT',  icon: 'Icon_PROTECT_10_Risk.png',        color: '#10B981', bg: '#F0FDF4', border: '#6EE7B7', href: '/beylikduzu-komuta', desc: 'Compliance & Sendai audit' },
+  { key: 'omnivendor', name: 'omniVENDOR', icon: 'Icon_PROTECT_11_Supply.png',      color: '#6366F1', bg: '#EEF2FF', border: '#A5B4FC', href: '/tesis-agi',         desc: 'Supply chain risk' },
 ]
 
+interface NearMissRow { id: string; event_date: string; category: string; urgency: string; facility_id: string }
+interface SprintCardRow { id: string; status: string; tenant_id: string }
+interface FacilityRow { id: string; name: string; extra_data: { H_score?: number; F_score?: number; X_score?: number; C_score?: number; natech_risk?: number } | null }
+
+const URGENCY_COLOR: Record<string, { bg: string; text: string; border: string }> = {
+  'Critical': { bg: '#FEF2F2', text: '#B91C1C', border: '#FECACA' },
+  'Kritik':   { bg: '#FEF2F2', text: '#B91C1C', border: '#FECACA' },
+  'High':     { bg: '#FFF7ED', text: '#C2410C', border: '#FED7AA' },
+  'Yüksek':  { bg: '#FFF7ED', text: '#C2410C', border: '#FED7AA' },
+  'Medium':   { bg: '#FFFBEB', text: '#B45309', border: '#FDE68A' },
+  'Orta':     { bg: '#FFFBEB', text: '#B45309', border: '#FDE68A' },
+  'Low':      { bg: '#F0FDF4', text: '#15803D', border: '#BBF7D0' },
+  'Düşük':   { bg: '#F0FDF4', text: '#15803D', border: '#BBF7D0' },
+}
+
+function uriScore(f: FacilityRow): number {
+  const ed = f.extra_data
+  if (!ed) return 50
+  const H = (ed.H_score ?? 0) / 5 * 100
+  const F = (ed.F_score ?? 0) / 5 * 100
+  const X = (ed.X_score ?? 0) / 5 * 100
+  const C = (ed.C_score ?? 0) / 5 * 100
+  return Math.max(0, Math.min(100, 100 - (H * 0.3 + F * 0.3 + X * 0.2) / 100 + C * 0.2))
+}
+
 export default function HubPage() {
-  const [kullanici, setKullanici]     = useState('...')
-  const [toplam,    setToplam]        = useState<number | null>(null)
-  const [kritik,    setKritik]        = useState<number | null>(null)
-  const [bekleyen,  setBekleyen]      = useState(4)
-  const [tatbikat,  setTatbikat]      = useState('15 Mart 2026')
-  const bugun = new Date().toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+  const [kullanici, setKullanici] = useState('...')
+  const bugun = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+
+  // KPI state
+  const [totalFacilities, setTotalFacilities] = useState<number | null>(null)
+  const [criticalRisk,    setCriticalRisk]    = useState<number | null>(null)
+  const [activeNearMiss,  setActiveNearMiss]  = useState<number | null>(null)
+  const [sprintVelocity,  setSprintVelocity]  = useState<{ done: number; total: number } | null>(null)
+
+  // Panel state
+  const [topFacilities, setTopFacilities] = useState<{ name: string; uri: number; id: string }[]>([])
+  const [mtpdTotal,     setMtpdTotal]     = useState(0)
+  const [nearMissItems, setNearMissItems] = useState<NearMissRow[]>([])
+  const [sprintActive,  setSprintActive]  = useState<SprintCardRow[]>([])
+
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const k = mevcutKullanici()
     if (k) setKullanici(k.tenant)
 
-    sbBD
-      .from('facilities')
-      .select('id,extra_data', { count: 'exact' })
-      .eq('tenant_id', TENANT_BD)
-      .eq('is_active', true)
-      .limit(1000)
-      .then(({ data, count }) => {
-        setToplam(count ?? data?.length ?? 0)
-        const krit = (data ?? []).filter((f: { extra_data: { H_score?: number } | null }) =>
-          (f.extra_data?.H_score ?? 0) >= 4
-        ).length
-        setKritik(krit)
-      })
+    async function loadAll() {
+      setLoading(true)
+      try {
+        // 1. Facilities
+        const { data: facs, count } = await sbBD
+          .from('facilities')
+          .select('id,name,extra_data', { count: 'exact' })
+          .eq('tenant_id', TENANT_BD)
+          .eq('is_active', true)
+          .limit(1000)
+
+        const facList = (facs ?? []) as FacilityRow[]
+        setTotalFacilities(count ?? facList.length)
+
+        // Critical risk: URI < 75
+        const critCount = facList.filter(f => uriScore(f) < 75).length
+        setCriticalRisk(critCount)
+
+        // Top 5 riskiest facilities (lowest URI)
+        const scored = facList
+          .map(f => ({ name: f.name, uri: uriScore(f), id: f.id }))
+          .sort((a, b) => a.uri - b.uri)
+          .slice(0, 5)
+        setTopFacilities(scored)
+        setMtpdTotal(facList.length * 2) // placeholder MTPD hours
+
+        // 2. Near Miss (this month)
+        const thisMonth = new Date()
+        thisMonth.setDate(1)
+        thisMonth.setHours(0, 0, 0, 0)
+        const { data: nmData, count: nmCount } = await sbBD
+          .from('near_miss_events')
+          .select('id,event_date,category,urgency,facility_id', { count: 'exact' })
+          .eq('tenant_id', TENANT_BD)
+          .gte('event_date', thisMonth.toISOString())
+          .order('event_date', { ascending: false })
+          .limit(5)
+
+        setActiveNearMiss(nmCount ?? 0)
+        setNearMissItems((nmData ?? []) as NearMissRow[])
+
+        // 3. Sprint cards
+        const { data: sprintData } = await sbBD
+          .from('sprint_cards')
+          .select('id,status,tenant_id')
+          .eq('tenant_id', TENANT_BD)
+
+        const allCards = (sprintData ?? []) as SprintCardRow[]
+        const doneCards = allCards.filter(c => c.status === 'tamamlandi' || c.status === 'Done')
+        setSprintVelocity({ done: doneCards.length, total: allCards.length })
+        setSprintActive(allCards.filter(c => c.status === 'yapiliyor' || c.status === 'In Progress'))
+
+      } catch (e) {
+        console.error('Hub load error:', e)
+      }
+      setLoading(false)
+    }
+
+    loadAll()
   }, [])
 
-  const KPI_ITEMS = [
-    { label: 'Toplam Tesis',    val: toplam !== null ? toplam.toLocaleString('tr-TR') : '…', renk: '#3B82F6', sub: 'Supabase · canlı' },
-    { label: 'Kritik Risk',     val: kritik !== null ? String(kritik) : '…',                  renk: '#EF4444', sub: 'H ≥ 4 seviyesi'   },
-    { label: 'Bekleyen Aksiyon',val: String(bekleyen),                                         renk: '#F97316', sub: 'Aksiyon planı'    },
-    { label: 'Son Tatbikat',    val: tatbikat,                                                  renk: '#10B981', sub: 'En son tatbikat'  },
+  const kpis = [
+    {
+      label: 'Total Facilities',
+      val: totalFacilities !== null ? totalFacilities.toLocaleString() : '…',
+      color: '#3B82F6', sub: 'Supabase · live',
+    },
+    {
+      label: 'Critical Risk',
+      val: criticalRisk !== null ? String(criticalRisk) : '…',
+      color: '#EF4444', sub: 'URI < 75 threshold',
+    },
+    {
+      label: 'Active Near Miss',
+      val: activeNearMiss !== null ? String(activeNearMiss) : '…',
+      color: '#F97316', sub: 'This month',
+    },
+    {
+      label: 'Sprint Velocity',
+      val: sprintVelocity !== null
+        ? `${sprintVelocity.done}/${sprintVelocity.total}`
+        : '…',
+      color: '#10B981', sub: 'Completed / total cards',
+    },
   ]
+
+  const uriColor = (uri: number) =>
+    uri < 40 ? '#EF4444' : uri < 60 ? '#F97316' : uri < 75 ? '#F59E0B' : '#22C55E'
 
   return (
     <div className="min-h-screen" style={{ background: '#F8F9FA', fontFamily: "'DM Sans',sans-serif" }}>
 
       {/* HEADER */}
-      <div style={{ background: '#0A1628', borderBottom: '1px solid rgba(255,255,255,0.06)' }} className="px-8 py-6">
-        <div className="max-w-6xl mx-auto flex items-center justify-between flex-wrap gap-4">
+      <div style={{ background: NAVY, borderBottom: '1px solid rgba(255,255,255,0.06)' }} className="px-8 py-6">
+        <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-2xl font-bold text-white">
-              Hoş geldiniz,{' '}
-              <span style={{ color: '#E8C97A' }}>{kullanici}</span>
+              Welcome,{' '}
+              <span style={{ color: GOLD }}>{kullanici}</span>
             </h1>
             <p className="text-sm mt-1" style={{ color: '#94A3B8' }}>{bugun}</p>
           </div>
           <div className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg"
-               style={{ background: 'rgba(232,201,122,.1)', border: '1px solid rgba(232,201,122,.2)', color: '#E8C97A' }}>
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#E8C97A' }}/>
+               style={{ background: 'rgba(232,201,122,.1)', border: '1px solid rgba(232,201,122,.2)', color: GOLD }}>
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: GOLD }}/>
             OMNI Resilience Platform · v2.0
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-8 py-8">
+      <div className="max-w-7xl mx-auto px-8 py-8">
 
-        {/* KPI STRIP */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-          {KPI_ITEMS.map(k => (
-            <div key={k.label} className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">{k.label}</p>
-              <p className="text-2xl font-bold font-mono mt-1" style={{ color: k.renk }}>{k.val}</p>
-              <p className="text-xs text-gray-400 mt-1.5">{k.sub}</p>
+        {/* ── KPI STRIP ──────────────────────────────────────────── */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {kpis.map(k => (
+            <div key={k.label} style={{ background: 'white', borderRadius: 12, border: `1px solid ${BORDER}`, padding: '20px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{k.label}</p>
+              <p style={{ fontSize: 28, fontWeight: 800, color: k.color, fontFamily: 'DM Mono,monospace', lineHeight: 1 }}>{k.val}</p>
+              <p style={{ fontSize: 11, color: '#CBD5E1', marginTop: 6 }}>{k.sub}</p>
             </div>
           ))}
         </div>
 
-        {/* MODULES GRID */}
-        <div className="mb-6">
-          <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Modüller</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {MODULES.map(m => (
-              <div key={m.key}
-                   className="bg-white rounded-xl border shadow-sm flex flex-col overflow-hidden hover:shadow-md transition-shadow"
-                   style={{ borderColor: m.border }}>
-                <div className="p-6 flex-1">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="p-3 rounded-xl flex-shrink-0" style={{ background: m.bg, color: m.color }}>
-                      {m.icon}
+        {/* ── MIDDLE: 3 PANELS ───────────────────────────────────── */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 28 }}>
+
+          {/* LEFT: YGG Summary */}
+          <div style={{ background: 'white', borderRadius: 12, border: `1px solid ${BORDER}`, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+            <div style={{ padding: '14px 16px', borderBottom: `1px solid ${BORDER}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <CcdsIcon file="Icon_MIT_06_Risk.png" size={18} />
+                <span style={{ fontSize: 13, fontWeight: 700, color: NAVY }}>Executive Dashboard</span>
+              </div>
+              <Link href="/ygg-pano" style={{ fontSize: 11, color: TEAL, fontWeight: 600 }}>View all →</Link>
+            </div>
+            <div style={{ padding: '12px 16px' }}>
+              <p style={{ fontSize: 11, color: '#94A3B8', marginBottom: 8 }}>Top 5 Riskiest Facilities</p>
+              {loading ? (
+                <p style={{ fontSize: 12, color: '#CBD5E1' }}>Loading…</p>
+              ) : topFacilities.length === 0 ? (
+                <p style={{ fontSize: 12, color: '#CBD5E1' }}>No data</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {topFacilities.map((f, i) => (
+                    <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 10, color: '#94A3B8', fontWeight: 700, width: 14 }}>{i+1}</span>
+                      <span style={{ fontSize: 12, color: '#374151', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.name}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: uriColor(f.uri), fontFamily: 'DM Mono,monospace' }}>{Math.round(f.uri)}</span>
                     </div>
-                    <div>
-                      <p className="text-base font-bold text-gray-900" style={{ fontFamily: 'DM Mono,monospace', letterSpacing: 1 }}>{m.name}</p>
-                      <p className="text-xs text-gray-500 mt-1 leading-relaxed">{m.desc}</p>
+                  ))}
+                </div>
+              )}
+              <div style={{ marginTop: 12, paddingTop: 10, borderTop: `1px solid ${BORDER}` }}>
+                <p style={{ fontSize: 11, color: '#94A3B8' }}>
+                  Est. MTPD coverage: <span style={{ fontWeight: 700, color: NAVY }}>{mtpdTotal}h</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* CENTER: Near Miss Feed */}
+          <div style={{ background: 'white', borderRadius: 12, border: `1px solid ${BORDER}`, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+            <div style={{ padding: '14px 16px', borderBottom: `1px solid ${BORDER}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <CcdsIcon file="Icon_RESP_15_Situational.png" size={18} />
+                <span style={{ fontSize: 13, fontWeight: 700, color: NAVY }}>Near Miss Feed</span>
+              </div>
+              <Link href="/near-miss" style={{ fontSize: 11, color: TEAL, fontWeight: 600 }}>View all →</Link>
+            </div>
+            <div style={{ padding: '12px 16px' }}>
+              <p style={{ fontSize: 11, color: '#94A3B8', marginBottom: 8 }}>Last 5 Events This Month</p>
+              {loading ? (
+                <p style={{ fontSize: 12, color: '#CBD5E1' }}>Loading…</p>
+              ) : nearMissItems.length === 0 ? (
+                <p style={{ fontSize: 12, color: '#CBD5E1' }}>No events recorded this month</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+                  {nearMissItems.map(nm => {
+                    const uc = URGENCY_COLOR[nm.urgency] ?? URGENCY_COLOR['Low']
+                    return (
+                      <div key={nm.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 6, background: uc.bg, color: uc.text, border: `1px solid ${uc.border}`, flexShrink: 0 }}>
+                          {nm.urgency}
+                        </span>
+                        <span style={{ fontSize: 12, color: '#374151', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nm.category}</span>
+                        <span style={{ fontSize: 10, color: '#94A3B8', flexShrink: 0 }}>
+                          {new Date(nm.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* RIGHT: Sprint Status */}
+          <div style={{ background: 'white', borderRadius: 12, border: `1px solid ${BORDER}`, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+            <div style={{ padding: '14px 16px', borderBottom: `1px solid ${BORDER}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <CcdsIcon file="Icon_PROTECT_01_Planning.png" size={18} />
+                <span style={{ fontSize: 13, fontWeight: 700, color: NAVY }}>Sprint Status</span>
+              </div>
+              <Link href="/omni-sprint" style={{ fontSize: 11, color: TEAL, fontWeight: 600 }}>View board →</Link>
+            </div>
+            <div style={{ padding: '12px 16px' }}>
+              {loading ? (
+                <p style={{ fontSize: 12, color: '#CBD5E1' }}>Loading…</p>
+              ) : (
+                <>
+                  <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+                    <div style={{ flex: 1, textAlign: 'center', padding: '10px 6px', background: '#F8F9FA', borderRadius: 8, borderTop: `3px solid ${TEAL}` }}>
+                      <div style={{ fontSize: 22, fontWeight: 800, color: TEAL, fontFamily: 'DM Mono,monospace' }}>{sprintVelocity?.done ?? 0}</div>
+                      <div style={{ fontSize: 10, color: '#94A3B8', fontWeight: 600, marginTop: 4 }}>DONE</div>
+                    </div>
+                    <div style={{ flex: 1, textAlign: 'center', padding: '10px 6px', background: '#F8F9FA', borderRadius: 8, borderTop: '3px solid #F59E0B' }}>
+                      <div style={{ fontSize: 22, fontWeight: 800, color: '#F59E0B', fontFamily: 'DM Mono,monospace' }}>{sprintActive.length}</div>
+                      <div style={{ fontSize: 10, color: '#94A3B8', fontWeight: 600, marginTop: 4 }}>IN PROGRESS</div>
+                    </div>
+                    <div style={{ flex: 1, textAlign: 'center', padding: '10px 6px', background: '#F8F9FA', borderRadius: 8, borderTop: '3px solid #6B7280' }}>
+                      <div style={{ fontSize: 22, fontWeight: 800, color: '#6B7280', fontFamily: 'DM Mono,monospace' }}>
+                        {(sprintVelocity?.total ?? 0) - (sprintVelocity?.done ?? 0) - sprintActive.length}
+                      </div>
+                      <div style={{ fontSize: 10, color: '#94A3B8', fontWeight: 600, marginTop: 4 }}>BACKLOG</div>
                     </div>
                   </div>
+                  {/* Mini burndown bar */}
+                  {sprintVelocity && sprintVelocity.total > 0 && (
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#94A3B8', marginBottom: 5 }}>
+                        <span>Velocity</span>
+                        <span style={{ fontWeight: 700, color: TEAL }}>{Math.round(sprintVelocity.done / sprintVelocity.total * 100)}%</span>
+                      </div>
+                      <div style={{ height: 6, background: '#F1F0EF', borderRadius: 99 }}>
+                        <div style={{ height: '100%', width: `${Math.round(sprintVelocity.done / sprintVelocity.total * 100)}%`, background: TEAL, borderRadius: 99 }} />
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ── QUICK ACCESS GRID ──────────────────────────────────── */}
+        <div>
+          <h2 style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Modules</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {QUICK_MODULES.map(m => (
+              <Link key={m.key} href={m.href}
+                style={{ background: 'white', borderRadius: 12, border: `1px solid ${m.border}`, padding: '16px', display: 'flex', flexDirection: 'column', gap: 10, transition: 'box-shadow .15s', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', textDecoration: 'none' }}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: m.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <CcdsIcon file={m.icon} size={22} />
                 </div>
-                <div className="px-6 pb-5">
-                  <Link href={m.href}
-                    className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg text-sm font-semibold transition-all hover:opacity-90"
-                    style={{ background: m.color, color: 'white' }}>
-                    Aç
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <line x1="5" y1="12" x2="19" y2="12"/>
-                      <polyline points="12 5 19 12 12 19"/>
-                    </svg>
-                  </Link>
+                <div>
+                  <p style={{ fontSize: 12, fontWeight: 800, color: m.color, fontFamily: 'DM Mono,monospace', letterSpacing: 0.5 }}>{m.name}</p>
+                  <p style={{ fontSize: 10, color: '#94A3B8', marginTop: 2, lineHeight: 1.4 }}>{m.desc}</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
 
         {/* FOOTER */}
-        <div className="mt-8 pt-5 border-t border-gray-200 flex flex-wrap items-center justify-between gap-2">
-          <p className="text-xs text-gray-300">OMNI Resilience Platform · HFER-720 v2.0 · © 2026</p>
-          <p className="text-xs text-gray-300">Sendai 2015–2030 · ISO 22301 · AFAD</p>
+        <div style={{ marginTop: 32, paddingTop: 20, borderTop: `1px solid ${BORDER}`, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+          <p style={{ fontSize: 11, color: '#CBD5E1' }}>OMNI Resilience Platform · HFER-720 v2.0 · © 2026</p>
+          <p style={{ fontSize: 11, color: '#CBD5E1' }}>Sendai 2015–2030 · ISO 22301 · AFAD</p>
         </div>
       </div>
     </div>

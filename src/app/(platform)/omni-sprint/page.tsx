@@ -13,15 +13,79 @@ const sb = createClient(
 const TENANT = '11111111-0000-0000-0000-000000000001'
 const NAVY   = '#0A1628'
 const TEAL   = '#009B8D'
-const LS_KEY = 'omniSPRINT_kartlar'
+
+async function ensureSprintTable() {
+  try {
+    await sb.rpc('exec_sql', {
+      sql: `CREATE TABLE IF NOT EXISTS sprint_cards (
+        id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+        tenant_id UUID,
+        title TEXT,
+        facility_id UUID,
+        priority TEXT,
+        fema_phase TEXT,
+        squad TEXT,
+        bottleneck_score FLOAT,
+        uri_impact FLOAT,
+        status TEXT DEFAULT 'backlog',
+        risk_id TEXT,
+        facility_name TEXT,
+        start_date TIMESTAMPTZ,
+        end_date TIMESTAMPTZ,
+        near_miss_source BOOLEAN DEFAULT false,
+        created_at TIMESTAMPTZ DEFAULT now(),
+        updated_at TIMESTAMPTZ DEFAULT now()
+      );`
+    })
+  } catch { /* table may already exist */ }
+}
+
+function toDbRow(k: SprintKarti) {
+  return {
+    id: k.id.startsWith('kart-') || k.id.startsWith('natech-') ? undefined : k.id,
+    tenant_id: TENANT,
+    title: k.tesis_adi,
+    facility_id: k.facility_id || null,
+    priority: k.oncelik,
+    fema_phase: k.fema_faz,
+    squad: k.squad,
+    bottleneck_score: k.b_degeri,
+    uri_impact: k.uri_etki,
+    status: k.sutun,
+    risk_id: k.risk_id,
+    facility_name: k.tesis_adi,
+    start_date: k.baslama_tarihi || null,
+    end_date: k.bitis_tarihi || null,
+    near_miss_source: k.near_miss_kaynakli || false,
+    updated_at: new Date().toISOString(),
+  }
+}
+
+function fromDbRow(row: Record<string, unknown>): SprintKarti {
+  return {
+    id: row.id as string,
+    risk_id: (row.risk_id as string) || `R-${String(row.id).slice(0,4)}`,
+    tesis_adi: (row.facility_name || row.title) as string,
+    facility_id: row.facility_id as string | undefined,
+    b_degeri: (row.bottleneck_score as number) || 1.2,
+    squad: (row.squad as string) || 'A',
+    fema_faz: (row.fema_phase as FemaFaz) || 'Mitigation',
+    oncelik: (row.priority as Oncelik) || 'Medium',
+    uri_etki: (row.uri_impact as number) || 5,
+    sutun: (row.status as KanbanSutun) || 'backlog',
+    baslama_tarihi: row.start_date as string | undefined,
+    bitis_tarihi: row.end_date as string | undefined,
+    near_miss_kaynakli: (row.near_miss_source as boolean) || false,
+  }
+}
 
 const SPRINT_BASLANGIC = new Date('2026-03-19')
 const SPRINT_BITIS     = new Date('2026-04-03')
 const SPRINT_SURE      = 15 // gün
 
 type KanbanSutun  = 'backlog' | 'yapiliyor' | 'incelemede' | 'tamamlandi'
-type FemaFaz      = 'Önleme' | 'Koruma' | 'Zarar Azaltma' | 'Müdahale' | 'İyileştirme'
-type Oncelik      = 'Kritik' | 'Yüksek' | 'Orta'
+type FemaFaz      = 'Prevention' | 'Protection' | 'Mitigation' | 'Response' | 'Recovery'
+type Oncelik      = 'Critical' | 'High' | 'Medium'
 
 interface SprintKarti {
   id: string
@@ -40,23 +104,23 @@ interface SprintKarti {
 }
 
 const SUTUNLAR: { id: KanbanSutun; label: string; renk: string }[] = [
-  { id: 'backlog',     label: 'Backlog',       renk: '#6B7280' },
-  { id: 'yapiliyor',  label: 'Yapılıyor',      renk: '#3B82F6' },
-  { id: 'incelemede', label: 'İncelemede',     renk: '#F59E0B' },
-  { id: 'tamamlandi', label: 'Tamamlandı',     renk: '#22C55E' },
+  { id: 'backlog',     label: 'Backlog',     renk: '#6B7280' },
+  { id: 'yapiliyor',  label: 'In Progress', renk: '#3B82F6' },
+  { id: 'incelemede', label: 'In Review',   renk: '#F59E0B' },
+  { id: 'tamamlandi', label: 'Done',        renk: '#22C55E' },
 ]
 
 const FEMA_RENKLER: Record<FemaFaz, { bg: string; text: string }> = {
-  'Önleme':       { bg: '#DCFCE7', text: '#15803D' },
-  'Koruma':       { bg: '#CCFBF1', text: '#0F766E' },
-  'Zarar Azaltma':{ bg: '#FEF3C7', text: '#92400E' },
-  'Müdahale':     { bg: '#FFEDD5', text: '#C2410C' },
-  'İyileştirme':  { bg: '#FEE2E2', text: '#B91C1C' },
+  'Prevention':  { bg: '#DCFCE7', text: '#15803D' },
+  'Protection':  { bg: '#CCFBF1', text: '#0F766E' },
+  'Mitigation':  { bg: '#FEF3C7', text: '#92400E' },
+  'Response':    { bg: '#FFEDD5', text: '#C2410C' },
+  'Recovery':    { bg: '#FEE2E2', text: '#B91C1C' },
 }
 const ONCELIK_RENKLER: Record<Oncelik, { bg: string; text: string; dot: string }> = {
-  'Kritik': { bg: '#FEE2E2', text: '#B91C1C', dot: '#EF4444' },
-  'Yüksek': { bg: '#FFF7ED', text: '#C2410C', dot: '#F97316' },
-  'Orta':   { bg: '#FFFBEB', text: '#92400E', dot: '#F59E0B' },
+  'Critical': { bg: '#FEE2E2', text: '#B91C1C', dot: '#EF4444' },
+  'High':     { bg: '#FFF7ED', text: '#C2410C', dot: '#F97316' },
+  'Medium':   { bg: '#FFFBEB', text: '#92400E', dot: '#F59E0B' },
 }
 
 // ── SVG Pasta Grafiği ──────────────────────────────────────────
@@ -64,7 +128,7 @@ function PieChart({ data }: { data: { label: string; value: number; renk: string
   const total = data.reduce((s, d) => s + d.value, 0)
   if (total === 0) return (
     <div style={{ width: 90, height: 90, borderRadius: '50%', background: '#E5E3E1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <span style={{ fontSize: 10, color: '#9CA3AF' }}>Veri yok</span>
+      <span style={{ fontSize: 10, color: '#9CA3AF' }}>No data</span>
     </div>
   )
   const r = 40; const cx = 50; const cy = 50
@@ -160,8 +224,8 @@ function YeniKartModal({
   const [form, setForm] = useState({
     tesis_adi: '', facility_id: '',
     b_degeri: 1.2, squad: 'A',
-    fema_faz: 'Zarar Azaltma' as FemaFaz,
-    oncelik: 'Orta' as Oncelik,
+    fema_faz: 'Mitigation' as FemaFaz,
+    oncelik: 'Medium' as Oncelik,
     uri_etki: 5,
     near_miss_kaynakli: false,
   })
@@ -175,7 +239,7 @@ function YeniKartModal({
   const lbl: React.CSSProperties = { fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 4 }
 
   function gonder() {
-    const ad = form.tesis_adi || facilities.find(f => f.id === form.facility_id)?.name || 'Yeni Tesis'
+    const ad = form.tesis_adi || facilities.find(f => f.id === form.facility_id)?.name || 'New Facility'
     const riskId = `R-${String(Date.now()).slice(-4)}`
     onEkle({
       risk_id: riskId,
@@ -195,34 +259,34 @@ function YeniKartModal({
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ background: 'white', borderRadius: 20, padding: 24, width: 420, maxWidth: '94vw', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <h3 style={{ fontSize: 15, fontWeight: 700, color: NAVY }}>Yeni Sprint Kartı</h3>
+          <h3 style={{ fontSize: 15, fontWeight: 700, color: NAVY }}>New Sprint Card</h3>
           <button onClick={onKapat} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF' }}><X size={18} /></button>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div>
-            <label style={lbl}>Tesis</label>
+            <label style={lbl}>Facility</label>
             <select style={sel} value={form.facility_id}
               onChange={e => { f('facility_id', e.target.value); f('tesis_adi', facilities.find(fc => fc.id === e.target.value)?.name || '') }}>
-              <option value="">— Manuel gir —</option>
+              <option value="">— Enter manually —</option>
               {facilities.map(fc => <option key={fc.id} value={fc.id}>{fc.name}</option>)}
             </select>
           </div>
           {!form.facility_id && (
             <div>
-              <label style={lbl}>Tesis Adı</label>
-              <input style={inp} value={form.tesis_adi} onChange={e => f('tesis_adi', e.target.value)} placeholder="Tesis adı giriniz" />
+              <label style={lbl}>Facility Name</label>
+              <input style={inp} value={form.tesis_adi} onChange={e => f('tesis_adi', e.target.value)} placeholder="Enter facility name" />
             </div>
           )}
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <div>
-              <label style={lbl}>TOC Darboğaz (B)</label>
+              <label style={lbl}>TOC Bottleneck (B)</label>
               <input style={inp} type="number" step="0.1" min="1" max="3" value={form.b_degeri}
                 onChange={e => f('b_degeri', parseFloat(e.target.value) || 1.2)} />
             </div>
             <div>
-              <label style={lbl}>URI Etkisi (+puan)</label>
+              <label style={lbl}>URI Impact (+pts)</label>
               <input style={inp} type="number" min="1" max="30" value={form.uri_etki}
                 onChange={e => f('uri_etki', parseInt(e.target.value) || 5)} />
             </div>
@@ -233,17 +297,17 @@ function YeniKartModal({
               </select>
             </div>
             <div>
-              <label style={lbl}>Öncelik</label>
+              <label style={lbl}>Priority</label>
               <select style={sel} value={form.oncelik} onChange={e => f('oncelik', e.target.value as Oncelik)}>
-                {(['Kritik', 'Yüksek', 'Orta'] as Oncelik[]).map(o => <option key={o}>{o}</option>)}
+                {(['Critical', 'High', 'Medium'] as Oncelik[]).map(o => <option key={o}>{o}</option>)}
               </select>
             </div>
           </div>
 
           <div>
-            <label style={lbl}>FEMA Yetkinlik Fazı</label>
+            <label style={lbl}>FEMA Capability Phase</label>
             <select style={sel} value={form.fema_faz} onChange={e => f('fema_faz', e.target.value as FemaFaz)}>
-              {(['Önleme', 'Koruma', 'Zarar Azaltma', 'Müdahale', 'İyileştirme'] as FemaFaz[]).map(fz => <option key={fz}>{fz}</option>)}
+              {(['Prevention', 'Protection', 'Mitigation', 'Response', 'Recovery'] as FemaFaz[]).map(fz => <option key={fz}>{fz}</option>)}
             </select>
           </div>
 
@@ -251,12 +315,12 @@ function YeniKartModal({
             <input type="checkbox" checked={form.near_miss_kaynakli}
               onChange={e => f('near_miss_kaynakli', e.target.checked)}
               style={{ width: 16, height: 16, cursor: 'pointer' }} />
-            Near Miss kaynaklı aksiyon
+            Near Miss-sourced action
           </label>
 
           <button onClick={gonder}
             style={{ width: '100%', padding: '12px', borderRadius: 12, background: TEAL, color: 'white', border: 'none', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", marginTop: 4 }}>
-            Kartı Ekle
+            Add Card
           </button>
         </div>
       </div>
@@ -270,42 +334,46 @@ export default function OmniSprintPage() {
   const [facilities,  setFacilities]  = useState<{ id: string; name: string }[]>([])
   const [yukleniyor,  setYukleniyor]  = useState(true)
   const [modalAcik,   setModalAcik]   = useState(false)
-  const [sprintHedef, setSprintHedef] = useState('Yakuplu NATECH darboğazlarını azalt')
+  const [sprintHedef, setSprintHedef] = useState('Reduce NATECH bottlenecks in Yakuplu')
   const [hedefDuzenle,setHedefDuzenle]= useState(false)
   const [indiriyor,   setIndiriyor]   = useState(false)
 
-  // localStorage'dan yükle
+  // Sprint hedefini localStorage'dan yükle
   useEffect(() => {
-    const kayitli = localStorage.getItem(LS_KEY)
-    if (kayitli) {
-      try { setKartlar(JSON.parse(kayitli)) } catch { /* ignore */ }
-    }
     const hedefKayit = localStorage.getItem('omniSPRINT_hedef')
     if (hedefKayit) setSprintHedef(hedefKayit)
   }, [])
 
-  // Supabase'den NATECH tesisleri çek
+  // Supabase'den sprint kartlarını ve NATECH tesislerini yükle
   useEffect(() => {
     async function yukle() {
       setYukleniyor(true)
-      const { data } = await sb.from('facilities')
+
+      // Ensure table exists
+      await ensureSprintTable()
+
+      // Load existing sprint cards from Supabase
+      const { data: existingCards } = await sb
+        .from('sprint_cards')
+        .select('*')
+        .eq('tenant_id', TENANT)
+        .order('created_at', { ascending: true })
+
+      const mevcutKartlar: SprintKarti[] = (existingCards ?? []).map(fromDbRow)
+      const mevcutFacIds = new Set(mevcutKartlar.map(k => k.facility_id).filter(Boolean))
+
+      // Load facilities
+      const { data: facData } = await sb.from('facilities')
         .select('id,name,extra_data')
         .eq('tenant_id', TENANT)
         .eq('is_active', true)
         .order('name')
 
-      const tumFac = (data ?? []) as { id: string; name: string; extra_data: Record<string, unknown> | null }[]
+      const tumFac = (facData ?? []) as { id: string; name: string; extra_data: Record<string, unknown> | null }[]
       setFacilities(tumFac.map(f => ({ id: f.id, name: f.name })))
 
-      // NATECH tesisleri: extra_data.hazmat_flag === true
+      // Create backlog cards for new NATECH facilities not yet in sprint_cards
       const natechFac = tumFac.filter(f => f.extra_data?.hazmat_flag === true)
-
-      // localStorage'dan mevcut kartları al
-      const kayitli = localStorage.getItem(LS_KEY)
-      const mevcutKartlar: SprintKarti[] = kayitli ? JSON.parse(kayitli) : []
-      const mevcutFacIds = new Set(mevcutKartlar.map(k => k.facility_id).filter(Boolean))
-
-      // Yeni NATECH tesisleri için backlog kartı oluştur
       const yeniKartlar: SprintKarti[] = natechFac
         .filter(f => !mevcutFacIds.has(f.id))
         .map((f, idx) => ({
@@ -315,17 +383,38 @@ export default function OmniSprintPage() {
           facility_id: f.id,
           b_degeri: 2.5,
           squad: 'A',
-          fema_faz: 'Zarar Azaltma' as FemaFaz,
-          oncelik: 'Kritik' as Oncelik,
+          fema_faz: 'Mitigation' as FemaFaz,
+          oncelik: 'Critical' as Oncelik,
           uri_etki: 8,
           sutun: 'backlog' as KanbanSutun,
           near_miss_kaynakli: false,
         }))
 
+      // Upsert new NATECH cards to Supabase
       if (yeniKartlar.length > 0) {
-        const guncellenmis = [...mevcutKartlar, ...yeniKartlar]
-        setKartlar(guncellenmis)
-        localStorage.setItem(LS_KEY, JSON.stringify(guncellenmis))
+        const rows = yeniKartlar.map(k => ({
+          tenant_id: TENANT,
+          title: k.tesis_adi,
+          facility_id: k.facility_id || null,
+          priority: k.oncelik,
+          fema_phase: k.fema_faz,
+          squad: k.squad,
+          bottleneck_score: k.b_degeri,
+          uri_impact: k.uri_etki,
+          status: k.sutun,
+          risk_id: k.risk_id,
+          facility_name: k.tesis_adi,
+          near_miss_source: false,
+        }))
+        await sb.from('sprint_cards').insert(rows)
+
+        // Reload after insert
+        const { data: refreshed } = await sb
+          .from('sprint_cards')
+          .select('*')
+          .eq('tenant_id', TENANT)
+          .order('created_at', { ascending: true })
+        setKartlar((refreshed ?? []).map(fromDbRow))
       } else {
         setKartlar(mevcutKartlar)
       }
@@ -334,16 +423,21 @@ export default function OmniSprintPage() {
     yukle()
   }, [])
 
-  // localStorage'a kaydet
-  const kaydet = useCallback((guncel: SprintKarti[]) => {
+  // Supabase'e kaydet
+  const kaydet = useCallback(async (guncel: SprintKarti[]) => {
     setKartlar(guncel)
-    localStorage.setItem(LS_KEY, JSON.stringify(guncel))
+    // Upsert all cards with valid UUIDs to Supabase
+    const rows = guncel.map(toDbRow)
+    const validRows = rows.filter(r => r.id !== undefined)
+    if (validRows.length > 0) {
+      await sb.from('sprint_cards').upsert(validRows, { onConflict: 'id' })
+    }
   }, [])
 
   // Sütun değiştir
   function tasiFn(id: string, yon: 'ileri' | 'geri') {
     const sirali: KanbanSutun[] = ['backlog', 'yapiliyor', 'incelemede', 'tamamlandi']
-    kaydet(kartlar.map(k => {
+    const updated = kartlar.map(k => {
       if (k.id !== id) return k
       const i = sirali.indexOf(k.sutun)
       const yeniI = yon === 'ileri' ? Math.min(3, i + 1) : Math.max(0, i - 1)
@@ -354,16 +448,48 @@ export default function OmniSprintPage() {
         baslama_tarihi: yeniSutun === 'yapiliyor' && !k.baslama_tarihi ? new Date().toISOString() : k.baslama_tarihi,
         bitis_tarihi:   yeniSutun === 'tamamlandi' ? new Date().toISOString() : k.bitis_tarihi,
       }
-    }))
+    })
+    setKartlar(updated)
+    // Upsert changed card
+    const changed = updated.find(k => k.id === id)
+    if (changed && !changed.id.startsWith('kart-') && !changed.id.startsWith('natech-')) {
+      sb.from('sprint_cards').upsert({
+        id: changed.id,
+        tenant_id: TENANT,
+        status: changed.sutun,
+        start_date: changed.baslama_tarihi || null,
+        end_date: changed.bitis_tarihi || null,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'id' })
+    }
   }
 
   function kartSil(id: string) {
-    kaydet(kartlar.filter(k => k.id !== id))
+    setKartlar(prev => prev.filter(k => k.id !== id))
+    if (!id.startsWith('kart-') && !id.startsWith('natech-')) {
+      sb.from('sprint_cards').delete().eq('id', id)
+    }
   }
 
   function kartEkle(yeni: Omit<SprintKarti, 'id'>) {
-    const k: SprintKarti = { ...yeni, id: `kart-${Date.now()}` }
-    kaydet([...kartlar, k])
+    const newId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `kart-${Date.now()}`
+    const k: SprintKarti = { ...yeni, id: newId }
+    sb.from('sprint_cards').insert({
+      id: newId,
+      tenant_id: TENANT,
+      title: k.tesis_adi,
+      facility_id: k.facility_id || null,
+      priority: k.oncelik,
+      fema_phase: k.fema_faz,
+      squad: k.squad,
+      bottleneck_score: k.b_degeri,
+      uri_impact: k.uri_etki,
+      status: k.sutun,
+      risk_id: k.risk_id,
+      facility_name: k.tesis_adi,
+      near_miss_source: k.near_miss_kaynakli || false,
+    })
+    setKartlar(prev => [...prev, k])
     setModalAcik(false)
   }
 
@@ -461,9 +587,9 @@ export default function OmniSprintPage() {
           return [
             trP(s.label),
             sc.length.toString(),
-            sc.filter(k => k.oncelik === 'Kritik').length.toString(),
-            sc.filter(k => k.oncelik === 'Yüksek').length.toString(),
-            sc.filter(k => k.oncelik === 'Orta').length.toString(),
+            sc.filter(k => k.oncelik === 'Critical').length.toString(),
+            sc.filter(k => k.oncelik === 'High').length.toString(),
+            sc.filter(k => k.oncelik === 'Medium').length.toString(),
           ]
         }),
         headStyles: { fillColor: [10, 22, 40], textColor: [255, 255, 255], fontSize: 9 },
@@ -577,10 +703,10 @@ export default function OmniSprintPage() {
   const donusumOrani  = kartlar.length > 0 ? Math.round((nearMissKarti / kartlar.length) * 100) : 0
 
   // FEMA dağılımı (bu sprint tüm kartlar)
-  const femaDagilim: Record<FemaFaz, number> = { 'Önleme': 0, 'Koruma': 0, 'Zarar Azaltma': 0, 'Müdahale': 0, 'İyileştirme': 0 }
+  const femaDagilim: Record<FemaFaz, number> = { 'Prevention': 0, 'Protection': 0, 'Mitigation': 0, 'Response': 0, 'Recovery': 0 }
   for (const k of kartlar) femaDagilim[k.fema_faz]++
   const femaRenkler: Record<FemaFaz, string> = {
-    'Önleme': '#22C55E', 'Koruma': '#14B8A6', 'Zarar Azaltma': '#F59E0B', 'Müdahale': '#F97316', 'İyileştirme': '#EF4444',
+    'Prevention': '#22C55E', 'Protection': '#14B8A6', 'Mitigation': '#F59E0B', 'Response': '#F97316', 'Recovery': '#EF4444',
   }
   const femaData = Object.entries(femaDagilim).map(([label, value]) => ({
     label, value, renk: femaRenkler[label as FemaFaz],
@@ -611,18 +737,18 @@ export default function OmniSprintPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
             <Zap size={18} color={TEAL} />
             <h1 style={{ fontSize: 20, fontWeight: 800, color: NAVY, letterSpacing: '-0.02em' }}>omniSPRINT</h1>
-            <span style={{ fontSize: 11, background: '#DCFCE7', color: '#15803D', borderRadius: 99, padding: '3px 10px', fontWeight: 700 }}>Sprint 1 Aktif</span>
+            <span style={{ fontSize: 11, background: '#DCFCE7', color: '#15803D', borderRadius: 99, padding: '3px 10px', fontWeight: 700 }}>Sprint 1 Active</span>
           </div>
-          <p style={{ fontSize: 12, color: '#9CA3AF' }}>Çevik Dayanıklılık Sprint Panosu — TOC · HRO · FEMA</p>
+          <p style={{ fontSize: 12, color: '#9CA3AF' }}>Agile Resilience Sprint Board — TOC · HRO · FEMA</p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={pdfIndir} disabled={indiriyor}
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', background: 'transparent', color: '#6B7280', border: '1px solid #E5E3E1', borderRadius: 12, fontSize: 13, fontWeight: 600, cursor: indiriyor ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans',sans-serif", opacity: indiriyor ? 0.7 : 1 }}>
-            <Download size={14} /> {indiriyor ? 'Hazirlaniyor…' : 'Sprint Raporu'}
+            <Download size={14} /> {indiriyor ? 'Preparing…' : 'Sprint Report'}
           </button>
           <button onClick={() => setModalAcik(true)}
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', background: TEAL, color: 'white', border: 'none', borderRadius: 12, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}>
-            <Plus size={15} /> Kart Ekle
+            <Plus size={15} /> Add Card
           </button>
         </div>
       </div>
@@ -632,9 +758,9 @@ export default function OmniSprintPage() {
 
         {/* Sprint bilgisi */}
         <div style={kart}>
-          <p style={kTitre}>Aktif Sprint</p>
+          <p style={kTitre}>Active Sprint</p>
           <p style={{ fontSize: 16, fontWeight: 800, color: NAVY, marginBottom: 8 }}>
-            Sprint 1 — 19 Mart · 3 Nisan 2026
+            Sprint 1 — Mar 19 · Apr 3, 2026
           </p>
 
           {hedefDuzenle ? (
@@ -653,14 +779,14 @@ export default function OmniSprintPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} onClick={() => setHedefDuzenle(true)}>
               <Target size={13} color={TEAL} />
               <span style={{ fontSize: 13, color: '#374151', fontStyle: 'italic' }}>&quot;{sprintHedef}&quot;</span>
-              <span style={{ fontSize: 10, color: '#9CA3AF' }}>(düzenle)</span>
+              <span style={{ fontSize: 10, color: '#9CA3AF' }}>(edit)</span>
             </div>
           )}
 
           <div style={{ marginTop: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6B7280', marginBottom: 5 }}>
-              <span>Sprint İlerlemesi</span>
-              <span>Gün {bugunSprintGunu} / {SPRINT_SURE} — %{sprintIlerlemePct}</span>
+              <span>Sprint Progress</span>
+              <span>Day {bugunSprintGunu} / {SPRINT_SURE} — {sprintIlerlemePct}%</span>
             </div>
             <div style={{ height: 6, background: '#F1F0EF', borderRadius: 99, overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${sprintIlerlemePct}%`, background: TEAL, borderRadius: 99, transition: 'width .3s' }} />
@@ -674,10 +800,10 @@ export default function OmniSprintPage() {
           <div style={{ textAlign: 'center', padding: '4px 0' }}>
             <span style={{ fontSize: 36, fontWeight: 800, color: TEAL }}>{tamamlananlar.length}</span>
             <span style={{ fontSize: 18, color: '#9CA3AF' }}>/{kartlar.length}</span>
-            <p style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>Aksiyon tamamlandı</p>
+            <p style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>Actions completed</p>
           </div>
           <div style={{ background: '#F8F9FA', borderRadius: 10, padding: '8px 12px', display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: 11, color: '#6B7280' }}>Yapılıyor</span>
+            <span style={{ fontSize: 11, color: '#6B7280' }}>In Progress</span>
             <span style={{ fontSize: 12, fontWeight: 700, color: wipIhlal ? '#EF4444' : '#374151' }}>
               {yapiliyorlar.length} {wipIhlal ? '⚠' : ''}
             </span>
@@ -686,7 +812,7 @@ export default function OmniSprintPage() {
 
         {/* FEMA Dağılımı */}
         <div style={kart}>
-          <p style={kTitre}>FEMA Faz Dağılımı</p>
+          <p style={kTitre}>FEMA Phase Distribution</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <PieChart data={femaData} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5, flex: 1 }}>
@@ -709,7 +835,7 @@ export default function OmniSprintPage() {
         <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 12, padding: '10px 16px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
           <AlertTriangle size={16} color="#B91C1C" />
           <span style={{ fontSize: 13, color: '#B91C1C', fontWeight: 600 }}>
-            WIP İhlali: &quot;Yapılıyor&quot; sütununda {yapiliyorlar.length} kart var (limit: 3). Lütfen bir aksiyon tamamlayın veya geri alın.
+            WIP Violation: &quot;In Progress&quot; column has {yapiliyorlar.length} cards (limit: 3). Please complete or move back an action.
           </span>
         </div>
       )}
@@ -749,7 +875,7 @@ export default function OmniSprintPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minHeight: 80 }}>
                 {yukleniyor && sutunKartlar.length === 0 && sutun.id === 'backlog' && (
                   <div style={{ background: 'white', borderRadius: 12, padding: 12, textAlign: 'center', color: '#9CA3AF', fontSize: 12, border: '1px solid #E5E3E1' }}>
-                    Yükleniyor...
+                    Loading...
                   </div>
                 )}
                 {sutunKartlar.map(krt => {
@@ -806,8 +932,8 @@ export default function OmniSprintPage() {
                       {/* URI etkisi */}
                       <div style={{ background: '#F0FDFA', borderRadius: 6, padding: '4px 8px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
                         <TrendingUp size={10} color={TEAL} />
-                        <span style={{ fontSize: 10, color: TEAL, fontWeight: 700 }}>URI +{krt.uri_etki} puan</span>
-                        <span style={{ fontSize: 10, color: '#6B7280' }}>tamamlanırsa</span>
+                        <span style={{ fontSize: 10, color: TEAL, fontWeight: 700 }}>URI +{krt.uri_etki} pts</span>
+                        <span style={{ fontSize: 10, color: '#6B7280' }}>on completion</span>
                       </div>
 
                       {/* Taşı butonları */}
@@ -828,7 +954,7 @@ export default function OmniSprintPage() {
                 {/* Boş sütun placeholder */}
                 {sutunKartlar.length === 0 && !yukleniyor && (
                   <div style={{ border: '2px dashed #E5E3E1', borderRadius: 12, padding: '20px 12px', textAlign: 'center', color: '#D1D5DB', fontSize: 11 }}>
-                    Kart yok
+                    No cards
                   </div>
                 )}
               </div>
@@ -842,18 +968,18 @@ export default function OmniSprintPage() {
 
         {/* Burndown */}
         <div style={kart}>
-          <p style={kTitre}>Burndown Chart — Sprint 1 (15 Gün)</p>
+          <p style={kTitre}>Burndown Chart — Sprint 1 (15 Days)</p>
           <div style={{ display: 'flex', gap: 16, marginBottom: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               <svg width="20" height="8"><line x1="0" y1="4" x2="20" y2="4" stroke="#E5E3E1" strokeWidth="1.5" strokeDasharray="4,2" /></svg>
-              <span style={{ fontSize: 10, color: '#9CA3AF' }}>İdeal</span>
+              <span style={{ fontSize: 10, color: '#9CA3AF' }}>Ideal</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               <svg width="20" height="8"><line x1="0" y1="4" x2="20" y2="4" stroke={TEAL} strokeWidth="2" /></svg>
-              <span style={{ fontSize: 10, color: '#9CA3AF' }}>Gerçek</span>
+              <span style={{ fontSize: 10, color: '#9CA3AF' }}>Actual</span>
             </div>
             <div style={{ marginLeft: 'auto', fontSize: 10, color: '#6B7280' }}>
-              Gün {bugunSprintGunu} / {SPRINT_SURE} · {kartlar.length - tamamlananlar.length} aksiyon kaldı
+              Day {bugunSprintGunu} / {SPRINT_SURE} · {kartlar.length - tamamlananlar.length} actions remaining
             </div>
           </div>
           <BurndownChart toplamKart={kartlar.length} tamamlananSayisi={tamamlananlar.length} />
@@ -865,13 +991,13 @@ export default function OmniSprintPage() {
           <div style={{ ...kart, padding: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
               <Clock size={14} color="#6B7280" />
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Ort. Cycle Time</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Avg. Cycle Time</span>
             </div>
             <p style={{ fontSize: 26, fontWeight: 800, color: NAVY }}>
-              {ortCycleTime !== null ? `${ortCycleTime} gün` : '—'}
+              {ortCycleTime !== null ? `${ortCycleTime} days` : '—'}
             </p>
             <p style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>
-              {cycleTimeler.length > 0 ? `${cycleTimeler.length} tamamlanan kart ortalaması` : 'Henüz tamamlanan kart yok'}
+              {cycleTimeler.length > 0 ? `Average of ${cycleTimeler.length} completed cards` : 'No completed cards yet'}
             </p>
           </div>
 
@@ -882,20 +1008,20 @@ export default function OmniSprintPage() {
             </div>
             <p style={{ fontSize: 26, fontWeight: 800, color: NAVY }}>%{donusumOrani}</p>
             <p style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>
-              {nearMissKarti} near-miss kaynaklı kart / {kartlar.length} toplam
+              {nearMissKarti} near-miss sourced cards / {kartlar.length} total
             </p>
           </div>
 
           <div style={{ ...kart, padding: 16, background: wipIhlal ? '#FEF2F2' : 'white', borderColor: wipIhlal ? '#FECACA' : '#F1F0EF' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
               <AlertTriangle size={14} color={wipIhlal ? '#B91C1C' : '#6B7280'} />
-              <span style={{ fontSize: 11, fontWeight: 700, color: wipIhlal ? '#B91C1C' : '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>WIP Durumu</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: wipIhlal ? '#B91C1C' : '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>WIP Status</span>
             </div>
             <p style={{ fontSize: 26, fontWeight: 800, color: wipIhlal ? '#B91C1C' : '#22C55E' }}>
-              {wipIhlal ? 'İHLAL' : 'Normal'}
+              {wipIhlal ? 'VIOLATION' : 'Normal'}
             </p>
             <p style={{ fontSize: 11, color: wipIhlal ? '#B91C1C' : '#9CA3AF', marginTop: 2 }}>
-              {yapiliyorlar.length}/3 WIP limiti {wipIhlal ? 'aşıldı' : 'uygun'}
+              {yapiliyorlar.length}/3 WIP limit {wipIhlal ? 'exceeded' : 'OK'}
             </p>
           </div>
         </div>

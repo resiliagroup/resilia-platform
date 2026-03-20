@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
-import OmniverselLogo from '@/components/OmniverselLogo'
 
 /* ─── tokens ─────────────────────────────────────────────────── */
 const N      = '#0A1628'
@@ -83,8 +82,8 @@ function RiskGaugeCard() {
     { label:'CRITICAL', color:R_R, active:false },
   ]
   return (
-    <div style={{ background:BG, border:`1px solid ${BORDER}`, borderRadius:12,
-      padding:'16px', boxShadow:'0 2px 8px rgba(0,0,0,.08)', flex:1 }}>
+    <div style={{ background:'#FFFFFF', border:'1px solid #E2E8F0', borderRadius:12,
+      padding:'16px', boxShadow:'0 2px 8px rgba(0,0,0,0.06)', flex:1 }}>
       <p style={{ fontSize:11, fontWeight:700, color:MG, letterSpacing:1.5,
         textTransform:'uppercase', marginBottom:6 }}>Risk Score</p>
       <div style={{ position:'relative', textAlign:'center' }}>
@@ -126,8 +125,8 @@ function PendulumCard() {
     { label:'HIGH',     color:R_O, pct:22 }, { label:'CRITICAL', color:R_R, pct:13 },
   ]
   return (
-    <div style={{ background:BG, border:`1px solid ${BORDER}`, borderRadius:16,
-      padding:'20px', boxShadow:'0 2px 16px rgba(10,22,40,.07)', flex:1 }}>
+    <div style={{ background:'#FFFFFF', border:'1px solid #E2E8F0', borderRadius:12,
+      padding:'16px', boxShadow:'0 2px 8px rgba(0,0,0,0.06)', flex:1 }}>
       <p style={{ fontSize:10, fontWeight:700, color:MG, letterSpacing:2,
         textTransform:'uppercase', marginBottom:14 }}>Risk Distribution</p>
       <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
@@ -154,8 +153,8 @@ function ChecklistCard() {
     { text:'BCP Update Required',         icon:'⚠', color:R_O },
   ]
   return (
-    <div style={{ background:BG, border:`1px solid ${BORDER}`, borderRadius:16,
-      padding:'20px', boxShadow:'0 2px 16px rgba(10,22,40,.07)', flex:1 }}>
+    <div style={{ background:'#FFFFFF', border:'1px solid #E2E8F0', borderRadius:12,
+      padding:'16px', boxShadow:'0 2px 8px rgba(0,0,0,0.06)', flex:1 }}>
       <p style={{ fontSize:10, fontWeight:700, color:MG, letterSpacing:2,
         textTransform:'uppercase', marginBottom:14 }}>Action Items</p>
       <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
@@ -178,8 +177,8 @@ function KpiCard() {
     { v:'47%', l:'Sendai',     c:R_Y },
   ]
   return (
-    <div style={{ background:BG, border:`1px solid ${BORDER}`, borderRadius:16,
-      padding:'20px', boxShadow:'0 2px 16px rgba(10,22,40,.07)', flex:1 }}>
+    <div style={{ background:'#FFFFFF', border:'1px solid #E2E8F0', borderRadius:12,
+      padding:'16px', boxShadow:'0 2px 8px rgba(0,0,0,0.06)', flex:1 }}>
       <p style={{ fontSize:10, fontWeight:700, color:MG, letterSpacing:2,
         textTransform:'uppercase', marginBottom:14 }}>Live Metrics</p>
       <div style={{ display:'flex', gap:6 }}>
@@ -223,9 +222,14 @@ export default function Page() {
   const screenW  = useWindowWidth()
   const isMobile = screenW > 0 && screenW < 768
 
-  const metricsSection = useInView(0.2)
+  const metricsSection = useInView(0.1)
   const femaSection    = useInView(0.15)
   const statsSection   = useInView(0.2)
+  const statRef0 = useInView(0.1)
+  const statRef1 = useInView(0.1)
+  const statRef2 = useInView(0.1)
+  const statRef3 = useInView(0.1)
+  const statRefs = [statRef0, statRef1, statRef2, statRef3]
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 32)
@@ -387,7 +391,10 @@ export default function Page() {
         <div style={{ maxWidth:1200, width:'100%', margin:'0 auto',
           display:'flex', alignItems:'center', justifyContent:'space-between' }}>
           <Link href="/" style={{ display:'flex', alignItems:'center' }}>
-            <OmniverselLogo width={240} height={60} light />
+            <div style={{ display:'flex', flexDirection:'column' }}>
+              <span style={{ fontSize:18, fontWeight:800, color:N, letterSpacing:-0.5, lineHeight:1 }}>OMNIVERSEL</span>
+              <span style={{ fontSize:10, fontWeight:500, color:MG, letterSpacing:1.5, textTransform:'uppercase', marginTop:2 }}>Urban Resilience OS</span>
+            </div>
           </Link>
 
           {/* Desktop nav */}
@@ -493,7 +500,10 @@ export default function Page() {
           <div className="mob-overlay" onClick={() => setMenuOpen(false)}/>
           <div className="mob-menu">
             <div style={{ paddingBottom:8, marginBottom:4 }}>
-              <OmniverselLogo width={160} height={40} light />
+              <div style={{ display:'flex', flexDirection:'column' }}>
+                <span style={{ fontSize:18, fontWeight:800, color:N, letterSpacing:-0.5, lineHeight:1 }}>OMNIVERSEL</span>
+                <span style={{ fontSize:10, fontWeight:500, color:MG, letterSpacing:1.5, textTransform:'uppercase', marginTop:2 }}>Urban Resilience OS</span>
+              </div>
             </div>
             <div className="mob-sep"/>
             <Link href="/solutions"   onClick={() => setMenuOpen(false)}>Solutions</Link>
@@ -582,7 +592,9 @@ export default function Page() {
             <Link href="/products/omnirisk" className="road-card">
               <div style={{ width:52, height:52, borderRadius:14, background:`${T}14`,
                 border:`1.5px solid ${T}30`, display:'flex', alignItems:'center',
-                justifyContent:'center', marginBottom:24, fontSize:24 }}>🏗️</div>
+                justifyContent:'center', marginBottom:24 }}>
+                <img src="/icons/Icon_PROTECT_01_Planning.png" width={28} height={28} alt="Platform" style={{objectFit:'contain'}} />
+              </div>
               <h3 style={{ color:N, fontSize:22, fontWeight:700, marginBottom:10 }}>Platform</h3>
               <p style={{ color:MG, fontSize:14, lineHeight:1.75, marginBottom:24 }}>
                 6 integrated modules from risk scoring to crisis command — the complete
@@ -616,7 +628,9 @@ export default function Page() {
             <Link href="/solutions" className="road-card">
               <div style={{ width:52, height:52, borderRadius:14, background:`${R_O}14`,
                 border:`1.5px solid ${R_O}30`, display:'flex', alignItems:'center',
-                justifyContent:'center', marginBottom:24, fontSize:24 }}>🏭</div>
+                justifyContent:'center', marginBottom:24 }}>
+                <img src="/icons/Icon_MIT_03_Operational.png" width={28} height={28} alt="Solutions" style={{objectFit:'contain'}} />
+              </div>
               <h3 style={{ color:N, fontSize:22, fontWeight:700, marginBottom:10 }}>Solutions</h3>
               <p style={{ color:MG, fontSize:14, lineHeight:1.75, marginBottom:24 }}>
                 Purpose-built for Banking, Health, Industry, Public Sector and more —
@@ -646,7 +660,9 @@ export default function Page() {
             <Link href="/methodology" className="road-card">
               <div style={{ width:52, height:52, borderRadius:14, background:`${'#7B5EA7'}14`,
                 border:`1.5px solid ${'#7B5EA7'}30`, display:'flex', alignItems:'center',
-                justifyContent:'center', marginBottom:24, fontSize:24 }}>📐</div>
+                justifyContent:'center', marginBottom:24 }}>
+                <img src="/icons/Icon_MIT_06_Risk.png" width={28} height={28} alt="Methodology" style={{objectFit:'contain'}} />
+              </div>
               <h3 style={{ color:N, fontSize:22, fontWeight:700, marginBottom:10 }}>Methodology</h3>
               <p style={{ color:MG, fontSize:14, lineHeight:1.75, marginBottom:24 }}>
                 The omniRISK engine, HFER-720 formula, HRO Alpha, TOC Bottleneck —
@@ -694,36 +710,67 @@ export default function Page() {
               giving your organization a globally recognized preparedness baseline.
             </p>
           </div>
-          <div style={{ display:'grid',
-            gridTemplateColumns:isMobile?'1fr':' repeat(5,1fr)',
-            gap:16 }}>
-            {FEMA_AREAS.map((area, i) => (
-              <div key={area.phase} className="fema-card"
-                style={{
-                  borderTop:`4px solid ${area.color}`,
-                  opacity:femaSection.inView?1:0,
-                  transform:femaSection.inView?'translateY(0)':'translateY(24px)',
-                  transition:`all .5s ease ${i*0.1}s`,
-                }}>
-                <img src={area.icon} alt={area.phase}
-                  style={{ width:44, height:44, objectFit:'contain', marginBottom:14 }}/>
-                <div style={{ fontSize:10, fontWeight:700, color:area.color,
-                  letterSpacing:2, textTransform:'uppercase', marginBottom:6 }}>
-                  FEMA Mission Area
+          <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
+            {/* Row 1: 2 cards */}
+            <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:20 }}>
+              {FEMA_AREAS.slice(0,2).map((area, i) => (
+                <div key={area.phase} className="fema-card"
+                  style={{
+                    borderTop:`4px solid ${area.color}`,
+                    opacity:femaSection.inView?1:0,
+                    transform:femaSection.inView?'translateY(0)':'translateY(24px)',
+                    transition:`all .5s ease ${i*0.1}s`,
+                  }}>
+                  <img src={area.icon} alt={area.phase}
+                    style={{ width:44, height:44, objectFit:'contain', marginBottom:14 }}/>
+                  <div style={{ fontSize:10, fontWeight:700, color:area.color,
+                    letterSpacing:2, textTransform:'uppercase', marginBottom:6 }}>
+                    FEMA Mission Area
+                  </div>
+                  <div style={{ fontSize:16, fontWeight:700, color:N, marginBottom:10 }}>{area.phase}</div>
+                  <p style={{ fontSize:12, color:MG, lineHeight:1.65, marginBottom:16 }}>{area.desc}</p>
+                  <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                    {area.caps.map(c => (
+                      <div key={c.label} style={{ display:'flex', alignItems:'center', gap:8 }}>
+                        <img src={c.icon} alt={c.label}
+                          style={{ width:20, height:20, objectFit:'contain', flexShrink:0 }}/>
+                        <span style={{ fontSize:11, color:N, fontWeight:500 }}>{c.label}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div style={{ fontSize:16, fontWeight:700, color:N, marginBottom:10 }}>{area.phase}</div>
-                <p style={{ fontSize:12, color:MG, lineHeight:1.65, marginBottom:16 }}>{area.desc}</p>
-                <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-                  {area.caps.map(c => (
-                    <div key={c.label} style={{ display:'flex', alignItems:'center', gap:8 }}>
-                      <img src={c.icon} alt={c.label}
-                        style={{ width:20, height:20, objectFit:'contain', flexShrink:0 }}/>
-                      <span style={{ fontSize:11, color:N, fontWeight:500 }}>{c.label}</span>
-                    </div>
-                  ))}
+              ))}
+            </div>
+            {/* Row 2: 3 cards */}
+            <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr 1fr', gap:20 }}>
+              {FEMA_AREAS.slice(2).map((area, i) => (
+                <div key={area.phase} className="fema-card"
+                  style={{
+                    borderTop:`4px solid ${area.color}`,
+                    opacity:femaSection.inView?1:0,
+                    transform:femaSection.inView?'translateY(0)':'translateY(24px)',
+                    transition:`all .5s ease ${(i+2)*0.1}s`,
+                  }}>
+                  <img src={area.icon} alt={area.phase}
+                    style={{ width:44, height:44, objectFit:'contain', marginBottom:14 }}/>
+                  <div style={{ fontSize:10, fontWeight:700, color:area.color,
+                    letterSpacing:2, textTransform:'uppercase', marginBottom:6 }}>
+                    FEMA Mission Area
+                  </div>
+                  <div style={{ fontSize:16, fontWeight:700, color:N, marginBottom:10 }}>{area.phase}</div>
+                  <p style={{ fontSize:12, color:MG, lineHeight:1.65, marginBottom:16 }}>{area.desc}</p>
+                  <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                    {area.caps.map(c => (
+                      <div key={c.label} style={{ display:'flex', alignItems:'center', gap:8 }}>
+                        <img src={c.icon} alt={c.label}
+                          style={{ width:20, height:20, objectFit:'contain', flexShrink:0 }}/>
+                        <span style={{ fontSize:11, color:N, fontWeight:500 }}>{c.label}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -744,13 +791,13 @@ export default function Page() {
               { target:metrics.mahalle, suffix:'M+', label:'TRY Value Protected',  sub:'Weighted MTPD coverage'  },
               { target:metrics.sektor,  suffix:'', label:'Sectors Covered',       sub:'Cross-sector analysis'   },
             ].map((m, i) => (
-              <div key={i} style={{
+              <div key={i} ref={statRefs[i].ref} style={{
                 opacity:metricsSection.inView?1:0,
                 transform:metricsSection.inView?'translateY(0)':'translateY(20px)',
                 transition:`all .6s ease ${i*.12}s`,
                 borderLeft:!isMobile&&i>0?'1px solid rgba(255,255,255,0.2)':'none',
               }}>
-                <LiveMetric {...m} go={metricsSection.inView} />
+                <LiveMetric {...m} go={statRefs[i].inView || metricsSection.inView} />
               </div>
             ))}
           </div>
@@ -797,13 +844,13 @@ export default function Page() {
       </section>
 
       {/* ══ DEMO CTA ═════════════════════════════════════════════ */}
-      <section style={{ padding:isMobile?'48px 20px':'80px 48px', background:BG }}>
+      <section style={{ padding:isMobile?'72px 20px':'96px 48px', background:BG }}>
         <div style={{ maxWidth:760, margin:'0 auto' }}>
           <div style={{ background:N, borderRadius:24, padding:isMobile?'40px 24px':'64px 56px',
             textAlign:'center', boxShadow:'0 8px 48px rgba(10,22,40,.12)' }}>
             <p style={{ color:T, fontSize:12, fontWeight:700, letterSpacing:3,
               textTransform:'uppercase', marginBottom:16 }}>Get Started</p>
-            <h2 style={{ color:BG, fontSize:'clamp(26px,3.8vw,44px)', fontWeight:700,
+            <h2 style={{ color:'#FFFFFF', fontSize:'clamp(26px,3.8vw,44px)', fontWeight:700,
               lineHeight:1.12, marginBottom:20 }}>
               Calculate Your<br/>Resilience Score →
             </h2>
@@ -835,7 +882,10 @@ export default function Page() {
             gap:isMobile?32:48, marginBottom:isMobile?36:56 }}>
             <div>
               <div style={{ marginBottom:20 }}>
-                <OmniverselLogo width={180} height={45} />
+                <div style={{ display:'flex', flexDirection:'column' }}>
+                  <span style={{ fontSize:18, fontWeight:800, color:'#FFFFFF', letterSpacing:-0.5, lineHeight:1 }}>OMNIVERSEL</span>
+                  <span style={{ fontSize:10, fontWeight:500, color:'rgba(255,255,255,0.5)', letterSpacing:1.5, textTransform:'uppercase', marginTop:2 }}>Urban Resilience OS</span>
+                </div>
               </div>
               <p style={{ color:'rgba(255,255,255,0.45)', fontSize:13, lineHeight:1.75, maxWidth:280 }}>
                 Integrated resilience analytics for multi-hazard urban environments.

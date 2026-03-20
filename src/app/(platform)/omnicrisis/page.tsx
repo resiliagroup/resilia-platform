@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 
-type OlayDurum = 'Kapalı' | 'Aktif' | 'İzleniyor'
+type OlayDurum = 'Closed' | 'Active' | 'Monitoring'
 
 interface Aksiyon {
   id: number
@@ -28,138 +28,138 @@ interface Olay {
 const OLAYLAR: Olay[] = [
   {
     id: 'olay-001',
-    baslik: 'Haramidere Sanayi Yangın Tatbikatı',
-    tarih: '08 Mart 2026',
-    tur: 'Yangın / NATECH',
-    durum: 'Kapalı',
-    ozet: 'Haramidere OSB\'de kimyasal madde depolama alanı yangın senaryosu tatbikatı. 3 fabrika, 1 depo, NEFES gönüllüler ve İtfaiye Müdürlüğü katıldı. Tahliye protokolü ve RAPID-N domino zinciri testi yapıldı.',
+    baslik: 'Haramidere Industrial Fire Drill',
+    tarih: '08 Mar 2026',
+    tur: 'Fire / NATECH',
+    durum: 'Closed',
+    ozet: 'Fire scenario drill at Haramidere OSB chemical storage area. 3 factories, 1 warehouse, NEFES volunteers and Fire Department participated. Evacuation protocol and RAPID-N domino chain test conducted.',
     ekleGorev: [
-      'RAPID-N kimyasal yayılım haritası çıkarma',
-      'OSB giriş/çıkış noktası güvenlik protokolü',
-      'Rüzgar yönü izleme sensörü kurulumu',
+      'RAPID-N chemical dispersion mapping',
+      'OSB entry/exit point security protocol',
+      'Wind direction monitoring sensor installation',
     ],
     silGorev: [
-      'Manuel tetikleme protokolü (otomasyona geçildi)',
+      'Manual trigger protocol (replaced with automation)',
     ],
     uzunSuren: [
-      'Tahliye bildirim SMS\'i — hedef 5 dk, gerçekleşen 14 dk',
-      'AFAD koordinasyon onayı — hedef 10 dk, gerçekleşen 28 dk',
+      'Evacuation SMS alert — target 5 min, actual 14 min',
+      'AFAD coordination approval — target 10 min, actual 28 min',
     ],
     tamamlanamayan: [
-      'F-N eğrisi hesabı tatbikat sırasında tamamlanamadı',
-      'Yakın tesis yöneticisi bilgilendirmesi atlandı',
+      'F-N curve calculation could not be completed during drill',
+      'Neighboring facility manager notification was skipped',
     ],
     basarilar: [
-      'NEFES gönüllüler sahaya 18 dakikada ulaştı (hedef 20 dk)',
-      'Tüm OSB personeli 22 dakikada tahliye edildi',
-      'İtfaiye–OMNI veri entegrasyonu ilk kez başarıyla test edildi',
-      'Domino riski haritası gerçek zamanlı güncellendi',
+      'NEFES volunteers reached the field in 18 minutes (target 20 min)',
+      'All OSB personnel evacuated in 22 minutes',
+      'Fire Dept.–OMNI data integration successfully tested for the first time',
+      'Domino risk map updated in real time',
     ],
     basarisizliklar: [
-      'SMS bildirim sistemi kapasitesi yetersiz kaldı — toplu mesaj gecikti',
-      'AFAD ile koordinasyon hattı ilk 10 dakika meşgul bulundu',
-      'Gece vardiyası senaryosu test edilmedi',
+      'SMS notification system capacity insufficient — bulk messages delayed',
+      'AFAD coordination line was busy for the first 10 minutes',
+      'Night shift scenario was not tested',
     ],
     aksiyonlar: [
-      { id: 1, metin: 'SMS bildirim kapasitesini 5.000/dk\'ya yükselt', tamamlandi: false },
-      { id: 2, metin: 'AFAD direkt koordinasyon hattı SLA güncellemesi', tamamlandi: false },
-      { id: 3, metin: 'Gece tatbikatı planla (Nisan 2026)', tamamlandi: false },
-      { id: 4, metin: 'Yakın tesis yöneticisi listesini OMNI\'ye kaydet', tamamlandi: true  },
-      { id: 5, metin: 'Rüzgar sensörü temin ve kurulum — Q2 2026', tamamlandi: false },
+      { id: 1, metin: 'Upgrade SMS notification capacity to 5,000/min', tamamlandi: false },
+      { id: 2, metin: 'AFAD direct coordination line SLA update',        tamamlandi: false },
+      { id: 3, metin: 'Schedule night drill (April 2026)',                tamamlandi: false },
+      { id: 4, metin: 'Register neighboring facility managers in OMNI',  tamamlandi: true  },
+      { id: 5, metin: 'Wind sensor procurement and installation — Q2 2026', tamamlandi: false },
     ],
   },
   {
     id: 'olay-002',
-    baslik: 'Kavaklı Sel Erken Uyarı Testi',
-    tarih: '12 Şubat 2026',
-    tur: 'Sel / Taşkın',
-    durum: 'Kapalı',
-    ozet: 'Kavaklı mahallesi dere yatağı su seviyesi artışı senaryosu. Meteoroloji API entegrasyonu, siren sistemi ve tahliye güzergahları test edildi. İBB altyapı ekibiyle ortak çalıştırıldı.',
+    baslik: 'Kavaklı Flood Early Warning Test',
+    tarih: '12 Feb 2026',
+    tur: 'Flood / Inundation',
+    durum: 'Closed',
+    ozet: 'Water level rise scenario for Kavaklı district creek bed. Meteorology API integration, siren system and evacuation routes tested. Conducted jointly with IBB infrastructure team.',
     ekleGorev: [
-      'Kavaklı Deresi anlık seviye sensörü entegrasyonu',
-      'Meteoroloji API otomatik eşik uyarısı kurulumu',
-      'Tahliye yönlendirme tabelaları — 12 kavşak',
+      'Kavaklı Creek real-time water level sensor integration',
+      'Meteorology API automatic threshold alert setup',
+      'Evacuation signage — 12 intersections',
     ],
     silGorev: [
-      'Manuel gözlemci nöbeti (sensör sistemi devreye alındı)',
-      'Kağıt tabanlı tahliye listesi (dijitale geçildi)',
+      'Manual observer duty (sensor system activated)',
+      'Paper-based evacuation list (migrated to digital)',
     ],
     uzunSuren: [
-      'Siren aktivasyonu — hedef 3 dk, gerçekleşen 7 dk',
+      'Siren activation — target 3 min, actual 7 min',
     ],
     tamamlanamayan: [
-      'Engelli bireylere yönelik tahliye senaryosu test edilmedi',
+      'Evacuation scenario for individuals with disabilities not tested',
     ],
     basarilar: [
-      'Meteoroloji API entegrasyonu başarıyla çalıştı',
-      'Tahliye güzergahı kılavuzu tüm gönüllülere ulaştı',
-      'İBB–Beylikdüzü koordinasyon protokolü imzalandı',
+      'Meteorology API integration worked successfully',
+      'Evacuation route guide distributed to all volunteers',
+      'IBB–Beylikdüzü coordination protocol signed',
     ],
     basarisizliklar: [
-      'Siren sistemi batarya yedekleme arızası tespit edildi',
-      'Engelsiz erişim güzergahları tatbikata dahil edilmedi',
+      'Siren system battery backup failure detected',
+      'Accessible evacuation routes not included in drill',
     ],
     aksiyonlar: [
-      { id: 1, metin: 'Siren batarya yedeklemesini değiştir (Mart 2026)', tamamlandi: true  },
-      { id: 2, metin: 'Engelli tahliye senaryosu protokolü hazırla',       tamamlandi: false },
-      { id: 3, metin: 'Kavaklı Deresi sensör verisi OMNI haritasına ekle', tamamlandi: true  },
-      { id: 4, metin: 'Tahliye tabelaları kurulumunu tamamla',             tamamlandi: false },
+      { id: 1, metin: 'Replace siren battery backup (March 2026)',             tamamlandi: true  },
+      { id: 2, metin: 'Prepare accessible evacuation scenario protocol',        tamamlandi: false },
+      { id: 3, metin: 'Add Kavaklı Creek sensor data to OMNI map',             tamamlandi: true  },
+      { id: 4, metin: 'Complete evacuation signage installation',               tamamlandi: false },
     ],
   },
   {
     id: 'olay-003',
-    baslik: 'Belediye BT Sistemi Kesinti Simülasyonu',
-    tarih: '20 Ocak 2026',
-    tur: 'BT / Siber',
-    durum: 'İzleniyor',
-    ozet: 'Belediye BETS (Belediye Elektronik Takip Sistemi) planlı kesinti simülasyonu. RTO/RPO hedeflerine uyum test edildi. Yedek sistem devreye alındı, manuel süreçler aktive edildi.',
+    baslik: 'Municipal IT System Outage Simulation',
+    tarih: '20 Jan 2026',
+    tur: 'IT / Cyber',
+    durum: 'Monitoring',
+    ozet: 'Planned outage simulation for municipal BETS (Municipal Electronic Tracking System). RTO/RPO target compliance tested. Backup system activated, manual processes enabled.',
     ekleGorev: [
-      'Yedek sistem otomatik devreye alma prosedürü',
-      'BT kesinti bildirim zinciri (IT → Müdür → Başkanlık)',
-      'Kritik hizmetler offline çalışma kılavuzu',
+      'Backup system automatic activation procedure',
+      'IT outage notification chain (IT → Director → Mayor\'s Office)',
+      'Critical services offline operation guide',
     ],
     silGorev: [
-      'Eski VPN kesinti protokolü (yeni mimari ile uyumsuz)',
+      'Legacy VPN outage protocol (incompatible with new architecture)',
     ],
     uzunSuren: [
-      'Yedek sistem devreye alma — hedef 4s RTO, gerçekleşen 6.5s',
-      'Veri senkronizasyonu — hedef 1s RPO, gerçekleşen 3s',
+      'Backup system activation — target 4h RTO, actual 6.5h',
+      'Data synchronization — target 1h RPO, actual 3h',
     ],
     tamamlanamayan: [
-      'Mobil uygulama offline mod testi tamamlanamadı',
-      'Tedarikçi SLA doğrulaması raporlanmadı',
+      'Mobile application offline mode test not completed',
+      'Vendor SLA verification not reported',
     ],
     basarilar: [
-      'Kritik mali hizmetler kesintisiz devam etti (offline mod)',
-      'BT ekibi koordinasyonu beklentinin üzerinde performans gösterdi',
-      'Yedekleme prosedür kılavuzu güncellendi',
+      'Critical financial services continued uninterrupted (offline mode)',
+      'IT team coordination performed above expectations',
+      'Backup procedure guide updated',
     ],
     basarisizliklar: [
-      'RTO hedefi %62 aşıldı — yedek sistem aktivasyonu yavaş kaldı',
-      'RPO hedefi 3x aşıldı — veri senkronizasyon gecikmesi',
-      'Tedarikçi destek hattı ilk 2 saatte ulaşılamadı',
+      'RTO target exceeded by 62% — backup system activation too slow',
+      'RPO target exceeded 3x — data synchronization delay',
+      'Vendor support line unreachable for first 2 hours',
     ],
     aksiyonlar: [
-      { id: 1, metin: 'Yedek sistem aktivasyon prosedürünü otomatikleştir',         tamamlandi: false },
-      { id: 2, metin: 'Veri senkronizasyon altyapısını güçlendir',                  tamamlandi: false },
-      { id: 3, metin: 'Tedarikçi SLA yeniden müzakeresi — 2 saatlik destek garantisi', tamamlandi: false },
-      { id: 4, metin: 'Mobil offline mod testini Şubat 2026\'ya planla',             tamamlandi: true  },
-      { id: 5, metin: 'BT kesinti bildirim zincirini OMNI\'ye kaydet',               tamamlandi: true  },
-      { id: 6, metin: 'RTO/RPO hedeflerini gözden geçir — revize et',               tamamlandi: false },
+      { id: 1, metin: 'Automate backup system activation procedure',                 tamamlandi: false },
+      { id: 2, metin: 'Strengthen data synchronization infrastructure',              tamamlandi: false },
+      { id: 3, metin: 'Vendor SLA renegotiation — 2-hour support guarantee',         tamamlandi: false },
+      { id: 4, metin: 'Schedule mobile offline mode test for February 2026',         tamamlandi: true  },
+      { id: 5, metin: 'Register IT outage notification chain in OMNI',               tamamlandi: true  },
+      { id: 6, metin: 'Review and revise RTO/RPO targets',                           tamamlandi: false },
     ],
   },
 ]
 
 const DURUM_STYLE: Record<OlayDurum, { color: string; bg: string; border: string; dot: string }> = {
-  'Kapalı':    { color: '#6B7280', bg: '#F3F4F6', border: '#D1D5DB', dot: '#9CA3AF' },
-  'Aktif':     { color: '#DC2626', bg: '#FEE2E2', border: '#FCA5A5', dot: '#EF4444' },
-  'İzleniyor': { color: '#D97706', bg: '#FEF3C7', border: '#FCD34D', dot: '#F59E0B' },
+  'Closed':     { color: '#6B7280', bg: '#F3F4F6', border: '#D1D5DB', dot: '#9CA3AF' },
+  'Active':     { color: '#DC2626', bg: '#FEE2E2', border: '#FCA5A5', dot: '#EF4444' },
+  'Monitoring': { color: '#D97706', bg: '#FEF3C7', border: '#FCD34D', dot: '#F59E0B' },
 }
 
 const TUR_STYLE: Record<string, { color: string; bg: string }> = {
-  'Yangın / NATECH': { color: '#EA580C', bg: '#FFF7ED' },
-  'Sel / Taşkın':    { color: '#2563EB', bg: '#EFF6FF' },
-  'BT / Siber':      { color: '#7C3AED', bg: '#F5F3FF' },
+  'Fire / NATECH':      { color: '#EA580C', bg: '#FFF7ED' },
+  'Flood / Inundation': { color: '#2563EB', bg: '#EFF6FF' },
+  'IT / Cyber':         { color: '#7C3AED', bg: '#F5F3FF' },
 }
 
 function Akordeon({ baslik, renk, items }: { baslik: string; renk: string; items: string[] }) {
@@ -175,7 +175,7 @@ function Akordeon({ baslik, renk, items }: { baslik: string; renk: string; items
       {ac && (
         <div style={{ background: '#FAFAFA', borderTop: `1px solid ${renk}20` }}>
           {items.length === 0
-            ? <p style={{ fontSize: 12, color: '#9CA3AF', padding: '10px 16px' }}>Kayıt yok.</p>
+            ? <p style={{ fontSize: 12, color: '#9CA3AF', padding: '10px 16px' }}>No records.</p>
             : items.map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '8px 16px', borderBottom: i < items.length-1 ? '1px solid #F3F4F6' : 'none' }}>
                   <span style={{ width: 5, height: 5, borderRadius: '50%', background: renk, flexShrink: 0, marginTop: 5 }}/>
@@ -224,13 +224,13 @@ export default function OmniCrisisPage() {
             <div>
               <h1 className="text-xl font-bold text-white">omniCRISIS</h1>
               <p className="text-xs mt-0.5" style={{ color: '#94A3B8' }}>
-                Kriz Yönetimi · Post-Mortem Raporlama · Beylikdüzü Belediyesi
+                Crisis Management · Post-Mortem Reporting · Beylikdüzü Municipality
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg"
                style={{ background: 'rgba(139,92,246,.1)', border: '1px solid rgba(139,92,246,.2)', color: '#C4B5FD' }}>
-            {OLAYLAR.filter(o => o.durum === 'Aktif').length} Aktif Olay · {OLAYLAR.filter(o => o.durum === 'İzleniyor').length} İzleniyor
+            {OLAYLAR.filter(o => o.durum === 'Active').length} Active Events · {OLAYLAR.filter(o => o.durum === 'Monitoring').length} Monitoring
           </div>
         </div>
       </div>
@@ -240,7 +240,7 @@ export default function OmniCrisisPage() {
 
           {/* OLAY LİSTESİ */}
           <div className="space-y-3">
-            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Olaylar</h2>
+            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Events</h2>
             {OLAYLAR.map(o => {
               const ds = DURUM_STYLE[o.durum]
               const ts = TUR_STYLE[o.tur] ?? { color: '#6B7280', bg: '#F3F4F6' }
@@ -294,13 +294,13 @@ export default function OmniCrisisPage() {
               {/* ISSUES & ANOMALIES */}
               <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
                 <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <span style={{ color: '#F59E0B' }}>⚠</span> Issues &amp; Anomaliler
+                  <span style={{ color: '#F59E0B' }}>⚠</span> Issues &amp; Anomalies
                 </h3>
                 <div className="space-y-3">
-                  <Akordeon baslik="Olayda Eklenen Görevler"     renk="#10B981" items={olay.ekleGorev}      />
-                  <Akordeon baslik="Silinen Görevler"             renk="#6B7280" items={olay.silGorev}       />
-                  <Akordeon baslik="Beklenenden Uzun Süren"       renk="#F97316" items={olay.uzunSuren}      />
-                  <Akordeon baslik="Tamamlanamayan Görevler"      renk="#EF4444" items={olay.tamamlanamayan} />
+                  <Akordeon baslik="Tasks Added During Event"     renk="#10B981" items={olay.ekleGorev}      />
+                  <Akordeon baslik="Removed Tasks"                renk="#6B7280" items={olay.silGorev}       />
+                  <Akordeon baslik="Took Longer Than Expected"    renk="#F97316" items={olay.uzunSuren}      />
+                  <Akordeon baslik="Incomplete Tasks"             renk="#EF4444" items={olay.tamamlanamayan} />
                 </div>
               </div>
 
@@ -308,7 +308,7 @@ export default function OmniCrisisPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="bg-white rounded-xl border border-green-200 shadow-sm p-5">
                   <h3 className="text-sm font-semibold text-green-700 mb-3 flex items-center gap-2">
-                    <span>✓</span> Başarılar — Ne İyi Gitti
+                    <span>✓</span> Successes — What Went Well
                   </h3>
                   <div className="space-y-2">
                     {olay.basarilar.map((b, i) => (
@@ -321,7 +321,7 @@ export default function OmniCrisisPage() {
                 </div>
                 <div className="bg-white rounded-xl border border-red-200 shadow-sm p-5">
                   <h3 className="text-sm font-semibold text-red-700 mb-3 flex items-center gap-2">
-                    <span>✗</span> Başarısızlıklar — Ne Yanlış Gitti
+                    <span>✗</span> Failures — What Went Wrong
                   </h3>
                   <div className="space-y-2">
                     {olay.basarisizliklar.map((b, i) => (
@@ -338,10 +338,10 @@ export default function OmniCrisisPage() {
               <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-                    <span style={{ color: '#3B82F6' }}>→</span> Aksiyon Kalemleri
+                    <span style={{ color: '#3B82F6' }}>→</span> Action Items
                   </h3>
                   <span className="text-xs text-gray-400 font-mono">
-                    {tamamlanan} / {mevcutAksiyonlar.length} tamamlandı
+                    {tamamlanan} / {mevcutAksiyonlar.length} completed
                   </span>
                 </div>
                 {/* Progress bar */}
@@ -374,14 +374,14 @@ export default function OmniCrisisPage() {
             </div>
           ) : (
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm flex items-center justify-center" style={{ minHeight: 300 }}>
-              <p className="text-sm text-gray-400">Soldan bir olay seçin.</p>
+              <p className="text-sm text-gray-400">Select an event from the left.</p>
             </div>
           )}
         </div>
 
         <div className="mt-8 pt-5 border-t border-gray-200 flex flex-wrap items-center justify-between gap-2">
-          <p className="text-xs text-gray-300">omniCRISIS · Kriz Yönetim Modülü · OMNI Resilience Platform</p>
-          <p className="text-xs text-gray-300">Beylikdüzü Belediyesi · 2026</p>
+          <p className="text-xs text-gray-300">omniCRISIS · Crisis Management Module · OMNI Resilience Platform</p>
+          <p className="text-xs text-gray-300">Beylikdüzü Municipality · 2026</p>
         </div>
       </div>
     </div>

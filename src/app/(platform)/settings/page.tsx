@@ -17,38 +17,38 @@ const TENANT = '11111111-0000-0000-0000-000000000001'
 ───────────────────────────────────────────────────────────── */
 type Alan = { ad: string; tip: string; zorunlu: boolean; gorulur: boolean; sira: number }
 const BASLANGIC_ALANLAR: Alan[] = [
-  { ad: 'Tesis Adı',        tip: 'metin', zorunlu: true,  gorulur: true,  sira: 1  },
-  { ad: 'Birim Kodu',       tip: 'metin', zorunlu: true,  gorulur: true,  sira: 2  },
-  { ad: 'Sektör',           tip: 'seçim', zorunlu: true,  gorulur: true,  sira: 3  },
-  { ad: 'Alt Sektör',       tip: 'seçim', zorunlu: false, gorulur: true,  sira: 4  },
-  { ad: 'Yapım Yılı',       tip: 'sayı',  zorunlu: true,  gorulur: true,  sira: 5  },
-  { ad: 'Kat Sayısı',       tip: 'sayı',  zorunlu: true,  gorulur: true,  sira: 6  },
-  { ad: 'Brüt Alan (m²)',   tip: 'sayı',  zorunlu: false, gorulur: true,  sira: 7  },
-  { ad: 'Zemin Sınıfı',     tip: 'seçim', zorunlu: false, gorulur: true,  sira: 8  },
-  { ad: 'Deprem Zonu',      tip: 'seçim', zorunlu: false, gorulur: true,  sira: 9  },
-  { ad: 'Çalışan Sayısı',   tip: 'sayı',  zorunlu: false, gorulur: true,  sira: 10 },
-  { ad: 'Günlük Ziyaretçi', tip: 'sayı',  zorunlu: false, gorulur: false, sira: 11 },
-  { ad: '7/24 Operasyon',   tip: 'onay',  zorunlu: false, gorulur: true,  sira: 12 },
-  { ad: 'Jeneratör',        tip: 'onay',  zorunlu: false, gorulur: true,  sira: 13 },
-  { ad: 'UPS',              tip: 'onay',  zorunlu: false, gorulur: true,  sira: 14 },
-  { ad: 'Sprinkler',        tip: 'onay',  zorunlu: false, gorulur: false, sira: 15 },
+  { ad: 'Facility Name',    tip: 'text',      zorunlu: true,  gorulur: true,  sira: 1  },
+  { ad: 'Unit Code',        tip: 'text',      zorunlu: true,  gorulur: true,  sira: 2  },
+  { ad: 'Sector',           tip: 'selection', zorunlu: true,  gorulur: true,  sira: 3  },
+  { ad: 'Sub-Sector',       tip: 'selection', zorunlu: false, gorulur: true,  sira: 4  },
+  { ad: 'Construction Year',tip: 'number',    zorunlu: true,  gorulur: true,  sira: 5  },
+  { ad: 'Floor Count',      tip: 'number',    zorunlu: true,  gorulur: true,  sira: 6  },
+  { ad: 'Gross Area (m²)',  tip: 'number',    zorunlu: false, gorulur: true,  sira: 7  },
+  { ad: 'Soil Class',       tip: 'selection', zorunlu: false, gorulur: true,  sira: 8  },
+  { ad: 'Seismic Zone',     tip: 'selection', zorunlu: false, gorulur: true,  sira: 9  },
+  { ad: 'Employee Count',   tip: 'number',    zorunlu: false, gorulur: true,  sira: 10 },
+  { ad: 'Daily Visitors',   tip: 'number',    zorunlu: false, gorulur: false, sira: 11 },
+  { ad: '24/7 Operation',   tip: 'checkbox',  zorunlu: false, gorulur: true,  sira: 12 },
+  { ad: 'Generator',        tip: 'checkbox',  zorunlu: false, gorulur: true,  sira: 13 },
+  { ad: 'UPS',              tip: 'checkbox',  zorunlu: false, gorulur: true,  sira: 14 },
+  { ad: 'Sprinkler',        tip: 'checkbox',  zorunlu: false, gorulur: false, sira: 15 },
 ]
 
 type Soru = { kod: string; metin: string; agirlik: number; boyut: 'H'|'F'|'E'|'C'; tersSkor: boolean }
 const BASLANGIC_SORULAR: Soru[] = [
-  { kod: 'H1', metin: 'Deprem tehlike sıklığı',          agirlik: 5, boyut: 'H', tersSkor: false },
-  { kod: 'H2', metin: 'Taşkın maruziyet düzeyi',         agirlik: 4, boyut: 'H', tersSkor: false },
-  { kod: 'H3', metin: 'Sismik zemin sınıfı',             agirlik: 4, boyut: 'H', tersSkor: false },
-  { kod: 'F1', metin: 'Yapı yaşı ve eskime durumu',      agirlik: 5, boyut: 'F', tersSkor: false },
-  { kod: 'F2', metin: 'Kilit personel bağımlılığı',      agirlik: 3, boyut: 'F', tersSkor: false },
-  { kod: 'F3', metin: 'Yapısal güçlendirme varlığı',     agirlik: 4, boyut: 'F', tersSkor: true  },
-  { kod: 'E1', metin: 'Günlük ziyaretçi yoğunluğu',     agirlik: 3, boyut: 'E', tersSkor: false },
-  { kod: 'E2', metin: 'Kritik hizmet kesintisi etkisi',  agirlik: 5, boyut: 'E', tersSkor: false },
-  { kod: 'C1', metin: 'BCP planı varlığı ve güncelliği', agirlik: 5, boyut: 'C', tersSkor: true  },
-  { kod: 'C2', metin: 'Yedek güç sistemi kapasitesi',    agirlik: 4, boyut: 'C', tersSkor: true  },
+  { kod: 'H1', metin: 'Seismic hazard frequency',       agirlik: 5, boyut: 'H', tersSkor: false },
+  { kod: 'H2', metin: 'Flood exposure level',           agirlik: 4, boyut: 'H', tersSkor: false },
+  { kod: 'H3', metin: 'Seismic soil class',             agirlik: 4, boyut: 'H', tersSkor: false },
+  { kod: 'F1', metin: 'Building age and deterioration', agirlik: 5, boyut: 'F', tersSkor: false },
+  { kod: 'F2', metin: 'Key personnel dependency',       agirlik: 3, boyut: 'F', tersSkor: false },
+  { kod: 'F3', metin: 'Structural reinforcement status',agirlik: 4, boyut: 'F', tersSkor: true  },
+  { kod: 'E1', metin: 'Daily visitor density',          agirlik: 3, boyut: 'E', tersSkor: false },
+  { kod: 'E2', metin: 'Critical service outage impact', agirlik: 5, boyut: 'E', tersSkor: false },
+  { kod: 'C1', metin: 'BCP plan existence and currency',agirlik: 5, boyut: 'C', tersSkor: true  },
+  { kod: 'C2', metin: 'Backup power system capacity',   agirlik: 4, boyut: 'C', tersSkor: true  },
 ]
 
-const SEKTÖRLER   = ['Bankacılık', 'Sağlık', 'Konaklama', 'Sanayi', 'Belediye', 'Eğitim', 'Hizmet', 'Odalar']
+const SEKTÖRLER   = ['Banking', 'Healthcare', 'Hospitality', 'Industry', 'Municipality', 'Education', 'Services', 'Chambers']
 const SORU_SETLERI = ['HFE-360', 'SATAKOL', 'SRTF', 'ETAHF', 'Belediye']
 const BOYUT_RENK: Record<string, string> = { H: '#EF4444', F: '#F97316', E: '#EAB308', C: '#22C55E' }
 
@@ -62,21 +62,21 @@ type SectorKey  = typeof SECTORS[number]
 type KMatrix    = Record<SectorKey, Record<HazardKey, number>>
 
 const SECTOR_TR: Record<SectorKey, string> = {
-  HOSPITAL:     'Sağlık',
-  INDUSTRIAL:   'Sanayi',
-  BANK:         'Finans',
-  MUNICIPALITY: 'Belediye',
-  EDUCATION:    'Eğitim',
-  HOTEL:        'Konaklama',
+  HOSPITAL:     'Healthcare',
+  INDUSTRIAL:   'Industry',
+  BANK:         'Finance',
+  MUNICIPALITY: 'Municipality',
+  EDUCATION:    'Education',
+  HOTEL:        'Hospitality',
 }
 const HAZARD_TR: Record<HazardKey, string> = {
-  deprem: 'Deprem', sel: 'Sel', natech: 'NATECH', siber: 'Siber',
+  deprem: 'Earthquake', sel: 'Flood', natech: 'NATECH', siber: 'Cyber',
 }
 const HAZARD_DESC: Record<HazardKey, string> = {
-  deprem: 'Yapısal kırılganlık ve zemin etkisi',
-  sel:    'Kıyı konumu ve drenaj kapasitesi',
-  natech: 'Tehlikeli madde ve domino etkisi',
-  siber:  'BT bağımlılığı ve dijital maruziyet',
+  deprem: 'Structural vulnerability and soil effect',
+  sel:    'Coastal location and drainage capacity',
+  natech: 'Hazardous materials and domino effect',
+  siber:  'IT dependency and digital exposure',
 }
 
 const DEFAULT_K: KMatrix = {
@@ -232,29 +232,29 @@ export default function SettingsPage() {
                     position: 'sticky', top: 0, zIndex: 10 }}>
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 800, color: NAVY, margin: 0 }}>
-            {sekme === 'form' ? 'Form Ayarları' : 'omniRISK k(s,t) Katsayı Matrisi'}
+            {sekme === 'form' ? 'Form Settings' : 'omniRISK k(s,t) Coefficient Matrix'}
           </h1>
           <p style={{ fontSize: 12, color: '#6B7280', margin: '2px 0 0' }}>
             {sekme === 'form'
-              ? 'Tesis kartı alanları, soru ağırlıkları ve sektör form yapılandırması'
-              : 'Sektör × tehlike türü risk katsayısı — HFER-720 URI hesabını doğrudan etkiler'}
+              ? 'Facility card fields, question weights and sector form configuration'
+              : 'Sector × hazard type risk coefficient — directly affects HFER-720 URI calculation'}
           </p>
         </div>
         {sekme === 'form' ? (
           <div style={{ display: 'flex', gap: 10 }}>
             <button type="button" onClick={() => { setAlanlar(BASLANGIC_ALANLAR); setSorular(BASLANGIC_SORULAR) }}
-              style={btnOutline}>İptal</button>
+              style={btnOutline}>Cancel</button>
             <button type="button" onClick={kaydet}
               style={{ ...btnSolid, background: kaydedildi ? '#22C55E' : NAVY }}>
-              {kaydedildi ? '✓ Kaydedildi' : 'Kaydet'}
+              {kaydedildi ? '✓ Saved' : 'Save'}
             </button>
           </div>
         ) : (
           <div style={{ display: 'flex', gap: 10 }}>
-            <button type="button" onClick={kSifirla} style={btnOutline}>↺ Varsayılana Sıfırla</button>
+            <button type="button" onClick={kSifirla} style={btnOutline}>↺ Reset to Default</button>
             <button type="button" onClick={kKaydet}
               style={{ ...btnSolid, background: kKaydedildi ? '#22C55E' : NAVY }}>
-              {kKaydedildi ? '✓ Kaydedildi' : '💾 Kaydet'}
+              {kKaydedildi ? '✓ Saved' : '💾 Save'}
             </button>
           </div>
         )}
@@ -264,8 +264,8 @@ export default function SettingsPage() {
       <div style={{ background: 'white', borderBottom: `1px solid ${BORDER}`, padding: '0 32px',
                     display: 'flex', gap: 4 }}>
         {([
-          { key: 'form',    label: 'Form Ayarları' },
-          { key: 'kmatrix', label: 'k(s,t) Katsayı Matrisi' },
+          { key: 'form',    label: 'Form Settings' },
+          { key: 'kmatrix', label: 'k(s,t) Coefficient Matrix' },
         ] as { key: 'form' | 'kmatrix'; label: string }[]).map(tab => (
           <button key={tab.key} type="button" onClick={() => setSekme(tab.key)}
             style={{
@@ -287,14 +287,14 @@ export default function SettingsPage() {
         ════════════════════════════════════════════════════════ */}
         {sekme === 'form' && (<>
 
-          {/* A) Tesis Kartı Alanları */}
+          {/* A) Facility Card Fields */}
           <div style={card}>
-            <h2 style={cardTitle}>A — Tesis Kartı Alanları</h2>
+            <h2 style={cardTitle}>A — Facility Card Fields</h2>
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                 <thead>
                   <tr style={{ borderBottom: `2px solid ${BORDER}` }}>
-                    {['Sıra', 'Alan Adı', 'Tip', 'Zorunlu', 'Görünür', 'Taşı'].map(h => (
+                    {['Order', 'Field Name', 'Type', 'Required', 'Visible', 'Move'].map(h => (
                       <th key={h} style={thStyle}>{h}</th>
                     ))}
                   </tr>
@@ -322,14 +322,14 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {/* B) Soru Ağırlıkları */}
+          {/* B) Question Weights */}
           <div style={card}>
-            <h2 style={cardTitle}>B — Soru Ağırlıkları</h2>
+            <h2 style={cardTitle}>B — Question Weights</h2>
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                 <thead>
                   <tr style={{ borderBottom: `2px solid ${BORDER}` }}>
-                    {['Kod', 'Soru Metni', 'Ağırlık (1–5)', 'Boyut', 'Ters Skor'].map(h => (
+                    {['Code', 'Question', 'Weight (1–5)', 'Dimension', 'Reverse Score'].map(h => (
                       <th key={h} style={thStyle}>{h}</th>
                     ))}
                   </tr>
@@ -365,14 +365,14 @@ export default function SettingsPage() {
                 style={{ marginTop: 12, padding: '8px 18px', borderRadius: 8, border: `1.5px solid ${TEAL}`,
                           background: `${TEAL}08`, color: TEAL, fontSize: 12, fontWeight: 700, cursor: 'pointer',
                           fontFamily: "'DM Sans',sans-serif" }}>
-                Tümünü Görüntüle ({sorular.length} soru)
+                Show All ({sorular.length} questions)
               </button>
             )}
           </div>
 
-          {/* C) Sektör Form Ayarları */}
+          {/* C) Sector Form Settings */}
           <div style={card}>
-            <h2 style={cardTitle}>C — Sektör Form Ayarları</h2>
+            <h2 style={cardTitle}>C — Sector Form Settings</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px,1fr))', gap: 12 }}>
               {SEKTÖRLER.map(sektor => (
                 <div key={sektor} style={{ display: 'flex', alignItems: 'center', gap: 12,
@@ -392,10 +392,10 @@ export default function SettingsPage() {
 
           <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
             <button type="button" onClick={() => { setAlanlar(BASLANGIC_ALANLAR); setSorular(BASLANGIC_SORULAR) }}
-              style={btnOutline}>İptal</button>
+              style={btnOutline}>Cancel</button>
             <button type="button" onClick={kaydet}
               style={{ ...btnSolid, background: kaydedildi ? '#22C55E' : NAVY }}>
-              {kaydedildi ? '✓ Kaydedildi' : 'Kaydet'}
+              {kaydedildi ? '✓ Saved' : 'Save'}
             </button>
           </div>
         </>)}
@@ -414,8 +414,8 @@ export default function SettingsPage() {
                 k(s,t) katsayısı — URI = (H × F × E × B) / (1 + <strong>k(s,t)</strong> × C²) × HRO_α
               </p>
               <p style={{ fontSize: 12, color: '#3B82F6', margin: 0 }}>
-                Yüksek k değeri: aynı kapasite yatırımı daha büyük risk azaltma sağlar.
-                Renk kodu: <span style={{ color: '#15803D', fontWeight: 700 }}>yeşil &lt;1.5</span> · <span style={{ color: '#B45309', fontWeight: 700 }}>sarı 1.5–3.0</span> · <span style={{ color: '#C2410C', fontWeight: 700 }}>turuncu 3.0–4.5</span> · <span style={{ color: '#B91C1C', fontWeight: 700 }}>kırmızı &gt;4.5</span>
+                Higher k value: the same capacity investment yields greater risk reduction.
+                Color code: <span style={{ color: '#15803D', fontWeight: 700 }}>green &lt;1.5</span> · <span style={{ color: '#B45309', fontWeight: 700 }}>yellow 1.5–3.0</span> · <span style={{ color: '#C2410C', fontWeight: 700 }}>orange 3.0–4.5</span> · <span style={{ color: '#B91C1C', fontWeight: 700 }}>red &gt;4.5</span>
               </p>
             </div>
           </div>
@@ -426,7 +426,7 @@ export default function SettingsPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '140px repeat(4,1fr)',
                           background: NAVY, padding: '12px 20px', gap: 12 }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.08em' }}>
-                Sektör
+                Sector
               </div>
               {HAZARDS.map(h => (
                 <div key={h} style={{ textAlign: 'center' }}>
@@ -471,7 +471,7 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div style={{ fontSize: 9, fontWeight: 700, color: c.text, letterSpacing: '.5px', textTransform: 'uppercase' }}>
-                        {val < 1.5 ? 'Düşük' : val < 3.0 ? 'Orta' : val < 4.5 ? 'Yüksek' : 'Kritik'}
+                        {val < 1.5 ? 'Low' : val < 3.0 ? 'Medium' : val < 4.5 ? 'High' : 'Critical'}
                       </div>
                     </div>
                   )
@@ -484,7 +484,7 @@ export default function SettingsPage() {
                           padding: '12px 20px', gap: 12, background: '#F8FAFC',
                           borderTop: `2px solid ${BORDER}`, alignItems: 'center' }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '.06em' }}>
-                Ort.
+                Avg.
               </div>
               {HAZARDS.map(hazard => {
                 const avg = SECTORS.reduce((sum, s) => sum + kMatrix[s][hazard], 0) / SECTORS.length
@@ -502,26 +502,26 @@ export default function SettingsPage() {
 
           {/* ── ETKİ SİMÜLATÖRÜ ──────────────────────────────────── */}
           <div style={{ ...card, marginTop: 24 }}>
-            <h2 style={{ ...cardTitle, marginBottom: 20 }}>⚡ Etki Simülatörü</h2>
+            <h2 style={{ ...cardTitle, marginBottom: 20 }}>⚡ Impact Simulator</h2>
             <p style={{ fontSize: 13, color: '#6B7280', marginBottom: 20 }}>
-              k değerini değiştirdiğinizde URI skorunun nasıl etkilendiğini anlık görün.
-              <em style={{ color: '#9CA3AF', fontSize: 12 }}> (H=0.6, F=0.5, E=0.5, C-açığı=0.5, B=1.0 sabit varsayım)</em>
+              See in real time how the URI score is affected when you change the k value.
+              <em style={{ color: '#9CA3AF', fontSize: 12 }}> (H=0.6, F=0.5, E=0.5, C-deficit=0.5, B=1.0 fixed assumptions)</em>
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 16, marginBottom: 24 }}>
               {/* Tesis seçimi */}
               <div>
-                <label style={labelStyle}>Tesis</label>
+                <label style={labelStyle}>Facility</label>
                 <select value={simFacility} onChange={e => setSimFacility(e.target.value)}
                   style={selectStyle}>
                   {facilities.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
-                  {!facilities.length && <option>Yükleniyor…</option>}
+                  {!facilities.length && <option>Loading…</option>}
                 </select>
               </div>
 
               {/* Tehlike türü */}
               <div>
-                <label style={labelStyle}>Tehlike Türü</label>
+                <label style={labelStyle}>Hazard Type</label>
                 <select value={simHazard} onChange={e => setSimHazard(e.target.value as HazardKey)}
                   style={selectStyle}>
                   {HAZARDS.map(h => <option key={h} value={h}>{HAZARD_TR[h]}</option>)}
@@ -530,7 +530,7 @@ export default function SettingsPage() {
 
               {/* k slider */}
               <div>
-                <label style={labelStyle}>k değeri</label>
+                <label style={labelStyle}>k value</label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
                   <input type="range" min={0.5} max={6.0} step={0.1} value={simK}
                     onChange={e => setSimK(parseFloat(e.target.value))}
@@ -546,35 +546,35 @@ export default function SettingsPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
               <div style={{ background: '#F8FAFC', borderRadius: 12, padding: '20px 24px', border: `1px solid ${BORDER}` }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '.07em', marginBottom: 8 }}>
-                  Mevcut k = {baseK.toFixed(1)}
+                  Current k = {baseK.toFixed(1)}
                 </div>
                 <div style={{ fontSize: 32, fontWeight: 800, fontFamily: 'monospace', color: uriColor(simUriBase) }}>
                   {simUriBase}
                 </div>
-                <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 4 }}>URI Skoru</div>
+                <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 4 }}>URI Score</div>
               </div>
 
               <div style={{ background: '#F8FAFC', borderRadius: 12, padding: '20px 24px', border: `1px solid ${BORDER}` }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '.07em', marginBottom: 8 }}>
-                  Yeni k = {simK.toFixed(1)}
+                  New k = {simK.toFixed(1)}
                 </div>
                 <div style={{ fontSize: 32, fontWeight: 800, fontFamily: 'monospace', color: uriColor(simUriNew) }}>
                   {simUriNew}
                 </div>
-                <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 4 }}>URI Skoru</div>
+                <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 4 }}>URI Score</div>
               </div>
 
               <div style={{ background: uriDelta >= 0 ? '#F0FDF4' : '#FEF2F2', borderRadius: 12,
                              padding: '20px 24px', border: `1px solid ${uriDelta >= 0 ? '#BBF7D0' : '#FECACA'}` }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '.07em', marginBottom: 8 }}>
-                  Δ Fark
+                  Δ Delta
                 </div>
                 <div style={{ fontSize: 32, fontWeight: 800, fontFamily: 'monospace',
                                color: uriDelta >= 0 ? '#15803D' : '#B91C1C' }}>
                   {uriDelta >= 0 ? '+' : ''}{uriDelta.toFixed(1)}
                 </div>
                 <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 4 }}>
-                  {uriDelta > 0 ? 'URI iyileşmesi' : uriDelta < 0 ? 'URI kötüleşmesi' : 'Değişim yok'}
+                  {uriDelta > 0 ? 'URI improvement' : uriDelta < 0 ? 'URI degradation' : 'No change'}
                 </div>
               </div>
             </div>

@@ -13,14 +13,14 @@ const NAVY   = '#0A1628'
 const TEAL   = '#009B8D'
 
 const KATEGORILER = [
-  'Yangın Tehlikesi', 'Kimyasal Sızıntı', 'Yapısal Hasar',
-  'Ekipman Arızası', 'İnsan Hatası', 'Doğal Tehlike', 'Siber/BT', 'Diğer',
+  'Fire Hazard', 'Chemical Spill', 'Structural Damage',
+  'Equipment Failure', 'Human Error', 'Natural Hazard', 'Cyber/IT', 'Other',
 ]
 const ACILIYET_RENKLER: Record<string, { bg: string; border: string; text: string }> = {
-  'Düşük':  { bg: '#F0FDF4', border: '#BBF7D0', text: '#15803D' },
-  'Orta':   { bg: '#FFFBEB', border: '#FDE68A', text: '#B45309' },
-  'Yüksek': { bg: '#FFF7ED', border: '#FED7AA', text: '#C2410C' },
-  'Kritik': { bg: '#FEF2F2', border: '#FECACA', text: '#B91C1C' },
+  'Low':      { bg: '#F0FDF4', border: '#BBF7D0', text: '#15803D' },
+  'Medium':   { bg: '#FFFBEB', border: '#FDE68A', text: '#B45309' },
+  'High':     { bg: '#FFF7ED', border: '#FED7AA', text: '#C2410C' },
+  'Critical': { bg: '#FEF2F2', border: '#FECACA', text: '#B91C1C' },
 }
 const DURUM_RENKLER: Record<string, { bg: string; text: string }> = {
   open:         { bg: '#EEF2FF', text: '#4338CA' },
@@ -28,7 +28,7 @@ const DURUM_RENKLER: Record<string, { bg: string; text: string }> = {
   closed:       { bg: '#F0FDF4', text: '#166534' },
 }
 const DURUM_TR: Record<string, string> = {
-  open: 'Açık', investigating: 'İnceleniyor', closed: 'Kapatıldı',
+  open: 'Open', investigating: 'Investigating', closed: 'Closed',
 }
 
 interface ExtraData {
@@ -52,7 +52,7 @@ const BOSH = {
   facility_id: '', event_date: '', category: '', location: '',
   description: '', potential_outcome: '',
   root_cause_1: '', root_cause_2: '', root_cause_3: '',
-  repeated: false, urgency: 'Orta',
+  repeated: false, urgency: 'Medium',
 }
 
 async function ensureTable() {
@@ -347,7 +347,7 @@ export default function NearMissPage() {
 
   async function kaydet() {
     if (!form.facility_id || !form.category || !form.description) {
-      setHata('Tesis, kategori ve açıklama zorunludur.')
+      setHata('Facility, category and description are required.')
       return
     }
     setKaydediyor(true); setHata(null); setHroSonuc(null)
@@ -390,7 +390,7 @@ export default function NearMissPage() {
     const primaryH = natech >= deprem && natech >= sel ? 'natech' : deprem >= sel ? 'deprem' : 'sel'
 
     setHroHesaplaniyor(true)
-    setToastMesaj('Near Miss kaydedildi → Railway URI motoru tetiklendi → HRO skoru güncelleniyor...')
+    setToastMesaj('Near Miss saved → Railway URI engine triggered → HRO score updating...')
 
     // Railway webhook — arka planda URI yeniden hesapla (fire & forget)
     fetch('https://omniversel-risk-engine-production.up.railway.app/api/v1/webhooks/near-miss-trigger', {
@@ -434,9 +434,9 @@ export default function NearMissPage() {
       })
       const alpha = res.hro_alpha ?? 1.2
       setHroSonuc({ uri: res.uri_score, alpha, facility_name: fac?.name ?? '' })
-      setToastMesaj(`Near Miss kaydedildi → Railway URI motoru tetiklendi → HRO α = ${alpha.toFixed(2)} ✓`)
+      setToastMesaj(`Near Miss saved → Railway URI engine triggered → HRO α = ${alpha.toFixed(2)} ✓`)
     } catch {
-      setToastMesaj('Near Miss kaydedildi → Railway URI motoru tetiklendi → HRO skoru güncelleniyor...')
+      setToastMesaj('Near Miss saved → Railway URI engine triggered → HRO score updating...')
     } finally {
       setHroHesaplaniyor(false)
     }
@@ -485,8 +485,8 @@ export default function NearMissPage() {
       <div style={{ background: NAVY, padding: '20px 32px' }}>
         <div style={{ maxWidth: 960, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <h1 style={{ color: 'white', fontSize: 20, fontWeight: 700, margin: 0 }}>Near Miss Bildirim Modülü</h1>
-            <p style={{ color: '#94A3B8', fontSize: 11, marginTop: 3 }}>HRO Beşinci İlkesi · Başarısızlıklara Hassasiyet · Ramak Kala Kayıt Sistemi</p>
+            <h1 style={{ color: 'white', fontSize: 20, fontWeight: 700, margin: 0 }}>Near-Miss Event Management</h1>
+            <p style={{ color: '#94A3B8', fontSize: 11, marginTop: 3 }}>Proactive Hazard Identification · HRO Recalculation · Sendai SF Target 1</p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             {(['form', 'liste'] as const).map(s => (
@@ -498,12 +498,12 @@ export default function NearMissPage() {
                   border: `1px solid ${(s === 'liste') === listeleme ? TEAL : 'rgba(148,163,184,.3)'}`,
                   fontWeight: 600,
                 }}>
-                {s === 'form' ? '+ Yeni Kayıt' : `📋 Son Kayıtlar (${kayitlar.length})`}
+                {s === 'form' ? '+ New Record' : `📋 Recent Records (${kayitlar.length})`}
               </button>
             ))}
             <button onClick={pdfIndir} disabled={indiriyor}
               style={{ fontSize: 12, padding: '7px 14px', borderRadius: 8, cursor: indiriyor ? 'not-allowed' : 'pointer', background: 'transparent', color: '#E8C97A', border: '1px solid rgba(232,201,122,.3)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 5, opacity: indiriyor ? 0.7 : 1 }}>
-              <Download size={13} /> {indiriyor ? 'Hazirlaniyor…' : 'PDF Raporu'}
+              <Download size={13} /> {indiriyor ? 'Preparing…' : 'PDF Report'}
             </button>
           </div>
         </div>
@@ -516,37 +516,37 @@ export default function NearMissPage() {
           <div style={{ background: 'white', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.06)', border: '1px solid #F1F0EF', overflow: 'hidden' }}>
             <div style={{ padding: '20px 24px', borderBottom: '1px solid #F1F0EF', display: 'flex', alignItems: 'center', gap: 10 }}>
               <AlertTriangle style={{ width: 18, height: 18, color: '#F59E0B' }}/>
-              <h2 style={{ fontSize: 15, fontWeight: 700, color: NAVY, margin: 0 }}>Yeni Ramak Kala Olayı</h2>
+              <h2 style={{ fontSize: 15, fontWeight: 700, color: NAVY, margin: 0 }}>New Near-Miss Event</h2>
             </div>
 
             <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div>
-                  <label style={labelSt}>Tesis *</label>
+                  <label style={labelSt}>Facility *</label>
                   <select value={form.facility_id} onChange={e => f('facility_id', e.target.value)} style={inputSt}>
-                    <option value="">— Tesis seçin —</option>
+                    <option value="">— Select facility —</option>
                     {facilities.map(fc => <option key={fc.id} value={fc.id}>{fc.name}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label style={labelSt}>Olay Tarihi / Saati</label>
+                  <label style={labelSt}>Event Date / Time</label>
                   <input type="datetime-local" value={form.event_date} onChange={e => f('event_date', e.target.value)} style={inputSt}/>
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div>
-                  <label style={labelSt}>Olay Kategorisi *</label>
+                  <label style={labelSt}>Category *</label>
                   <select value={form.category} onChange={e => f('category', e.target.value)} style={inputSt}>
-                    <option value="">— Kategori seçin —</option>
+                    <option value="">— Select category —</option>
                     {KATEGORILER.map(k => <option key={k} value={k}>{k}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label style={labelSt}>Aciliyet</label>
+                  <label style={labelSt}>Urgency</label>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    {['Düşük','Orta','Yüksek','Kritik'].map(a => {
+                    {['Low','Medium','High','Critical'].map(a => {
                       const r = ACILIYET_RENKLER[a]
                       const aktif = form.urgency === a
                       return (
@@ -562,40 +562,40 @@ export default function NearMissPage() {
               </div>
 
               <div>
-                <label style={labelSt}>Olay Lokasyonu (tesis içinde)</label>
-                <input type="text" placeholder="ör. Depo B katı, Üretim Hattı 3, Sunucu Odası…" value={form.location} onChange={e => f('location', e.target.value)} style={inputSt}/>
+                <label style={labelSt}>Location (within facility)</label>
+                <input type="text" placeholder="e.g. Warehouse B floor, Production Line 3, Server Room…" value={form.location} onChange={e => f('location', e.target.value)} style={inputSt}/>
               </div>
 
               <div>
-                <label style={labelSt}>Kısa Açıklama *</label>
-                <textarea rows={3} placeholder="Ne oldu? Kısaca özetleyin…" value={form.description} onChange={e => f('description', e.target.value)}
+                <label style={labelSt}>Description *</label>
+                <textarea rows={3} placeholder="What happened? Briefly summarize…" value={form.description} onChange={e => f('description', e.target.value)}
                   style={{ ...inputSt, resize: 'vertical' as const }}/>
               </div>
 
               <div>
-                <label style={labelSt}>Potansiyel Sonuç</label>
-                <textarea rows={2} placeholder="Bu olay önlenmeseydi ne olabilirdi?" value={form.potential_outcome} onChange={e => f('potential_outcome', e.target.value)}
+                <label style={labelSt}>Potential Outcome</label>
+                <textarea rows={2} placeholder="What could have happened if this event had not been prevented?" value={form.potential_outcome} onChange={e => f('potential_outcome', e.target.value)}
                   style={{ ...inputSt, resize: 'vertical' as const }}/>
               </div>
 
               <div>
-                <label style={labelSt}>Kök Neden Analizi (5 WHY — 3 adım)</label>
+                <label style={labelSt}>Root Cause Analysis (5 WHY — 3 steps)</label>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {(['root_cause_1','root_cause_2','root_cause_3'] as const).map((k, i) => (
                     <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <span style={{ fontSize: 11, fontWeight: 700, color: TEAL, width: 52, flexShrink: 0 }}>
-                        {i === 0 ? 'Neden?' : i === 1 ? 'Neden? (2)' : 'Neden? (3)'}
+                        {i === 0 ? 'Why?' : i === 1 ? 'Why? (2)' : 'Why? (3)'}
                       </span>
-                      <input type="text" placeholder={`${i+1}. neden…`} value={form[k]} onChange={e => f(k, e.target.value)} style={{ ...inputSt, flex: 1 }}/>
+                      <input type="text" placeholder={`Root cause ${i+1}…`} value={form[k]} onChange={e => f(k, e.target.value)} style={{ ...inputSt, flex: 1 }}/>
                     </div>
                   ))}
                 </div>
               </div>
 
               <div>
-                <label style={labelSt}>HRO: Bu olay daha önce de yaşandı mı?</label>
+                <label style={labelSt}>HRO: Recurring event?</label>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  {[{ v: true, l: 'Evet' }, { v: false, l: 'Hayır' }].map(({ v, l }) => (
+                  {[{ v: true, l: 'Yes' }, { v: false, l: 'No' }].map(({ v, l }) => (
                     <button key={l} onClick={() => f('repeated', v)}
                       style={{ fontSize: 13, fontWeight: form.repeated === v ? 700 : 400, padding: '8px 24px', borderRadius: 8, cursor: 'pointer',
                         background: form.repeated === v ? (v ? '#FEF2F2' : '#F0FDF4') : 'white',
@@ -616,10 +616,10 @@ export default function NearMissPage() {
               <button onClick={kaydet} disabled={kaydediyor || hroHesaplaniyor}
                 style={{ background: (kaydediyor || hroHesaplaniyor) ? '#9CA3AF' : TEAL, color: 'white', border: 'none', borderRadius: 12, padding: '13px', fontSize: 14, fontWeight: 700, cursor: (kaydediyor || hroHesaplaniyor) ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans',sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                 {kaydediyor
-                  ? <><Loader2 style={{ width: 16, height: 16 }} className="animate-spin"/> Kaydediliyor…</>
+                  ? <><Loader2 style={{ width: 16, height: 16 }} className="animate-spin"/> Saving…</>
                   : hroHesaplaniyor
-                  ? <><Loader2 style={{ width: 16, height: 16 }} className="animate-spin"/> HRO skoru güncelleniyor…</>
-                  : '✓ Near Miss Kaydını Oluştur'}
+                  ? <><Loader2 style={{ width: 16, height: 16 }} className="animate-spin"/> Updating HRO score…</>
+                  : '✓ Save Near-Miss Record'}
               </button>
 
               {/* HRO Sonuç kartı */}
@@ -628,7 +628,7 @@ export default function NearMissPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                     <CheckCircle style={{ width: 16, height: 16, color: '#16A34A' }}/>
                     <span style={{ fontSize: 13, fontWeight: 700, color: '#15803D' }}>
-                      {hroSonuc.facility_name} — HRO Skoru Güncellendi
+                      {hroSonuc.facility_name} — HRO Score Updated
                     </span>
                   </div>
                   <div style={{ display: 'flex', gap: 24 }}>
@@ -642,7 +642,7 @@ export default function NearMissPage() {
                     </div>
                     <div>
                       <div style={{ fontSize: 10, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 4 }}>
-                        Yeni URI Skoru
+                        New URI Score
                       </div>
                       <div style={{ fontSize: 28, fontWeight: 800, fontFamily: 'monospace',
                                      color: hroSonuc.uri >= 80 ? '#16A34A' : hroSonuc.uri >= 60 ? '#D97706' : '#DC2626' }}>
@@ -651,7 +651,7 @@ export default function NearMissPage() {
                     </div>
                     <div style={{ alignSelf: 'center' }}>
                       <span style={{ fontSize: 12, color: '#15803D', background: '#DCFCE7', border: '1px solid #BBF7D0', borderRadius: 20, padding: '4px 14px', fontWeight: 600 }}>
-                        Near Miss raporlama kültürü aktif
+                        Near-miss reporting culture active
                       </span>
                     </div>
                   </div>
@@ -669,23 +669,23 @@ export default function NearMissPage() {
             {[
               {
                 icon: <TrendingUp style={{ width: 18, height: 18 }}/>,
-                label: 'Bu Ay Near Miss',
+                label: 'Near Miss This Month',
                 val: String(kpiAy),
-                sub: `${new Date().toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })}`,
+                sub: `${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`,
                 renk: '#F97316', bg: '#FFF7ED',
               },
               {
                 icon: <Building2 style={{ width: 18, height: 18 }}/>,
-                label: 'En Çok Raporlayan',
+                label: 'Most Reporting Facility',
                 val: kpiFacility.length > 22 ? kpiFacility.slice(0, 20) + '…' : kpiFacility,
-                sub: 'Tesis bazında en yüksek kayıt',
+                sub: 'Highest record count by facility',
                 renk: '#6366F1', bg: '#EEF2FF',
               },
               {
                 icon: <Shield style={{ width: 18, height: 18 }}/>,
-                label: 'Ortalama HRO_α',
+                label: 'Average HRO_α',
                 val: kpiHroOrtalama !== null ? kpiHroOrtalama.toFixed(2) : '—',
-                sub: 'Near miss > 0 tesisler dahil',
+                sub: 'Including facilities with near miss > 0',
                 renk: kpiHroOrtalama !== null && kpiHroOrtalama >= 1.0 ? '#16A34A' : '#DC2626',
                 bg:   kpiHroOrtalama !== null && kpiHroOrtalama >= 1.0 ? '#F0FDF4' : '#FEF2F2',
               },
@@ -704,18 +704,18 @@ export default function NearMissPage() {
           {/* Liste tablosu */}
           <div style={{ background: 'white', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.06)', border: '1px solid #F1F0EF', overflow: 'hidden' }}>
             <div style={{ padding: '16px 20px', borderBottom: '1px solid #F1F0EF' }}>
-              <h2 style={{ fontSize: 14, fontWeight: 700, color: NAVY, margin: 0 }}>Son Near Miss Kayıtları</h2>
+              <h2 style={{ fontSize: 14, fontWeight: 700, color: NAVY, margin: 0 }}>Recent Near-Miss Records</h2>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr 1fr 90px 100px', padding: '8px 20px', background: '#F8F9FA', borderBottom: '1px solid #F1F0EF', gap: 12 }}>
-              {['Tarih','Tesis','Kategori','Aciliyet','Durum'].map(h => (
+              {['Date','Facility','Category','Urgency','Status'].map(h => (
                 <span key={h} style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</span>
               ))}
             </div>
 
             {kayitlar.length === 0 ? (
               <div style={{ padding: 40, textAlign: 'center', color: '#9CA3AF', fontSize: 13 }}>
-                Henüz kayıt yok. Yeni kayıt eklemek için &quot;+ Yeni Kayıt&quot; seçin.
+                No records yet. Select &quot;+ New Record&quot; to add one.
               </div>
             ) : (
               <div>
