@@ -8,3 +8,4 @@ tsconfig.json.eski
 OMNI/omni-frontend/node_modules/
 OMNI/omni-frontend/.next/
 OMNI/omni-dashboard/node_modules/
+.vercel
