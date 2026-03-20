@@ -42,7 +42,6 @@ const PLANS = [
     features: [
       '1 facility assessment',
       'Resilience score & report',
-      'FEMA mission area mapping',
       'PDF report export',
       '14-day access',
       'Email support',
@@ -164,18 +163,32 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* FAQ / Compliance note */}
-      <section style={{ padding:'48px', background:'#fff', borderTop:`1px solid ${BORDER}` }}>
-        <div style={{ maxWidth:720, margin:'0 auto', textAlign:'center' }}>
-          <h2 style={{ fontSize:22, fontWeight:700, color:N, marginBottom:16 }}>
+      {/* All plans include */}
+      <section style={{ padding:'64px 48px', background:'#fff', borderTop:`1px solid ${BORDER}` }}>
+        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+          <h2 style={{ fontSize:22, fontWeight:700, color:N, marginBottom:48, textAlign:'center' }}>
             All plans include
           </h2>
-          <div style={{ display:'flex', gap:12, flexWrap:'wrap', justifyContent:'center' }}>
-            {['International standards alignment','ISO 22301 templates','Sendai SF tracking','AFAD compatible','Turkish language support','GDPR compliant data storage'].map(item => (
-              <span key={item} style={{ fontSize:12, fontWeight:600, padding:'6px 14px',
-                borderRadius:20, background:`${T}10`, color:T, border:`1px solid ${T}25` }}>
-                {item}
-              </span>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:32 }}>
+            {[
+              {
+                title: 'Regulatory Alignment',
+                body: 'Every assessment is structured around international business continuity and disaster risk standards. Compliance outputs are generated automatically — audit-ready from day one.',
+              },
+              {
+                title: 'Data Security',
+                body: 'All data is stored within GDPR-compliant infrastructure. Organizational risk data never leaves your jurisdiction without explicit authorization.',
+              },
+              {
+                title: 'Implementation Support',
+                body: 'Every plan includes onboarding guidance from our advisory team. We ensure your first assessment reflects the real risk profile of your organization — not a generic template.',
+              },
+            ].map(col => (
+              <div key={col.title}>
+                <div style={{ fontSize:13, fontWeight:700, color:T, letterSpacing:'0.08em',
+                  textTransform:'uppercase', marginBottom:12 }}>{col.title}</div>
+                <p style={{ fontSize:14, color:MG, lineHeight:1.8 }}>{col.body}</p>
+              </div>
             ))}
           </div>
         </div>
