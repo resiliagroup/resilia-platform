@@ -16,7 +16,7 @@ const TABS = [
 
 type TabKey = typeof TABS[number]['key']
 
-const TAB_CONTENT: Record<TabKey, { color: string; heading: string; intro: string; points: { title: string; desc: string }[] }> = {
+const TAB_CONTENT: Record<TabKey, { color: string; heading: string; intro: string; points: { title: string; desc: string }[]; paragraphs: string[] }> = {
   risk: {
     color: R_R,
     heading: 'Risk Assessment',
@@ -26,6 +26,10 @@ const TAB_CONTENT: Record<TabKey, { color: string; heading: string; intro: strin
       { title: 'Bottleneck identification', desc: 'Inspired by Theory of Constraints, our model identifies the single constraint that would halt system throughput — allowing focused, high-leverage interventions.' },
       { title: 'Sector calibration', desc: 'Scoring weights are calibrated by sector and hazard type. A hospital facing NATECH risk is scored differently from a bank facing cyber exposure — because the stakes differ.' },
       { title: 'FEMA mission area alignment', desc: 'Assessments are structured around Prevention, Protection, Mitigation, Response and Recovery — enabling direct comparison to international preparedness standards.' },
+    ],
+    paragraphs: [
+      'Risk is not a single number. It is a composite of interacting factors — where a facility sits geographically, how its systems are structured, who depends on it, and how much organizational capacity exists to absorb and recover from disruption. Omniversel models each of these dimensions independently, then synthesizes them into a single, auditable resilience index.',
+      'Our approach draws on established quantitative risk analysis traditions used in nuclear safety, process industries and critical infrastructure protection. We apply these principles to organizational settings — translating engineering-grade rigor into a format that executive decision-makers can act on.',
     ],
   },
   continuity: {
@@ -38,6 +42,10 @@ const TAB_CONTENT: Record<TabKey, { color: string; heading: string; intro: strin
       { title: 'Plan lifecycle management', desc: 'Continuity plans move through draft → review → approval stages. Drill results and lessons learned feed directly into plan revisions.' },
       { title: 'ISO 22301 gap analysis', desc: 'Clause-by-clause maturity assessment against ISO 22301:2019. Evidence is linked to requirements, and corrective actions are tracked to closure.' },
     ],
+    paragraphs: [
+      'ISO 22301 provides a process framework for business continuity management. What it does not provide is a quantitative link between risk exposure and continuity investment. Omniversel bridges that gap — connecting BIA outputs to measurable resilience scores, so organizations can justify BCM spending with data rather than intuition.',
+      'Recovery Time Objectives and Recovery Point Objectives are not aspirational targets. They are organizational commitments that must be grounded in realistic capability assessments. Omniversel\'s continuity module tests RTO/RPO feasibility against actual capacity scores — revealing gaps before a disruption does.',
+    ],
   },
   crisis: {
     color: R_O,
@@ -45,9 +53,13 @@ const TAB_CONTENT: Record<TabKey, { color: string; heading: string; intro: strin
     intro: 'When an incident occurs, response speed and coordination determine outcomes. Our crisis management approach is built on ICS principles — clear command structure, role clarity and real-time situational awareness.',
     points: [
       { title: 'Incident Command System', desc: 'Crisis response is organized around ICS roles: Incident Commander, Operations, Logistics, Finance/Admin and Planning sections — adaptable to any incident scale.' },
-      { title: 'Near-miss culture', desc: 'Drawing on High Reliability Organization research (Weick & Sutcliffe, 2007), we embed systematic near-miss reporting as the primary early-warning mechanism.' },
+      { title: 'Near-miss culture', desc: 'Systematic near-miss reporting is embedded as the primary early-warning mechanism — surfacing weak signals before they become critical failures.' },
       { title: 'Escalation protocols', desc: 'Incidents move through defined severity levels with clear escalation triggers. Notifications, documentation and resource requests follow the same structure every time.' },
       { title: 'After-action learning', desc: 'Every exercise and real incident generates lessons that are tracked, assigned and closed. The organization learns systematically rather than informally.' },
+    ],
+    paragraphs: [
+      'Crisis response is not an improvised act — it is a rehearsed capability. The difference between organizations that recover quickly and those that do not is rarely resources. It is structural clarity: who decides, who communicates, and who acts in the first sixty minutes of an incident.',
+      'Omniversel\'s crisis module is built on Incident Command System principles adapted for multi-sector institutional environments. Every role, every escalation path, and every communication protocol is pre-defined, tested through simulation, and updated through structured after-action review.',
     ],
   },
   compliance: {
@@ -55,23 +67,18 @@ const TAB_CONTENT: Record<TabKey, { color: string; heading: string; intro: strin
     heading: 'Compliance',
     intro: 'Regulatory compliance is not a destination — it is a continuous operational posture. Our compliance framework tracks requirements across multiple standards simultaneously, with evidence collection built into daily workflows.',
     points: [
-      { title: 'Multi-framework tracking', desc: 'ISO 22301, Sendai Framework, BDDK, Basel III, JCI and FEMA requirements are mapped in a single compliance matrix — eliminating duplicate effort across teams.' },
+      { title: 'Multi-framework tracking', desc: 'ISO 22301, Sendai Framework, BDDK, Basel III and JCI requirements are mapped in a single compliance matrix — eliminating duplicate effort across teams.' },
       { title: 'Evidence collection', desc: 'Compliance evidence is captured at the point of activity — drill records, audit reports, near-miss logs — and linked directly to the relevant requirement clause.' },
       { title: 'Gap identification', desc: 'Automated gap analysis surfaces non-conformances before audits occur. Each gap generates a corrective action with owner, deadline and closure criteria.' },
       { title: 'Audit readiness', desc: 'Compliance scorecards are maintained in real time. When an auditor arrives, evidence packages are ready — not assembled under deadline pressure.' },
     ],
+    paragraphs: [
+      'Compliance is a floor, not a ceiling. Meeting ISO 22301, BDDK operational resilience requirements or Sendai Framework indicators demonstrates a baseline of organizational seriousness. It does not, by itself, indicate that an organization will perform well under pressure.',
+      'Omniversel\'s audit module treats compliance as a starting point for continuous improvement rather than a periodic checkbox exercise. Gaps identified through clause-level assessment feed directly into sprint planning — translating regulatory obligations into operational priorities.',
+    ],
   },
 }
 
-const REFS = [
-  'UNDRR (2015). Sendai Framework for Disaster Risk Reduction 2015–2030. United Nations.',
-  'ISO 22301:2019. Business Continuity Management Systems – Requirements.',
-  'ISO 31000:2018. Risk Management – Guidelines.',
-  'Goldratt, E.M. (1984). The Goal: A Process of Ongoing Improvement. Theory of Constraints.',
-  'Weick, K.E. & Sutcliffe, K.M. (2007). Managing the Unexpected: Resilient Performance in an Age of Uncertainty.',
-  'FEMA (2019). National Preparedness Goal – Core Capabilities. U.S. Department of Homeland Security.',
-  'RAPID-N (2021). Natech Risk Assessment and Management Tool. European Commission JRC.',
-]
 
 export default function MethodologyPage() {
   const [activeTab, setActiveTab] = useState<TabKey>('risk')
@@ -155,18 +162,10 @@ export default function MethodologyPage() {
             ))}
           </div>
 
-          <div style={{ background:`${T}08`, border:`1px solid ${T}25`, borderRadius:12, padding:'24px 28px' }}>
-            <p style={{ fontSize:12, fontWeight:700, color:T, letterSpacing:2,
-              textTransform:'uppercase', marginBottom:14 }}>Academic References</p>
-            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-              {REFS.map((ref, i) => (
-                <div key={i} style={{ display:'flex', gap:10 }}>
-                  <span style={{ color:T, fontWeight:700, flexShrink:0, fontSize:12,
-                    fontFamily:'DM Mono,monospace', marginTop:2 }}>[{i+1}]</span>
-                  <span style={{ fontSize:13, color:MG, lineHeight:1.65 }}>{ref}</span>
-                </div>
-              ))}
-            </div>
+          <div style={{ display:'flex', flexDirection:'column', gap:20, maxWidth:720 }}>
+            {content.paragraphs.map((p, i) => (
+              <p key={i} style={{ fontSize:15, color:MG, lineHeight:1.85 }}>{p}</p>
+            ))}
           </div>
         </div>
       </section>
