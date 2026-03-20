@@ -149,9 +149,6 @@ export default function OmniHROPage() {
             <h2 style={{ fontSize:26, fontWeight:700, color:N, marginBottom:12 }}>
               The 5 HRO Principles
             </h2>
-            <p style={{ fontSize:15, color:MG, maxWidth:500, margin:'0 auto' }}>
-              Weick &amp; Sutcliffe (2007), operationalized into measurable reliability inputs.
-            </p>
           </div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:16 }}>
             {[
@@ -169,20 +166,6 @@ export default function OmniHROPage() {
                 <p style={{ fontSize:11, color:MG, lineHeight:1.6 }}>{p.short}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ACADEMIC REFERENCES */}
-      <section style={{ padding:'32px 48px', background:GR, borderTop:`1px solid ${BORDER}` }}>
-        <div style={{ maxWidth:800, margin:'0 auto', textAlign:'center' }}>
-          <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-            <p style={{ fontSize:12, color:MG, fontStyle:'italic', lineHeight:1.8 }}>
-              Weick, K.E. &amp; Sutcliffe, K.M. (2007). <em>Managing the Unexpected: Resilient Performance in an Age of Uncertainty.</em> Jossey-Bass.
-            </p>
-            <p style={{ fontSize:12, color:MG, fontStyle:'italic', lineHeight:1.8 }}>
-              Novaces (2012). <em>Operational Reliability Methodology.</em> Institute for Defense Analyses.
-            </p>
           </div>
         </div>
       </section>
