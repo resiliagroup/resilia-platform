@@ -109,6 +109,100 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* Our Foundation — Timeline */}
+      <section style={{ padding:'80px 40px', background:BG }}>
+        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+          <div style={{ textAlign:'center', marginBottom:64 }}>
+            <p style={{ color:T, fontSize:12, fontWeight:700, letterSpacing:3,
+              textTransform:'uppercase', marginBottom:16 }}>Our Foundation</p>
+            <h2 style={{ fontSize:'clamp(24px,3vw,36px)', fontWeight:700, color:N, lineHeight:1.2 }}>
+              Built on two decades of disaster science.
+            </h2>
+          </div>
+
+          {/* Timeline */}
+          <div style={{ position:'relative' }}>
+            {/* Horizontal line */}
+            <div style={{ position:'absolute', top:20, left:0, right:0, height:2,
+              background:BORDER, zIndex:0 }} />
+
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:32, position:'relative', zIndex:1 }}>
+              {[
+                {
+                  year: '2001',
+                  text: 'ITU AYM established through a tripartite agreement between Istanbul Technical University, the Turkish Prime Ministry Crisis Management Directorate, and FEMA (U.S. Federal Emergency Management Agency). The Center began transferring American and Japanese disaster management knowledge into Turkish institutional practice.',
+                },
+                {
+                  year: '2001–2020',
+                  text: 'Over two decades, ITU AYM trained more than 5,000 local government officials, disaster management professionals and institutional leaders across Turkey. The Center published 23 reference volumes — the only comprehensive disaster management library in Turkish.',
+                },
+                {
+                  year: '2024',
+                  text: 'Omniversel was founded to translate the accumulated academic knowledge of ITU AYM into a digital platform. The quantitative resilience assessment methodology was developed through joint research and validated across real-world field implementations in metropolitan Istanbul.',
+                },
+                {
+                  year: '2025–',
+                  text: 'The Omniversel ecosystem expanded to encompass platform software, organizational consulting, field assessment services and — in 2025 — an operational fire testing laboratory. The organization continues to grow toward the integrated resilience services model pioneered by institutions such as Gexcon and ECRI.',
+                },
+              ].map((m, i) => (
+                <div key={i}>
+                  {/* Dot */}
+                  <div style={{ width:12, height:12, borderRadius:'50%', background:T,
+                    border:`2px solid ${BG}`, boxShadow:`0 0 0 2px ${T}`,
+                    marginBottom:20 }} />
+                  <div style={{ fontSize:13, fontWeight:800, color:T, fontFamily:'DM Mono,monospace',
+                    letterSpacing:1, marginBottom:12 }}>{m.year}</div>
+                  <p style={{ fontSize:13, color:MG, lineHeight:1.75 }}>{m.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Model */}
+      <section style={{ padding:'72px 40px', background:GR, borderTop:`1px solid ${BORDER}` }}>
+        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+          <div style={{ textAlign:'center', marginBottom:48 }}>
+            <p style={{ color:T, fontSize:12, fontWeight:700, letterSpacing:3,
+              textTransform:'uppercase', marginBottom:16 }}>Our Model</p>
+            <h2 style={{ fontSize:'clamp(22px,3vw,34px)', fontWeight:700, color:N,
+              lineHeight:1.2, marginBottom:12 }}>
+              An Integrated Resilience Organization
+            </h2>
+            <p style={{ fontSize:16, color:MG, maxWidth:520, margin:'0 auto' }}>
+              Omniversel operates across four practice areas — each reinforcing the others.
+            </p>
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:24 }}>
+            {[
+              {
+                title: 'Platform',
+                desc: 'SaaS resilience software for quantitative risk scoring, BCM planning and crisis management.',
+              },
+              {
+                title: 'Consulting',
+                desc: 'Field assessment, HIFYEA evaluation, business continuity plan development and drill management.',
+              },
+              {
+                title: 'Testing & Investigation',
+                desc: 'Fire testing laboratory, NATECH field analysis and expert witness services for regulatory proceedings.',
+              },
+              {
+                title: 'Research & Training',
+                desc: 'Joint R&D with ITU AYM, ISO 22301 certification programs and capacity development.',
+              },
+            ].map((card, i) => (
+              <div key={i} style={{ background:BG, border:`1px solid ${BORDER}`,
+                borderLeft:`4px solid ${T}`, borderRadius:12, padding:'24px 20px' }}>
+                <div style={{ fontSize:15, fontWeight:700, color:N, marginBottom:10 }}>{card.title}</div>
+                <p style={{ fontSize:13, color:MG, lineHeight:1.75 }}>{card.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section style={{ background:T, padding:'64px 40px', textAlign:'center' }}>
         <h2 style={{ fontSize:'clamp(22px,3vw,34px)', fontWeight:800, color:'#FFFFFF',
