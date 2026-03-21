@@ -46,7 +46,7 @@ function Nav() {
         {/* Center links */}
         <nav style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
           {[
-            ['Platform', '/platform/omnirisk'],
+            ['Platform', '#modules'],
             ['Solutions', '/solutions'],
             ['Methodology', '/methodology'],
             ['Pricing', '/pricing'],
@@ -195,6 +195,20 @@ const MODULES = [
     detail: 'Score, monitor and tier critical suppliers against disruption risk — from natural hazard cascades to cyber dependencies.',
     features: ['Supplier risk scoring', 'Dependency mapping', 'Cascade analysis'],
   },
+  {
+    code: 'omniPIPE', href: '/platform/omnipipe',
+    desc: 'Pipeline, LNG and energy infrastructure risk',
+    detail: 'Purpose-built for pipeline operators, LNG terminals and energy distributors — quantitative consequence modeling and structural integrity assessment.',
+    features: ['Gas release consequence modeling', 'Pipeline integrity scoring', 'SCADA integration ready'],
+    soon: true,
+  },
+  {
+    code: 'omniHRO', href: '/platform/omni-hro',
+    desc: 'Near miss analysis and reliability culture measurement',
+    detail: 'Operational signal intelligence for high-reliability organizations. Near-miss reporting, culture measurement and reliability coefficient scoring.',
+    features: ['Structured near-miss reporting', 'HRO alpha coefficient scoring', 'Reliability culture survey'],
+    soon: true,
+  },
 ]
 
 /* ── SECTORS ────────────────────────────────────────────────────── */
@@ -291,7 +305,7 @@ export default function HomePage() {
       </section>
 
       {/* ── PLATFORM MODULES ──────────────────────────────────────── */}
-      <section style={{ padding: '120px 40px' }}>
+      <section id="modules" style={{ padding: '120px 40px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ marginBottom: 64 }}>
             <h2 style={{ fontSize: 'clamp(36px,5vw,64px)', fontWeight: 800, color: N, lineHeight: 1.05, letterSpacing: '-0.02em', marginBottom: 16 }}>
@@ -309,7 +323,7 @@ export default function HomePage() {
               {MODULES.map((m, i) => (
                 <div
                   key={m.code}
-                  className="mod-row"
+                  className={m.soon ? '' : 'mod-row'}
                   onClick={() => setActiveModule(i)}
                   style={{
                     padding: '18px 24px',
@@ -317,10 +331,18 @@ export default function HomePage() {
                     borderLeft: activeModule === i ? `3px solid ${T}` : '3px solid transparent',
                     background: activeModule === i ? '#F0F9F8' : '#fff',
                     cursor: 'pointer',
-                    transition: 'background 0.15s, border-color 0.15s',
+                    opacity: m.soon && activeModule !== i ? 0.55 : 1,
+                    transition: 'background 0.15s, border-color 0.15s, opacity 0.15s',
                   }}>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: activeModule === i ? T : N, marginBottom: 3 }}>
-                    {m.code}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+                    <span style={{ fontSize: 15, fontWeight: 700, color: activeModule === i ? T : N }}>
+                      {m.code}
+                    </span>
+                    {m.soon && (
+                      <span style={{ fontSize: 9, fontWeight: 700, color: '#9CA3AF', background: '#F3F4F6', border: '1px solid #E5E7EB', borderRadius: 4, padding: '1px 6px', letterSpacing: 1, textTransform: 'uppercase' as const }}>
+                        Soon
+                      </span>
+                    )}
                   </div>
                   <div style={{ fontSize: 13, color: '#9CA3AF' }}>{m.desc}</div>
                 </div>
