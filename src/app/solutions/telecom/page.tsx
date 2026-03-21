@@ -1,5 +1,8 @@
 import Link from 'next/link'
 import Nav from '@/components/Nav'
+import Footer from '@/components/Footer'
+
+export const metadata = { title: 'Telecommunications Solutions', description: 'Network resilience for telecom operators — BTK aligned, ISO 22301, node-level risk scoring.' }
 
 const C = {
   navy950: '#060D1A', navy900: '#0A1628',
@@ -145,9 +148,7 @@ export default function TelecomPage() {
         </div>
       </section>
 
-      <footer style={{ background: C.navy950, borderTop: `1px solid ${C.border}`, padding: '32px 0', textAlign: 'center' }}>
-        <p style={{ fontSize: 12, color: C.dim }}>© 2026 Omniversel · All rights reserved</p>
-      </footer>
+      <Footer />
     </div>
   )
 }

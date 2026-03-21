@@ -1,5 +1,8 @@
 import Link from 'next/link'
 import Nav from '@/components/Nav'
+import Footer from '@/components/Footer'
+
+export const metadata = { title: 'Industrial Solutions', description: 'Process safety and operational resilience for industrial facilities — NATECH, SEVESO III, ISO 45001.' }
 
 const C = {
   navy950: '#060D1A', navy900: '#0A1628', navy800: '#0F2240',
@@ -212,9 +215,7 @@ export default function IndustrialPage() {
         </div>
       </section>
 
-      <footer style={{ background: C.navy950, borderTop: `1px solid ${C.border}`, padding: '32px 0', textAlign: 'center' }}>
-        <p style={{ fontSize: 12, color: C.dim }}>© 2026 Omniversel · All rights reserved</p>
-      </footer>
+      <Footer />
     </div>
   )
 }

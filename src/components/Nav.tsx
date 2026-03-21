@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
 
 const C = {
@@ -17,24 +17,24 @@ const PLATFORM_LINKS = [
   { label: 'omniCRISIS', href: '/platform/omnicrisis' },
   { label: 'omniAUDIT',  href: '/platform/omniaudit' },
   { label: 'omniVENDOR', href: '/platform/omnivendor' },
-  { label: 'omniPIPE',   href: '/platform/omnipipe',  soon: true },
   { label: 'omniHRO',    href: '/platform/omni-hro',  soon: true },
+  { label: 'omniPIPE',   href: '/platform/omnipipe',  soon: true },
 ]
 
 const SOLUTIONS_LEFT = [
-  { label: 'Banking & Finance',        href: '/solutions/banking' },
-  { label: 'Healthcare',               href: '/solutions/health' },
-  { label: 'Energy & Utilities',       href: '/solutions/energy' },
+  { label: 'Banking & Finance',          href: '/solutions/banking' },
+  { label: 'Healthcare',                 href: '/solutions/health' },
+  { label: 'Energy & Utilities',         href: '/solutions/energy' },
   { label: 'Industrial & Manufacturing', href: '/solutions/industrial' },
-  { label: 'Manufacturing',            href: '/solutions/manufacturing' },
-  { label: 'Public Sector',            href: '/solutions/public-sector' },
-  { label: 'Education',                href: '/solutions/education' },
+  { label: 'Manufacturing',              href: '/solutions/manufacturing' },
+  { label: 'Public Sector',              href: '/solutions/public-sector' },
+  { label: 'Education',                  href: '/solutions/education' },
 ]
 
 const SOLUTIONS_RIGHT = [
-  { label: 'Insurance',        href: '/solutions/insurance' },
+  { label: 'Insurance',         href: '/solutions/insurance' },
   { label: 'Telecommunications', href: '/solutions/telecom' },
-  { label: 'Government',       href: '/solutions/government' },
+  { label: 'Government',        href: '/solutions/government' },
 ]
 
 function DropdownLink({ href, children }: { href: string; children: React.ReactNode }) {
@@ -55,15 +55,22 @@ function DropdownLink({ href, children }: { href: string; children: React.ReactN
 }
 
 interface NavProps {
-  /** sticky (homepage) vs fixed (inner pages) */
   position?: 'sticky' | 'fixed'
-  /** background override — defaults to rgba(6,13,26,0.92) with blur */
   solid?: boolean
 }
 
 export default function Nav({ position = 'fixed', solid = false }: NavProps) {
-  const [platOpen, setPlatOpen] = useState(false)
-  const [solOpen,  setSolOpen]  = useState(false)
+  const [openMenu, setOpenMenu] = useState<string | null>(null)
+  const platRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const solRef  = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const openPlat  = () => { if (platRef.current) clearTimeout(platRef.current); setOpenMenu('plat') }
+  const closePlat = () => { platRef.current = setTimeout(() => setOpenMenu(m => m === 'plat' ? null : m), 150) }
+  const openSol   = () => { if (solRef.current)  clearTimeout(solRef.current);  setOpenMenu('sol') }
+  const closeSol  = () => { solRef.current  = setTimeout(() => setOpenMenu(m => m === 'sol'  ? null : m), 150) }
+
+  const platOpen = openMenu === 'plat'
+  const solOpen  = openMenu === 'sol'
 
   const bg = solid ? C.navy950 : 'rgba(6,13,26,0.92)'
   const backdropFilter = solid ? undefined : 'blur(12px)'
@@ -96,8 +103,8 @@ export default function Nav({ position = 'fixed', solid = false }: NavProps) {
 
           {/* Platform dropdown */}
           <div style={{ position: 'relative' }}
-            onMouseEnter={() => setPlatOpen(true)}
-            onMouseLeave={() => setPlatOpen(false)}>
+            onMouseEnter={openPlat}
+            onMouseLeave={closePlat}>
             <button className="nav-dd-link"
               style={{ padding: '8px 14px', borderRadius: 6,
                 background: platOpen ? C.navy800 : 'transparent',
@@ -105,13 +112,16 @@ export default function Nav({ position = 'fixed', solid = false }: NavProps) {
               Platform ▾
             </button>
             {platOpen && (
-              <div style={{
-                position: 'absolute', top: '100%', left: 0, zIndex: 50,
-                marginTop: 4, background: C.navy900,
-                border: `1px solid ${C.border}`, borderRadius: 12,
-                padding: '16px 12px', minWidth: 220,
-                boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
-              }}>
+              <div
+                onMouseEnter={openPlat}
+                onMouseLeave={closePlat}
+                style={{
+                  position: 'absolute', top: '100%', left: 0, zIndex: 50,
+                  marginTop: 4, background: C.navy900,
+                  border: `1px solid ${C.border}`, borderRadius: 12,
+                  padding: '16px 12px', minWidth: 220,
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+                }}>
                 <p style={{ fontSize: 11, fontWeight: 700, color: C.dim, letterSpacing: '0.14em',
                   textTransform: 'uppercase', padding: '0 12px', marginBottom: 8 }}>Modules</p>
                 {PLATFORM_LINKS.map(l => (
@@ -120,7 +130,7 @@ export default function Nav({ position = 'fixed', solid = false }: NavProps) {
                       <span>{l.label}</span>
                       {l.soon && (
                         <span style={{ fontSize: 10, fontWeight: 700, color: C.amber,
-                          background: `${C.amber}18`, padding: '2px 7px', borderRadius: 4, letterSpacing: '0.06em' }}>
+                          border: `1px solid ${C.amber}`, padding: '1px 6px', borderRadius: 9999, letterSpacing: '0.06em' }}>
                           Soon
                         </span>
                       )}
@@ -133,8 +143,8 @@ export default function Nav({ position = 'fixed', solid = false }: NavProps) {
 
           {/* Solutions dropdown */}
           <div style={{ position: 'relative' }}
-            onMouseEnter={() => setSolOpen(true)}
-            onMouseLeave={() => setSolOpen(false)}>
+            onMouseEnter={openSol}
+            onMouseLeave={closeSol}>
             <button className="nav-dd-link"
               style={{ padding: '8px 14px', borderRadius: 6,
                 background: solOpen ? C.navy800 : 'transparent',
@@ -142,13 +152,16 @@ export default function Nav({ position = 'fixed', solid = false }: NavProps) {
               Solutions ▾
             </button>
             {solOpen && (
-              <div style={{
-                position: 'absolute', top: '100%', left: 0, zIndex: 50,
-                marginTop: 4, background: C.navy900,
-                border: `1px solid ${C.border}`, borderRadius: 12,
-                padding: 24, minWidth: 480,
-                boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
-              }}>
+              <div
+                onMouseEnter={openSol}
+                onMouseLeave={closeSol}
+                style={{
+                  position: 'absolute', top: '100%', left: 0, zIndex: 50,
+                  marginTop: 4, background: C.navy900,
+                  border: `1px solid ${C.border}`, borderRadius: 12,
+                  padding: 24, minWidth: 480,
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+                }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
                   <div>
                     <p style={{ fontSize: 11, fontWeight: 700, color: C.dim, letterSpacing: '0.14em',

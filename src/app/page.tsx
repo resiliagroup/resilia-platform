@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
+import Footer from '@/components/Footer'
 
 /* ── tokens ─────────────────────────────────────────────────────── */
 const C = {
@@ -406,58 +407,7 @@ export default function HomePage() {
       </section>
 
       {/* ── FOOTER ─────────────────────────────────────────────────── */}
-      <footer style={{ background: C.navy950, borderTop: `1px solid ${C.border}`, padding: '60px 40px 40px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: 64, marginBottom: 48 }}>
-            {/* Brand */}
-            <div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', letterSpacing: -0.5, marginBottom: 6 }}>OMNIVERSEL</div>
-              <div style={{ fontSize: 10, color: '#475569', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 16 }}>Urban Resilience Platform</div>
-              <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.7, maxWidth: 280, marginBottom: 20 }}>
-                Quantitative resilience software for organizations operating in complex, high-stakes environments.
-              </p>
-              <p style={{ fontSize: 12, color: '#2D3F55' }}>© 2026 Omniversel. All rights reserved.</p>
-            </div>
-
-            {/* Links */}
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#2D3F55', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 20 }}>Platform</div>
-              {[['Platform Overview','#modules'],['Solutions','/solutions'],['Methodology','/methodology'],['Pricing','/pricing'],['About','/about']].map(([l,h]) => (
-                <Link key={l} href={h} style={{ display: 'block', fontSize: 13, color: '#475569', marginBottom: 12, fontFamily: FONT, transition: 'color .15s' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = C.muted)}
-                  onMouseLeave={e => (e.currentTarget.style.color = '#475569')}>
-                  {l}
-                </Link>
-              ))}
-            </div>
-
-            {/* Contact */}
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#2D3F55', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 20 }}>Contact</div>
-              <a href="mailto:demo@omniversel.com" style={{ display: 'block', fontSize: 13, color: '#475569', marginBottom: 12, fontFamily: FONT, transition: 'color .15s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = C.muted)}
-                onMouseLeave={e => (e.currentTarget.style.color = '#475569')}>
-                demo@omniversel.com
-              </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#475569', fontFamily: FONT, transition: 'color .15s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = C.muted)}
-                onMouseLeave={e => (e.currentTarget.style.color = '#475569')}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
-                </svg>
-                LinkedIn
-              </a>
-            </div>
-          </div>
-
-          <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 24, textAlign: 'center' }}>
-            <p style={{ fontSize: 12, color: '#2D3F55' }}>
-              Omniversel · ITU AYM Partnership · ISO 22301 · Sendai Framework
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

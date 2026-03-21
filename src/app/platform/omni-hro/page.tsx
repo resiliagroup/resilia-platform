@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
+import Footer from '@/components/Footer'
 
 const C = { navy950:'#060D1A', navy900:'#0A1628', teal:'#2D8A87', amber:'#F59E0B', white:'#FFFFFF', muted:'#94A3B8', dim:'#64748B', border:'#1E3A5F' }
 const F = "'Plus Jakarta Sans',sans-serif"
@@ -121,9 +122,7 @@ export default function OmniHROPage() {
         <p style={{ fontSize:12, color:C.dim, marginTop:20 }}>No spam. Unsubscribe at any time.</p>
       </section>
 
-      <footer style={{ background:C.navy950, borderTop:`1px solid ${C.border}`, padding:'32px 0', textAlign:'center' }}>
-        <p style={{ fontSize:12, color:C.dim }}>© 2026 Omniversel · All rights reserved</p>
-      </footer>
+      <Footer />
     </div>
   )
 }

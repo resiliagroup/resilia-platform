@@ -1,5 +1,8 @@
 import Link from 'next/link'
 import Nav from '@/components/Nav'
+import Footer from '@/components/Footer'
+
+export const metadata = { title: 'omniIMPACT — Business Impact Analysis', description: 'BIA and downtime cost modeling — RTO/RPO tracking, financial impact, ISO 22301 aligned.' }
 
 const C = { navy950:'#060D1A', navy900:'#0A1628', teal:'#2D8A87', white:'#FFFFFF', muted:'#94A3B8', dim:'#64748B', border:'#1E3A5F' }
 const F = "'Plus Jakarta Sans',sans-serif"
@@ -124,9 +127,7 @@ export default function OmniImpactPage() {
         </div>
       </section>
 
-      <footer style={{ background:C.navy950, borderTop:`1px solid ${C.border}`, padding:'32px 0', textAlign:'center' }}>
-        <p style={{ fontSize:12, color:C.dim }}>© 2026 Omniversel · All rights reserved</p>
-      </footer>
+      <Footer />
     </div>
   )
 }

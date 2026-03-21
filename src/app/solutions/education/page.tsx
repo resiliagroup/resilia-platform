@@ -1,5 +1,8 @@
 import Link from 'next/link'
 import Nav from '@/components/Nav'
+import Footer from '@/components/Footer'
+
+export const metadata = { title: 'Education Solutions', description: 'Emergency preparedness for educational institutions — campus safety, EOP, academic continuity.' }
 
 const C = {
   navy950: '#060D1A', navy900: '#0A1628', navy800: '#0F2240',
@@ -211,9 +214,7 @@ export default function EducationPage() {
         </div>
       </section>
 
-      <footer style={{ background: C.navy950, borderTop: `1px solid ${C.border}`, padding: '32px 0', textAlign: 'center' }}>
-        <p style={{ fontSize: 12, color: C.dim }}>© 2026 Omniversel · All rights reserved</p>
-      </footer>
+      <Footer />
     </div>
   )
 }

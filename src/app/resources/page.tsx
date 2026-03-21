@@ -1,244 +1,127 @@
 'use client'
-import React from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import OmniverselLogo from '@/components/OmniverselLogo'
+import Nav from '@/components/Nav'
+import Footer from '@/components/Footer'
 
-const N = '#0A1628'; const T = '#2D8A87'
-const GR = '#F4F7F6'; const MG = '#566B66'; const BG = '#FFFFFF'; const BORDER = '#E8EDED'
-const R_R = '#E30613'; const R_O = '#E56A04'; const R_Y = '#FFC801'
+const C = { navy950: '#060D1A', navy900: '#0A1628', teal: '#2D8A87', amber: '#F59E0B', white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B', border: '#1E3A5F' }
+const F = "'Plus Jakarta Sans', sans-serif"
 
-const blogPosts = [
-  {
-    category: 'Methodology', categoryColor: T,
-    title: 'Quantitative Risk Scoring: A Multi-Parameter Approach',
-    summary: 'How multi-dimensional scoring integrates hazard exposure, structural fragility, operational capacity and supply-chain bottlenecks into a single actionable resilience index.',
-    readTime: '8 min', date: 'March 2026', tag: 'Risk Assessment',
-  },
-  {
-    category: 'Concept', categoryColor: R_O,
-    title: 'What is NATECH? Natural Hazard Triggered Technological Accidents',
-    summary: 'Secondary accidents triggered in industrial facilities after earthquakes and floods, the RAPID-N methodology and NATECH risk mapping in industrial zones.',
-    readTime: '6 min', date: 'February 2026', tag: 'NATECH',
-  },
-  {
-    category: 'Policy', categoryColor: '#7B5EA7',
-    title: 'Sendai Framework and Municipalities: Practical Implementation',
-    summary: 'Discover the 4 priorities of the 2015–2030 Sendai Framework, practical implementation steps for municipalities, and how to track Sendai compliance with omniRISK.',
-    readTime: '10 min', date: 'January 2026', tag: 'Sendai',
-  },
-  {
-    category: 'HRO', categoryColor: '#F97316',
-    title: 'Near-Miss Culture: Small Signals Predict Major Failures',
-    summary: 'How Weick & Sutcliffe\'s HRO methodology is adapted to organizations, how the near-miss reporting cycle improves the HRO_α multiplier, and sector-specific examples.',
-    readTime: '7 min', date: 'December 2025', tag: 'HRO',
-  },
-  {
-    category: 'Case Study', categoryColor: R_R,
-    title: 'Banking Sector BCM: BDDK Guidelines & Basel III Integration',
-    summary: 'BCP preparation under the BDDK Business Continuity Management Guideline, Basel III operational risk matrix and the design logic of the HIFYEA banking question set.',
-    readTime: '9 min', date: 'November 2025', tag: 'Banking',
-  },
-  {
-    category: 'Case Study', categoryColor: T,
-    title: 'Beylikdüzü Pilot: HFER Scoring Across 782 Facilities',
-    summary: 'Findings from the implementation project covering 10 neighborhoods, 6 sectors and 782 facilities: 103 critical facilities, NATECH risk map and Sendai compliance improvement.',
-    readTime: '12 min', date: 'October 2025', tag: 'Case Study',
-  },
+const CATEGORIES = [
+  { title: 'Methodology Guides', desc: 'Deep-dive technical documentation on the Omniversel URI methodology, sector calibration and regulatory alignment frameworks.', link: 'View Guides →' },
+  { title: 'Sector Briefings',   desc: 'Risk and resilience briefings for banking, healthcare, energy, industrial and public sector decision-makers.',                 link: 'View Briefings →' },
+  { title: 'Regulatory Updates', desc: 'Analysis of BDDK, AFAD, ISO 22301 and international regulatory developments affecting organizational resilience programs.',  link: 'View Updates →' },
 ]
 
-const caseStudies = [
-  {
-    sehir: 'Beylikdüzü, Istanbul',
-    sektor: 'Multi-Sector Urban',
-    baslik: 'Urban Resilience Scoring — Multi-Sector Assessment',
-    metrikler: [
-      { v:'782', l:'Facilities Scored' },
-      { v:'103', l:'Critical Risk Flagged' },
-      { v:'+34%', l:'Sendai Compliance Gain' },
-    ],
-    detay: '10 neighborhoods · 6 sectors · CBS-integrated mapping · NATECH hotspot identification',
-    tarih: 'Q4 2025',
-    renk: T,
-  },
-  {
-    sehir: 'Major Turkish Bank',
-    sektor: 'Banking & Finance',
-    baslik: 'HIFYEA v2.0 Banking Assessment',
-    metrikler: [
-      { v:'73', l:'Questions Evaluated' },
-      { v:'BDDK', l:'Regulatory Aligned' },
-      { v:'Basel III', l:'Op-Risk Mapped' },
-    ],
-    detay: 'Full BDDK ISP alignment · Basel III operational risk matrix · FEMA phase mapping',
-    tarih: 'Q1 2026',
-    renk: '#1565C0',
-  },
-  {
-    sehir: 'District Hospital Group',
-    sektor: 'Health & Hospital',
-    baslik: 'Critical Care Continuity Assessment',
-    metrikler: [
-      { v:'ISO', l:'22301 Aligned' },
-      { v:'HAP', l:'Standard Met' },
-      { v:'-28%', l:'Vulnerability Reduction' },
-    ],
-    detay: 'Sendai SF-3 alignment · OES integration · Medical infrastructure BIA',
-    tarih: 'Q2 2026',
-    renk: '#C62828',
-  },
+const ARTICLES = [
+  { cat: 'METHODOLOGY',    title: 'Quantifying Urban Resilience: The URI Model Explained',                                  excerpt: 'A technical overview of the Unified Risk Index formula and its application across multi-hazard urban environments.',                              read: '8 min read' },
+  { cat: 'SECTOR BRIEFING', title: 'Operational Resilience in Turkish Banking: BDDK Requirements and Beyond',               excerpt: 'How Turkish financial institutions can build defensible, audit-ready resilience programs.',                                                    read: '6 min read' },
+  { cat: 'REGULATORY',     title: 'The Sendai Framework at 10: Implications for Municipal Resilience Planning',            excerpt: 'What the Sendai Framework\'s second decade means for Turkish municipalities and their AFAD obligations.',                                    read: '7 min read' },
+  { cat: 'METHODOLOGY',    title: 'NATECH Risk: When Natural Hazards Trigger Industrial Accidents',                         excerpt: 'Understanding cascade scenarios and why standard risk frameworks miss them.',                                                                  read: '5 min read' },
+  { cat: 'SECTOR BRIEFING', title: 'Hospital Resilience Planning: From JCI Compliance to Operational Reality',             excerpt: 'Why JCI accreditation and genuine emergency preparedness are not the same thing.',                                                           read: '6 min read' },
+  { cat: 'RESEARCH',       title: 'High Reliability Organizations: Applying HRO Principles to Urban Infrastructure',       excerpt: 'How near-miss culture and reliability science can transform organizational resilience programs.',                                           read: '9 min read' },
 ]
 
-const reports = [
-  { title:'Organizational Resilience Assessment Guide', size:'2.4 MB', pages:'48', tag:'Whitepaper',  icon:'/icons/fema/Icon_MIT_06_Risk.png' },
-  { title:'Banking Sector BCM Assessment Guide',        size:'1.8 MB', pages:'36', tag:'Framework',  icon:'/icons/fema/Icon_PROTECT_10_Risk.png' },
-  { title:'International Standards Alignment Guide',    size:'3.1 MB', pages:'64', tag:'Reference',   icon:'/icons/fema/Icon_PREVENT_01_Planning.png' },
-  { title:'NATECH Risk Assessment Methodology',         size:'2.0 MB', pages:'52', tag:'Methodology', icon:'/icons/fema/Icon_RESP_08_Fire.png' },
-]
+function CategoryCard({ title, desc, link }: { title: string; desc: string; link: string }) {
+  const [hov, setHov] = useState(false)
+  return (
+    <div
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{ background: C.navy900, border: `1px solid ${hov ? C.teal : C.border}`, borderRadius: 12, padding: 32, transition: 'border-color .2s, transform .2s', transform: hov ? 'translateY(-2px)' : 'none' }}>
+      <h3 style={{ fontSize: 18, fontWeight: 700, color: C.white, marginBottom: 12 }}>{title}</h3>
+      <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.75, marginBottom: 20 }}>{desc}</p>
+      <span style={{ fontSize: 13, fontWeight: 600, color: C.teal }}>{link}</span>
+    </div>
+  )
+}
 
 export default function ResourcesPage() {
+  const [email, setEmail]   = useState('')
+  const [subbed, setSubbed] = useState(false)
+
   return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'DM Sans',sans-serif;background:${GR};color:${N}}
-        a{text-decoration:none;color:inherit}
-        .blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-        @media(max-width:1100px){.blog-grid{grid-template-columns:repeat(2,1fr)}}
-        @media(max-width:640px){.blog-grid{grid-template-columns:1fr}}
-        .case-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-        @media(max-width:900px){.case-grid{grid-template-columns:1fr}}
-      `}</style>
+    <div style={{ background: C.navy900, fontFamily: F, minHeight: '100vh', color: C.white }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}a{text-decoration:none;color:inherit}`}</style>
+      <Nav />
 
-      <nav style={{ position:'sticky', top:0, zIndex:100, background:N,
-        borderBottom:'1px solid rgba(255,255,255,0.07)', padding:'0 40px',
-        height:64, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-        <OmniverselLogo />
-        <Link href="/" style={{ fontFamily:"'DM Sans',sans-serif", fontSize:14, fontWeight:600,
-          color:'#FFFFFF', textDecoration:'none', display:'flex', alignItems:'center', gap:6,
-          opacity:0.85, transition:'opacity 0.15s' }}
-          onMouseEnter={e => (e.currentTarget.style.opacity='1')}
-          onMouseLeave={e => (e.currentTarget.style.opacity='0.85')}>
-          ← Home
-        </Link>
-      </nav>
-
-      <section style={{ background:N, padding:'72px 40px 64px', textAlign:'center' }}>
-        <span style={{ fontSize:12, fontWeight:700, color:T, letterSpacing:'0.14em',
-          textTransform:'uppercase', display:'block', marginBottom:18 }}>KNOWLEDGE BASE</span>
-        <h1 style={{ fontSize:'clamp(28px,5vw,48px)', fontWeight:800, color:'#FFFFFF',
-          lineHeight:1.15, marginBottom:20, maxWidth:700, margin:'0 auto 20px' }}>
-          Resources &amp; Research
-        </h1>
-        <p style={{ fontSize:17, color:'rgba(255,255,255,0.65)', maxWidth:560,
-          margin:'0 auto', lineHeight:1.7 }}>
-          Technical reports, case studies and methodology articles from the Omniversel team.
-        </p>
+      {/* HERO */}
+      <section style={{ background: C.navy900, padding: '120px 48px 60px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: 0, right: 0, width: 700, height: 500, background: 'radial-gradient(circle at 100% 0%, rgba(45,138,135,0.10) 0%, transparent 65%)', pointerEvents: 'none' }} />
+        <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative' }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 20 }}>Resources</p>
+          <h1 style={{ fontSize: 'clamp(38px,5vw,60px)', fontWeight: 800, lineHeight: 1.08, marginBottom: 24, letterSpacing: '-0.02em', maxWidth: 700 }}>
+            Insights, Research<br /><span style={{ color: C.teal }}>and Guidance.</span>
+          </h1>
+          <p style={{ fontSize: 18, color: C.muted, maxWidth: 600, lineHeight: 1.75 }}>
+            Perspectives on organizational resilience, disaster risk management and business continuity from the Omniversel advisory team and our academic partners at ITU AYM.
+          </p>
+        </div>
       </section>
 
-      {/* Blog posts */}
-      <section style={{ maxWidth:1280, margin:'0 auto', padding:'60px 40px 0' }}>
-        <h2 style={{ fontSize:24, fontWeight:700, color:N, marginBottom:32 }}>Latest Articles</h2>
-        <div className="blog-grid">
-          {blogPosts.map((post, i) => (
-            <div key={i} style={{ background:BG, borderRadius:12, overflow:'hidden',
-              border:`1px solid ${BORDER}`, boxShadow:'0 2px 8px rgba(10,22,40,.05)',
-              display:'flex', flexDirection:'column' }}>
-              <div style={{ padding:'24px 24px 0' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14 }}>
-                  <span style={{ fontSize:10, fontWeight:700, color:post.categoryColor,
-                    background:`${post.categoryColor}14`, padding:'3px 10px', borderRadius:20,
-                    letterSpacing:0.5 }}>{post.category}</span>
-                  <span style={{ fontSize:11, color:MG }}>{post.readTime} read · {post.date}</span>
+      {/* FEATURED CATEGORIES */}
+      <section style={{ background: C.navy950, padding: '80px 48px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16 }}>Browse by Topic</p>
+          <h2 style={{ fontSize: 'clamp(26px,3vw,36px)', fontWeight: 800, color: C.white, marginBottom: 48, letterSpacing: '-0.02em' }}>Find What You Need.</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
+            {CATEGORIES.map(c => <CategoryCard key={c.title} {...c} />)}
+          </div>
+        </div>
+      </section>
+
+      {/* ARTICLES */}
+      <section style={{ background: C.navy900, padding: '100px 48px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16 }}>Latest Articles</p>
+          <h2 style={{ fontSize: 'clamp(26px,3vw,36px)', fontWeight: 800, color: C.white, marginBottom: 56, letterSpacing: '-0.02em' }}>From Our Advisory Team.</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
+            {ARTICLES.map(a => (
+              <div key={a.title} style={{ background: C.navy950, border: `1px solid ${C.border}`, borderRadius: 12, padding: 28 }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>{a.cat}</p>
+                <h3 style={{ fontSize: 16, fontWeight: 600, color: C.white, lineHeight: 1.45, marginBottom: 12 }}>{a.title}</h3>
+                <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.7, marginBottom: 20,
+                  display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' }}>{a.excerpt}</p>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: C.amber, background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.25)', padding: '3px 10px', borderRadius: 9999, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Coming Soon</span>
+                  <span style={{ fontSize: 12, color: C.dim }}>{a.read}</span>
                 </div>
-                <h3 style={{ fontSize:16, fontWeight:700, color:N, marginBottom:10, lineHeight:1.4 }}>{post.title}</h3>
-                <p style={{ fontSize:13, color:MG, lineHeight:1.65, marginBottom:16 }}>{post.summary}</p>
               </div>
-              <div style={{ padding:'0 24px 20px', marginTop:'auto' }}>
-                <span style={{ display:'inline-block', fontSize:11, fontWeight:600, color:T,
-                  background:`${T}10`, border:`1px solid ${T}25`, borderRadius:4,
-                  padding:'2px 8px', marginRight:8 }}>{post.tag}</span>
-                <span style={{ fontSize:12, color:T, fontWeight:600, cursor:'pointer' }}>Read →</span>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Case Studies */}
-      <section style={{ maxWidth:1280, margin:'0 auto', padding:'60px 40px 0' }}>
-        <h2 style={{ fontSize:24, fontWeight:700, color:N, marginBottom:32 }}>Case Studies</h2>
-        <div className="case-grid">
-          {caseStudies.map((cs, i) => (
-            <div key={i} style={{ background:BG, borderRadius:16, border:`1px solid ${BORDER}`,
-              borderTop:`4px solid ${cs.renk}`, padding:'28px',
-              boxShadow:'0 2px 8px rgba(10,22,40,.05)' }}>
-              <div style={{ fontSize:10, fontWeight:700, color:cs.renk, letterSpacing:1.5,
-                textTransform:'uppercase', marginBottom:6 }}>{cs.sektor}</div>
-              <div style={{ fontSize:12, color:MG, marginBottom:12 }}>{cs.sehir}</div>
-              <h3 style={{ fontSize:17, fontWeight:700, color:N, marginBottom:20 }}>{cs.baslik}</h3>
-              <div style={{ display:'flex', gap:10, marginBottom:20 }}>
-                {cs.metrikler.map((m, j) => (
-                  <div key={j} style={{ flex:1, textAlign:'center', background:GR,
-                    borderRadius:8, padding:'10px 6px', borderTop:`2px solid ${cs.renk}` }}>
-                    <div style={{ fontSize:18, fontWeight:800, color:cs.renk,
-                      fontFamily:'DM Mono,monospace' }}>{m.v}</div>
-                    <div style={{ fontSize:9, color:MG, fontWeight:600, marginTop:4,
-                      textTransform:'uppercase', letterSpacing:0.3 }}>{m.l}</div>
-                  </div>
-                ))}
-              </div>
-              <p style={{ fontSize:12, color:MG, lineHeight:1.6, marginBottom:14 }}>{cs.detay}</p>
-              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                <span style={{ fontSize:11, color:MG }}>{cs.tarih}</span>
-                <span style={{ fontSize:12, color:T, fontWeight:600, cursor:'pointer' }}>View Case →</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Reports */}
-      <section style={{ maxWidth:1280, margin:'0 auto', padding:'60px 40px' }}>
-        <h2 style={{ fontSize:24, fontWeight:700, color:N, marginBottom:32 }}>Reports &amp; Whitepapers</h2>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:16 }}>
-          {reports.map((r, i) => (
-            <div key={i} style={{ background:BG, border:`1px solid ${BORDER}`, borderRadius:12,
-              padding:'20px 22px', display:'flex', alignItems:'center', gap:16,
-              boxShadow:'0 1px 4px rgba(10,22,40,.04)', cursor:'pointer',
-              transition:'box-shadow .18s, border-color .18s' }}>
-              <img src={r.icon} alt={r.title} style={{ width:40, height:40, objectFit:'contain', flexShrink:0 }}/>
-              <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontSize:10, fontWeight:700, color:T, letterSpacing:1,
-                  textTransform:'uppercase', marginBottom:4 }}>{r.tag}</div>
-                <div style={{ fontSize:14, fontWeight:600, color:N, lineHeight:1.35,
-                  whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{r.title}</div>
-                <div style={{ fontSize:11, color:MG, marginTop:3 }}>{r.pages} pages · {r.size}</div>
-              </div>
-              <div style={{ fontSize:18, color:T, flexShrink:0 }}>↓</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section style={{ background:T, padding:'64px 40px', textAlign:'center' }}>
-        <h2 style={{ fontSize:'clamp(22px,3vw,34px)', fontWeight:800, color:'#FFFFFF',
-          marginBottom:16, lineHeight:1.2 }}>Ready to Get Started?</h2>
-        <p style={{ color:'rgba(255,255,255,0.75)', fontSize:16, marginBottom:32, lineHeight:1.65 }}>
-          Schedule a free demo and see how Omniversel maps to your sector requirements.
+      {/* NEWSLETTER */}
+      <section style={{ background: 'linear-gradient(135deg, #0F2240, #060D1A)', borderTop: `1px solid ${C.border}`, padding: '80px 48px', textAlign: 'center' }}>
+        <h2 style={{ fontSize: 'clamp(26px,3.5vw,36px)', fontWeight: 800, color: C.white, marginBottom: 16, letterSpacing: '-0.02em' }}>Stay Informed.</h2>
+        <p style={{ fontSize: 16, color: C.muted, maxWidth: 480, margin: '0 auto 40px', lineHeight: 1.7 }}>
+          Resilience insights and regulatory updates — delivered quarterly. No spam.
         </p>
-        <div style={{ display:'flex', gap:14, justifyContent:'center', flexWrap:'wrap' }}>
-          <Link href="/login" style={{ background:'#FFFFFF', color:N, fontWeight:700, fontSize:15,
-            padding:'14px 32px', borderRadius:8, display:'inline-block' }}>
-            Free Demo
-          </Link>
-          <Link href="/methodology" style={{ border:'2px solid rgba(255,255,255,0.7)', color:'#FFFFFF',
-            fontWeight:600, fontSize:15, padding:'13px 32px', borderRadius:8, display:'inline-block' }}>
-            Methodology →
-          </Link>
-        </div>
+        {!subbed ? (
+          <div style={{ display: 'flex', gap: 0, justifyContent: 'center', maxWidth: 480, margin: '0 auto' }}>
+            <input
+              type="email"
+              placeholder="your@email.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              style={{ flex: 1, background: 'rgba(255,255,255,0.06)', border: `1px solid ${C.border}`, borderRight: 'none', borderRadius: '9999px 0 0 9999px', padding: '14px 20px', fontSize: 14, color: C.white, outline: 'none', fontFamily: F }}
+            />
+            <button
+              onClick={() => { if (email) setSubbed(true) }}
+              style={{ background: C.teal, color: C.white, fontWeight: 700, fontSize: 14, padding: '14px 28px', borderRadius: '0 9999px 9999px 0', border: 'none', cursor: 'pointer', fontFamily: F }}>
+              Subscribe
+            </button>
+          </div>
+        ) : (
+          <div style={{ background: 'rgba(45,138,135,0.12)', border: `1px solid ${C.teal}`, borderRadius: 12, padding: '20px 32px', maxWidth: 400, margin: '0 auto' }}>
+            <p style={{ fontSize: 15, fontWeight: 600, color: C.teal }}>You are subscribed.</p>
+            <p style={{ fontSize: 13, color: C.muted, marginTop: 6 }}>Thank you. We will be in touch quarterly.</p>
+          </div>
+        )}
       </section>
-    </>
+
+      <Footer />
+    </div>
   )
 }
