@@ -29,9 +29,13 @@ export default function LoginPage() {
       <div style={{ flex: 1, background: C.navy900, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '80px 64px' }}>
         <a href="/" style={{ fontSize: 13, color: C.dim, marginBottom: 48, display: 'inline-block', cursor: 'pointer', textDecoration: 'none' }}>← Back to omniversel.com</a>
 
-        <a href="/" style={{ textDecoration: 'none', cursor: 'pointer', display: 'block', marginBottom: 48 }}>
-          <div style={{ fontSize: 24, fontWeight: 800, color: C.white, letterSpacing: -0.5 }}>OMNIVERSEL</div>
-          <div style={{ fontSize: 13, color: C.dim, marginTop: 4 }}>Urban Resilience Platform</div>
+        <a href="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: '32px' }}>
+          <div style={{ fontSize: '22px', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.5px' }}>
+            OMNIVERSEL
+          </div>
+          <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>
+            Urban Resilience Platform
+          </div>
         </a>
 
         <h1 style={{ fontSize: 36, fontWeight: 700, color: C.white, lineHeight: 1.2, marginBottom: 12 }}>
