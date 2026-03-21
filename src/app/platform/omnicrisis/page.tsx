@@ -1,191 +1,131 @@
-'use client'
 import Link from 'next/link'
+import Nav from '@/components/Nav'
 
-const N = '#0A1628'; const T = '#009B8D'; const MG = '#566B66'; const BORDER = '#E8EDED'; const GR = '#F4F7F6'
-const ACCENT = '#8B5CF6'
+const C = { navy950:'#060D1A', navy900:'#0A1628', teal:'#2D8A87', white:'#FFFFFF', muted:'#94A3B8', dim:'#64748B', border:'#1E3A5F' }
+const F = "'Plus Jakarta Sans',sans-serif"
 
-function PageNav() {
-  return (
-    <header style={{ position:'fixed', top:0, left:0, right:0, zIndex:200,
-      height:64, background:'rgba(255,255,255,0.97)', backdropFilter:'blur(12px)',
-      borderBottom:'1px solid #E8EDED', display:'flex', alignItems:'center',
-      padding:'0 48px' }}>
-      <div style={{ maxWidth:1200, width:'100%', margin:'0 auto',
-        display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-        <a href="/" style={{ textDecoration:'none' }}>
-          <div style={{ display:'flex', flexDirection:'column' }}>
-            <span style={{ fontSize:17, fontWeight:800, color:'#0A1628', letterSpacing:-0.5, lineHeight:1 }}>OMNIVERSEL</span>
-            <span style={{ fontSize:9, fontWeight:500, color:'#566B66', letterSpacing:1.5, textTransform:'uppercase', marginTop:2 }}>Urban Resilience OS</span>
-          </div>
-        </a>
-        <div style={{ display:'flex', gap:24, alignItems:'center' }}>
-          <a href="/platform/omnirisk" style={{ fontSize:13, color:'#566B66', fontWeight:500, textDecoration:'none' }}>Platform</a>
-          <a href="/solutions" style={{ fontSize:13, color:'#566B66', fontWeight:500, textDecoration:'none' }}>Solutions</a>
-          <a href="/pricing" style={{ fontSize:13, color:'#566B66', fontWeight:500, textDecoration:'none' }}>Pricing</a>
-          <a href="/login" style={{ background:'#2D8A87', color:'#fff', fontWeight:700,
-            fontSize:13, padding:'9px 22px', borderRadius:6, textDecoration:'none' }}>
-            Request Demo
-          </a>
-        </div>
-      </div>
-    </header>
-  )
-}
-
-const FEATURES = [
-  {
-    icon: 'Icon_RESP_12_OnScene.png',
-    title: 'HEICS Protocol Integration',
-    desc: 'Hospital Emergency Incident Command System protocols built-in. Pre-defined role assignments, activation checklists and escalation paths for every hazard type.',
-    color: ACCENT,
-  },
-  {
-    icon: 'Icon_RESP_03_OpCoord.png',
-    title: 'Real-Time Task Tracking',
-    desc: 'Live incident dashboard with task assignment, status updates and resource tracking across all ICS sections — Operations, Logistics, Planning and Finance.',
-    color: '#EC4899',
-  },
-  {
-    icon: 'Icon_RESP_12_OnScene.png',
-    title: 'Automated Post-Mortem',
-    desc: 'Structured After Action Review templates automatically populated from incident data. Lessons learned feed directly into the omniAUDIT compliance loop.',
-    color: '#F97316',
-  },
+const STEPS = [
+  { n:'01', title:'Incident Activation', desc:'Incidents activated from omniRISK alerts or manual declaration — triggering pre-defined response protocols, assembling the command team and initiating stakeholder notification sequences automatically.' },
+  { n:'02', title:'Live Coordination', desc:'Crisis command dashboard provides real-time task assignment, status tracking and decision logging across all response teams — ensuring coordinated action under the pressure of a live incident.' },
+  { n:'03', title:'Post-Incident Review', desc:'Structured debrief process captures lessons learned, near-miss data and protocol gaps — feeding directly into omniPLAN updates and omniHRO near-miss analytics.' },
 ]
-
-const ICS_SECTIONS = [
-  { label: 'Operations', color: '#EF4444', desc: 'Tactical response, resource deployment' },
-  { label: 'Logistics', color: '#F97316', desc: 'Resources, facilities, services' },
-  { label: 'Planning', color: '#3B82F6', desc: 'Situation status, documentation' },
-  { label: 'Finance', color: '#10B981', desc: 'Cost tracking, procurement' },
+const FEATURES = [
+  { title:'Command Dashboard', desc:'Real-time incident command interface — task assignment, status updates and escalation management in a single, role-based view for all response team members.' },
+  { title:'Pre-Defined Protocols', desc:'Response protocols loaded from omniPLAN — tested procedures available at incident activation, eliminating the delay of searching for documentation during a live event.' },
+  { title:'Stakeholder Notification', desc:'Automated notification sequences triggered at incident activation — reaching internal command teams, external agencies and regulators through pre-configured communication trees.' },
+  { title:'Decision Log', desc:'Every command decision timestamped and recorded automatically — providing a complete, defensible audit trail for post-incident review, regulatory reporting and insurance claims.' },
+  { title:'Near-Miss Integration', desc:'Near-miss events captured during response feed into omniHRO analytics — building the organizational learning database that drives HRO culture improvement over time.' },
+  { title:'Post-Incident Analysis', desc:'Structured after-action review workflow captures performance data, protocol gaps and improvement recommendations — automatically generating plan update tasks in omniPLAN.' },
+]
+const STATS = [
+  { val:'Real-time', label:'Command Visibility', sub:'Live incident dashboard' },
+  { val:'<3 min', label:'Protocol Activation', sub:'From declaration to response' },
+  { val:'100%', label:'Decision Audit Trail', sub:'Every action timestamped' },
+  { val:'Automatic', label:'Plan Update Triggers', sub:'Post-incident integration' },
+]
+const INTEG = [
+  { mod:'omniRISK', desc:'Live URI risk scores inform crisis command decisions — providing real-time facility risk context during incident response.' },
+  { mod:'omniPLAN', desc:'Pre-tested BCM plans loaded into omniCRISIS at incident activation — ensuring response teams act on validated procedures, not improvisation.' },
+  { mod:'omniAUDIT', desc:'Crisis response logs feed into compliance scorecards — demonstrating regulatory response capability across BDDK, ISO 22301 and AFAD frameworks.' },
 ]
 
 export default function OmniCrisisPage() {
   return (
-    <div style={{ background:'#F8F9FA', fontFamily:"'DM Sans',sans-serif", minHeight:'100vh' }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;600&display=swap'); *{box-sizing:border-box;margin:0;padding:0} a{text-decoration:none;color:inherit}`}</style>
-      <PageNav />
+    <div style={{ background:C.navy900, fontFamily:F, minHeight:'100vh', color:C.white }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}a{text-decoration:none;color:inherit}.ch{transition:border-color .2s,transform .2s}.ch:hover{border-color:#2D8A87!important;transform:translateY(-2px)}`}</style>
+      <Nav />
 
-      {/* HERO */}
-      <section style={{ paddingTop:120, paddingBottom:80, paddingLeft:48, paddingRight:48, background:N }}>
-        <div style={{ maxWidth:900, margin:'0 auto', textAlign:'center' }}>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(139,92,246,0.15)',
-            border:'1px solid rgba(139,92,246,0.3)', borderRadius:20, padding:'5px 16px', marginBottom:28 }}>
-            <img src="/icons/Icon_RESP_12_OnScene.png" width={14} height={14} alt="Crisis" style={{ objectFit:'contain' }} />
-            <span style={{ color:'#C4B5FD', fontSize:12, fontWeight:600, letterSpacing:1 }}>omniCRISIS Module</span>
-          </div>
-          <h1 style={{ fontSize:'clamp(32px,4.5vw,58px)', fontWeight:800, color:'#fff', lineHeight:1.1, marginBottom:20, letterSpacing:'-0.02em' }}>
-            omniCRISIS —<br/>
-            <span style={{ color:'#C4B5FD' }}>Real-Time Crisis Command</span>
+      <section style={{ background:C.navy900, padding:'120px 48px 80px', position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', top:0, right:0, width:700, height:600, background:'radial-gradient(circle at 100% 0%, rgba(45,138,135,0.12) 0%, transparent 65%)', pointerEvents:'none' }} />
+        <div style={{ maxWidth:1100, margin:'0 auto', position:'relative' }}>
+          <p style={{ fontSize:12, color:C.muted, fontWeight:500, marginBottom:16 }}>Platform / omniCRISIS</p>
+          <p style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.14em', textTransform:'uppercase', marginBottom:20 }}>omniCRISIS</p>
+          <h1 style={{ fontSize:'clamp(38px,5vw,60px)', fontWeight:800, lineHeight:1.08, marginBottom:24, letterSpacing:'-0.02em', maxWidth:760 }}>
+            Live Crisis Command<br /><span style={{ color:C.teal }}>and Incident Management.</span>
           </h1>
-          <p style={{ color:'rgba(255,255,255,0.65)', fontSize:18, lineHeight:1.7, maxWidth:620, margin:'0 auto 48px' }}>
-            From early warning to post-mortem — a full incident command system with HEICS protocol integration,
-            real-time task tracking, and structured lessons-learned.
+          <p style={{ fontSize:18, color:C.muted, maxWidth:640, lineHeight:1.75, marginBottom:36 }}>
+            omniCRISIS provides a structured command environment for managing active incidents — from initial activation through coordinated response, stakeholder notification and post-incident review.
           </p>
-
-          {/* ICS Command Hierarchy */}
-          <div style={{ maxWidth:720, margin:'0 auto' }}>
-            <p style={{ color:'rgba(255,255,255,0.35)', fontSize:10, fontWeight:700,
-              letterSpacing:2, textTransform:'uppercase', marginBottom:20 }}>ICS Command Structure</p>
-
-            {/* Incident Commander */}
-            <div style={{ display:'flex', justifyContent:'center', marginBottom:16 }}>
-              <div style={{ background:'rgba(139,92,246,0.2)', border:'2px solid rgba(139,92,246,0.5)',
-                borderRadius:10, padding:'14px 36px', textAlign:'center' }}>
-                <span style={{ fontSize:13, fontWeight:700, color:'#C4B5FD' }}>Incident Commander</span>
-                <div style={{ fontSize:11, color:'rgba(255,255,255,0.4)', marginTop:4 }}>Strategic oversight · Media · Safety</div>
-              </div>
-            </div>
-
-            {/* Connector line */}
-            <div style={{ display:'flex', justifyContent:'center', marginBottom:0 }}>
-              <div style={{ width:2, height:20, background:'rgba(255,255,255,0.15)' }} />
-            </div>
-            {/* Horizontal line */}
-            <div style={{ display:'flex', justifyContent:'center', marginBottom:0, position:'relative' }}>
-              <div style={{ width:'80%', height:2, background:'rgba(255,255,255,0.15)', marginTop:0 }} />
-            </div>
-
-            {/* Section nodes */}
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginTop:0 }}>
-              {ICS_SECTIONS.map(s => (
-                <div key={s.label} style={{ display:'flex', flexDirection:'column', alignItems:'center' }}>
-                  <div style={{ width:2, height:20, background:'rgba(255,255,255,0.15)', marginBottom:0 }} />
-                  <div style={{ background:'rgba(255,255,255,0.05)', border:`1px solid ${s.color}40`,
-                    borderTop:`2px solid ${s.color}`, borderRadius:8, padding:'12px 8px', textAlign:'center', width:'100%' }}>
-                    <span style={{ fontSize:12, fontWeight:700, color:s.color }}>{s.label}</span>
-                    <div style={{ fontSize:10, color:'rgba(255,255,255,0.35)', marginTop:6, lineHeight:1.5 }}>{s.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:32 }}>
+            <Link href="/login" style={{ background:C.teal, color:C.white, fontWeight:700, fontSize:14, padding:'13px 28px', borderRadius:9999, display:'inline-block' }}>Request Demo</Link>
+            <Link href="/methodology" style={{ border:`1px solid ${C.border}`, color:C.muted, fontWeight:600, fontSize:14, padding:'12px 24px', borderRadius:9999, display:'inline-block' }}>View Methodology →</Link>
+          </div>
+          <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
+            {['Live Command','Incident Protocols','Post-Event Analysis'].map(b => (
+              <span key={b} style={{ fontSize:12, fontWeight:600, padding:'6px 14px', borderRadius:9999, border:`1px solid ${C.border}`, color:C.muted }}>{b}</span>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* FEATURE CARDS */}
-      <section style={{ padding:'72px 48px', background:'#F8F9FA' }}>
+      <section style={{ background:C.navy950, padding:'80px 48px' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
-          <div style={{ textAlign:'center', marginBottom:48 }}>
-            <h2 style={{ fontSize:30, fontWeight:700, color:N, marginBottom:12 }}>Command. Coordinate. Recover.</h2>
-            <p style={{ fontSize:16, color:MG, maxWidth:540, margin:'0 auto' }}>
-              Every phase of incident response, managed in one system.
-            </p>
-          </div>
+          <p style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.14em', textTransform:'uppercase', marginBottom:16 }}>How It Works</p>
+          <h2 style={{ fontSize:'clamp(28px,3.5vw,42px)', fontWeight:800, color:C.white, lineHeight:1.1, marginBottom:56, letterSpacing:'-0.02em' }}>From Activation to Review<br />in One Workflow.</h2>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:24 }}>
-            {FEATURES.map(f => (
-              <div key={f.title} style={{ background:'#fff', border:`1px solid ${BORDER}`,
-                borderRadius:16, padding:'28px 24px', borderTop:`3px solid ${f.color}` }}>
-                <img src={`/icons/${f.icon}`} width={36} height={36} alt={f.title} style={{ objectFit:'contain', marginBottom:16 }} />
-                <h3 style={{ fontSize:16, fontWeight:700, color:N, marginBottom:10 }}>{f.title}</h3>
-                <p style={{ fontSize:13, color:MG, lineHeight:1.7 }}>{f.desc}</p>
+            {STEPS.map(s => (
+              <div key={s.n} style={{ background:C.navy900, border:`1px solid ${C.border}`, borderRadius:12, padding:32, position:'relative', overflow:'hidden' }}>
+                <div style={{ fontSize:80, fontWeight:800, color:C.teal, opacity:0.08, lineHeight:1, position:'absolute', top:8, right:16, pointerEvents:'none' }}>{s.n}</div>
+                <div style={{ fontSize:13, fontWeight:700, color:C.teal, marginBottom:12 }}>{s.n}</div>
+                <h3 style={{ fontSize:18, fontWeight:700, color:C.white, marginBottom:12 }}>{s.title}</h3>
+                <p style={{ fontSize:14, color:C.muted, lineHeight:1.8 }}>{s.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* COMPLIANCE BADGES */}
-      <section style={{ padding:'40px 48px', background:'#fff', borderTop:`1px solid ${BORDER}`, borderBottom:`1px solid ${BORDER}` }}>
-        <div style={{ maxWidth:800, margin:'0 auto', textAlign:'center' }}>
-          <p style={{ fontSize:11, fontWeight:700, color:MG, letterSpacing:2, textTransform:'uppercase', marginBottom:24 }}>
-            Protocol Compatibility
-          </p>
-          <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap' }}>
-            {['HEICS', 'ICS-100', 'NIMS Compatible', 'FEMA Response', 'ISO 22320'].map(b => (
-              <span key={b} style={{ background:GR, border:`1px solid ${BORDER}`, borderRadius:20,
-                padding:'6px 18px', fontSize:13, fontWeight:600, color:N }}>{b}</span>
+      <section style={{ background:C.navy900, padding:'100px 48px' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+          <p style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.14em', textTransform:'uppercase', marginBottom:16 }}>Key Features</p>
+          <h2 style={{ fontSize:'clamp(26px,3vw,38px)', fontWeight:800, color:C.white, lineHeight:1.1, marginBottom:56, letterSpacing:'-0.02em' }}>Command Infrastructure<br />Built for High-Pressure Response.</h2>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20 }}>
+            {FEATURES.map(f => (
+              <div key={f.title} className="ch" style={{ background:C.navy950, border:`1px solid ${C.border}`, borderRadius:12, padding:28 }}>
+                <h3 style={{ fontSize:16, fontWeight:700, color:C.white, marginBottom:10 }}>{f.title}</h3>
+                <p style={{ fontSize:13, color:C.muted, lineHeight:1.75 }}>{f.desc}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* METRICS */}
-      <section style={{ padding:'48px', background:'#F8F9FA' }}>
-        <div style={{ maxWidth:900, margin:'0 auto', display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:24, textAlign:'center' }}>
-          {[['<5','min','Mean Detection to Activation'],['4','','ICS Sections Supported'],['100','%','Audit Trail'],['AAR','','Auto Post-Mortem']].map(([n,u,l]) => (
-            <div key={l} style={{ background:'#fff', border:`1px solid ${BORDER}`, borderRadius:12, padding:'28px 16px' }}>
-              <div style={{ fontSize:36, fontWeight:800, color:ACCENT, fontFamily:'DM Mono,monospace', lineHeight:1 }}>{n}<span style={{ fontSize:16 }}>{u}</span></div>
-              <div style={{ fontSize:12, color:MG, marginTop:8, fontWeight:600 }}>{l}</div>
+      <section style={{ background:C.navy950, borderTop:`1px solid ${C.border}`, borderBottom:`1px solid ${C.border}`, padding:'60px 48px' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto', display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:32 }}>
+          {STATS.map(s => (
+            <div key={s.val} style={{ textAlign:'center' }}>
+              <div style={{ fontSize:32, fontWeight:800, color:C.teal, lineHeight:1, marginBottom:8 }}>{s.val}</div>
+              <div style={{ fontSize:14, fontWeight:600, color:C.white, marginBottom:4 }}>{s.label}</div>
+              <div style={{ fontSize:12, color:C.dim }}>{s.sub}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* CTA */}
-      <section style={{ padding:'72px 48px', background:N, textAlign:'center' }}>
-        <h2 style={{ fontSize:32, fontWeight:700, color:'#fff', marginBottom:16 }}>Activate your command center →</h2>
-        <p style={{ color:'rgba(255,255,255,0.55)', fontSize:16, marginBottom:36 }}>
-          Be ready before the next incident. Start a free simulation today.
-        </p>
-        <Link href="/login" style={{ background:ACCENT, color:'#fff', fontWeight:700, fontSize:15,
-          padding:'14px 40px', borderRadius:8, display:'inline-block' }}>
-          Request Demo
-        </Link>
+      <section style={{ background:C.navy900, padding:'80px 48px' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+          <h2 style={{ fontSize:'clamp(24px,3vw,34px)', fontWeight:800, color:C.white, lineHeight:1.1, marginBottom:48, letterSpacing:'-0.01em' }}>Connects to the Full Platform.</h2>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20 }}>
+            {INTEG.map(i => (
+              <div key={i.mod} className="ch" style={{ background:C.navy950, border:`1px solid ${C.border}`, borderTop:`3px solid ${C.teal}`, borderRadius:12, padding:28 }}>
+                <div style={{ fontSize:15, fontWeight:800, color:C.teal, marginBottom:10 }}>{i.mod}</div>
+                <p style={{ fontSize:13, color:C.muted, lineHeight:1.75 }}>{i.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
-      <footer style={{ background:'#080F1C', padding:'24px 48px', textAlign:'center' }}>
-        <p style={{ color:'rgba(255,255,255,0.3)', fontSize:12 }}>© 2026 Omniversel · omniCRISIS · HEICS · ICS-100 · NIMS Compatible</p>
+      <section style={{ background:'linear-gradient(135deg, #0F2240, #060D1A)', borderTop:`1px solid ${C.border}`, padding:'100px 48px', textAlign:'center' }}>
+        <h2 style={{ fontSize:'clamp(26px,3.5vw,40px)', fontWeight:800, color:C.white, marginBottom:40, letterSpacing:'-0.02em', maxWidth:600, margin:'0 auto 40px' }}>Respond to incidents with command clarity and speed.</h2>
+        <div style={{ display:'flex', gap:14, justifyContent:'center', flexWrap:'wrap' }}>
+          <Link href="/login" style={{ background:C.teal, color:C.white, fontWeight:700, fontSize:15, padding:'16px 36px', borderRadius:9999, display:'inline-block' }}>Request Demo</Link>
+          <a href="mailto:info@omniversel.com" style={{ border:`1px solid ${C.border}`, color:C.muted, fontWeight:600, fontSize:15, padding:'15px 32px', borderRadius:9999, display:'inline-block' }}>Contact Advisory Team</a>
+        </div>
+      </section>
+
+      <footer style={{ background:C.navy950, borderTop:`1px solid ${C.border}`, padding:'32px 0', textAlign:'center' }}>
+        <p style={{ fontSize:12, color:C.dim }}>© 2026 Omniversel · All rights reserved</p>
       </footer>
     </div>
   )
