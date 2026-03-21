@@ -1,6 +1,5 @@
 'use client'
 import { useState } from 'react'
-import Link from 'next/link'
 
 const C = { navy950: '#060D1A', navy900: '#0A1628', teal: '#2D8A87', tealHov: '#3BA8A5', white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B', border: '#1E3A5F' }
 const F = "'Plus Jakarta Sans', sans-serif"
@@ -28,12 +27,12 @@ export default function LoginPage() {
 
       {/* Left column */}
       <div style={{ flex: 1, background: C.navy900, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '80px 64px' }}>
-        <Link href="/" style={{ fontSize: 13, color: C.dim, marginBottom: 48, display: 'inline-block', cursor: 'pointer', textDecoration: 'none' }}>← Back to omniversel.com</Link>
+        <a href="/" style={{ fontSize: 13, color: C.dim, marginBottom: 48, display: 'inline-block', cursor: 'pointer', textDecoration: 'none' }}>← Back to omniversel.com</a>
 
-        <Link href="/" style={{ textDecoration: 'none', cursor: 'pointer', display: 'block', marginBottom: 48 }}>
+        <a href="/" style={{ textDecoration: 'none', cursor: 'pointer', display: 'block', marginBottom: 48 }}>
           <div style={{ fontSize: 24, fontWeight: 800, color: C.white, letterSpacing: -0.5 }}>OMNIVERSEL</div>
           <div style={{ fontSize: 13, color: C.dim, marginTop: 4 }}>Urban Resilience Platform</div>
-        </Link>
+        </a>
 
         <h1 style={{ fontSize: 36, fontWeight: 700, color: C.white, lineHeight: 1.2, marginBottom: 12 }}>
           Sign in to your<br />workspace.
