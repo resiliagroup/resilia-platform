@@ -26,7 +26,7 @@ export default function LoginPage() {
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}a{text-decoration:none;color:inherit}::placeholder{color:#475569}`}</style>
 
       {/* Left column */}
-      <div style={{ flex: 1, background: C.navy900, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '80px 64px' }}>
+      <div style={{ flex: 1, background: C.navy900, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', padding: '48px 64px' }}>
         <a href="/" style={{ fontSize: 13, color: C.dim, marginBottom: 48, display: 'inline-block', cursor: 'pointer', textDecoration: 'none' }}>← Back to omniversel.com</a>
 
         <a href="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: '32px' }}>
