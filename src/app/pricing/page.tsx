@@ -97,7 +97,7 @@ export default function PricingPage() {
           alignItems: 'flex-start', flexWrap: 'wrap' }}>
 
           {/* STARTER */}
-          <div style={{ background: C.navy900, border: `1px solid ${C.border}`, borderRadius: 16, padding: 40, width: 340 }}>
+          <div className="price-card" style={{ background: C.navy900, border: `1px solid ${C.border}`, borderRadius: 16, padding: 40, width: 340 }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: C.muted, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>Starter</p>
             <h3 style={{ fontSize: 24, fontWeight: 800, color: C.white, lineHeight: 1.25, marginBottom: 28 }}>
               Single Facility<br />Assessment
@@ -122,7 +122,7 @@ export default function PricingPage() {
           </div>
 
           {/* PROFESSIONAL */}
-          <div style={{ background: C.navy800, border: `2px solid ${C.teal}`, borderRadius: 16, padding: 40, width: 380,
+          <div className="price-card" style={{ background: C.navy800, border: `2px solid ${C.teal}`, borderRadius: 16, padding: 40, width: 380,
             position: 'relative', boxShadow: `0 8px 40px rgba(45,138,135,0.15)` }}>
             <div style={{ position: 'absolute', top: -14, right: 28,
               background: C.teal, color: C.white, fontSize: 11, fontWeight: 800,
@@ -153,7 +153,7 @@ export default function PricingPage() {
           </div>
 
           {/* ENTERPRISE */}
-          <div style={{ background: C.navy900, border: `1px solid ${C.border}`, borderRadius: 16, padding: 40, width: 340 }}>
+          <div className="price-card" style={{ background: C.navy900, border: `1px solid ${C.border}`, borderRadius: 16, padding: 40, width: 340 }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: C.muted, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>Enterprise</p>
             <h3 style={{ fontSize: 24, fontWeight: 800, color: C.white, lineHeight: 1.25, marginBottom: 28 }}>
               Unlimited Facilities,<br />White-Label &amp; API
@@ -186,7 +186,7 @@ export default function PricingPage() {
           <h2 style={{ fontSize: 32, fontWeight: 800, color: C.white, textAlign: 'center', marginBottom: 56, letterSpacing: '-0.01em' }}>
             All Plans Include
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
+          <div className="g3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
             {INCLUDES.map(col => (
               <div key={col.title} style={{ background: C.navy900, border: `1px solid ${C.border}`,
                 borderRadius: 12, padding: 32 }}>

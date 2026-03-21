@@ -37,8 +37,8 @@ export default function Footer() {
   return (
     <footer style={{ background: C.navy950, borderTop: `1px solid ${C.border}`, padding: '64px 0 32px', fontFamily: F }}>
       <style>{`.ft-link{font-size:13px;color:#64748B;display:block;margin-bottom:8px;text-decoration:none;transition:color .15s}.ft-link:hover{color:#94A3B8}`}</style>
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 48px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr 0.8fr', gap: 48 }}>
+      <div className="ft-inner" style={{ maxWidth: 1100, margin: '0 auto', padding: '0 48px' }}>
+        <div className="ft-grid" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr 0.8fr', gap: 48 }}>
 
           {/* Col 1 — Brand */}
           <div>
@@ -70,7 +70,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div style={{ borderTop: `1px solid ${C.border}`, marginTop: 48, paddingTop: 24,
+        <div className="ft-bottom" style={{ borderTop: `1px solid ${C.border}`, marginTop: 48, paddingTop: 24,
           display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 12, color: '#475569' }}>Omniversel · Urban Resilience Platform · Istanbul, Turkey</span>
           <span style={{ fontSize: 12, color: '#475569' }}>ITU AYM Academic Partner</span>

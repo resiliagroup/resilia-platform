@@ -22,3 +22,43 @@ body { margin: 0; }
 ::-webkit-scrollbar-track { background: #0f172a; }
 ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+/* ── Mobile responsive ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  body { overflow-x: hidden; }
+
+  /* Reduce section horizontal padding */
+  section {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  /* Grid column helpers — applied via className on grid divs */
+  .g3 { grid-template-columns: 1fr !important; }
+  .g4 { grid-template-columns: repeat(2,1fr) !important; }
+  .g2 { grid-template-columns: 1fr !important; gap: 32px !important; }
+
+  /* Footer grid + inner padding */
+  .ft-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+  .ft-inner { padding-left: 20px !important; padding-right: 20px !important; }
+  .ft-bottom { flex-direction: column !important; gap: 8px !important; text-align: center; }
+
+  /* Login — hide right decorative column */
+  .login-right { display: none !important; }
+
+  /* Pricing — 3-col cards stack */
+  .price-grid { flex-direction: column !important; align-items: stretch !important; }
+  .price-card { width: 100% !important; max-width: 100% !important; }
+
+  /* About — 4-col model grid */
+  .model-grid { grid-template-columns: repeat(2,1fr) !important; }
+
+  /* Stats band — ensure 2-col on small */
+  .stats-band { grid-template-columns: repeat(2,1fr) !important; }
+
+  /* 2-col text+feature layout (methodology, etc.) */
+  .tab-body { grid-template-columns: 1fr !important; }
+
+  /* Max-width overrides for hero text blocks */
+  .mw-full { max-width: 100% !important; }
+}

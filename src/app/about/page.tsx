@@ -81,7 +81,7 @@ export default function AboutPage() {
 
       {/* MISSION */}
       <section style={{ background: C.navy950, padding: '100px 48px' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+        <div className="g2" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
           <div>
             <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 20 }}>Our Mission</p>
             <h2 style={{ fontSize: 'clamp(32px,3.5vw,42px)', fontWeight: 800, lineHeight: 1.1, marginBottom: 24, letterSpacing: '-0.02em' }}>
@@ -120,7 +120,7 @@ export default function AboutPage() {
           <p style={{ fontSize: 18, color: C.muted, maxWidth: 700, lineHeight: 1.75, marginBottom: 56 }}>
             Omniversel is built on a fundamental conviction: organizational resilience can be measured, not merely described.
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
+          <div className="g2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
             <p style={{ fontSize: 16, color: C.muted, lineHeight: 1.8 }}>
               Our platform applies quantitative risk analysis methods — drawing from process safety, disaster science and business continuity management — to produce defensible, auditable resilience scores that support real decisions. We work across sectors where the cost of failure is high: critical infrastructure, healthcare, financial services and public administration.
             </p>
@@ -133,7 +133,7 @@ export default function AboutPage() {
 
       {/* ACADEMIC PARTNERSHIP */}
       <section style={{ background: C.navy950, padding: '100px 48px' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '2fr 3fr', gap: 80 }}>
+        <div className="g2" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '2fr 3fr', gap: 80 }}>
           <div>
             <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 20 }}>Academic Partnership</p>
             <h2 style={{ fontSize: 28, fontWeight: 700, color: C.white, lineHeight: 1.25, marginBottom: 20 }}>
@@ -172,7 +172,7 @@ export default function AboutPage() {
             Omniversel operates across four practice areas — each reinforcing the others.
           </h2>
           <div style={{ height: 56 }} />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 20 }}>
+          <div className="g4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 20 }}>
             {MODEL_CARDS.map(card => (
               <div key={card.title} style={{ background: C.navy950, border: `1px solid ${C.border}`,
                 borderTop: `3px solid ${C.teal}`, borderRadius: 12, padding: 32,

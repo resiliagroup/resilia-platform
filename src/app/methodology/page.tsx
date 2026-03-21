@@ -121,7 +121,7 @@ export default function MethodologyPage() {
 
       {/* CORE METHODOLOGY — TAB CONTENT */}
       <section style={{ background: C.navy950, padding: '80px 48px' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '55fr 45fr', gap: 72 }}>
+        <div className="g2" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '55fr 45fr', gap: 72 }}>
           {/* Left */}
           <div>
             <h3 style={{ fontSize: 'clamp(24px,2.5vw,32px)', fontWeight: 800, color: C.white, marginBottom: 16, letterSpacing: '-0.01em' }}>

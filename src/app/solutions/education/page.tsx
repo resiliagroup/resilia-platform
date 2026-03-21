@@ -119,7 +119,7 @@ export default function EducationPage() {
           <h2 style={{ fontSize: 'clamp(28px,3.5vw,42px)', fontWeight: 800, color: C.white, lineHeight: 1.1, marginBottom: 56, letterSpacing: '-0.02em' }}>
             Educational Institutions Bear<br />a Duty of Care at Scale.
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
+          <div className="g3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
             {CHALLENGES.map(c => (
               <div key={c.title} className="ch" style={{ background: C.navy900, border: `1px solid ${C.border}`,
                 borderRadius: 12, padding: 32 }}>
@@ -133,7 +133,7 @@ export default function EducationPage() {
 
       {/* SOLUTION */}
       <section style={{ background: C.navy900, padding: '100px 48px' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '55fr 45fr', gap: 72, alignItems: 'start' }}>
+        <div className="g2" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '55fr 45fr', gap: 72, alignItems: 'start' }}>
           <div>
             <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16 }}>The Omniversel Approach</p>
             <h2 style={{ fontSize: 'clamp(26px,3vw,38px)', fontWeight: 800, color: C.white, lineHeight: 1.1, marginBottom: 40, letterSpacing: '-0.02em' }}>
@@ -180,7 +180,7 @@ export default function EducationPage() {
           <h2 style={{ fontSize: 'clamp(26px,3vw,38px)', fontWeight: 800, color: C.white, lineHeight: 1.1, marginBottom: 56, letterSpacing: '-0.02em' }}>
             From Single Campus to<br />District-Wide Preparedness.
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
+          <div className="g3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
             {USE_CASES.map(u => (
               <div key={u.title} className="ch" style={{ background: C.navy900, border: `1px solid ${C.border}`,
                 borderTop: `3px solid ${C.teal}`, borderRadius: 12, padding: 32 }}>

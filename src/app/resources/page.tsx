@@ -64,7 +64,7 @@ export default function ResourcesPage() {
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16 }}>Browse by Topic</p>
           <h2 style={{ fontSize: 'clamp(26px,3vw,36px)', fontWeight: 800, color: C.white, marginBottom: 48, letterSpacing: '-0.02em' }}>Find What You Need.</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
+          <div className="g3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
             {CATEGORIES.map(c => <CategoryCard key={c.title} {...c} />)}
           </div>
         </div>
@@ -75,7 +75,7 @@ export default function ResourcesPage() {
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16 }}>Latest Articles</p>
           <h2 style={{ fontSize: 'clamp(26px,3vw,36px)', fontWeight: 800, color: C.white, marginBottom: 56, letterSpacing: '-0.02em' }}>From Our Advisory Team.</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
+          <div className="g3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
             {ARTICLES.map(a => (
               <div key={a.title} style={{ background: C.navy950, border: `1px solid ${C.border}`, borderRadius: 12, padding: 28 }}>
                 <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>{a.cat}</p>

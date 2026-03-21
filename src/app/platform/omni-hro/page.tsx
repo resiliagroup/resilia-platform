@@ -57,7 +57,7 @@ export default function OmniHROPage() {
           <p style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.14em', textTransform:'uppercase', marginBottom:16 }}>HRO Foundation</p>
           <h2 style={{ fontSize:'clamp(28px,3.5vw,42px)', fontWeight:800, color:C.white, lineHeight:1.1, marginBottom:16, letterSpacing:'-0.02em' }}>The Five Principles of<br />High Reliability Organizations.</h2>
           <p style={{ fontSize:16, color:C.muted, maxWidth:680, lineHeight:1.75, marginBottom:56 }}>Weick and Sutcliffe identified five organizational properties that distinguish high-reliability organizations — those that operate in high-hazard environments with consistently low failure rates. omniHRO operationalizes these principles.</p>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:24 }}>
+          <div className="g3" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:24 }}>
             {PRINCIPLES.map(p => (
               <div key={p.n} style={{ background:C.navy900, border:`1px solid ${C.border}`, borderRadius:12, padding:32, position:'relative', overflow:'hidden' }}>
                 <div style={{ fontSize:80, fontWeight:800, color:C.teal, opacity:0.08, lineHeight:1, position:'absolute', top:8, right:16, pointerEvents:'none' }}>{p.n}</div>
@@ -77,7 +77,7 @@ export default function OmniHROPage() {
             <span style={{ fontSize:10, fontWeight:700, color:C.amber, background:'rgba(245,158,11,0.12)', border:'1px solid rgba(245,158,11,0.3)', padding:'3px 10px', borderRadius:9999, letterSpacing:'0.08em', textTransform:'uppercase' }}>Expected Q3 2026</span>
           </div>
           <h2 style={{ fontSize:'clamp(26px,3vw,38px)', fontWeight:800, color:C.white, lineHeight:1.1, marginBottom:56, letterSpacing:'-0.02em' }}>Measure Culture Before<br />Culture Produces a Crisis.</h2>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20 }}>
+          <div className="g3" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20 }}>
             {PLANNED.map(f => (
               <div key={f.title} className="ch" style={{ background:C.navy950, border:`1px dashed ${C.border}`, borderRadius:12, padding:28 }}>
                 <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>

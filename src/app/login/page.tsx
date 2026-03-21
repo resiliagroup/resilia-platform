@@ -106,7 +106,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right column */}
-      <div style={{ flex: 1, background: C.navy950, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '80px 64px' }}>
+      <div className="login-right" style={{ flex: 1, background: C.navy950, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '80px 64px' }}>
 
         {/* Quote card */}
         <div style={{
