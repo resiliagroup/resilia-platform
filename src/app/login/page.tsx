@@ -7,7 +7,8 @@ const F = "'Plus Jakarta Sans', sans-serif"
 export default function LoginPage() {
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
-  const [hovBtn, setHovBtn]     = useState(false)
+  const [loading, setLoading]   = useState(false)
+  const [error, setError]       = useState('')
   const [hovDemo, setHovDemo]   = useState(false)
   const [focusEmail, setFocusEmail] = useState(false)
   const [focusPwd, setFocusPwd]     = useState(false)
@@ -20,6 +21,27 @@ export default function LoginPage() {
     fontFamily: F, boxSizing: 'border-box' as const,
     transition: 'border-color .15s',
   })
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+
+    const { createClient } = await import('@supabase/supabase-js')
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (error) {
+      setError('Invalid email or password. Please try again.')
+      setLoading(false)
+    } else {
+      window.location.href = '/hub'
+    }
+  }
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', fontFamily: F }}>
@@ -43,7 +65,7 @@ export default function LoginPage() {
         </h1>
         <p style={{ fontSize: 16, color: C.muted, marginBottom: 40 }}>Access your organization&apos;s resilience platform.</p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div>
             <label style={{ fontSize: 13, color: C.muted, display: 'block', marginBottom: 6 }}>Work Email</label>
             <input
@@ -54,6 +76,7 @@ export default function LoginPage() {
               onFocus={() => setFocusEmail(true)}
               onBlur={() => setFocusEmail(false)}
               style={inputStyle(focusEmail)}
+              required
             />
           </div>
           <div>
@@ -66,21 +89,26 @@ export default function LoginPage() {
               onFocus={() => setFocusPwd(true)}
               onBlur={() => setFocusPwd(false)}
               style={inputStyle(focusPwd)}
+              required
             />
           </div>
-        </div>
 
-        <button
-          onMouseEnter={() => setHovBtn(true)}
-          onMouseLeave={() => setHovBtn(false)}
-          style={{
-            width: '100%', background: hovBtn ? C.tealHov : C.teal,
-            color: C.white, fontWeight: 600, fontSize: 15, padding: 14,
-            borderRadius: 8, border: 'none', cursor: 'pointer', marginTop: 24,
-            fontFamily: F, transition: 'background .15s',
-          }}>
-          Continue
-        </button>
+          {error && (
+            <div style={{ color: '#EF4444', fontSize: '13px', marginTop: '8px' }}>{error}</div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: '100%', background: loading ? '#1E6663' : C.teal,
+              color: C.white, fontWeight: 600, fontSize: 15, padding: 14,
+              borderRadius: 8, border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
+              fontFamily: F, transition: 'background .15s',
+            }}>
+            {loading ? 'Signing in...' : 'Sign In →'}
+          </button>
+        </form>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 32 }}>
           <div style={{ flex: 1, height: 1, background: C.border }} />
