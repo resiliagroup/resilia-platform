@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Nav from '@/components/Nav'
 
 /* ── tokens ─────────────────────────────────────────────────────── */
 const C = {
@@ -86,8 +87,6 @@ export default function HomePage() {
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         a{text-decoration:none;color:inherit}
         body{-webkit-font-smoothing:antialiased;background:${C.navy950}}
-        .nav-link{font-size:14px;font-weight:500;color:${C.muted};transition:color .15s;cursor:pointer}
-        .nav-link:hover{color:#fff}
         .mod-row{cursor:pointer;transition:background .15s}
         .mod-row:hover{background:${C.navy900}!important}
         .sector-card{transition:border-color .18s,transform .18s;cursor:default}
@@ -104,49 +103,11 @@ export default function HomePage() {
           .sectors-grid{grid-template-columns:1fr!important}
           .cs-grid{grid-template-columns:1fr!important}
           .footer-grid{grid-template-columns:1fr!important;gap:40px!important}
-          .nav-links{display:none!important}
         }
       `}</style>
 
       {/* ── NAV ────────────────────────────────────────────────────── */}
-      <header style={{
-        position: 'sticky', top: 0, zIndex: 300, height: 64,
-        background: C.navy950, borderBottom: `1px solid ${C.border}`,
-        display: 'flex', alignItems: 'center',
-      }}>
-        <div style={{ maxWidth: 1200, width: '100%', margin: '0 auto', padding: '0 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link href="/" style={{ textDecoration: 'none' }}>
-            <span style={{ fontSize: 20, fontWeight: 800, color: '#fff', letterSpacing: -0.5 }}>OMNIVERSEL</span>
-          </Link>
-
-          <nav className="nav-links" style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
-            {[['Platform','#modules'],['Solutions','/solutions'],['Methodology','/methodology'],['Pricing','/pricing'],['About','/about']].map(([l,h]) => (
-              <Link key={l} href={h} className="nav-link" style={{ fontFamily: FONT }}>{l}</Link>
-            ))}
-          </nav>
-
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <Link href="/login" style={{
-              fontSize: 13, fontWeight: 600, color: '#fff', fontFamily: FONT,
-              padding: '8px 18px', borderRadius: 20, border: `1px solid ${C.border}`,
-              transition: 'border-color .15s',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = C.teal)}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}>
-              Sign In
-            </Link>
-            <Link href="/login" style={{
-              fontSize: 13, fontWeight: 600, color: '#fff', fontFamily: FONT,
-              padding: '8px 20px', borderRadius: 20, background: C.teal,
-              transition: 'background .15s',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.background = C.tealL)}
-              onMouseLeave={e => (e.currentTarget.style.background = C.teal)}>
-              Request Demo
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Nav position="sticky" solid />
 
       {/* ── HERO ───────────────────────────────────────────────────── */}
       <section style={{
