@@ -1,137 +1,217 @@
-'use client'
 import Link from 'next/link'
 
-function PageNav() {
+const C = {
+  navy950: '#060D1A', navy900: '#0A1628', navy800: '#0F2240',
+  teal: '#2D8A87',
+  white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B',
+  border: '#1E3A5F',
+}
+const FONT = "'Plus Jakarta Sans', sans-serif"
+
+function Nav() {
   return (
-    <header style={{ position:'fixed', top:0, left:0, right:0, zIndex:200,
-      height:64, background:'rgba(255,255,255,0.97)', backdropFilter:'blur(12px)',
-      borderBottom:'1px solid #E8EDED', display:'flex', alignItems:'center',
-      padding:'0 48px' }}>
-      <div style={{ maxWidth:1200, width:'100%', margin:'0 auto',
-        display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-        <a href="/" style={{ textDecoration:'none' }}>
-          <div style={{ display:'flex', flexDirection:'column' }}>
-            <span style={{ fontSize:17, fontWeight:800, color:'#0A1628', letterSpacing:-0.5, lineHeight:1 }}>OMNIVERSEL</span>
-            <span style={{ fontSize:9, fontWeight:500, color:'#566B66', letterSpacing:1.5, textTransform:'uppercase', marginTop:2 }}>Urban Resilience OS</span>
+    <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
+      height: 64, background: 'rgba(6,13,26,0.92)', backdropFilter: 'blur(12px)',
+      borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center',
+      padding: '0 48px', fontFamily: FONT }}>
+      <div style={{ maxWidth: 1200, width: '100%', margin: '0 auto',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Link href="/" style={{ textDecoration: 'none' }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontSize: 17, fontWeight: 800, color: C.white, letterSpacing: -0.5, lineHeight: 1 }}>OMNIVERSEL</span>
+            <span style={{ fontSize: 9, fontWeight: 500, color: C.dim, letterSpacing: 1.5, textTransform: 'uppercase', marginTop: 2 }}>Urban Resilience OS</span>
           </div>
-        </a>
-        <div style={{ display:'flex', gap:24, alignItems:'center' }}>
-          <a href="/platform/omnirisk" style={{ fontSize:13, color:'#566B66', fontWeight:500, textDecoration:'none' }}>Platform</a>
-          <a href="/solutions" style={{ fontSize:13, color:'#566B66', fontWeight:500, textDecoration:'none' }}>Solutions</a>
-          <a href="/pricing" style={{ fontSize:13, color:'#566B66', fontWeight:500, textDecoration:'none' }}>Pricing</a>
-          <a href="/login" style={{ background:'#2D8A87', color:'#fff', fontWeight:700,
-            fontSize:13, padding:'9px 22px', borderRadius:6, textDecoration:'none' }}>
-            Request Demo
-          </a>
+        </Link>
+        <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
+          <Link href="/platform/omnirisk" style={{ fontSize: 13, color: C.muted, fontWeight: 500, textDecoration: 'none' }}>Platform</Link>
+          <Link href="/solutions" style={{ fontSize: 13, color: C.white, fontWeight: 600, textDecoration: 'none' }}>Solutions</Link>
+          <Link href="/methodology" style={{ fontSize: 13, color: C.muted, fontWeight: 500, textDecoration: 'none' }}>Methodology</Link>
+          <Link href="/pricing" style={{ fontSize: 13, color: C.muted, fontWeight: 500, textDecoration: 'none' }}>Pricing</Link>
+        </div>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <Link href="/login" style={{ fontSize: 13, color: C.muted, fontWeight: 600, textDecoration: 'none',
+            padding: '8px 18px', border: `1px solid ${C.border}`, borderRadius: 9999 }}>Sign In</Link>
+          <Link href="/login" style={{ fontSize: 13, color: C.white, fontWeight: 700, textDecoration: 'none',
+            background: C.teal, padding: '8px 20px', borderRadius: 9999 }}>Request Demo</Link>
         </div>
       </div>
     </header>
   )
 }
 
-const N='#0A1628'; const T='#009B8D'; const MG='#566B66'; const BORDER='#E8EDED'
-
-const BADGES = ['BDDK ISP', 'Basel III', 'ISO 22301', 'BIS Operational Resilience', 'SWIFT CSP']
+const CHALLENGES = [
+  {
+    title: 'Regulatory Scrutiny',
+    desc: 'BDDK and international regulators increasingly require demonstrable operational resilience — not self-reported estimates. Assessment methodologies must be defensible under audit.',
+  },
+  {
+    title: 'Systemic Interdependencies',
+    desc: 'Branch networks, correspondent banks, payment infrastructure and IT systems create complex failure cascades. A single point of failure can propagate across the entire organization.',
+  },
+  {
+    title: 'Multi-Hazard Exposure',
+    desc: 'Turkish financial institutions face earthquake, flood, cyber and operational risks simultaneously. Generic risk frameworks do not capture these interactions accurately.',
+  },
+]
 
 const FEATURES = [
-  { title:'BDDK 24-Hour Rule Compliance', desc:'Automated tracking of BDDK\'s 24-hour maximum acceptable downtime requirement for core banking systems — with real-time breach alerts.', color:'#1565C0' },
-  { title:'Basel III Operational Risk', desc:'Map operational risk events to Basel III Pillar 2 categories. Generate Board-ready risk reports aligned to BCBS 239 principles.', color:'#1E40AF' },
-  { title:'HIFYEA v2.0 — 73-Question Assessment', desc:'Purpose-built for Turkish banks: 73 questions covering BDDK requirements, Basel III categories, and FEMA mission area alignment.', color:'#2563EB' },
+  {
+    title: 'BDDK Compliance Mapping',
+    desc: "Every assessment output is structured to demonstrate compliance with BDDK Regulation on Banks' Internal Systems and Operational Risk — audit-ready from day one.",
+  },
+  {
+    title: 'Multi-Branch Risk Scoring',
+    desc: 'Each branch and operational unit receives an individual resilience score. Aggregate scores reveal systemic concentrations invisible in branch-level analysis.',
+  },
+  {
+    title: 'Business Impact Analysis',
+    desc: 'RTO and RPO targets established from quantitative impact data — not organizational preference. Downtime costs calculated by process and revenue stream.',
+  },
+  {
+    title: 'Continuity Plan Development',
+    desc: 'ISO 22301-aligned business continuity plans developed collaboratively — covering earthquake, cyber, operational and supply chain disruption scenarios.',
+  },
 ]
 
-const METRICS = [
-  { val:'<4h',  label:'Target RTO',     sub:'Core banking systems' },
-  { val:'<1h',  label:'Target RPO',     sub:'Transaction data' },
-  { val:'24h',  label:'BDDK Rule',      sub:'Max acceptable downtime' },
-  { val:'73',   label:'HIFYEA Questions', sub:'Banking assessment' },
+const USE_CASES = [
+  {
+    title: 'Branch Network Assessment',
+    desc: 'Systematic risk scoring across all branches — identifying the highest-exposure locations for targeted investment.',
+  },
+  {
+    title: 'Headquarters BCM',
+    desc: 'Enterprise-level continuity planning covering IT systems, payment infrastructure, treasury operations and executive crisis management.',
+  },
+  {
+    title: 'Regulatory Reporting',
+    desc: 'Automated generation of resilience reports structured to meet BDDK, Basel III and ISO 22301 reporting requirements.',
+  },
 ]
 
-export default function BankingSolutionPage() {
+export default function BankingPage() {
   return (
-    <div style={{ background:'#F8F9FA', fontFamily:"'DM Sans',sans-serif", minHeight:'100vh' }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;600&display=swap'); *{box-sizing:border-box;margin:0;padding:0} a{text-decoration:none;color:inherit}`}</style>
-      <PageNav />
+    <div style={{ background: C.navy900, fontFamily: FONT, minHeight: '100vh', color: C.white }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        a { text-decoration: none; color: inherit; }
+        .ch { transition: border-color 0.2s, transform 0.2s; }
+        .ch:hover { border-color: #2D8A87 !important; transform: translateY(-2px); }
+      `}</style>
+      <Nav />
 
       {/* HERO */}
-      <section style={{ paddingTop:120, paddingBottom:80, paddingLeft:48, paddingRight:48, background:N }}>
-        <div style={{ maxWidth:860, margin:'0 auto', textAlign:'center' }}>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(37,99,235,0.15)',
-            border:'1px solid rgba(37,99,235,0.3)', borderRadius:20, padding:'5px 16px', marginBottom:28 }}>
-            <span style={{ color:'#93C5FD', fontSize:12, fontWeight:600, letterSpacing:1 }}>Banking & Financial Services</span>
-          </div>
-          <h1 style={{ fontSize:'clamp(30px,4vw,54px)', fontWeight:800, color:'#fff', lineHeight:1.1, marginBottom:20 }}>
-            Banking & Financial Services<br/>
-            <span style={{ color:'#93C5FD' }}>Resilience</span>
-          </h1>
-          <p style={{ color:'rgba(255,255,255,0.65)', fontSize:17, lineHeight:1.75, maxWidth:580, margin:'0 auto 40px' }}>
-            BDDK and Basel III aligned operational resilience — purpose-built for Turkish financial institutions.
-            From 73-question assessments to real-time crisis command.
+      <section style={{ background: C.navy900, padding: '120px 48px 80px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: 0, right: 0, width: 700, height: 600,
+          background: 'radial-gradient(circle at 100% 0%, rgba(45,138,135,0.10) 0%, transparent 65%)',
+          pointerEvents: 'none' }} />
+        <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative' }}>
+          <p style={{ fontSize: 12, color: C.muted, fontWeight: 500, marginBottom: 16, letterSpacing: '0.06em' }}>
+            Solutions / Banking &amp; Finance
           </p>
-          {/* Compliance badges */}
-          <div style={{ display:'flex', gap:10, flexWrap:'wrap', justifyContent:'center' }}>
-            {BADGES.map(b => (
-              <span key={b} style={{ background:'rgba(37,99,235,0.15)', border:'1px solid rgba(37,99,235,0.3)',
-                color:'#93C5FD', fontSize:11, fontWeight:700, padding:'5px 14px', borderRadius:20, letterSpacing:0.5 }}>{b}</span>
+          <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 20 }}>
+            Banking &amp; Financial Services
+          </p>
+          <h1 style={{ fontSize: 'clamp(38px,5vw,60px)', fontWeight: 800, lineHeight: 1.08, marginBottom: 24, letterSpacing: '-0.02em', maxWidth: 720 }}>
+            Operational Resilience<br />
+            <span style={{ color: C.teal }}>for Financial Institutions.</span>
+          </h1>
+          <p style={{ fontSize: 18, color: C.muted, maxWidth: 640, lineHeight: 1.75, marginBottom: 36 }}>
+            Quantitative BCM and disaster risk assessment calibrated to BDDK operational resilience requirements, Basel III standards and ISO 22301 — built for Turkey&apos;s financial sector.
+          </p>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 32 }}>
+            <Link href="/login" style={{ background: C.teal, color: C.white, fontWeight: 700, fontSize: 14,
+              padding: '13px 28px', borderRadius: 9999, display: 'inline-block' }}>
+              Request Banking Demo
+            </Link>
+            <Link href="/methodology" style={{ border: `1px solid ${C.border}`, color: C.muted,
+              fontWeight: 600, fontSize: 14, padding: '12px 24px', borderRadius: 9999, display: 'inline-block' }}>
+              View Methodology →
+            </Link>
+          </div>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            {['BDDK Aligned', 'Basel III', 'ISO 22301'].map(b => (
+              <span key={b} style={{ fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 9999,
+                border: `1px solid ${C.border}`, color: C.muted }}>{b}</span>
             ))}
           </div>
         </div>
       </section>
 
-      {/* KEY METRICS */}
-      <section style={{ padding:'48px', background:'#fff', borderBottom:`1px solid ${BORDER}` }}>
-        <div style={{ maxWidth:900, margin:'0 auto', display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:24, textAlign:'center' }}>
-          {METRICS.map(m => (
-            <div key={m.label}>
-              <div style={{ fontSize:36, fontWeight:800, color:'#1565C0', fontFamily:'DM Mono,monospace', lineHeight:1 }}>{m.val}</div>
-              <div style={{ fontSize:13, fontWeight:700, color:N, marginTop:8 }}>{m.label}</div>
-              <div style={{ fontSize:11, color:MG, marginTop:4 }}>{m.sub}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* FEATURES */}
-      <section style={{ padding:'72px 48px', background:'#F8F9FA' }}>
-        <div style={{ maxWidth:1100, margin:'0 auto' }}>
-          <h2 style={{ fontSize:28, fontWeight:700, color:N, textAlign:'center', marginBottom:48 }}>
-            Purpose-Built for Financial Institutions
+      {/* CHALLENGE */}
+      <section style={{ background: C.navy950, padding: '100px 48px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16 }}>The Challenge</p>
+          <h2 style={{ fontSize: 'clamp(28px,3.5vw,42px)', fontWeight: 800, color: C.white, lineHeight: 1.1, marginBottom: 56, letterSpacing: '-0.02em' }}>
+            Financial Institutions Face<br />Unique Resilience Demands.
           </h2>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:24 }}>
-            {FEATURES.map(f => (
-              <div key={f.title} style={{ background:'#fff', border:`1px solid ${BORDER}`,
-                borderRadius:16, padding:'28px 24px', borderTop:`3px solid ${f.color}` }}>
-                <h3 style={{ fontSize:16, fontWeight:700, color:N, marginBottom:10 }}>{f.title}</h3>
-                <p style={{ fontSize:13, color:MG, lineHeight:1.7 }}>{f.desc}</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
+            {CHALLENGES.map(c => (
+              <div key={c.title} className="ch" style={{ background: C.navy900, border: `1px solid ${C.border}`,
+                borderRadius: 12, padding: 32 }}>
+                <h3 style={{ fontSize: 17, fontWeight: 700, color: C.white, marginBottom: 14 }}>{c.title}</h3>
+                <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.8 }}>{c.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* HIFYEA PREVIEW */}
-      <section style={{ padding:'64px 48px', background:'#fff', borderTop:`1px solid ${BORDER}` }}>
-        <div style={{ maxWidth:800, margin:'0 auto' }}>
-          <h2 style={{ fontSize:26, fontWeight:700, color:N, marginBottom:8, textAlign:'center' }}>
-            HIFYEA Banking Assessment v2.0
-          </h2>
-          <p style={{ color:MG, fontSize:14, textAlign:'center', marginBottom:36 }}>
-            73 questions · BDDK + Basel III + FEMA aligned · Score range: 0–720
-          </p>
-          <div style={{ background:'#F8F9FA', borderRadius:16, border:`1px solid ${BORDER}`, overflow:'hidden' }}>
-            <div style={{ background:N, padding:'12px 20px', display:'flex', justifyContent:'space-between' }}>
-              <span style={{ color:'rgba(255,255,255,0.6)', fontSize:11, fontWeight:700, letterSpacing:1, textTransform:'uppercase' }}>Question Category</span>
-              <span style={{ color:'rgba(255,255,255,0.6)', fontSize:11, fontWeight:700, letterSpacing:1, textTransform:'uppercase' }}>Questions</span>
+      {/* SOLUTION */}
+      <section style={{ background: C.navy900, padding: '100px 48px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '55fr 45fr', gap: 72, alignItems: 'start' }}>
+          <div>
+            <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16 }}>The Omniversel Approach</p>
+            <h2 style={{ fontSize: 'clamp(26px,3vw,38px)', fontWeight: 800, color: C.white, lineHeight: 1.1, marginBottom: 40, letterSpacing: '-0.02em' }}>
+              Sector-Calibrated Assessment<br />for Banking.
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+              {FEATURES.map(f => (
+                <div key={f.title} style={{ borderLeft: `2px solid ${C.teal}`, paddingLeft: 20 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: C.white, marginBottom: 6 }}>{f.title}</div>
+                  <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.75 }}>{f.desc}</p>
+                </div>
+              ))}
             </div>
-            {[
-              ['H — Hazard & Systemic Risk', '18 questions'],
-              ['F — Fragility & Operational Dependencies', '16 questions'],
-              ['E — Exposure & Systemic Importance', '14 questions'],
-              ['C — Capacity (BDDK + Basel III)', '25 questions'],
-            ].map(([cat, q]) => (
-              <div key={cat} style={{ padding:'14px 20px', borderBottom:`1px solid ${BORDER}`,
-                display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                <span style={{ fontSize:13, color:N, fontWeight:500 }}>{cat}</span>
-                <span style={{ fontSize:12, fontWeight:700, color:'#1565C0', fontFamily:'DM Mono,monospace' }}>{q}</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <div style={{ background: C.navy950, border: `1px solid ${C.border}`, borderRadius: 16, padding: 40 }}>
+              <div style={{ fontSize: 56, fontWeight: 800, color: C.teal, lineHeight: 1, marginBottom: 12 }}>94%</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: C.white, marginBottom: 16, lineHeight: 1.4 }}>
+                Compliance rate achieved across multi-branch banking assessment
+              </div>
+              <div style={{ height: 1, background: C.border, marginBottom: 16 }} />
+              <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.7 }}>
+                BDDK operational resilience requirements fully mapped and verified.
+              </p>
+            </div>
+            <div style={{ background: C.navy950, border: `1px solid ${C.border}`, borderRadius: 16, padding: 40 }}>
+              <div style={{ fontSize: 56, fontWeight: 800, color: C.teal, lineHeight: 1, marginBottom: 12 }}>103</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: C.white, marginBottom: 16, lineHeight: 1.4 }}>
+                Critical risk points identified
+              </div>
+              <div style={{ height: 1, background: C.border, marginBottom: 16 }} />
+              <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.7 }}>
+                Across banking sector facilities in metropolitan Istanbul.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* USE CASES */}
+      <section style={{ background: C.navy950, padding: '100px 48px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16 }}>Use Cases</p>
+          <h2 style={{ fontSize: 'clamp(26px,3vw,38px)', fontWeight: 800, color: C.white, lineHeight: 1.1, marginBottom: 56, letterSpacing: '-0.02em' }}>
+            Built for Every Layer<br />of the Banking Organization.
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
+            {USE_CASES.map(u => (
+              <div key={u.title} className="ch" style={{ background: C.navy900, border: `1px solid ${C.border}`,
+                borderTop: `3px solid ${C.teal}`, borderRadius: 12, padding: 32 }}>
+                <h3 style={{ fontSize: 17, fontWeight: 700, color: C.white, marginBottom: 12 }}>{u.title}</h3>
+                <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.8 }}>{u.desc}</p>
               </div>
             ))}
           </div>
@@ -139,14 +219,29 @@ export default function BankingSolutionPage() {
       </section>
 
       {/* CTA */}
-      <section style={{ padding:'72px 48px', background:N, textAlign:'center' }}>
-        <h2 style={{ fontSize:30, fontWeight:700, color:'#fff', marginBottom:16 }}>Assess your bank&apos;s resilience →</h2>
-        <p style={{ color:'rgba(255,255,255,0.55)', fontSize:15, marginBottom:32 }}>Free HIFYEA assessment for qualified financial institutions.</p>
-        <Link href="/login" style={{ background:T, color:'#fff', fontWeight:700, fontSize:15, padding:'14px 40px', borderRadius:8, display:'inline-block' }}>Start Assessment</Link>
+      <section style={{ background: 'linear-gradient(135deg, #0F2240, #060D1A)',
+        borderTop: `1px solid ${C.border}`, padding: '100px 48px', textAlign: 'center' }}>
+        <h2 style={{ fontSize: 'clamp(28px,3.5vw,42px)', fontWeight: 800, color: C.white, marginBottom: 20,
+          letterSpacing: '-0.02em', maxWidth: 640, margin: '0 auto 20px' }}>
+          Ready to assess your institution&apos;s resilience?
+        </h2>
+        <p style={{ fontSize: 18, color: C.muted, maxWidth: 560, margin: '0 auto 40px', lineHeight: 1.7 }}>
+          Our advisory team works with Turkish financial institutions to implement compliant, defensible resilience programs.
+        </p>
+        <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link href="/login" style={{ background: C.teal, color: C.white, fontWeight: 700, fontSize: 15,
+            padding: '16px 36px', borderRadius: 9999, display: 'inline-block' }}>
+            Request Banking Demo
+          </Link>
+          <a href="mailto:info@omniversel.com" style={{ border: `1px solid ${C.border}`, color: C.muted,
+            fontWeight: 600, fontSize: 15, padding: '15px 32px', borderRadius: 9999, display: 'inline-block' }}>
+            Contact Advisory Team
+          </a>
+        </div>
       </section>
 
-      <footer style={{ background:'#080F1C', padding:'24px 48px', textAlign:'center' }}>
-        <p style={{ color:'rgba(255,255,255,0.3)', fontSize:12 }}>© 2026 Omniversel · Banking & Finance Resilience · BDDK · Basel III · ISO 22301</p>
+      <footer style={{ background: C.navy950, borderTop: `1px solid ${C.border}`, padding: '32px 0', textAlign: 'center' }}>
+        <p style={{ fontSize: 12, color: C.dim }}>© 2026 Omniversel · All rights reserved</p>
       </footer>
     </div>
   )
