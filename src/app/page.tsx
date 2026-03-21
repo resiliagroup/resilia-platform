@@ -108,7 +108,7 @@ export default function HomePage() {
       `}</style>
 
       {/* ── NAV ────────────────────────────────────────────────────── */}
-      <Nav position="sticky" solid />
+      <Nav />
 
       {/* ── HERO ───────────────────────────────────────────────────── */}
       <section style={{
