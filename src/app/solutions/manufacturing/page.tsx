@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Nav from '@/components/Nav'
 
 const C = {
   navy950: '#060D1A', navy900: '#0A1628',
@@ -8,36 +9,6 @@ const C = {
 }
 const FONT = "'Plus Jakarta Sans', sans-serif"
 
-function Nav() {
-  return (
-    <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
-      height: 64, background: 'rgba(6,13,26,0.92)', backdropFilter: 'blur(12px)',
-      borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center',
-      padding: '0 48px', fontFamily: FONT }}>
-      <div style={{ maxWidth: 1200, width: '100%', margin: '0 auto',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link href="/" style={{ textDecoration: 'none' }}>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: 17, fontWeight: 800, color: C.white, letterSpacing: -0.5, lineHeight: 1 }}>OMNIVERSEL</span>
-            <span style={{ fontSize: 9, fontWeight: 500, color: C.dim, letterSpacing: 1.5, textTransform: 'uppercase', marginTop: 2 }}>Urban Resilience OS</span>
-          </div>
-        </Link>
-        <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
-          <Link href="/platform/omnirisk" style={{ fontSize: 13, color: C.muted, fontWeight: 500, textDecoration: 'none' }}>Platform</Link>
-          <Link href="/solutions" style={{ fontSize: 13, color: C.white, fontWeight: 600, textDecoration: 'none' }}>Solutions</Link>
-          <Link href="/methodology" style={{ fontSize: 13, color: C.muted, fontWeight: 500, textDecoration: 'none' }}>Methodology</Link>
-          <Link href="/pricing" style={{ fontSize: 13, color: C.muted, fontWeight: 500, textDecoration: 'none' }}>Pricing</Link>
-        </div>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <Link href="/login" style={{ fontSize: 13, color: C.muted, fontWeight: 600, textDecoration: 'none',
-            padding: '8px 18px', border: `1px solid ${C.border}`, borderRadius: 9999 }}>Sign In</Link>
-          <Link href="/login" style={{ fontSize: 13, color: C.white, fontWeight: 700, textDecoration: 'none',
-            background: C.teal, padding: '8px 20px', borderRadius: 9999 }}>Request Demo</Link>
-        </div>
-      </div>
-    </header>
-  )
-}
 
 const CHALLENGES = [
   { title: 'Production Continuity Under Disruption', desc: 'Manufacturing operations face constant pressure to maintain output schedules. A single facility disruption — equipment failure, supplier outage, natural hazard event — can halt production lines, breach customer contracts and generate significant financial loss.' },
