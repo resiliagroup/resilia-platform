@@ -1,374 +1,328 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 
-const N = '#0A1628'
-const T = '#2D8A87'
-const BG = '#FAFAFA'
-const BORDER = '#E5E7EB'
-
-function useScrolled() {
-  const [scrolled, setScrolled] = useState(false)
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 8)
-    window.addEventListener('scroll', fn)
-    return () => window.removeEventListener('scroll', fn)
-  }, [])
-  return scrolled
+/* ── tokens ─────────────────────────────────────────────────────── */
+const C = {
+  navy950: '#060D1A',
+  navy900: '#0A1628',
+  navy800: '#0F2240',
+  navy700: '#1B3358',
+  teal:    '#2D8A87',
+  tealL:   '#3BA8A5',
+  amber:   '#F59E0B',
+  green:   '#22C55E',
+  muted:   '#94A3B8',
+  dim:     '#64748B',
+  border:  '#1E3A5F',
 }
 
-/* ── NAV ───────────────────────────────────────────────────────── */
-function Nav() {
-  const scrolled = useScrolled()
-  return (
-    <header style={{
-      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 300,
-      height: 60,
-      background: scrolled ? 'rgba(250,250,250,0.92)' : 'transparent',
-      backdropFilter: scrolled ? 'blur(12px)' : 'none',
-      borderBottom: scrolled ? `1px solid ${BORDER}` : '1px solid transparent',
-      display: 'flex', alignItems: 'center',
-      transition: 'background 0.2s, border-color 0.2s',
-    }}>
-      <div style={{
-        maxWidth: 1200, width: '100%', margin: '0 auto',
-        padding: '0 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }}>
-        {/* Logo */}
-        <Link href="/" style={{ textDecoration: 'none' }}>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: 18, fontWeight: 800, color: N, letterSpacing: -0.5, lineHeight: 1 }}>OMNIVERSEL</span>
-            <span style={{ fontSize: 9, fontWeight: 500, color: '#9CA3AF', letterSpacing: 2, textTransform: 'uppercase', marginTop: 2 }}>Urban Resilience Platform</span>
-          </div>
-        </Link>
+const FONT = "'Plus Jakarta Sans', sans-serif"
 
-        {/* Center links */}
-        <nav style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
-          {[
-            ['Platform', '#modules'],
-            ['Solutions', '/solutions'],
-            ['Methodology', '/methodology'],
-            ['Pricing', '/pricing'],
-            ['About', '/about'],
-          ].map(([label, href]) => (
-            <Link key={label} href={href} style={{
-              fontSize: 14, fontWeight: 500, color: '#5A6A7A',
-              textDecoration: 'none', transition: 'color 0.15s',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.color = N)}
-              onMouseLeave={e => (e.currentTarget.style.color = '#5A6A7A')}>
-              {label}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Right CTAs */}
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <Link href="/login" style={{
-            fontSize: 14, fontWeight: 600, color: N,
-            padding: '8px 18px', borderRadius: 8, border: `1px solid ${BORDER}`,
-            textDecoration: 'none', background: 'transparent', transition: 'border-color 0.15s',
-          }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = '#9CA3AF')}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = BORDER)}>
-            Sign in
-          </Link>
-          <Link href="/login" style={{
-            fontSize: 14, fontWeight: 700, color: '#fff',
-            padding: '8px 20px', borderRadius: 8, background: T,
-            textDecoration: 'none', transition: 'opacity 0.15s',
-          }}
-            onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
-            onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-            Request Demo
-          </Link>
-        </div>
-      </div>
-    </header>
-  )
-}
-
-/* ── DASHBOARD MOCK ─────────────────────────────────────────────── */
-function DashboardMock() {
-  return (
-    <div style={{
-      background: N, borderRadius: 16, overflow: 'hidden',
-      border: '1px solid #1E2A3A', boxShadow: '0 24px 64px rgba(10,22,40,0.18)',
-    }}>
-      {/* Titlebar */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        padding: '12px 18px', borderBottom: '1px solid #1E2A3A', background: '#0D1E34',
-      }}>
-        <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#EF4444' }} />
-        <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#F59E0B' }} />
-        <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#10B981' }} />
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginLeft: 10, fontFamily: 'monospace', letterSpacing: 0.5 }}>
-          Omniversel Platform — Live
-        </span>
-      </div>
-
-      {/* Body */}
-      <div style={{ padding: 20 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-          {/* Risk Score */}
-          <div style={{ background: '#0D1E34', borderRadius: 10, padding: '16px 18px', border: '1px solid #1E3450' }}>
-            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 8 }}>Facility Risk Score</div>
-            <div style={{ fontSize: 36, fontWeight: 800, color: T, fontFamily: 'monospace', lineHeight: 1, marginBottom: 8 }}>78.4</div>
-            <div style={{ display: 'inline-block', background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 4, padding: '2px 8px', fontSize: 10, fontWeight: 700, color: '#34D399', marginBottom: 10 }}>Resilient</div>
-            <div style={{ height: 4, background: '#1E3450', borderRadius: 2 }}>
-              <div style={{ width: '78%', height: '100%', background: T, borderRadius: 2 }} />
-            </div>
-          </div>
-
-          {/* Critical Alerts */}
-          <div style={{ background: '#0D1E34', borderRadius: 10, padding: '16px 18px', border: '1px solid #1E3450' }}>
-            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 10 }}>Critical Alerts</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {[
-                { dot: '#EF4444', text: 'Generator backup overdue' },
-                { dot: '#F97316', text: 'BCP review pending — Q1' },
-                { dot: '#F59E0B', text: 'Supplier Tier-1 gap detected' },
-              ].map((a, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: a.dot, flexShrink: 0 }} />
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', lineHeight: 1.4 }}>{a.text}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* KPI bar */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', background: '#0D1E34', borderRadius: 10, border: '1px solid #1E3450', overflow: 'hidden' }}>
-          {[['782', 'Facilities'], ['103', 'Critical'], ['94%', 'Compliant']].map(([v, l], i) => (
-            <div key={i} style={{
-              padding: '12px 16px', textAlign: 'center',
-              borderRight: i < 2 ? '1px solid #1E3450' : 'none',
-            }}>
-              <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', fontFamily: 'monospace', lineHeight: 1 }}>{v}</div>
-              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', marginTop: 4 }}>{l}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/* ── MODULE DATA ─────────────────────────────────────────────────── */
+/* ── modules data ────────────────────────────────────────────────── */
 const MODULES = [
   {
     code: 'omniRISK', href: '/platform/omnirisk',
-    desc: 'Quantitative risk scoring',
+    short: 'Quantitative facility risk scoring',
     detail: 'Multi-parameter facility risk scoring — hazard, fragility, exposure and capacity synthesized into a single, auditable resilience index.',
-    features: ['Facility-level resilience score', 'Sector & hazard calibration', 'FEMA mission area alignment'],
+    features: ['URI score for every facility', 'Sector & hazard calibration', 'FEMA mission area alignment'],
   },
   {
     code: 'omniIMPACT', href: '/platform/omniimpact',
-    desc: 'Business impact analysis',
+    short: 'Business impact analysis & downtime modeling',
     detail: 'Identify critical functions, model downtime costs and establish evidence-based RTO/RPO targets for every business unit.',
     features: ['Critical function prioritization', 'Downtime cost modeling', 'MTPD and RTO/RPO tracking'],
   },
   {
     code: 'omniPLAN', href: '/platform/omniplan',
-    desc: 'ISO 22301 BCM planning',
+    short: 'BCM planning with RTO/RPO tracking',
     detail: 'Build, test and maintain business continuity plans aligned to ISO 22301 — with lifecycle management from draft to approved.',
     features: ['Clause-by-clause gap analysis', 'Drill & exercise management', 'Plan lifecycle tracking'],
   },
   {
     code: 'omniCRISIS', href: '/platform/omnicrisis',
-    desc: 'Crisis command center',
+    short: 'Real-time crisis command',
     detail: 'ICS-based crisis management with real-time incident tracking, role assignments and structured post-incident review.',
     features: ['ICS role structure', 'Escalation protocols', 'After-action learning'],
   },
   {
     code: 'omniAUDIT', href: '/platform/omniaudit',
-    desc: 'Compliance & audit management',
+    short: 'Compliance scorecards',
     detail: 'Continuous compliance monitoring across Sendai Framework, ISO 22301, BDDK and Basel III — audit-ready at all times.',
     features: ['Multi-framework tracking', 'Evidence collection', 'Automated gap analysis'],
   },
   {
     code: 'omniVENDOR', href: '/platform/omnivendor',
-    desc: 'Supply chain resilience',
+    short: 'Third-party risk assessment',
     detail: 'Score, monitor and tier critical suppliers against disruption risk — from natural hazard cascades to cyber dependencies.',
     features: ['Supplier risk scoring', 'Dependency mapping', 'Cascade analysis'],
   },
   {
     code: 'omniPIPE', href: '/platform/omnipipe',
-    desc: 'Pipeline, LNG and energy infrastructure risk',
+    short: 'Pipeline & energy risk',
     detail: 'Purpose-built for pipeline operators, LNG terminals and energy distributors — quantitative consequence modeling and structural integrity assessment.',
     features: ['Gas release consequence modeling', 'Pipeline integrity scoring', 'SCADA integration ready'],
     soon: true,
   },
   {
     code: 'omniHRO', href: '/platform/omni-hro',
-    desc: 'Near miss analysis and reliability culture measurement',
+    short: 'Near miss & reliability culture',
     detail: 'Operational signal intelligence for high-reliability organizations. Near-miss reporting, culture measurement and reliability coefficient scoring.',
     features: ['Structured near-miss reporting', 'HRO alpha coefficient scoring', 'Reliability culture survey'],
     soon: true,
   },
 ]
 
-/* ── SECTORS ────────────────────────────────────────────────────── */
-const SECTORS = [
-  { name: 'Banking & Finance',        desc: 'Operational risk inventory and business continuity aligned to BDDK and Basel III requirements.',      ref: 'BDDK · Basel III · ISO 22301' },
-  { name: 'Healthcare & Hospital',    desc: 'Critical patient service continuity and emergency operations center integration for medical facilities.', ref: 'JCI · ISO 22301 · Sendai SF' },
-  { name: 'Industry & Manufacturing', desc: 'NATECH cascade scenario analysis and supply chain disruption modeling for industrial facilities.',      ref: 'ISO 31000 · RAPID-N · Sendai SF' },
-  { name: 'Public & Municipality',    desc: 'Urban-scale vulnerability assessment and investment planning aligned to Sendai Framework priorities.',   ref: 'Sendai SF · ISO 22301' },
-  { name: 'Critical Infrastructure',  desc: 'N-1 analysis for energy, water and transport systems with dependency mapping across networks.',          ref: 'ISO 22301 · CIP standards' },
-  { name: 'Education Institutions',   desc: 'School disaster risk management plans, drill management and resilience assessment frameworks.',          ref: 'Sendai SF · ISO 22301' },
-]
-
-/* ── PAGE ───────────────────────────────────────────────────────── */
+/* ── page ────────────────────────────────────────────────────────── */
 export default function HomePage() {
-  const [activeModule, setActiveModule] = useState(0)
-  const mod = MODULES[activeModule]
+  const [activeMod, setActiveMod] = useState(0)
+  const mod = MODULES[activeMod]
 
   return (
-    <div style={{ background: BG, fontFamily: "'DM Sans', sans-serif", minHeight: '100vh' }}>
+    <div style={{ fontFamily: FONT, background: C.navy950, minHeight: '100vh' }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         a{text-decoration:none;color:inherit}
-        body{-webkit-font-smoothing:antialiased}
-        .sector-card:hover{border-left:3px solid ${T}!important;background:#F0F9F8!important}
-        .sector-card:hover .sector-arrow{opacity:1!important}
-        .mod-row:hover{background:#F0F9F8!important}
+        body{-webkit-font-smoothing:antialiased;background:${C.navy950}}
+        .nav-link{font-size:14px;font-weight:500;color:${C.muted};transition:color .15s;cursor:pointer}
+        .nav-link:hover{color:#fff}
+        .mod-row{cursor:pointer;transition:background .15s}
+        .mod-row:hover{background:${C.navy900}!important}
+        .sector-card{transition:border-color .18s,transform .18s;cursor:default}
+        .sector-card:hover{border-color:${C.teal}!important;transform:translateY(-2px)}
+        .cta-pill{transition:background .15s,transform .15s}
+        .cta-pill:hover{background:${C.tealL}!important;transform:scale(1.02)}
+        .ghost-pill{transition:border-color .15s}
+        .ghost-pill:hover{border-color:${C.teal}!important;color:#fff!important}
+        @media(max-width:900px){
+          .hero-grid{grid-template-columns:1fr!important}
+          .hero-right{display:none!important}
+          .mod-grid{grid-template-columns:1fr!important}
+          .metrics-grid{grid-template-columns:repeat(2,1fr)!important}
+          .sectors-grid{grid-template-columns:1fr!important}
+          .cs-grid{grid-template-columns:1fr!important}
+          .footer-grid{grid-template-columns:1fr!important;gap:40px!important}
+          .nav-links{display:none!important}
+        }
       `}</style>
 
-      <Nav />
+      {/* ── NAV ────────────────────────────────────────────────────── */}
+      <header style={{
+        position: 'sticky', top: 0, zIndex: 300, height: 64,
+        background: C.navy950, borderBottom: `1px solid ${C.border}`,
+        display: 'flex', alignItems: 'center',
+      }}>
+        <div style={{ maxWidth: 1200, width: '100%', margin: '0 auto', padding: '0 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Link href="/" style={{ textDecoration: 'none' }}>
+            <span style={{ fontSize: 20, fontWeight: 800, color: '#fff', letterSpacing: -0.5 }}>OMNIVERSEL</span>
+          </Link>
 
-      {/* ── HERO ──────────────────────────────────────────────────── */}
-      <section style={{ paddingTop: 120, paddingBottom: 100, padding: '120px 40px 100px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+          <nav className="nav-links" style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
+            {[['Platform','#modules'],['Solutions','/solutions'],['Methodology','/methodology'],['Pricing','/pricing'],['About','/about']].map(([l,h]) => (
+              <Link key={l} href={h} className="nav-link" style={{ fontFamily: FONT }}>{l}</Link>
+            ))}
+          </nav>
+
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <Link href="/login" style={{
+              fontSize: 13, fontWeight: 600, color: '#fff', fontFamily: FONT,
+              padding: '8px 18px', borderRadius: 20, border: `1px solid ${C.border}`,
+              transition: 'border-color .15s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = C.teal)}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}>
+              Sign In
+            </Link>
+            <Link href="/login" style={{
+              fontSize: 13, fontWeight: 600, color: '#fff', fontFamily: FONT,
+              padding: '8px 20px', borderRadius: 20, background: C.teal,
+              transition: 'background .15s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.background = C.tealL)}
+              onMouseLeave={e => (e.currentTarget.style.background = C.teal)}>
+              Request Demo
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* ── HERO ───────────────────────────────────────────────────── */}
+      <section style={{
+        minHeight: 'calc(100vh - 64px)',
+        background: C.navy900,
+        position: 'relative', overflow: 'hidden',
+        display: 'flex', alignItems: 'center',
+        padding: '80px 40px',
+      }}>
+        {/* Background glows */}
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+          <div style={{ position: 'absolute', top: 0, right: 0, width: '70%', height: '100%',
+            background: 'radial-gradient(ellipse 80% 60% at 70% 40%, rgba(45,138,135,0.12) 0%, transparent 60%)' }} />
+          <div style={{ position: 'absolute', bottom: 0, left: 0, width: '50%', height: '70%',
+            background: 'radial-gradient(ellipse 50% 40% at 10% 80%, rgba(27,51,88,0.8) 0%, transparent 70%)' }} />
+        </div>
+
+        <div className="hero-grid" style={{ maxWidth: 1200, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: '55% 45%', gap: 80, alignItems: 'center', position: 'relative', zIndex: 1 }}>
           {/* Left */}
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: T, letterSpacing: '3px', textTransform: 'uppercase', marginBottom: 24 }}>
+            <div style={{
+              display: 'inline-block', fontSize: 11, fontWeight: 600, color: C.teal,
+              letterSpacing: '2px', textTransform: 'uppercase',
+              border: `1px solid ${C.teal}40`, borderRadius: 20, padding: '4px 14px', marginBottom: 32,
+            }}>
               Enterprise Resilience Platform
             </div>
-            <h1 style={{
-              fontSize: 'clamp(48px,6vw,72px)', fontWeight: 800, color: N,
-              lineHeight: 1.05, letterSpacing: '-0.03em', marginBottom: 24,
-              whiteSpace: 'pre-line',
-            }}>
-              {'Resilience,\nReimagined.'}
+
+            <h1 style={{ lineHeight: 1.0, marginBottom: 24 }}>
+              <span style={{ display: 'block', fontSize: 'clamp(44px,5.5vw,72px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em' }}>Quantify Risk.</span>
+              <span style={{ display: 'block', fontSize: 'clamp(44px,5.5vw,72px)', fontWeight: 800, color: C.teal, letterSpacing: '-0.03em', marginTop: 4 }}>Ensure Continuity.</span>
+              <span style={{ display: 'block', fontSize: 'clamp(44px,5.5vw,72px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', marginTop: 4 }}>Manage Crises.</span>
             </h1>
-            <p style={{ fontSize: 18, color: '#6B7280', lineHeight: 1.7, maxWidth: 480, marginBottom: 40 }}>
+
+            <p style={{ fontSize: 18, color: C.muted, lineHeight: 1.7, maxWidth: 480, marginBottom: 40 }}>
               An integrated platform for organizational resilience — disaster risk assessment, business continuity and crisis management in one workspace.
             </p>
+
             <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 32 }}>
-              <Link href="/platform/omnirisk" style={{
-                fontSize: 16, fontWeight: 700, color: '#fff', background: T,
-                padding: '14px 32px', borderRadius: 10, display: 'inline-block', transition: 'opacity 0.15s',
-              }}
-                onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
-                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+              <Link href="/platform/omnirisk" className="cta-pill" style={{
+                fontSize: 16, fontWeight: 600, color: '#fff', fontFamily: FONT,
+                background: C.teal, padding: '14px 32px', borderRadius: 30, display: 'inline-block',
+              }}>
                 Explore Platform
               </Link>
-              <Link href="/methodology" style={{
-                fontSize: 16, fontWeight: 600, color: N,
-                padding: '14px 32px', borderRadius: 10, border: `1px solid ${BORDER}`,
-                display: 'inline-block', background: '#fff', transition: 'border-color 0.15s',
-              }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = '#9CA3AF')}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = BORDER)}>
+              <Link href="/methodology" className="ghost-pill" style={{
+                fontSize: 16, fontWeight: 600, color: C.muted, fontFamily: FONT,
+                padding: '14px 32px', borderRadius: 30, border: `1px solid ${C.border}`,
+                display: 'inline-block',
+              }}>
                 Watch Overview
               </Link>
             </div>
-            <p style={{ fontSize: 13, color: '#9CA3AF' }}>
-              Trusted by critical infrastructure operators across Turkey.
-            </p>
+
+            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+              {['ISO 22301 Aligned', 'FEMA Core Capabilities', 'ITU AYM Validated'].map(t => (
+                <span key={t} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: C.muted }}>
+                  <span style={{ color: C.green, fontWeight: 700 }}>✓</span> {t}
+                </span>
+              ))}
+            </div>
           </div>
 
-          {/* Right — Dashboard */}
-          <DashboardMock />
+          {/* Right — product cards */}
+          <div className="hero-right" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {[
+              { code: 'omniRISK — Quantitative Risk Scoring', sub: 'URI score for every facility. Multi-parameter model.', active: true, href: '/platform/omnirisk' },
+              { code: 'omniPLAN — Business Continuity Management', sub: 'ISO 22301 aligned. RTO/RPO tracking.', active: false, href: '/platform/omniplan' },
+              { code: 'omniCRISIS — Real-Time Crisis Command', sub: 'Live incident management. Post-event analysis.', active: false, href: '/platform/omnicrisis' },
+            ].map((card, i) => (
+              <Link key={i} href={card.href} style={{
+                display: 'block',
+                background: card.active ? C.navy800 : C.navy900,
+                border: `1px solid ${card.active ? C.teal : C.border}`,
+                borderRadius: 12, padding: '20px 20px 20px 20px',
+                textDecoration: 'none',
+                transition: 'border-color .15s',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = C.teal)}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = card.active ? C.teal : C.border)}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+                  <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: card.active ? C.teal : C.muted, flexShrink: 0, marginTop: 5 }} />
+                    <div>
+                      <div style={{ fontSize: 15, fontWeight: 600, color: card.active ? '#fff' : C.muted, marginBottom: 4 }}>{card.code}</div>
+                      <div style={{ fontSize: 13, color: card.active ? C.muted : '#475569' }}>{card.sub}</div>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 16, color: card.active ? C.teal : '#475569', flexShrink: 0 }}>→</span>
+                </div>
+              </Link>
+            ))}
+            <Link href="#modules" style={{ fontSize: 13, color: C.teal, fontWeight: 600, marginTop: 4, fontFamily: FONT }}>
+              + 5 more modules →
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* ── TRUST BAND ────────────────────────────────────────────── */}
-      <section style={{ borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, padding: '28px 40px', background: '#fff' }}>
+      {/* ── TRUST BAND ─────────────────────────────────────────────── */}
+      <section style={{ background: C.navy950, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}`, padding: '32px 40px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: '#9CA3AF', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 16 }}>
-            Trusted across sectors
+          <p style={{ fontSize: 11, fontWeight: 600, color: C.muted, letterSpacing: '3px', textTransform: 'uppercase', marginBottom: 24 }}>
+            Trusted across critical sectors
           </p>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 0, flexWrap: 'wrap' }}>
-            {['BANKING', 'HEALTHCARE', 'INDUSTRY', 'PUBLIC SECTOR', 'EDUCATION', 'CRITICAL INFRASTRUCTURE'].map((s, i) => (
-              <span key={s} style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#C4CDD5', letterSpacing: '1.5px' }}>{s}</span>
-                {i < 5 && <span style={{ display: 'inline-block', width: 1, height: 14, background: '#D1D5DB', margin: '0 20px' }} />}
-              </span>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 48, flexWrap: 'wrap' }}>
+            {['BANKING','HEALTHCARE','ENERGY','INDUSTRY','PUBLIC SECTOR','EDUCATION','CRITICAL INFRASTRUCTURE'].map(s => (
+              <span key={s} style={{ fontSize: 12, fontWeight: 600, color: '#475569', letterSpacing: '1px' }}>{s}</span>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── PLATFORM MODULES ──────────────────────────────────────── */}
-      <section id="modules" style={{ padding: '120px 40px' }}>
+      {/* ── PLATFORM MODULES ───────────────────────────────────────── */}
+      <section id="modules" style={{ background: C.navy950, padding: '120px 40px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ marginBottom: 64 }}>
-            <h2 style={{ fontSize: 'clamp(36px,5vw,64px)', fontWeight: 800, color: N, lineHeight: 1.05, letterSpacing: '-0.02em', marginBottom: 16 }}>
-              One platform.<br />
-              <span style={{ color: T }}>Six integrated modules.</span>
+          {/* Heading */}
+          <div style={{ textAlign: 'center', marginBottom: 72 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '3px', textTransform: 'uppercase', marginBottom: 16 }}>
+              THE PLATFORM
+            </p>
+            <h2 style={{ fontSize: 'clamp(36px,4.5vw,52px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 16 }}>
+              One Platform. <span style={{ color: C.teal }}>Every Risk.</span>
             </h2>
-            <p style={{ fontSize: 18, color: '#6B7280', maxWidth: 540 }}>
-              From first assessment to live crisis command — everything in one workspace.
+            <p style={{ fontSize: 18, color: C.muted, maxWidth: 600, margin: '0 auto', lineHeight: 1.7 }}>
+              Six integrated modules covering the complete resilience lifecycle — from first assessment to live crisis command.
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, alignItems: 'start' }}>
-            {/* Module list */}
-            <div style={{ border: `1px solid ${BORDER}`, borderRadius: 12, overflow: 'hidden', background: '#fff' }}>
+          {/* 2-col layout */}
+          <div className="mod-grid" style={{ display: 'grid', gridTemplateColumns: '40% 60%', gap: 24, alignItems: 'start' }}>
+            {/* Left list */}
+            <div style={{ border: `1px solid ${C.border}`, borderRadius: 12, overflow: 'hidden' }}>
               {MODULES.map((m, i) => (
                 <div
                   key={m.code}
-                  className={m.soon ? '' : 'mod-row'}
-                  onClick={() => setActiveModule(i)}
+                  className="mod-row"
+                  onClick={() => setActiveMod(i)}
                   style={{
-                    padding: '18px 24px',
-                    borderBottom: i < MODULES.length - 1 ? `1px solid ${BORDER}` : 'none',
-                    borderLeft: activeModule === i ? `3px solid ${T}` : '3px solid transparent',
-                    background: activeModule === i ? '#F0F9F8' : '#fff',
-                    cursor: 'pointer',
-                    opacity: m.soon && activeModule !== i ? 0.55 : 1,
-                    transition: 'background 0.15s, border-color 0.15s, opacity 0.15s',
+                    padding: '16px 20px',
+                    borderBottom: i < MODULES.length - 1 ? `1px solid ${C.border}` : 'none',
+                    borderLeft: activeMod === i ? `3px solid ${C.teal}` : '3px solid transparent',
+                    background: activeMod === i ? C.navy800 : C.navy950,
+                    opacity: m.soon && activeMod !== i ? 0.6 : 1,
                   }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
-                    <span style={{ fontSize: 15, fontWeight: 700, color: activeModule === i ? T : N }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 3 }}>
+                    <span style={{ fontSize: 15, fontWeight: 600, color: activeMod === i ? '#fff' : C.muted, fontFamily: FONT }}>
                       {m.code}
                     </span>
                     {m.soon && (
-                      <span style={{ fontSize: 9, fontWeight: 700, color: '#9CA3AF', background: '#F3F4F6', border: '1px solid #E5E7EB', borderRadius: 4, padding: '1px 6px', letterSpacing: 1, textTransform: 'uppercase' as const }}>
+                      <span style={{ fontSize: 9, fontWeight: 700, color: C.amber, border: `1px solid ${C.amber}50`, borderRadius: 4, padding: '1px 6px', letterSpacing: 1, textTransform: 'uppercase' as const }}>
                         Soon
                       </span>
                     )}
                   </div>
-                  <div style={{ fontSize: 13, color: '#9CA3AF' }}>{m.desc}</div>
+                  <div style={{ fontSize: 13, color: '#475569' }}>{m.short}</div>
                 </div>
               ))}
             </div>
 
-            {/* Module detail */}
-            <div style={{ border: `1px solid ${BORDER}`, borderRadius: 12, padding: '36px 32px', background: '#fff', minHeight: 360 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: T, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 12 }}>
-                {mod.code}
+            {/* Right detail */}
+            <div style={{ background: C.navy900, border: `1px solid ${C.border}`, borderRadius: 16, padding: '40px 36px', minHeight: 360 }}>
+              <div style={{ borderLeft: `3px solid ${C.teal}`, paddingLeft: 16, marginBottom: 20 }}>
+                <h3 style={{ fontSize: 28, fontWeight: 700, color: '#fff', fontFamily: FONT, marginBottom: 8 }}>{mod.code}</h3>
+                <p style={{ fontSize: 16, color: C.muted }}>{mod.short}</p>
               </div>
-              <h3 style={{ fontSize: 22, fontWeight: 700, color: N, marginBottom: 16, lineHeight: 1.3 }}>
-                {mod.desc}
-              </h3>
-              <p style={{ fontSize: 15, color: '#6B7280', lineHeight: 1.75, marginBottom: 28 }}>
-                {mod.detail}
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 32 }}>
+              <p style={{ fontSize: 15, color: C.dim, lineHeight: 1.75, marginBottom: 28 }}>{mod.detail}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
                 {mod.features.map(f => (
                   <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: T, flexShrink: 0 }} />
-                    <span style={{ fontSize: 14, color: '#374151' }}>{f}</span>
+                    <span style={{ color: C.teal, fontWeight: 700, fontSize: 14, flexShrink: 0 }}>✓</span>
+                    <span style={{ fontSize: 14, color: '#fff' }}>{f}</span>
                   </div>
                 ))}
               </div>
-              <Link href={mod.href} style={{ fontSize: 14, fontWeight: 600, color: T }}>
+              <Link href={mod.href} style={{ fontSize: 14, fontWeight: 600, color: C.teal, fontFamily: FONT }}>
                 Learn more →
               </Link>
             </div>
@@ -376,143 +330,141 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── BUILT DIFFERENT ───────────────────────────────────────── */}
-      <section style={{ borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, background: '#fff' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)' }}>
-          {[
-            { stat: '782+', body: 'Facilities assessed in a single metropolitan deployment' },
-            { stat: '6',    body: 'Integrated modules covering the complete BCM lifecycle' },
-            { stat: '03:00', body: 'The hour when systems fail. We\'re already ready.' },
-          ].map((d, i) => (
-            <div key={i} style={{
-              padding: '56px 48px',
-              borderRight: i < 2 ? `1px solid ${BORDER}` : 'none',
-            }}>
-              <div style={{ fontSize: 'clamp(40px,4vw,56px)', fontWeight: 800, color: N, fontFamily: 'DM Mono, monospace', lineHeight: 1, marginBottom: 16 }}>
-                {d.stat}
-              </div>
-              <p style={{ fontSize: 16, color: '#6B7280', lineHeight: 1.6, maxWidth: 240 }}>{d.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── SECTORS ───────────────────────────────────────────────── */}
-      <section style={{ padding: '120px 40px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(32px,4vw,48px)', fontWeight: 800, color: N, letterSpacing: '-0.02em', marginBottom: 56 }}>
-            Purpose-built for every sector.
-          </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 2 }}>
-            {SECTORS.map((s, i) => (
-              <div
-                key={i}
-                className="sector-card"
-                style={{
-                  padding: '28px 24px',
-                  border: `1px solid ${BORDER}`,
-                  borderLeft: '3px solid transparent',
-                  borderRadius: 2,
-                  background: '#fff',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
-                }}>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: N, marginBottom: 8 }}>{s.name}</h3>
-                <p style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6, marginBottom: 12 }}>{s.desc}</p>
-                <div style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 500, marginBottom: 12 }}>{s.ref}</div>
-                <span className="sector-arrow" style={{ fontSize: 13, fontWeight: 600, color: T, opacity: 0, transition: 'opacity 0.15s' }}>
-                  View details →
-                </span>
+      {/* ── METRICS BAND ───────────────────────────────────────────── */}
+      <section style={{ padding: '80px 40px', background: C.navy950 }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <div className="metrics-grid" style={{
+            display: 'grid', gridTemplateColumns: 'repeat(4,1fr)',
+            background: 'linear-gradient(135deg, #0F2240 0%, #0A1628 100%)',
+            border: `1px solid ${C.border}`, borderRadius: 16, overflow: 'hidden',
+          }}>
+            {[
+              { num: '782+',  title: 'Facilities Assessed',    sub: 'In a single metropolitan deployment' },
+              { num: '103',   title: 'Critical Risk Points',   sub: 'Identified across industrial clusters' },
+              { num: '94%',   title: 'Compliance Rate',        sub: 'Across assessed organizations' },
+              { num: '03:00', title: 'The Hour Systems Fail',  sub: 'We\'re already prepared' },
+            ].map((m, i) => (
+              <div key={i} style={{
+                padding: '48px 32px', textAlign: 'center',
+                borderRight: i < 3 ? `1px solid ${C.border}` : 'none',
+              }}>
+                <div style={{ fontSize: 48, fontWeight: 800, color: C.teal, fontFamily: "'DM Mono', monospace", lineHeight: 1, marginBottom: 12 }}>{m.num}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 6 }}>{m.title}</div>
+                <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.5 }}>{m.sub}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── CASE STUDIES ──────────────────────────────────────────── */}
-      <section style={{ padding: '0 40px 120px' }}>
+      {/* ── SECTORS ────────────────────────────────────────────────── */}
+      <section style={{ background: C.navy950, padding: '80px 40px 120px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(28px,3.5vw,40px)', fontWeight: 800, color: N, letterSpacing: '-0.02em', marginBottom: 40 }}>
-            Real deployments. Measurable outcomes.
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+            <h2 style={{ fontSize: 'clamp(32px,4vw,42px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', marginBottom: 16 }}>
+              Purpose-Built for Every Sector
+            </h2>
+            <p style={{ fontSize: 18, color: C.muted, maxWidth: 540, margin: '0 auto' }}>
+              Sector-specific risk models, regulatory frameworks and compliance requirements — built in.
+            </p>
+          </div>
+          <div className="sectors-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
+            {[
+              { name: 'Banking & Finance',        ref: 'BDDK · Basel III · ISO 22301',  desc: 'Operational risk inventory and business continuity planning aligned to banking regulators.',       href: '/solutions/banking' },
+              { name: 'Healthcare & Hospital',    ref: 'JCI · Kaiser HVA · HEICS',      desc: 'Critical patient service continuity and emergency operations center integration.',                 href: '/solutions/health'  },
+              { name: 'Industrial & Manufacturing', ref: 'NATECH · SEVESO III · ISO 45001', desc: 'NATECH cascade scenario analysis and supply chain disruption modeling.',                       href: '/solutions'         },
+              { name: 'Energy & Utilities',       ref: 'EPDK · Pipeline Safety · SCADA', desc: 'Infrastructure risk modeling for energy distributors, terminals and pipeline operators.',         href: '/solutions/energy'  },
+              { name: 'Public Sector',            ref: 'AFAD · Sendai Framework · FEMA',  desc: 'Urban-scale vulnerability assessment and investment planning for municipalities.',               href: '/solutions'         },
+              { name: 'Education',                ref: 'Campus Safety · Emergency Planning', desc: 'School disaster risk management plans, drill management and resilience assessment.',           href: '/solutions'         },
+            ].map((s, i) => (
+              <div key={i} className="sector-card" style={{
+                background: C.navy900, border: `1px solid ${C.border}`,
+                borderRadius: 12, padding: 32,
+              }}>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8 }}>{s.name}</h3>
+                <p style={{ fontSize: 12, color: C.dim, marginBottom: 12, letterSpacing: '0.3px' }}>{s.ref}</p>
+                <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.6, marginBottom: 16 }}>{s.desc}</p>
+                <Link href={s.href} style={{ fontSize: 13, fontWeight: 600, color: C.teal, fontFamily: FONT }}>View solutions →</Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CASE STUDIES ───────────────────────────────────────────── */}
+      <section style={{ background: C.navy900, padding: '120px 40px', borderTop: `1px solid ${C.border}` }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <h2 style={{ fontSize: 'clamp(28px,3.5vw,42px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', marginBottom: 48 }}>
+            Real Deployments. Measurable Outcomes.
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div className="cs-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             {[
               {
-                label: 'Metropolitan Risk Assessment',
-                body: '782 facilities. 10 neighborhoods. 6 sectors. 103 critical risk points identified across industrial clusters in metropolitan Istanbul.',
-                stat: '782', statLabel: 'Facilities assessed',
-                sub: '103 critical · 10 neighborhoods · 6 sectors',
+                label: 'METROPOLITAN DEPLOYMENT',
+                num: '782', numSub: 'facilities assessed across 10 neighborhoods and 6 sectors in metropolitan Istanbul',
+                result: '103 critical risk points identified',
               },
               {
-                label: 'Banking Sector BCM',
-                body: 'Multi-branch financial institution assessment. BDDK operational resilience requirements mapped. RTO/RPO targets established and verified.',
-                stat: 'BDDK', statLabel: 'Requirements mapped',
-                sub: 'Basel III aligned · RTO/RPO verified · Audit-ready',
+                label: 'BANKING SECTOR',
+                num: '94%', numSub: 'operational resilience compliance rate achieved across multi-branch assessment',
+                result: 'BDDK requirements fully mapped and verified',
               },
             ].map((cs, i) => (
-              <div key={i} style={{ background: N, borderRadius: 16, padding: '48px 40px' }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 20 }}>
-                  {cs.label}
-                </div>
-                <div style={{ fontSize: 'clamp(36px,4vw,52px)', fontWeight: 800, color: T, fontFamily: 'DM Mono, monospace', lineHeight: 1, marginBottom: 16 }}>
-                  {cs.stat}
-                </div>
-                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 20 }}>{cs.statLabel}</div>
-                <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.75, marginBottom: 20 }}>{cs.body}</p>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', fontWeight: 500 }}>{cs.sub}</div>
+              <div key={i} style={{ background: C.navy950, border: `1px solid ${C.border}`, borderRadius: 16, padding: 48 }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 20 }}>{cs.label}</p>
+                <div style={{ fontSize: 'clamp(52px,6vw,72px)', fontWeight: 800, color: C.teal, fontFamily: "'DM Mono', monospace", lineHeight: 1, marginBottom: 12 }}>{cs.num}</div>
+                <p style={{ fontSize: 15, color: C.muted, lineHeight: 1.7, marginBottom: 20 }}>{cs.numSub}</p>
+                <p style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>{cs.result}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── CTA ───────────────────────────────────────────────────── */}
-      <section style={{ background: N, padding: '160px 40px', textAlign: 'center' }}>
+      {/* ── CTA ────────────────────────────────────────────────────── */}
+      <section style={{
+        padding: '160px 40px',
+        background: 'linear-gradient(135deg, #0F2240 0%, #0A1628 50%, #060D1A 100%)',
+        borderTop: `1px solid ${C.border}`,
+        textAlign: 'center',
+      }}>
         <div style={{ maxWidth: 640, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(36px,5vw,56px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 20 }}>
+          <h2 style={{ fontSize: 'clamp(36px,5vw,56px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 16 }}>
             Start measuring resilience.
           </h2>
-          <p style={{ fontSize: 18, color: '#9CA3AF', lineHeight: 1.7, marginBottom: 48 }}>
+          <p style={{ fontSize: 20, color: C.muted, lineHeight: 1.7, marginBottom: 48 }}>
             No commitment. Our advisory team walks you through your first assessment.
           </p>
-          <Link href="/login" style={{
-            fontSize: 17, fontWeight: 700, color: '#fff', background: T,
-            padding: '18px 48px', borderRadius: 12, display: 'inline-block', transition: 'opacity 0.15s',
-          }}
-            onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
-            onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+          <Link href="/login" className="cta-pill" style={{
+            fontSize: 18, fontWeight: 600, color: '#fff', fontFamily: FONT,
+            background: C.teal, padding: '18px 48px', borderRadius: 30, display: 'inline-block',
+          }}>
             Request Free Assessment →
           </Link>
         </div>
       </section>
 
-      {/* ── FOOTER ────────────────────────────────────────────────── */}
-      <footer style={{ background: '#080F1C', borderTop: '1px solid #1E2A3A', padding: '64px 40px 32px' }}>
+      {/* ── FOOTER ─────────────────────────────────────────────────── */}
+      <footer style={{ background: C.navy950, borderTop: `1px solid ${C.border}`, padding: '60px 40px 40px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: 64, marginBottom: 48 }}>
-            {/* Left */}
+          <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: 64, marginBottom: 48 }}>
+            {/* Brand */}
             <div>
-              <div style={{ fontSize: 17, fontWeight: 800, color: '#fff', letterSpacing: -0.5, marginBottom: 4 }}>OMNIVERSEL</div>
-              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 16 }}>Urban Resilience Platform</div>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', lineHeight: 1.7, maxWidth: 280, marginBottom: 20 }}>
+              <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', letterSpacing: -0.5, marginBottom: 6 }}>OMNIVERSEL</div>
+              <div style={{ fontSize: 10, color: '#475569', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 16 }}>Urban Resilience Platform</div>
+              <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.7, maxWidth: 280, marginBottom: 20 }}>
                 Quantitative resilience software for organizations operating in complex, high-stakes environments.
               </p>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.2)' }}>© 2026 Omniversel · All rights reserved</p>
+              <p style={{ fontSize: 12, color: '#2D3F55' }}>© 2026 Omniversel. All rights reserved.</p>
             </div>
 
-            {/* Platform + Solutions */}
+            {/* Links */}
             <div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 20 }}>Platform</div>
-              {[
-                ['Platform Overview', '/platform/omnirisk'],
-                ['Solutions', '/solutions'],
-                ['Methodology', '/methodology'],
-                ['Pricing', '/pricing'],
-                ['About', '/about'],
-              ].map(([l, h]) => (
-                <Link key={l} href={h} style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 12, transition: 'color 0.15s' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.85)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#2D3F55', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 20 }}>Platform</div>
+              {[['Platform Overview','#modules'],['Solutions','/solutions'],['Methodology','/methodology'],['Pricing','/pricing'],['About','/about']].map(([l,h]) => (
+                <Link key={l} href={h} style={{ display: 'block', fontSize: 13, color: '#475569', marginBottom: 12, fontFamily: FONT, transition: 'color .15s' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = C.muted)}
+                  onMouseLeave={e => (e.currentTarget.style.color = '#475569')}>
                   {l}
                 </Link>
               ))}
@@ -520,25 +472,26 @@ export default function HomePage() {
 
             {/* Contact */}
             <div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 20 }}>Contact</div>
-              <a href="mailto:demo@omniversel.com" style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 12, transition: 'color 0.15s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.85)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#2D3F55', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 20 }}>Contact</div>
+              <a href="mailto:demo@omniversel.com" style={{ display: 'block', fontSize: 13, color: '#475569', marginBottom: 12, fontFamily: FONT, transition: 'color .15s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = C.muted)}
+                onMouseLeave={e => (e.currentTarget.style.color = '#475569')}>
                 demo@omniversel.com
               </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'rgba(255,255,255,0.45)', transition: 'color 0.15s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.85)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z M4 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#475569', fontFamily: FONT, transition: 'color .15s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = C.muted)}
+                onMouseLeave={e => (e.currentTarget.style.color = '#475569')}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
                 </svg>
                 LinkedIn
               </a>
             </div>
           </div>
 
-          <div style={{ borderTop: '1px solid #1E2A3A', paddingTop: 24 }}>
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.15)', textAlign: 'center' }}>
+          <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 24, textAlign: 'center' }}>
+            <p style={{ fontSize: 12, color: '#2D3F55' }}>
               Omniversel · ITU AYM Partnership · ISO 22301 · Sendai Framework
             </p>
           </div>
