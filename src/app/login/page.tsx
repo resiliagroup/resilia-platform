@@ -1,5 +1,11 @@
 'use client'
 import { useState } from 'react'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 const C = { navy950: '#060D1A', navy900: '#0A1628', teal: '#2D8A87', tealHov: '#3BA8A5', white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B', border: '#1E3A5F' }
 const F = "'Plus Jakarta Sans', sans-serif"
@@ -26,12 +32,6 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     setError('')
-
-    const { createClient } = await import('@supabase/supabase-js')
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
 
     const { error } = await supabase.auth.signInWithPassword({ email, password })
 
