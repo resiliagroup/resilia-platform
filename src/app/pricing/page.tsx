@@ -1,210 +1,250 @@
 'use client'
 import Link from 'next/link'
 
-function PageNav() {
+const C = {
+  navy950: '#060D1A', navy900: '#0A1628', navy800: '#0F2240',
+  teal: '#2D8A87', tealL: '#3BA8A5',
+  white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B',
+  border: '#1E3A5F',
+}
+const FONT = "'Plus Jakarta Sans', sans-serif"
+
+function Nav() {
   return (
-    <header style={{ position:'fixed', top:0, left:0, right:0, zIndex:200,
-      height:64, background:'rgba(255,255,255,0.97)', backdropFilter:'blur(12px)',
-      borderBottom:'1px solid #E8EDED', display:'flex', alignItems:'center',
-      padding:'0 48px' }}>
-      <div style={{ maxWidth:1200, width:'100%', margin:'0 auto',
-        display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-        <a href="/" style={{ textDecoration:'none' }}>
-          <div style={{ display:'flex', flexDirection:'column' }}>
-            <span style={{ fontSize:17, fontWeight:800, color:'#0A1628', letterSpacing:-0.5, lineHeight:1 }}>OMNIVERSEL</span>
-            <span style={{ fontSize:9, fontWeight:500, color:'#566B66', letterSpacing:1.5, textTransform:'uppercase', marginTop:2 }}>Urban Resilience OS</span>
+    <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
+      height: 64, background: 'rgba(6,13,26,0.92)', backdropFilter: 'blur(12px)',
+      borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center',
+      padding: '0 48px', fontFamily: FONT }}>
+      <div style={{ maxWidth: 1200, width: '100%', margin: '0 auto',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Link href="/" style={{ textDecoration: 'none' }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontSize: 17, fontWeight: 800, color: C.white, letterSpacing: -0.5, lineHeight: 1 }}>OMNIVERSEL</span>
+            <span style={{ fontSize: 9, fontWeight: 500, color: C.dim, letterSpacing: 1.5, textTransform: 'uppercase', marginTop: 2 }}>Urban Resilience OS</span>
           </div>
-        </a>
-        <div style={{ display:'flex', gap:24, alignItems:'center' }}>
-          <a href="/platform/omnirisk" style={{ fontSize:13, color:'#566B66', fontWeight:500, textDecoration:'none' }}>Platform</a>
-          <a href="/solutions" style={{ fontSize:13, color:'#566B66', fontWeight:500, textDecoration:'none' }}>Solutions</a>
-          <a href="/pricing" style={{ fontSize:13, color:'#566B66', fontWeight:500, textDecoration:'none' }}>Pricing</a>
-          <a href="/login" style={{ background:'#2D8A87', color:'#fff', fontWeight:700,
-            fontSize:13, padding:'9px 22px', borderRadius:6, textDecoration:'none' }}>
-            Request Demo
-          </a>
+        </Link>
+        <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
+          <Link href="/platform/omnirisk" style={{ fontSize: 13, color: C.muted, fontWeight: 500, textDecoration: 'none' }}>Platform</Link>
+          <Link href="/solutions" style={{ fontSize: 13, color: C.muted, fontWeight: 500, textDecoration: 'none' }}>Solutions</Link>
+          <Link href="/methodology" style={{ fontSize: 13, color: C.muted, fontWeight: 500, textDecoration: 'none' }}>Methodology</Link>
+          <Link href="/pricing" style={{ fontSize: 13, color: C.white, fontWeight: 600, textDecoration: 'none' }}>Pricing</Link>
+        </div>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <Link href="/login" style={{ fontSize: 13, color: C.muted, fontWeight: 600, textDecoration: 'none',
+            padding: '8px 18px', border: `1px solid ${C.border}`, borderRadius: 9999 }}>Sign In</Link>
+          <Link href="/login" style={{ fontSize: 13, color: C.white, fontWeight: 700, textDecoration: 'none',
+            background: C.teal, padding: '8px 20px', borderRadius: 9999 }}>Request Demo</Link>
         </div>
       </div>
     </header>
   )
 }
 
-const N='#0A1628'; const T='#009B8D'; const MG='#566B66'; const BORDER='#E8EDED'; const GR='#F4F7F6'
+function CheckIcon({ color }: { color: string }) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 2 }}>
+      <circle cx="8" cy="8" r="7" fill={`${color}20`} />
+      <path d="M5 8l2.5 2.5L11 5.5" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
 
-const PLANS = [
+const STARTER_FEATURES = [
+  '1 facility assessment',
+  'Resilience score & report',
+  'PDF report export',
+  '14-day access',
+  'Email support',
+]
+
+const PRO_FEATURES = [
+  'Up to 50 facilities',
+  'All 6 platform modules',
+  'Agile sprint board',
+  'Near-miss event tracking',
+  'BCM plan templates',
+  'Crisis command center',
+  'PDF + Excel reports',
+  'Priority support',
+  'Onboarding session',
+  'Quarterly review call',
+]
+
+const ENT_FEATURES = [
+  'Unlimited facilities',
+  'All modules incl. pipeline & HRO',
+  'White-label deployment',
+  'REST API access',
+  'Dedicated account manager',
+  'SLA guarantee',
+  'On-site training',
+  'Regulatory reporting package',
+  'Custom integrations',
+  'Executive dashboard',
+]
+
+const INCLUDES = [
   {
-    name: 'Starter',
-    tagline: 'Single facility assessment',
-    price: 'Free',
-    priceSub: 'No credit card required',
-    color: '#6B7280',
-    accent: '#F3F4F6',
-    features: [
-      '1 facility assessment',
-      'Resilience score & report',
-      'PDF report export',
-      '14-day access',
-      'Email support',
-    ],
-    cta: 'Start for free',
-    ctaHref: '/login',
-    popular: false,
+    title: 'Regulatory Alignment',
+    body: 'Every assessment structured around international BCM and disaster risk standards. Compliance outputs generated automatically.',
   },
   {
-    name: 'Professional',
-    tagline: 'Up to 50 facilities, full omniRISK suite',
-    price: 'Contact for pricing',
-    priceSub: 'Annual billing',
-    color: T,
-    accent: `${T}10`,
-    features: [
-      'Up to 50 facilities',
-      'All 6 platform modules',
-      'omniSPRINT agile board',
-      'Near-miss event tracking',
-      'omniPLAN BCM templates',
-      'omniCRISIS command center',
-      'PDF + Excel reports',
-      'Priority support',
-      'Onboarding session',
-    ],
-    cta: 'Contact Sales',
-    ctaHref: 'mailto:info@omniversel.com',
-    popular: true,
+    title: 'Data Security',
+    body: 'GDPR-compliant infrastructure. Organizational risk data never leaves your jurisdiction without explicit authorization.',
   },
   {
-    name: 'Enterprise',
-    tagline: 'Unlimited facilities, white-label, API access',
-    price: 'Contact for pricing',
-    priceSub: 'Custom contract',
-    color: '#8B5CF6',
-    accent: '#F5F3FF',
-    features: [
-      'Unlimited facilities',
-      'All modules incl. omniPIPE + omniHRO',
-      'White-label deployment',
-      'REST API access',
-      'Dedicated account manager',
-      'SLA guarantee',
-      'On-site training',
-      'Regulatory reporting package',
-    ],
-    cta: 'Contact Enterprise',
-    ctaHref: 'mailto:enterprise@omniversel.com',
-    popular: false,
+    title: 'Implementation Support',
+    body: 'Every plan includes onboarding from our advisory team — ensuring your first assessment reflects your real risk profile.',
   },
 ]
 
 export default function PricingPage() {
   return (
-    <div style={{ background:GR, fontFamily:"'DM Sans',sans-serif", minHeight:'100vh' }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;600&display=swap'); *{box-sizing:border-box;margin:0;padding:0} a{text-decoration:none;color:inherit}`}</style>
-      <PageNav />
+    <div style={{ background: C.navy900, fontFamily: FONT, minHeight: '100vh', color: C.white }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        a { text-decoration: none; color: inherit; }
+      `}</style>
+      <Nav />
 
-      {/* HEADER */}
-      <section style={{ paddingTop:110, paddingBottom:60, paddingLeft:48, paddingRight:48,
-        background:N, textAlign:'center' }}>
-        <h1 style={{ fontSize:'clamp(32px,4vw,52px)', fontWeight:800, color:'#fff', marginBottom:16, letterSpacing:'-0.02em' }}>
-          Simple, Transparent Pricing
+      {/* HERO */}
+      <section style={{ background: C.navy900, padding: '100px 48px 60px', textAlign: 'center' }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16 }}>Pricing</p>
+        <h1 style={{ fontSize: 'clamp(36px,4.5vw,56px)', fontWeight: 800, color: C.white, marginBottom: 20, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+          Simple, Transparent Pricing.
         </h1>
-        <p style={{ color:'rgba(255,255,255,0.55)', fontSize:17, maxWidth:520, margin:'0 auto' }}>
+        <p style={{ fontSize: 20, color: C.muted, maxWidth: 520, margin: '0 auto', lineHeight: 1.65 }}>
           Start free. Scale with your resilience program. No surprise charges.
         </p>
       </section>
 
       {/* PLANS */}
-      <section style={{ padding:'60px 48px' }}>
-        <div style={{ maxWidth:1100, margin:'0 auto',
-          display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:24, alignItems:'start' }}>
-          {PLANS.map(plan => (
-            <div key={plan.name} style={{ background:'#fff', borderRadius:20,
-              border: plan.popular ? `2px solid ${T}` : `1px solid ${BORDER}`,
-              padding:'32px 28px', position:'relative',
-              boxShadow: plan.popular ? `0 8px 40px ${T}20` : '0 1px 4px rgba(0,0,0,0.05)' }}>
-              {plan.popular && (
-                <div style={{ position:'absolute', top:-14, left:'50%', transform:'translateX(-50%)',
-                  background:T, color:'#fff', fontSize:11, fontWeight:800,
-                  padding:'5px 18px', borderRadius:20, letterSpacing:1, textTransform:'uppercase', whiteSpace:'nowrap' }}>
-                  Most Popular
-                </div>
-              )}
-              <div style={{ marginBottom:24 }}>
-                <h3 style={{ fontSize:20, fontWeight:800, color:N, marginBottom:4 }}>{plan.name}</h3>
-                <p style={{ fontSize:13, color:MG }}>{plan.tagline}</p>
-              </div>
-              <div style={{ marginBottom:28, paddingBottom:24, borderBottom:`1px solid ${BORDER}` }}>
-                <div style={{ fontSize:plan.price==='Free'?44:20, fontWeight:800,
-                  color:plan.price==='Free'?T:N, fontFamily:'DM Mono,monospace', lineHeight:1 }}>
-                  {plan.price}
-                </div>
-                <div style={{ fontSize:12, color:MG, marginTop:6 }}>{plan.priceSub}</div>
-              </div>
-              <ul style={{ listStyle:'none', display:'flex', flexDirection:'column', gap:10, marginBottom:32 }}>
-                {plan.features.map(f => (
-                  <li key={f} style={{ display:'flex', alignItems:'flex-start', gap:8, fontSize:13, color:'#374151' }}>
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink:0, marginTop:1 }}>
-                      <circle cx="8" cy="8" r="7" fill={`${plan.color}15`}/>
-                      <path d="M5 8l2.5 2.5L11 5.5" stroke={plan.color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <a href={plan.ctaHref}
-                style={{ display:'block', textAlign:'center', padding:'13px 24px', borderRadius:10,
-                  background: plan.popular ? T : 'transparent',
-                  border: plan.popular ? 'none' : `1.5px solid ${plan.color}`,
-                  color: plan.popular ? '#fff' : plan.color,
-                  fontWeight:700, fontSize:14, transition:'opacity .18s' }}>
-                {plan.cta}
-              </a>
+      <section style={{ padding: '60px 48px 80px' }}>
+        <div style={{ maxWidth: 1140, margin: '0 auto', display: 'flex', gap: 24, justifyContent: 'center',
+          alignItems: 'flex-start', flexWrap: 'wrap' }}>
+
+          {/* STARTER */}
+          <div style={{ background: C.navy900, border: `1px solid ${C.border}`, borderRadius: 16, padding: 40, width: 340 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: C.muted, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>Starter</p>
+            <h3 style={{ fontSize: 24, fontWeight: 800, color: C.white, lineHeight: 1.25, marginBottom: 28 }}>
+              Single Facility<br />Assessment
+            </h3>
+            <div style={{ marginBottom: 12 }}>
+              <span style={{ fontSize: 48, fontWeight: 800, color: C.teal, lineHeight: 1 }}>Free</span>
             </div>
-          ))}
+            <p style={{ fontSize: 12, color: C.dim, marginBottom: 28 }}>No credit card required</p>
+            <div style={{ height: 1, background: C.border, marginBottom: 28 }} />
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
+              {STARTER_FEATURES.map(f => (
+                <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: C.white }}>
+                  <CheckIcon color={C.teal} />
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <Link href="/login" style={{ display: 'block', textAlign: 'center', padding: '12px 24px', borderRadius: 9999,
+              border: `1px solid ${C.teal}`, color: C.teal, fontWeight: 700, fontSize: 14 }}>
+              Start for Free
+            </Link>
+          </div>
+
+          {/* PROFESSIONAL */}
+          <div style={{ background: C.navy800, border: `2px solid ${C.teal}`, borderRadius: 16, padding: 40, width: 380,
+            position: 'relative', boxShadow: `0 8px 40px rgba(45,138,135,0.15)` }}>
+            <div style={{ position: 'absolute', top: -14, right: 28,
+              background: C.teal, color: C.white, fontSize: 11, fontWeight: 800,
+              padding: '4px 12px', borderRadius: 9999, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              Most Popular
+            </div>
+            <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>Professional</p>
+            <h3 style={{ fontSize: 24, fontWeight: 800, color: C.white, lineHeight: 1.25, marginBottom: 28 }}>
+              Up to 50 Facilities,<br />Full Platform Suite
+            </h3>
+            <div style={{ marginBottom: 8 }}>
+              <span style={{ fontSize: 28, fontWeight: 800, color: C.white, lineHeight: 1 }}>Contact for pricing</span>
+            </div>
+            <p style={{ fontSize: 12, color: C.muted, marginBottom: 28 }}>Annual billing · All modules included</p>
+            <div style={{ height: 1, background: C.border, marginBottom: 28 }} />
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
+              {PRO_FEATURES.map(f => (
+                <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: C.white }}>
+                  <CheckIcon color={C.teal} />
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <a href="mailto:info@omniversel.com" style={{ display: 'block', textAlign: 'center', padding: '14px 24px', borderRadius: 9999,
+              background: C.teal, color: C.white, fontWeight: 700, fontSize: 14 }}>
+              Contact Sales
+            </a>
+          </div>
+
+          {/* ENTERPRISE */}
+          <div style={{ background: C.navy900, border: `1px solid ${C.border}`, borderRadius: 16, padding: 40, width: 340 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: C.muted, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>Enterprise</p>
+            <h3 style={{ fontSize: 24, fontWeight: 800, color: C.white, lineHeight: 1.25, marginBottom: 28 }}>
+              Unlimited Facilities,<br />White-Label &amp; API
+            </h3>
+            <div style={{ marginBottom: 8 }}>
+              <span style={{ fontSize: 28, fontWeight: 800, color: C.white, lineHeight: 1 }}>Contact for pricing</span>
+            </div>
+            <p style={{ fontSize: 12, color: C.dim, marginBottom: 28 }}>Custom contract · Dedicated support</p>
+            <div style={{ height: 1, background: C.border, marginBottom: 28 }} />
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
+              {ENT_FEATURES.map(f => (
+                <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: C.white }}>
+                  <CheckIcon color={C.muted} />
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <a href="mailto:enterprise@omniversel.com" style={{ display: 'block', textAlign: 'center', padding: '12px 24px', borderRadius: 9999,
+              border: `1px solid ${C.border}`, color: C.muted, fontWeight: 700, fontSize: 14 }}>
+              Contact Enterprise
+            </a>
+          </div>
+
         </div>
       </section>
 
-      {/* All plans include */}
-      <section style={{ padding:'64px 48px', background:'#fff', borderTop:`1px solid ${BORDER}` }}>
-        <div style={{ maxWidth:1100, margin:'0 auto' }}>
-          <h2 style={{ fontSize:22, fontWeight:700, color:N, marginBottom:48, textAlign:'center' }}>
-            All plans include
+      {/* ALL PLANS INCLUDE */}
+      <section style={{ background: C.navy950, padding: '80px 48px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <h2 style={{ fontSize: 32, fontWeight: 800, color: C.white, textAlign: 'center', marginBottom: 56, letterSpacing: '-0.01em' }}>
+            All Plans Include
           </h2>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:32 }}>
-            {[
-              {
-                title: 'Regulatory Alignment',
-                body: 'Every assessment is structured around international business continuity and disaster risk standards. Compliance outputs are generated automatically — audit-ready from day one.',
-              },
-              {
-                title: 'Data Security',
-                body: 'All data is stored within GDPR-compliant infrastructure. Organizational risk data never leaves your jurisdiction without explicit authorization.',
-              },
-              {
-                title: 'Implementation Support',
-                body: 'Every plan includes onboarding guidance from our advisory team. We ensure your first assessment reflects the real risk profile of your organization — not a generic template.',
-              },
-            ].map(col => (
-              <div key={col.title}>
-                <div style={{ fontSize:13, fontWeight:700, color:T, letterSpacing:'0.08em',
-                  textTransform:'uppercase', marginBottom:12 }}>{col.title}</div>
-                <p style={{ fontSize:14, color:MG, lineHeight:1.8 }}>{col.body}</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
+            {INCLUDES.map(col => (
+              <div key={col.title} style={{ background: C.navy900, border: `1px solid ${C.border}`,
+                borderRadius: 12, padding: 32 }}>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: C.white, marginBottom: 12 }}>{col.title}</h3>
+                <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.8 }}>{col.body}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section style={{ padding:'64px 48px', background:N, textAlign:'center' }}>
-        <h2 style={{ fontSize:28, fontWeight:700, color:'#fff', marginBottom:12 }}>Ready to get started?</h2>
-        <p style={{ color:'rgba(255,255,255,0.55)', fontSize:15, marginBottom:32 }}>No commitment. Start with a free assessment today.</p>
-        <Link href="/login" style={{ background:T, color:'#fff', fontWeight:700, fontSize:15, padding:'14px 40px', borderRadius:8, display:'inline-block' }}>
+      {/* FINAL CTA */}
+      <section style={{ background: 'linear-gradient(135deg, #0F2240, #060D1A)',
+        borderTop: `1px solid ${C.border}`, padding: '100px 48px', textAlign: 'center' }}>
+        <h2 style={{ fontSize: 'clamp(28px,3.5vw,42px)', fontWeight: 800, color: C.white, marginBottom: 20, letterSpacing: '-0.02em' }}>
+          Ready to get started?
+        </h2>
+        <p style={{ fontSize: 18, color: C.muted, marginBottom: 40 }}>
+          No commitment. Start with a free assessment today.
+        </p>
+        <Link href="/login" style={{ background: C.teal, color: C.white, fontWeight: 700,
+          fontSize: 15, padding: '16px 40px', borderRadius: 9999, display: 'inline-block' }}>
           Start Free Assessment
         </Link>
       </section>
 
-      <footer style={{ background:'#080F1C', padding:'24px 48px', textAlign:'center' }}>
-        <p style={{ color:'rgba(255,255,255,0.3)', fontSize:12 }}>© 2026 Omniversel · Pricing · All rights reserved</p>
+      {/* FOOTER */}
+      <footer style={{ background: C.navy950, borderTop: `1px solid ${C.border}`,
+        padding: '32px 0', textAlign: 'center' }}>
+        <p style={{ fontSize: 12, color: C.dim }}>© 2026 Omniversel · All rights reserved</p>
       </footer>
     </div>
   )

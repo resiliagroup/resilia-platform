@@ -1,199 +1,212 @@
 'use client'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import OmniverselLogo from '@/components/OmniverselLogo'
 
-const N = '#0A1628'; const T = '#2D8A87'
-const GR = '#F4F7F6'; const MG = '#566B66'; const BG = '#FFFFFF'; const BORDER = '#E8EDED'
-const R_R = '#E30613'; const R_O = '#E56A04'; const R_G = '#2D8A87'
+const C = {
+  navy950: '#060D1A', navy900: '#0A1628', navy800: '#0F2240',
+  teal: '#2D8A87', tealL: '#3BA8A5',
+  white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B',
+  border: '#1E3A5F',
+}
+const FONT = "'Plus Jakarta Sans', sans-serif"
 
-const TABS = [
-  { key: 'risk',        label: 'Risk Assessment' },
-  { key: 'continuity',  label: 'Business Continuity' },
-  { key: 'crisis',      label: 'Crisis Management' },
-  { key: 'compliance',  label: 'Compliance' },
-] as const
+function Nav() {
+  return (
+    <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
+      height: 64, background: 'rgba(6,13,26,0.92)', backdropFilter: 'blur(12px)',
+      borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center',
+      padding: '0 48px', fontFamily: FONT }}>
+      <div style={{ maxWidth: 1200, width: '100%', margin: '0 auto',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Link href="/" style={{ textDecoration: 'none' }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontSize: 17, fontWeight: 800, color: C.white, letterSpacing: -0.5, lineHeight: 1 }}>OMNIVERSEL</span>
+            <span style={{ fontSize: 9, fontWeight: 500, color: C.dim, letterSpacing: 1.5, textTransform: 'uppercase', marginTop: 2 }}>Urban Resilience OS</span>
+          </div>
+        </Link>
+        <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
+          <Link href="/platform/omnirisk" style={{ fontSize: 13, color: C.muted, fontWeight: 500, textDecoration: 'none' }}>Platform</Link>
+          <Link href="/solutions" style={{ fontSize: 13, color: C.muted, fontWeight: 500, textDecoration: 'none' }}>Solutions</Link>
+          <Link href="/methodology" style={{ fontSize: 13, color: C.white, fontWeight: 600, textDecoration: 'none' }}>Methodology</Link>
+          <Link href="/pricing" style={{ fontSize: 13, color: C.muted, fontWeight: 500, textDecoration: 'none' }}>Pricing</Link>
+        </div>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <Link href="/login" style={{ fontSize: 13, color: C.muted, fontWeight: 600, textDecoration: 'none',
+            padding: '8px 18px', border: `1px solid ${C.border}`, borderRadius: 9999 }}>Sign In</Link>
+          <Link href="/login" style={{ fontSize: 13, color: C.white, fontWeight: 700, textDecoration: 'none',
+            background: C.teal, padding: '8px 20px', borderRadius: 9999 }}>Request Demo</Link>
+        </div>
+      </div>
+    </header>
+  )
+}
 
-type TabKey = typeof TABS[number]['key']
+const TABS = ['Risk Assessment', 'Business Continuity', 'Crisis Management', 'Compliance'] as const
+type Tab = typeof TABS[number]
 
-const TAB_CONTENT: Record<TabKey, { color: string; heading: string; intro: string; points: { title: string; desc: string }[]; paragraphs: string[] }> = {
-  risk: {
-    color: R_R,
+type TabData = {
+  heading: string
+  subtitle: string
+  features: { title: string; desc: string }[]
+  quote: string
+  prose: string
+}
+
+const TAB_DATA: Record<Tab, TabData> = {
+  'Risk Assessment': {
     heading: 'Risk Assessment',
-    intro: 'We quantify organizational risk across multiple parameters — hazard exposure, structural fragility, operational capacity and supply-chain dependencies. The result is a facility-level resilience score that prioritizes where action matters most.',
-    points: [
-      { title: 'Multi-parameter scoring', desc: 'Risk is evaluated across hazard, fragility, exposure, capacity and bottleneck dimensions — not as a single qualitative rating but as a structured, measurable index.' },
-      { title: 'Bottleneck identification', desc: 'Inspired by Theory of Constraints, our model identifies the single constraint that would halt system throughput — allowing focused, high-leverage interventions.' },
-      { title: 'Sector calibration', desc: 'Scoring weights are calibrated by sector and hazard type. A hospital facing NATECH risk is scored differently from a bank facing cyber exposure — because the stakes differ.' },
-      { title: 'FEMA mission area alignment', desc: 'Assessments are structured around Prevention, Protection, Mitigation, Response and Recovery — enabling direct comparison to international preparedness standards.' },
+    subtitle: 'We quantify organizational risk across multiple parameters — hazard exposure, structural fragility, operational capacity and supply-chain dependencies.',
+    features: [
+      { title: 'Multi-parameter Scoring', desc: 'Risk evaluated across hazard, fragility, exposure, capacity and bottleneck dimensions — a structured, measurable index.' },
+      { title: 'Bottleneck Identification', desc: 'Inspired by Theory of Constraints, our model identifies the single constraint that would halt system throughput — enabling focused, high-leverage interventions.' },
+      { title: 'Sector Calibration', desc: 'Scoring weights calibrated by sector and hazard type. A hospital facing NATECH risk is scored differently from a bank facing cyber exposure.' },
+      { title: 'FEMA Mission Area Alignment', desc: 'Structured around Prevention, Protection, Mitigation, Response and Recovery — enabling direct comparison to international preparedness standards.' },
     ],
-    paragraphs: [
-      'Risk is not a single number. It is a composite of interacting factors — where a facility sits geographically, how its systems are structured, who depends on it, and how much organizational capacity exists to absorb and recover from disruption. Omniversel models each of these dimensions independently, then synthesizes them into a single, auditable resilience index.',
-      'Our approach draws on established quantitative risk analysis traditions used in nuclear safety, process industries and critical infrastructure protection. We apply these principles to organizational settings — translating engineering-grade rigor into a format that executive decision-makers can act on.',
-    ],
+    quote: 'Risk is not a single number. It is a composite of interacting factors — where a facility sits geographically, how its systems are structured, who depends on it, and how much organizational capacity exists to absorb and recover from disruption.',
+    prose: 'Our approach draws on established quantitative risk analysis traditions used in nuclear safety, process industries and critical infrastructure protection. We apply these principles to organizational settings — translating engineering-grade rigor into a format that executive decision-makers can act on.',
   },
-  continuity: {
-    color: T,
-    heading: 'Business Continuity',
-    intro: 'We help organizations build, test and maintain continuity plans that work under real-world conditions. Our approach integrates ISO 22301 requirements with operational reality — not just documentation compliance.',
-    points: [
-      { title: 'Business impact analysis', desc: 'Critical functions are identified, prioritized by recovery timeline and mapped to their dependencies — staff, systems, suppliers and infrastructure.' },
-      { title: 'RTO / RPO / MTD tracking', desc: 'Recovery objectives are defined at function level and tracked continuously. Gaps between target and current capability are surfaced automatically.' },
-      { title: 'Plan lifecycle management', desc: 'Continuity plans move through draft → review → approval stages. Drill results and lessons learned feed directly into plan revisions.' },
-      { title: 'ISO 22301 gap analysis', desc: 'Clause-by-clause maturity assessment against ISO 22301:2019. Evidence is linked to requirements, and corrective actions are tracked to closure.' },
+  'Business Continuity': {
+    heading: 'Business Continuity Management',
+    subtitle: 'We structure continuity planning around measurable recovery objectives — translating risk assessment outputs into actionable business continuity plans aligned with ISO 22301.',
+    features: [
+      { title: 'Recovery Time Objectives', desc: 'RTO and RPO targets established from impact analysis data, not organizational preference alone.' },
+      { title: 'ISO 22301 Alignment', desc: 'Every plan is structured to satisfy audit requirements under international business continuity standards.' },
+      { title: 'Agile Sprint Cycles', desc: 'Continuity program development managed in 15-day sprint cycles — enabling iterative improvement rather than infrequent annual reviews.' },
+      { title: 'Multi-Scenario Planning', desc: 'Plans cover earthquake, flood, NATECH, cyber and supply chain disruption scenarios — calibrated to Istanbul\'s multi-hazard environment.' },
     ],
-    paragraphs: [
-      'ISO 22301 provides a process framework for business continuity management. What it does not provide is a quantitative link between risk exposure and continuity investment. Omniversel bridges that gap — connecting BIA outputs to measurable resilience scores, so organizations can justify BCM spending with data rather than intuition.',
-      'Recovery Time Objectives and Recovery Point Objectives are not aspirational targets. They are organizational commitments that must be grounded in realistic capability assessments. Omniversel\'s continuity module tests RTO/RPO feasibility against actual capacity scores — revealing gaps before a disruption does.',
-    ],
+    quote: 'ISO 22301 provides a process framework for business continuity management. What it does not provide is a quantitative link between risk exposure and continuity investment. Omniversel bridges that gap — connecting BIA outputs to measurable resilience scores.',
+    prose: 'Recovery Time Objectives and Recovery Point Objectives are not aspirational targets. They are organizational commitments that must be grounded in realistic capability assessments. Our continuity module tests RTO/RPO feasibility against actual capacity scores — revealing gaps before a disruption does.',
   },
-  crisis: {
-    color: R_O,
+  'Crisis Management': {
     heading: 'Crisis Management',
-    intro: 'When an incident occurs, response speed and coordination determine outcomes. Our crisis management approach is built on ICS principles — clear command structure, role clarity and real-time situational awareness.',
-    points: [
-      { title: 'Incident Command System', desc: 'Crisis response is organized around ICS roles: Incident Commander, Operations, Logistics, Finance/Admin and Planning sections — adaptable to any incident scale.' },
-      { title: 'Near-miss culture', desc: 'Systematic near-miss reporting is embedded as the primary early-warning mechanism — surfacing weak signals before they become critical failures.' },
-      { title: 'Escalation protocols', desc: 'Incidents move through defined severity levels with clear escalation triggers. Notifications, documentation and resource requests follow the same structure every time.' },
-      { title: 'After-action learning', desc: 'Every exercise and real incident generates lessons that are tracked, assigned and closed. The organization learns systematically rather than informally.' },
+    subtitle: 'When an incident occurs, response speed and coordination determine outcomes. Our crisis management approach is built on ICS principles — clear command structure, role clarity and real-time situational awareness.',
+    features: [
+      { title: 'Real-Time Command', desc: 'Crisis command dashboards provide live situational awareness across facilities and stakeholder groups.' },
+      { title: 'Autonomous Response Squads', desc: 'Pre-trained crisis squads with clear authority boundaries — reducing response latency when time is critical.' },
+      { title: 'Near-Miss Integration', desc: 'Near-miss signals are captured and fed back into the risk model — improving foresight, not just hindsight.' },
+      { title: 'Post-Incident Analysis', desc: 'Every crisis event generates a structured debrief — accelerating organizational learning.' },
     ],
-    paragraphs: [
-      'Crisis response is not an improvised act — it is a rehearsed capability. The difference between organizations that recover quickly and those that do not is rarely resources. It is structural clarity: who decides, who communicates, and who acts in the first sixty minutes of an incident.',
-      'Omniversel\'s crisis module is built on Incident Command System principles adapted for multi-sector institutional environments. Every role, every escalation path, and every communication protocol is pre-defined, tested through simulation, and updated through structured after-action review.',
-    ],
+    quote: 'Crisis response is not an improvised act — it is a rehearsed capability. The difference between organizations that recover quickly and those that do not is rarely resources. It is structural clarity: who decides, who communicates, and who acts in the first sixty minutes.',
+    prose: 'Omniversel\'s crisis module is built on Incident Command System principles adapted for multi-sector institutional environments. Every role, every escalation path, and every communication protocol is pre-defined, tested through simulation, and updated through structured after-action review.',
   },
-  compliance: {
-    color: '#6366F1',
-    heading: 'Compliance',
-    intro: 'Regulatory compliance is not a destination — it is a continuous operational posture. Our compliance framework tracks requirements across multiple standards simultaneously, with evidence collection built into daily workflows.',
-    points: [
-      { title: 'Multi-framework tracking', desc: 'ISO 22301, Sendai Framework, BDDK, Basel III and JCI requirements are mapped in a single compliance matrix — eliminating duplicate effort across teams.' },
-      { title: 'Evidence collection', desc: 'Compliance evidence is captured at the point of activity — drill records, audit reports, near-miss logs — and linked directly to the relevant requirement clause.' },
-      { title: 'Gap identification', desc: 'Automated gap analysis surfaces non-conformances before audits occur. Each gap generates a corrective action with owner, deadline and closure criteria.' },
-      { title: 'Audit readiness', desc: 'Compliance scorecards are maintained in real time. When an auditor arrives, evidence packages are ready — not assembled under deadline pressure.' },
+  'Compliance': {
+    heading: 'Regulatory Compliance',
+    subtitle: 'Regulatory compliance is not a destination — it is a continuous operational posture. Our compliance framework tracks requirements across multiple standards simultaneously, with evidence collection built into daily workflows.',
+    features: [
+      { title: 'BDDK Alignment', desc: 'Banking assessments structured to meet Turkish Banking Regulation and Supervision Agency operational resilience requirements.' },
+      { title: 'ISO 22301 Readiness', desc: 'Platform outputs are designed to support third-party certification audits.' },
+      { title: 'Sendai Framework Mapping', desc: 'Municipal and public sector assessments mapped to the Sendai Framework for Disaster Risk Reduction 2015–2030.' },
+      { title: 'Audit Trail Generation', desc: 'Every assessment generates a complete audit trail — defensible in regulatory proceedings.' },
     ],
-    paragraphs: [
-      'Compliance is a floor, not a ceiling. Meeting ISO 22301, BDDK operational resilience requirements or Sendai Framework indicators demonstrates a baseline of organizational seriousness. It does not, by itself, indicate that an organization will perform well under pressure.',
-      'Omniversel\'s audit module treats compliance as a starting point for continuous improvement rather than a periodic checkbox exercise. Gaps identified through clause-level assessment feed directly into sprint planning — translating regulatory obligations into operational priorities.',
-    ],
+    quote: 'Compliance is a floor, not a ceiling. Meeting ISO 22301, BDDK operational resilience requirements or Sendai Framework indicators demonstrates a baseline of organizational seriousness. It does not, by itself, indicate that an organization will perform well under pressure.',
+    prose: 'Omniversel\'s audit module treats compliance as a starting point for continuous improvement rather than a periodic checkbox exercise. Gaps identified through clause-level assessment feed directly into sprint planning — translating regulatory obligations into operational priorities.',
   },
 }
 
-
 export default function MethodologyPage() {
-  const [activeTab, setActiveTab] = useState<TabKey>('risk')
-  const content = TAB_CONTENT[activeTab]
+  const [active, setActive] = useState<Tab>('Risk Assessment')
+  const d = TAB_DATA[active]
 
   return (
-    <>
+    <div style={{ background: C.navy900, fontFamily: FONT, minHeight: '100vh', color: C.white }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500;700&display=swap');
-        *{box-sizing:border-box;margin:0;padding:0}
-        body{background:${BG};color:${N};font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-        a{text-decoration:none;color:inherit}
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        a { text-decoration: none; color: inherit; }
       `}</style>
+      <Nav />
 
-      <header style={{ position:'sticky', top:0, zIndex:100, height:64, background:'rgba(255,255,255,0.97)',
-        backdropFilter:'blur(12px)', borderBottom:`1px solid ${BORDER}`,
-        display:'flex', alignItems:'center', padding:'0 48px' }}>
-        <div style={{ maxWidth:1200, width:'100%', margin:'0 auto',
-          display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-          <Link href="/"><OmniverselLogo width={200} height={50} light /></Link>
-          <Link href="/" style={{ display:'flex', alignItems:'center', gap:6, color:MG, fontSize:14, fontWeight:500,
-            padding:'8px 16px', borderRadius:8, border:`1px solid ${BORDER}`, transition:'all .18s' }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M11 7H3M7 11l-4-4 4-4" stroke={MG} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            Home
-          </Link>
-        </div>
-      </header>
-
-      <section style={{ background:`linear-gradient(135deg, ${N} 0%, #0F2847 100%)`,
-        padding:'80px 48px 64px', textAlign:'center' }}>
-        <p style={{ color:T, fontSize:12, fontWeight:700, letterSpacing:3,
-          textTransform:'uppercase', marginBottom:16 }}>Our Approach</p>
-        <h1 style={{ color:'#fff', fontSize:'clamp(32px,4.5vw,56px)', fontWeight:700,
-          lineHeight:1.1, marginBottom:20, maxWidth:800, margin:'0 auto 20px' }}>
-          Methodology
-        </h1>
-        <p style={{ color:'rgba(255,255,255,0.6)', fontSize:17, lineHeight:1.8,
-          maxWidth:600, margin:'0 auto' }}>
-          A multi-parameter, academically grounded approach to organizational resilience —
-          developed in collaboration with ITU AYM.
-        </p>
-      </section>
-
-      <section style={{ background:GR, borderBottom:`1px solid ${BORDER}` }}>
-        <div style={{ maxWidth:1100, margin:'0 auto', display:'flex', overflowX:'auto' }}>
-          {TABS.map(tab => (
-            <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-              style={{ flexShrink:0, padding:'18px 28px', border:'none', background:'transparent',
-                fontSize:14, fontWeight:activeTab===tab.key?700:500,
-                color:activeTab===tab.key?T:MG, cursor:'pointer',
-                borderBottom:activeTab===tab.key?`2px solid ${T}`:'2px solid transparent',
-                fontFamily:"'DM Sans',sans-serif", transition:'all .18s', whiteSpace:'nowrap' as const }}>
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <section style={{ padding:'64px 48px', background:BG }}>
-        <div style={{ maxWidth:1100, margin:'0 auto' }}>
-          <p style={{ color:content.color, fontSize:12, fontWeight:700, letterSpacing:3,
-            textTransform:'uppercase', marginBottom:12 }}>Core Methodology</p>
-          <h2 style={{ color:N, fontSize:'clamp(26px,3.5vw,40px)', fontWeight:700,
-            lineHeight:1.15, marginBottom:16 }}>
-            {content.heading}
-          </h2>
-          <p style={{ color:MG, fontSize:16, lineHeight:1.85, maxWidth:680, marginBottom:48 }}>
-            {content.intro}
+      {/* HERO */}
+      <section style={{ background: C.navy900, padding: '120px 48px 80px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: 0, right: 0, width: 700, height: 600,
+          background: 'radial-gradient(circle at 100% 0%, rgba(45,138,135,0.08) 0%, transparent 60%)',
+          pointerEvents: 'none' }} />
+        <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative' }}>
+          <p style={{ fontSize: 12, color: C.muted, fontWeight: 500, marginBottom: 24, letterSpacing: '0.08em' }}>Methodology</p>
+          <h1 style={{ fontSize: 'clamp(36px,5vw,60px)', fontWeight: 800, lineHeight: 1.08, marginBottom: 24, letterSpacing: '-0.02em' }}>
+            A Rigorous Approach<br />
+            <span style={{ color: C.teal }}>to Organizational Resilience.</span>
+          </h1>
+          <p style={{ fontSize: 18, color: C.muted, maxWidth: 680, lineHeight: 1.75, marginBottom: 40 }}>
+            A multi-parameter, academically grounded framework for quantitative risk assessment, business continuity management and crisis preparedness — developed in collaboration with ITU AYM.
           </p>
 
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',
-            gap:24, marginBottom:56 }}>
-            {content.points.map((p, i) => (
-              <div key={i} style={{ background:GR, border:`1px solid ${BORDER}`,
-                borderLeft:`4px solid ${content.color}`, borderRadius:12, padding:'28px 24px' }}>
-                <div style={{ fontSize:15, fontWeight:700, color:N, marginBottom:10 }}>{p.title}</div>
-                <p style={{ fontSize:13, color:MG, lineHeight:1.75 }}>{p.desc}</p>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ display:'flex', flexDirection:'column', gap:20, maxWidth:720 }}>
-            {content.paragraphs.map((p, i) => (
-              <p key={i} style={{ fontSize:15, color:MG, lineHeight:1.85 }}>{p}</p>
+          {/* Tab pills */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {TABS.map(tab => (
+              <button key={tab} onClick={() => setActive(tab)}
+                style={{ fontSize: 13, fontWeight: 600, padding: '8px 18px', borderRadius: 9999,
+                  border: `1px solid ${active === tab ? C.teal : C.border}`,
+                  background: active === tab ? C.teal : C.navy800,
+                  color: active === tab ? C.white : C.muted,
+                  cursor: 'pointer', fontFamily: FONT, transition: 'all 0.18s' }}>
+                {tab}
+              </button>
             ))}
           </div>
         </div>
       </section>
 
-      <section style={{ background:N, padding:'64px 48px', textAlign:'center' }}>
-        <p style={{ color:T, fontSize:12, fontWeight:700, letterSpacing:3,
-          textTransform:'uppercase', marginBottom:16 }}>Access the Platform</p>
-        <h2 style={{ color:'#fff', fontSize:'clamp(26px,3.5vw,40px)', fontWeight:700,
-          lineHeight:1.15, marginBottom:20 }}>
-          See the methodology in action
+      {/* CORE METHODOLOGY — TAB CONTENT */}
+      <section style={{ background: C.navy950, padding: '80px 48px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '55fr 45fr', gap: 72 }}>
+          {/* Left */}
+          <div>
+            <h3 style={{ fontSize: 'clamp(24px,2.5vw,32px)', fontWeight: 800, color: C.white, marginBottom: 16, letterSpacing: '-0.01em' }}>
+              {d.heading}
+            </h3>
+            <p style={{ fontSize: 16, color: C.muted, lineHeight: 1.75, marginBottom: 40 }}>
+              {d.subtitle}
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+              {d.features.map(f => (
+                <div key={f.title} style={{ borderLeft: `2px solid ${C.teal}`, paddingLeft: 20 }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: C.white, marginBottom: 6 }}>{f.title}</div>
+                  <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.75 }}>{f.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <div style={{ background: C.navy900, border: `1px solid ${C.border}`,
+              borderLeft: `3px solid ${C.teal}`, borderRadius: 16, padding: 40 }}>
+              <p style={{ fontSize: 18, color: C.white, fontStyle: 'italic', lineHeight: 1.7, marginBottom: 16 }}>
+                &ldquo;{d.quote}&rdquo;
+              </p>
+              <p style={{ fontSize: 13, color: C.dim }}>— Omniversel Methodology Framework</p>
+            </div>
+            <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.8 }}>{d.prose}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ACCESS CTA */}
+      <section style={{ background: C.navy900, borderTop: `1px solid ${C.border}`, padding: '80px 48px', textAlign: 'center' }}>
+        <h2 style={{ fontSize: 'clamp(26px,3vw,36px)', fontWeight: 800, color: C.white, marginBottom: 16, letterSpacing: '-0.01em' }}>
+          See the Methodology in Action
         </h2>
-        <p style={{ color:'rgba(255,255,255,0.55)', fontSize:16, lineHeight:1.75,
-          maxWidth:480, margin:'0 auto 40px' }}>
+        <p style={{ fontSize: 18, color: C.muted, marginBottom: 40 }}>
           Our approach is embedded directly into the Omniversel platform.
-          For methodology inquiries, contact our team.
         </p>
-        <div style={{ display:'flex', gap:14, justifyContent:'center', flexWrap:'wrap' }}>
-          <Link href="/login" style={{ background:T, color:'#fff', fontWeight:700, fontSize:15,
-            padding:'14px 36px', borderRadius:8, display:'inline-block', transition:'opacity .18s' }}>
+        <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link href="/login" style={{ border: `1px solid ${C.border}`, color: C.muted,
+            fontWeight: 600, fontSize: 15, padding: '15px 32px', borderRadius: 9999, display: 'inline-block' }}>
             Platform Login
           </Link>
-          <a href="mailto:info@omniversel.com" style={{ border:'1.5px solid rgba(255,255,255,0.2)',
-            color:'rgba(255,255,255,0.72)', fontWeight:600, fontSize:15, padding:'13px 32px',
-            borderRadius:8, display:'inline-block', transition:'border-color .18s' }}>
+          <a href="mailto:info@omniversel.com" style={{ background: C.teal, color: C.white,
+            fontWeight: 700, fontSize: 15, padding: '15px 32px', borderRadius: 9999, display: 'inline-block' }}>
             Contact Methodology Team
           </a>
         </div>
       </section>
-    </>
+
+      {/* FOOTER */}
+      <footer style={{ background: C.navy950, borderTop: `1px solid ${C.border}`,
+        padding: '32px 0', textAlign: 'center' }}>
+        <p style={{ fontSize: 12, color: C.dim }}>© 2026 Omniversel · All rights reserved</p>
+      </footer>
+    </div>
   )
 }
