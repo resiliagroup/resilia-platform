@@ -142,7 +142,7 @@ export default function AboutPage() {
                 },
                 {
                   year: '2025–',
-                  text: 'The Omniversel ecosystem expanded to encompass platform software, organizational consulting, field assessment services and — in 2025 — an operational fire testing laboratory. The organization continues to grow toward the integrated resilience services model pioneered by institutions such as Gexcon and ECRI.',
+                  text: 'The Omniversel ecosystem expanded to encompass platform software, organizational consulting, field assessment services and — in 2025 — an operational fire testing laboratory. The organization continues to grow toward a fully integrated resilience services model.',
                 },
               ].map((m, i) => (
                 <div key={i}>
@@ -182,7 +182,7 @@ export default function AboutPage() {
               },
               {
                 title: 'Consulting',
-                desc: 'Field assessment, HIFYEA evaluation, business continuity plan development and drill management.',
+                desc: 'Sector-calibrated facility assessments, business continuity plan development and drill management.',
               },
               {
                 title: 'Testing & Investigation',
@@ -190,7 +190,7 @@ export default function AboutPage() {
               },
               {
                 title: 'Research & Training',
-                desc: 'Joint R&D with ITU AYM, ISO 22301 certification programs and capacity development.',
+                desc: 'Joint R&D with ITU AYM, professional resilience training programs and capacity development.',
               },
             ].map((card, i) => (
               <div key={i} style={{ background:BG, border:`1px solid ${BORDER}`,
