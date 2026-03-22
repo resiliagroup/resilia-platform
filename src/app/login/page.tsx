@@ -65,27 +65,35 @@ export default function LoginPage() {
       }}>
         <div>
           {/* Logo */}
-          <div style={{ marginBottom: 80 }}>
+          <a href="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 80 }}>
             <div style={{ fontSize: 20, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.4px' }}>
               OMNIVERSEL
             </div>
             <div style={{ fontSize: 11, color: '#2D8A87', marginTop: 4, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               Urban Resilience Platform
             </div>
-          </div>
+          </a>
 
           {/* Headline */}
           <div style={{ maxWidth: 520, marginBottom: 56 }}>
+            <div style={{
+              display: 'inline-block', fontSize: 11, fontWeight: 600, color: '#2D8A87',
+              letterSpacing: '2px', textTransform: 'uppercase',
+              border: '1px solid #2D8A8740', borderRadius: 20,
+              padding: '4px 14px', marginBottom: 28,
+            }}>
+              Enterprise Resilience Platform
+            </div>
             <h1 style={{
               fontSize: 40, fontWeight: 800, color: '#FFFFFF',
-              lineHeight: 1.12, letterSpacing: '-0.8px', marginBottom: 20,
+              lineHeight: 1.08, letterSpacing: '-0.8px', marginBottom: 20,
             }}>
-              Turkey&apos;s First Urban<br />
-              <span style={{ color: '#2D8A87' }}>Resilience Operating</span><br />
-              System
+              Quantify Risk.<br />
+              Ensure Continuity.<br />
+              Manage Crises.
             </h1>
-            <p style={{ fontSize: 16, color: '#4A6FA5', lineHeight: 1.65, fontWeight: 400 }}>
-              Quantify risk. Build continuity. Respond with confidence.
+            <p style={{ fontSize: 15, color: '#94A3B8', lineHeight: 1.7, fontWeight: 400 }}>
+              An integrated platform for organizational resilience — disaster risk assessment, business continuity and crisis management in one workspace.
             </p>
           </div>
 
@@ -106,21 +114,16 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Bottom */}
-        <div>
-          <p style={{ fontSize: 13, color: '#2A4266', marginBottom: 20, lineHeight: 1.6 }}>
-            Trusted by municipalities, banks and industrial facilities across Turkey
-          </p>
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            {['ITU AYM Partner', 'Sendai 2015–2030', 'ISO 22301'].map(b => (
-              <div key={b} style={{
-                background: '#080F1E',
-                border: '1px solid #0F2240',
-                borderRadius: 6, padding: '5px 14px',
-                fontSize: 11, color: '#2A4266', fontWeight: 500,
-              }}>{b}</div>
-            ))}
-          </div>
+        {/* Bottom trust badges */}
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          {['ISO 22301 Aligned', 'FEMA Core Capabilities', 'ITU AYM Validated'].map(b => (
+            <div key={b} style={{
+              background: '#080F1E',
+              border: '1px solid #0F2240',
+              borderRadius: 6, padding: '5px 14px',
+              fontSize: 11, color: '#2A4266', fontWeight: 500,
+            }}>{b}</div>
+          ))}
         </div>
       </div>
 
