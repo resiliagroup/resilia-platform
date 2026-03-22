@@ -1,317 +1,330 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
-import { mevcutKullanici, oturumKapat } from '@/lib/auth'
-import { getRiskRenk, getRiskEtiket, type FormCevabi } from '@/types'
+import { createBrowserClient } from '@supabase/ssr'
 
-type Siralama = 'skor_asc' | 'skor_desc' | 'tarih_desc'
+const TENANT_ID = '11111111-0000-0000-0000-000000000001'
+const NAVY = '#060D1A'
+const TEAL = '#2D8A87'
+const BORDER = '#1E3A5F'
+
+const supabase = createBrowserClient(
+  'https://gqguwgbopgnpwzjwcexl.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzOTk4MzMsImV4cCI6MjA4ODk3NTgzM30.ZIFmmiGsB1rUAojvSG8uTfcknZi6LoXgrgApCL-e550'
+)
+
+type FormCevabi = {
+  id: string
+  birim_kodu: string
+  senaryo: string
+  dayaniklilik_skoru: number
+  durum: 'taslak' | 'gonderildi' | 'incelendi'
+  sektor?: string
+  il_adi?: string
+  olusturulma: string
+  inceleme_notu?: string
+}
+type BIAKayit = { id: string; tenant_id: string; [k: string]: unknown }
+type BCPKayit  = { id: string; tenant_id: string; [k: string]: unknown }
+type Tesis     = { id: string; name: string; type?: string; city?: string; status?: string }
+
+const PERSONEL = [
+  { ad: 'Dr. Fatma Şahin',    pozisyon: 'Kriz Koordinatörü',    tel: '+90 532 100 0001', yedek: 'Mehmet Demir'    },
+  { ad: 'Mehmet Demir',       pozisyon: 'BCP Sorumlusu',        tel: '+90 532 100 0002', yedek: 'Ayşe Kaya'       },
+  { ad: 'Ayşe Kaya',          pozisyon: 'İletişim Yöneticisi',  tel: '+90 532 100 0003', yedek: 'Can Özdemir'     },
+  { ad: 'Can Özdemir',        pozisyon: 'IT Altyapı Yöneticisi',tel: '+90 532 100 0004', yedek: 'Tuba Erdoğan'    },
+  { ad: 'Tuba Erdoğan',       pozisyon: 'Operasyon Direktörü',  tel: '+90 532 100 0005', yedek: 'Dr. Fatma Şahin' },
+]
+
+const TATBIKATLAR = [
+  { ad: 'Deprem Tahliye Tatbikatı', tarih: '2026-02-15', tur: 'Saha',    katilimci: 142, durum: 'Tamamlandı'  },
+  { ad: 'BCP Masa Tatbikatı',       tarih: '2026-01-10', tur: 'Masa Üstü',katilimci: 28,  durum: 'Tamamlandı'  },
+  { ad: 'IT Yük Devretme Testi',    tarih: '2026-04-20', tur: 'Teknik',  katilimci: 12,  durum: 'Planlandı'   },
+  { ad: 'Yangın Söndürme Eğitimi',  tarih: '2026-05-08', tur: 'Saha',    katilimci: 85,  durum: 'Planlandı'   },
+]
+
+const TABS = [
+  'Form Değerlendirme',
+  'BIA Analizi',
+  'İş Sürekliliği (BCP)',
+  'Kritik Personel',
+  'Eğitim & Tatbikat',
+  'Risk Haritası',
+]
+
+function riskRenk(s: number) { return s < 40 ? '#EF4444' : s < 70 ? '#F59E0B' : '#22C55E' }
+function riskEtiket(s: number) { return s < 40 ? 'KRİTİK' : s < 70 ? 'ORTA' : 'GÜÇLÜ' }
+function durumRenk(d: string) {
+  if (d === 'incelendi') return '#22C55E'
+  if (d === 'gonderildi') return '#F59E0B'
+  return '#64748B'
+}
+
+const card = (style?: React.CSSProperties): React.CSSProperties => ({
+  background: '#0A1628', border: `1px solid ${BORDER}`, borderRadius: 12,
+  padding: 20, ...style,
+})
 
 export default function UzmanDashboard() {
-  const [formlar,    setFormlar]    = useState<FormCevabi[]>([])
-  const [yukleniyor, setYukleniyor] = useState(true)
-  const [acikId,     setAcikId]     = useState<string | null>(null)
-  const [filDurum,   setFilDurum]   = useState('gonderildi')
-  const [filSenaryo, setFilSenaryo] = useState('tumu')
-  const [filRisk,    setFilRisk]    = useState('tumu')
-  const [aramaKod,   setAramaKod]   = useState('')
-  const [siralama,   setSiralama]   = useState<Siralama>('skor_asc')
-  const [kullanici,  setKullanici]  = useState<ReturnType<typeof mevcutKullanici>>(null)
+  const [aktifTab, setAktifTab] = useState(0)
+  const [formlar, setFormlar]   = useState<FormCevabi[]>([])
+  const [bia, setBia]           = useState<BIAKayit[]>([])
+  const [bcp, setBcp]           = useState<BCPKayit[]>([])
+  const [tesisler, setTesisler] = useState<Tesis[]>([])
+  const [yukl, setYukl]         = useState(true)
 
   useEffect(() => {
-    const k = mevcutKullanici()
-    if (!k?.rol) { window.location.href = '/login'; return }
-    setKullanici(k)
-    veriGetir()
+    async function yukle() {
+      setYukl(true)
+      const [fRes, biaRes, bcpRes, tesRes] = await Promise.all([
+        supabase.from('form_cevaplari').select('*').eq('tenant_id', TENANT_ID).order('olusturulma', { ascending: false }),
+        supabase.from('bia_assessments').select('*').eq('tenant_id', TENANT_ID),
+        supabase.from('bcp_plans').select('*').eq('tenant_id', TENANT_ID),
+        supabase.from('facilities').select('id,name,type,city,status').limit(50),
+      ])
+      setFormlar((fRes.data ?? []) as FormCevabi[])
+      setBia((biaRes.data ?? []) as BIAKayit[])
+      setBcp((bcpRes.data ?? []) as BCPKayit[])
+      setTesisler((tesRes.data ?? []) as Tesis[])
+      setYukl(false)
+    }
+    yukle()
   }, [])
 
-  const veriGetir = async () => {
-    setYukleniyor(true)
-    const { data } = await supabase
-      .from('form_cevaplari').select('*').order('olusturulma', { ascending: false })
-    setFormlar(data || [])
-    setYukleniyor(false)
-  }
-
-  const incelendi = async (id: string) => {
-    const not = prompt('İnceleme notu (isteğe bağlı):') || ''
-    await supabase.from('form_cevaplari').update({
-      durum: 'incelendi', inceleme_notu: not, incelenme: new Date().toISOString(),
-    }).eq('id', id)
-    veriGetir()
-  }
-
-  const filtrelenmis = formlar
-    .filter(f => filDurum   === 'tumu' || f.durum   === filDurum)
-    .filter(f => filSenaryo === 'tumu' || f.senaryo === filSenaryo)
-    .filter(f => {
-      if (filRisk === 'kritik') return f.dayaniklilik_skoru < 40
-      if (filRisk === 'orta')   return f.dayaniklilik_skoru >= 40 && f.dayaniklilik_skoru < 70
-      if (filRisk === 'guclu')  return f.dayaniklilik_skoru >= 70
-      return true
-    })
-    .filter(f => !aramaKod || f.birim_kodu.toLowerCase().includes(aramaKod.toLowerCase()))
-    .sort((a, b) => {
-      if (siralama === 'skor_asc')  return a.dayaniklilik_skoru - b.dayaniklilik_skoru
-      if (siralama === 'skor_desc') return b.dayaniklilik_skoru - a.dayaniklilik_skoru
-      return new Date(b.olusturulma).getTime() - new Date(a.olusturulma).getTime()
-    })
-
-  const senaryolar   = [...new Set(formlar.map(f => f.senaryo))]
-  const gonderilmis  = formlar.filter(f => f.durum === 'gonderildi')
-  const kritikSay    = gonderilmis.filter(f => f.dayaniklilik_skoru < 40).length
-  const ortaSay      = gonderilmis.filter(f => f.dayaniklilik_skoru >= 40 && f.dayaniklilik_skoru < 70).length
-  const gucluSay     = gonderilmis.filter(f => f.dayaniklilik_skoru >= 70).length
-  const ortSkor      = gonderilmis.length
+  const gonderilmis = formlar.filter(f => f.durum === 'gonderildi' || f.durum === 'incelendi')
+  const kritik = gonderilmis.filter(f => f.dayaniklilik_skoru < 40).length
+  const orta   = gonderilmis.filter(f => f.dayaniklilik_skoru >= 40 && f.dayaniklilik_skoru < 70).length
+  const ortSkor = gonderilmis.length
     ? Math.round(gonderilmis.reduce((a, f) => a + f.dayaniklilik_skoru, 0) / gonderilmis.length)
     : 0
 
   return (
-    <div className="min-h-screen bg-stone-50" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
-        .font-display { font-family: 'Playfair Display', serif; }
-        .font-mono-dm { font-family: 'DM Mono', monospace; }
-      `}</style>
+    <div style={{ minHeight: '100vh', background: NAVY, color: '#E2E8F0', fontFamily: 'system-ui, sans-serif' }}>
 
-      {/* NAV */}
-      <nav className="bg-white border-b border-stone-200 px-6 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto flex items-center justify-between h-14">
-          <div className="flex items-center gap-6">
-            <a href="/ana-sayfa" className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-stone-900 flex items-center justify-center">
-                <span className="text-white font-bold text-xs font-display">R</span>
-              </div>
-              <span className="font-display font-bold text-stone-900">OMNI</span>
-            </a>
-            <div className="hidden sm:flex items-center gap-1 text-sm">
-              <a href="/board/ozet"
-                className="px-3 py-1.5 rounded-lg font-medium text-stone-500 hover:text-stone-900 hover:bg-stone-50 transition">
-                Yönetim Özeti
-              </a>
-              <a href="/uzman/dashboard"
-                className="px-3 py-1.5 rounded-lg font-medium bg-stone-100 text-stone-900">
-                Uzman Paneli
-              </a>
-              <a href="/harita"
-                className="px-3 py-1.5 rounded-lg font-medium text-stone-500 hover:text-stone-900 hover:bg-stone-50 transition">
-                Risk Haritası
-              </a>
-              <a href="/board/cok-banka"
-                className="px-3 py-1.5 rounded-lg font-medium text-stone-500 hover:text-stone-900 hover:bg-stone-50 transition">
-                🏦 Çok Banka
-              </a>
-              <a href="/uzman/bia"
-                className="px-3 py-1.5 rounded-lg font-medium text-stone-500 hover:text-stone-900 hover:bg-stone-50 transition">
-                📊 BIA
-              </a>
-              <a href="/uzman/istanbul-sanayi"
-                className="px-3 py-1.5 rounded-lg font-medium text-stone-500 hover:text-stone-900 hover:bg-stone-50 transition">
-                🏭 İst. Sanayi
-              </a>
-              <a href="/board/rapor"
-                className="px-3 py-1.5 rounded-lg font-medium text-stone-500 hover:text-stone-900 hover:bg-stone-50 transition">
-                PDF Rapor
-              </a>
+      {/* Header */}
+      <div style={{ borderBottom: `1px solid ${BORDER}`, padding: '20px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: '#fff', margin: 0 }}>Uzman Paneli</h1>
+          <p style={{ fontSize: 13, color: '#64748B', margin: '2px 0 0' }}>Beylikdüzü Belediyesi · Operasyonel Risk Yönetimi</p>
+        </div>
+        <div style={{ fontSize: 12, color: '#64748B' }}>{new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })}</div>
+      </div>
+
+      <div style={{ padding: '24px 32px' }}>
+
+        {/* KPI Kartlar */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 28 }}>
+          {[
+            { etiket: 'Toplam Form',   deger: formlar.length,    renk: TEAL     },
+            { etiket: 'Kritik Risk',   deger: kritik,            renk: '#EF4444'},
+            { etiket: 'Orta Risk',     deger: orta,              renk: '#F59E0B'},
+            { etiket: 'Ort. URI Skor', deger: `${ortSkor}`,      renk: '#22C55E'},
+          ].map(k => (
+            <div key={k.etiket} style={card()}>
+              <div style={{ fontSize: 12, color: '#64748B', marginBottom: 8 }}>{k.etiket}</div>
+              <div style={{ fontSize: 32, fontWeight: 800, color: k.renk }}>{yukl ? '—' : k.deger}</div>
             </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right hidden sm:block">
-              <div className="text-xs font-semibold text-stone-700">{kullanici?.ad_soyad}</div>
-              <div className="text-[10px] text-stone-400">{kullanici?.tenant}</div>
-            </div>
-            <button onClick={oturumKapat}
-              className="text-xs text-stone-400 hover:text-stone-700 border border-stone-200 px-3 py-1.5 rounded-lg transition">
-              Çıkış
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      <div className="max-w-7xl mx-auto px-6 py-8">
-
-        {/* BAŞLIK + KPI */}
-        <div className="mb-7">
-          <h1 className="font-display text-3xl font-bold text-stone-900 mb-6">Uzman İzleme Merkezi</h1>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {[
-              { label: 'Toplam Form', val: gonderilmis.length, renk: '#0f172a', bg: 'bg-white border-stone-200' },
-              { label: 'Kritik',      val: kritikSay,          renk: '#EF4444', bg: 'bg-red-50 border-red-100' },
-              { label: 'Orta Risk',   val: ortaSay,            renk: '#F59E0B', bg: 'bg-amber-50 border-amber-100' },
-              { label: 'Ort. Skor',   val: ortSkor,            renk: getRiskRenk(ortSkor), bg: 'bg-white border-stone-200' },
-            ].map(k => (
-              <div key={k.label} className={`${k.bg} border rounded-2xl p-4 shadow-sm`}>
-                <div className="text-xs text-stone-400 mb-1 font-mono-dm">{k.label}</div>
-                <div className="font-display text-4xl font-bold" style={{ color: k.renk }}>{k.val}</div>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
 
-        {/* FİLTRELER */}
-        <div className="bg-white border border-stone-200 rounded-2xl p-4 mb-4 shadow-sm">
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-            <input
-              placeholder="Birim kodu ara..."
-              value={aramaKod}
-              onChange={e => setAramaKod(e.target.value)}
-              className="col-span-2 sm:col-span-1 border border-stone-200 text-sm px-3 py-2.5 rounded-xl text-stone-700 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-            {[
-              { val: filDurum,   set: setFilDurum,   opts: [['tumu','Tüm Durumlar'],['gonderildi','Gönderildi'],['incelendi','İncelendi'],['taslak','Taslak']] },
-              { val: filSenaryo, set: setFilSenaryo, opts: [['tumu','Tüm Senaryolar'], ...senaryolar.map(s=>[s,s])] },
-              { val: filRisk,    set: setFilRisk,    opts: [['tumu','Tüm Riskler'],['kritik','Kritik'],['orta','Orta'],['guclu','Güçlü']] },
-              { val: siralama,   set: (v: string) => setSiralama(v as Siralama), opts: [['skor_asc','Skor Artan'],['skor_desc','Skor Azalan'],['tarih_desc','Son Eklenen']] },
-            ].map((f, i) => (
-              <select key={i} value={f.val} onChange={e => f.set(e.target.value)}
-                className="border border-stone-200 text-sm px-3 py-2.5 rounded-xl text-stone-600 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
-                {f.opts.map(([v,l]) => <option key={v} value={v}>{l}</option>)}
-              </select>
-            ))}
-          </div>
+        {/* Tab bar */}
+        <div style={{ display: 'flex', gap: 4, marginBottom: 20, borderBottom: `1px solid ${BORDER}`, paddingBottom: 0 }}>
+          {TABS.map((t, i) => (
+            <button key={t} onClick={() => setAktifTab(i)} style={{
+              padding: '9px 16px', fontSize: 13, fontWeight: 500, cursor: 'pointer',
+              background: 'transparent', border: 'none', outline: 'none',
+              color: aktifTab === i ? '#fff' : '#64748B',
+              borderBottom: aktifTab === i ? `2px solid ${TEAL}` : '2px solid transparent',
+              transition: 'color .15s',
+            }}>{t}</button>
+          ))}
         </div>
 
-        {/* SONUÇ SAYISI */}
-        <div className="flex items-center justify-between mb-3 px-1">
-          <span className="text-xs text-stone-400 font-mono-dm">{filtrelenmis.length} kayıt</span>
-          <button onClick={veriGetir} className="text-xs text-stone-400 hover:text-stone-700 transition">
-            Yenile
-          </button>
-        </div>
-
-        {/* LİSTE */}
-        {yukleniyor ? (
-          <div className="bg-white border border-stone-200 rounded-2xl p-16 text-center shadow-sm">
-            <div className="text-stone-300 text-sm">Yükleniyor...</div>
-          </div>
+        {/* Tab içerikleri */}
+        {yukl ? (
+          <div style={{ textAlign: 'center', padding: 60, color: '#64748B' }}>Yükleniyor...</div>
         ) : (
-          <div className="space-y-2">
-            {filtrelenmis.map(f => (
-              <div key={f.id} className="bg-white border border-stone-200 rounded-2xl shadow-sm overflow-hidden">
-
-                {/* Satır */}
-                <div
-                  className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-stone-50 transition group"
-                  onClick={() => setAcikId(acikId === f.id ? null : f.id)}
-                  onDoubleClick={() => window.location.href = `/uzman/sube/${f.birim_kodu}`}
-                >
-                  {/* Risk renk çizgisi */}
-                  <div className="w-1 h-10 rounded-full flex-shrink-0"
-                    style={{ background: getRiskRenk(f.dayaniklilik_skoru) }} />
-
-                  {/* Skor */}
-                  <div className="w-12 text-center flex-shrink-0">
-                    <div className="font-display text-2xl font-bold"
-                      style={{ color: getRiskRenk(f.dayaniklilik_skoru) }}>
-                      {f.dayaniklilik_skoru}
-                    </div>
-                    <div className="text-[9px] font-mono-dm" style={{ color: getRiskRenk(f.dayaniklilik_skoru) }}>
-                      {getRiskEtiket(f.dayaniklilik_skoru)}
-                    </div>
+          <>
+            {/* 0 — Form Değerlendirme */}
+            {aktifTab === 0 && (
+              <div>
+                {formlar.length === 0 ? (
+                  <div style={card({ textAlign: 'center', padding: 48, color: '#64748B' })}>
+                    Henüz form kaydı yok. Migration 005 çalıştırıldı mı?
                   </div>
-
-                  {/* Birim & HFE */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-2">
-                      <a
-                        href={`/uzman/sube/${f.birim_kodu}`}
-                        onClick={e => e.stopPropagation()}
-                        className="font-mono-dm font-bold text-stone-800 hover:text-blue-700 hover:underline transition"
-                      >{f.birim_kodu}</a>
-                      <span className="text-xs text-stone-400">{f.senaryo}</span>
-                    </div>
-                    <div className="flex gap-2">
-                      {[
-                        { label:'H', val:f.h_skoru??0, renk:'#F97316' },
-                        { label:'F', val:f.f_skoru??0, renk:'#EF4444' },
-                        { label:'E', val:f.e_skoru??0, renk:'#3B82F6' },
-                      ].map(b => (
-                        <div key={b.label} className="flex-1">
-                          <div className="flex justify-between mb-0.5">
-                            <span className="text-[9px] font-mono-dm" style={{ color: b.renk }}>{b.label}</span>
-                            <span className="text-[9px] text-stone-400">{b.val}</span>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {formlar.map(f => (
+                      <div key={f.id} style={card({ display: 'flex', alignItems: 'center', gap: 16 })}>
+                        <div style={{
+                          minWidth: 56, height: 56, borderRadius: 10,
+                          background: riskRenk(f.dayaniklilik_skoru) + '22',
+                          border: `1px solid ${riskRenk(f.dayaniklilik_skoru)}44`,
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                          <div style={{ fontSize: 18, fontWeight: 800, color: riskRenk(f.dayaniklilik_skoru) }}>{f.dayaniklilik_skoru}</div>
+                          <div style={{ fontSize: 9, color: riskRenk(f.dayaniklilik_skoru), fontWeight: 600 }}>{riskEtiket(f.dayaniklilik_skoru)}</div>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 600, color: '#fff', fontSize: 14 }}>{f.birim_kodu}</div>
+                          <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>
+                            {f.sektor ?? '—'} · {f.senaryo} · {f.il_adi ?? '—'}
                           </div>
-                          <div className="h-1 bg-stone-100 rounded-full overflow-hidden">
-                            <div className="h-full rounded-full" style={{ width:`${b.val}%`, background:b.renk }} />
+                          {f.inceleme_notu && (
+                            <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 4, fontStyle: 'italic' }}>
+                              📝 {f.inceleme_notu}
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{
+                            fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20,
+                            background: durumRenk(f.durum) + '22', color: durumRenk(f.durum),
+                            border: `1px solid ${durumRenk(f.durum)}44`,
+                          }}>{f.durum}</span>
+                          <div style={{ fontSize: 11, color: '#475569', marginTop: 4 }}>
+                            {new Date(f.olusturulma).toLocaleDateString('tr-TR')}
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Durum & Tarih */}
-                  <div className="text-right flex-shrink-0">
-                    <span className={`text-[10px] px-2.5 py-1 rounded-full font-medium inline-block mb-1 ${
-                      f.durum === 'incelendi'  ? 'bg-green-100 text-green-700' :
-                      f.durum === 'gonderildi' ? 'bg-blue-100 text-blue-700' :
-                      'bg-stone-100 text-stone-500'
-                    }`}>
-                      {f.durum === 'gonderildi' ? 'Gönderildi' : f.durum === 'incelendi' ? 'İncelendi' : 'Taslak'}
-                    </span>
-                    <div className="text-[10px] text-stone-400">
-                      {new Date(f.olusturulma).toLocaleDateString('tr-TR')}
-                    </div>
-                  </div>
-
-                  <svg className={`w-4 h-4 text-stone-300 transition-transform flex-shrink-0 ${acikId===f.id?'rotate-180':''}`}
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-
-                {/* Detay Paneli */}
-                {acikId === f.id && (
-                  <div className="border-t border-stone-100 px-5 py-5 bg-stone-50">
-                    <div className="grid grid-cols-3 gap-3 mb-4">
-                      {[
-                        { label:'Tehlike (H)',     val:f.h_skoru??0, renk:'#F97316' },
-                        { label:'Kırılganlık (F)', val:f.f_skoru??0, renk:'#EF4444' },
-                        { label:'Kapasite (E)',    val:f.e_skoru??0, renk:'#3B82F6' },
-                      ].map(k => (
-                        <div key={k.label} className="bg-white rounded-xl p-4 text-center border border-stone-100">
-                          <div className="font-display text-4xl font-bold mb-1" style={{ color:k.renk }}>{k.val}</div>
-                          <div className="text-xs text-stone-400">{k.label}</div>
-                        </div>
-                      ))}
-                    </div>
-                    {f.inceleme_notu && (
-                      <div className="bg-green-50 border border-green-100 rounded-xl p-3 mb-3 text-sm text-green-700">
-                        Not: {f.inceleme_notu}
                       </div>
-                    )}
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => window.location.href = `/uzman/sube/${f.birim_kodu}`}
-                        className="flex-1 bg-blue-700 hover:bg-blue-800 text-white text-sm py-2.5 rounded-xl transition font-semibold"
-                      >
-                        📊 Detaylı Analiz →
-                      </button>
-                      {f.durum === 'gonderildi' && (
-                        <button
-                          onClick={() => incelendi(f.id)}
-                          className="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-sm py-2.5 rounded-xl transition font-medium"
-                        >
-                          İncelendi İşaretle
-                        </button>
-                      )}
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 1 — BIA Analizi */}
+            {aktifTab === 1 && (
+              <div style={card({ padding: 32 })}>
+                {bia.length === 0 ? (
+                  <div style={{ textAlign: 'center', color: '#64748B', padding: 32 }}>
+                    <div style={{ fontSize: 32, marginBottom: 12 }}>📊</div>
+                    <div style={{ fontWeight: 600, color: '#94A3B8' }}>BIA kaydı bulunamadı.</div>
+                    <div style={{ fontSize: 13, marginTop: 6 }}>bia_assessments tablosuna veri ekleyin.</div>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {bia.map(b => (
+                      <div key={b.id} style={{ padding: '14px 18px', background: '#0D1F3C', borderRadius: 10, border: `1px solid ${BORDER}` }}>
+                        <div style={{ fontSize: 13, color: '#94A3B8' }}>ID: {b.id}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 2 — İş Sürekliliği */}
+            {aktifTab === 2 && (
+              <div style={card({ padding: 32 })}>
+                {bcp.length === 0 ? (
+                  <div style={{ textAlign: 'center', color: '#64748B', padding: 32 }}>
+                    <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
+                    <div style={{ fontWeight: 600, color: '#94A3B8' }}>BCP planı bulunamadı.</div>
+                    <div style={{ fontSize: 13, marginTop: 6 }}>bcp_plans tablosuna veri ekleyin.</div>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {bcp.map(b => (
+                      <div key={b.id} style={{ padding: '14px 18px', background: '#0D1F3C', borderRadius: 10, border: `1px solid ${BORDER}` }}>
+                        <div style={{ fontSize: 13, color: '#94A3B8' }}>ID: {b.id}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 3 — Kritik Personel */}
+            {aktifTab === 3 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {PERSONEL.map(p => (
+                  <div key={p.ad} style={card({ display: 'flex', alignItems: 'center', gap: 16 })}>
+                    <div style={{
+                      width: 44, height: 44, borderRadius: '50%',
+                      background: TEAL + '33', border: `1px solid ${TEAL}66`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 18, fontWeight: 700, color: TEAL,
+                    }}>
+                      {p.ad.charAt(0)}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, color: '#fff', fontSize: 14 }}>{p.ad}</div>
+                      <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{p.pozisyon}</div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: 13, color: TEAL, fontWeight: 500 }}>{p.tel}</div>
+                      <div style={{ fontSize: 11, color: '#475569', marginTop: 3 }}>Yedek: {p.yedek}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* 4 — Eğitim & Tatbikat */}
+            {aktifTab === 4 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {TATBIKATLAR.map(t => (
+                  <div key={t.ad} style={card({ display: 'flex', alignItems: 'center', gap: 16 })}>
+                    <div style={{
+                      minWidth: 48, height: 48, borderRadius: 10,
+                      background: t.durum === 'Tamamlandı' ? '#22C55E22' : '#F59E0B22',
+                      border: `1px solid ${t.durum === 'Tamamlandı' ? '#22C55E44' : '#F59E0B44'}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+                    }}>
+                      {t.durum === 'Tamamlandı' ? '✓' : '📅'}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, color: '#fff', fontSize: 14 }}>{t.ad}</div>
+                      <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>
+                        {t.tur} · {t.katilimci} katılımcı
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: 13, color: '#94A3B8' }}>{new Date(t.tarih).toLocaleDateString('tr-TR')}</div>
+                      <span style={{
+                        fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20, marginTop: 4, display: 'inline-block',
+                        background: t.durum === 'Tamamlandı' ? '#22C55E22' : '#F59E0B22',
+                        color: t.durum === 'Tamamlandı' ? '#22C55E' : '#F59E0B',
+                        border: `1px solid ${t.durum === 'Tamamlandı' ? '#22C55E44' : '#F59E0B44'}`,
+                      }}>{t.durum}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* 5 — Risk Haritası (tesis listesi) */}
+            {aktifTab === 5 && (
+              <div>
+                {tesisler.length === 0 ? (
+                  <div style={card({ textAlign: 'center', padding: 48, color: '#64748B' })}>
+                    <div style={{ fontSize: 32, marginBottom: 12 }}>🗺️</div>
+                    <div style={{ fontWeight: 600, color: '#94A3B8' }}>Tesis kaydı bulunamadı.</div>
+                    <div style={{ fontSize: 13, marginTop: 6 }}>facilities tablosuna veri ekleyin.</div>
+                  </div>
+                ) : (
+                  <div>
+                    <div style={{ fontSize: 13, color: '#64748B', marginBottom: 14 }}>{tesisler.length} tesis bulundu</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+                      {tesisler.map(t => (
+                        <div key={t.id} style={card()}>
+                          <div style={{ fontWeight: 600, color: '#fff', fontSize: 14, marginBottom: 6 }}>{t.name}</div>
+                          <div style={{ fontSize: 12, color: '#64748B' }}>{t.type ?? '—'} · {t.city ?? '—'}</div>
+                          <div style={{ marginTop: 10 }}>
+                            <span style={{
+                              fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20,
+                              background: '#22C55E22', color: '#22C55E', border: '1px solid #22C55E44',
+                            }}>{t.status ?? 'Aktif'}</span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
               </div>
-            ))}
-
-            {filtrelenmis.length === 0 && (
-              <div className="bg-white border border-stone-200 rounded-2xl p-16 text-center shadow-sm">
-                <div className="font-display text-3xl text-stone-200 mb-2">—</div>
-                <p className="text-stone-400 text-sm">Filtre kriterlerine uygun kayıt bulunamadı.</p>
-              </div>
             )}
-          </div>
+          </>
         )}
-
-        <div className="mt-8 pt-6 border-t border-stone-200 flex justify-between">
-          <span className="text-xs text-stone-400">OMNI Kurumsal Dayanıklılık Platformu</span>
-          <span className="text-xs text-stone-300">ITU AYM iş birliğiyle geliştirilmiştir</span>
-        </div>
       </div>
     </div>
   )
