@@ -4,6 +4,59 @@ import Link from 'next/link'
 import { mevcutKullanici } from '@/lib/auth'
 import { createClient } from '@supabase/supabase-js'
 
+async function exportPDF(
+  facilities: { name: string; uri: number; id: string }[],
+  totalFacilities: number | null,
+  criticalRisk: number | null
+) {
+  const { default: jsPDF } = await import('jspdf')
+  const { default: autoTable } = await import('jspdf-autotable')
+
+  const doc = new jsPDF()
+  const now = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })
+
+  // Başlık
+  doc.setFontSize(18)
+  doc.setTextColor(10, 22, 40)
+  doc.text('Omniversel Resilience Platform', 14, 22)
+
+  doc.setFontSize(11)
+  doc.setTextColor(100, 116, 139)
+  doc.text('Tesis Risk Raporu — Beylikdüzü Belediyesi', 14, 30)
+  doc.text(`Rapor Tarihi: ${now}`, 14, 37)
+
+  // KPI satırı
+  doc.setFontSize(10)
+  doc.setTextColor(10, 22, 40)
+  doc.text(`Toplam Tesis: ${totalFacilities ?? '—'}`, 14, 50)
+  doc.text(`Kritik Tesis (URI < 75): ${criticalRisk ?? '—'}`, 80, 50)
+
+  // Tablo
+  autoTable(doc, {
+    startY: 58,
+    head: [['Sıra', 'Tesis Adı', 'URI Skoru', 'Risk Seviyesi']],
+    body: facilities.map((f, i) => [
+      i + 1,
+      f.name,
+      Math.round(f.uri),
+      f.uri < 40 ? 'Kritik' : f.uri < 60 ? 'Yüksek' : f.uri < 75 ? 'Orta' : 'Düşük',
+    ]),
+    headStyles: { fillColor: [10, 22, 40], textColor: 255, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [248, 249, 250] },
+    columnStyles: {
+      0: { cellWidth: 12 },
+      2: { halign: 'center' },
+      3: { halign: 'center' },
+    },
+  })
+
+  doc.setFontSize(8)
+  doc.setTextColor(148, 163, 184)
+  doc.text('Omniversel Platform · HFER-720 v2.0 · ISO 22301 · Sendai 2015–2030', 14, 285)
+
+  doc.save(`omni-risk-raporu-${new Date().toISOString().slice(0, 10)}.pdf`)
+}
+
 const sbBD = createClient(
   'https://gqguwgbopgnpwzjwcexl.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzM5OTgzMywiZXhwIjoyMDg4OTc1ODMzfQ.Ku-JRx8JFH5a3SIj7sGP_Dy_nM89NMMW34gPyxVO_qI',
@@ -177,10 +230,18 @@ export default function HubPage() {
             </h1>
             <p className="text-sm mt-1" style={{ color: '#94A3B8' }}>{bugun}</p>
           </div>
-          <div className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg"
-               style={{ background: 'rgba(232,201,122,.1)', border: '1px solid rgba(232,201,122,.2)', color: GOLD }}>
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: GOLD }}/>
-            OMNI Resilience Platform · v2.0
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <button
+              onClick={() => exportPDF(topFacilities, totalFacilities, criticalRisk)}
+              style={{ fontSize: 12, fontWeight: 600, padding: '7px 14px', borderRadius: 8, background: 'rgba(0,155,141,0.15)', border: '1px solid rgba(0,155,141,0.3)', color: TEAL, cursor: 'pointer' }}
+            >
+              ↓ PDF İndir
+            </button>
+            <div className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg"
+                 style={{ background: 'rgba(232,201,122,.1)', border: '1px solid rgba(232,201,122,.2)', color: GOLD }}>
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: GOLD }}/>
+              OMNI Resilience Platform · v2.0
+            </div>
           </div>
         </div>
       </div>

@@ -36,7 +36,15 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
-      setError(error.message || 'Invalid email or password. Please try again.')
+      if (error.message?.includes('Invalid login credentials')) {
+        setError('E-posta veya şifre hatalı. Lütfen tekrar deneyin.')
+      } else if (error.message?.includes('Email not confirmed')) {
+        setError('E-posta adresiniz henüz onaylanmamış. Lütfen gelen kutunuzu kontrol edin.')
+      } else if (error.message?.includes('Too many requests')) {
+        setError('Çok fazla başarısız deneme. Lütfen birkaç dakika bekleyin.')
+      } else {
+        setError(error.message || 'Giriş yapılırken bir hata oluştu. Lütfen tekrar deneyin.')
+      }
       setLoading(false)
     } else {
       window.location.href = '/hub'
@@ -106,7 +114,7 @@ export default function LoginPage() {
               borderRadius: 8, border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
               fontFamily: F, transition: 'background .15s',
             }}>
-            {loading ? 'Signing in...' : 'Sign In →'}
+            {loading ? 'Giriş yapılıyor...' : 'Giriş Yap →'}
           </button>
         </form>
 

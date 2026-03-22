@@ -1,3 +1,59 @@
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+// ── Supabase tabanlı auth (Sprint 1) ────────────────────────
+
+export type PlatformRole = 'admin' | 'uzman' | 'izleme'
+
+export interface PlatformUser {
+  id: string
+  email: string
+  full_name: string
+  role: PlatformRole
+  tenant_id: string
+}
+
+/**
+ * Aktif Supabase oturumunu döndürür.
+ * Oturum yoksa null döner.
+ */
+export async function getUser(): Promise<PlatformUser | null> {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) return null
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('id, tenant_id, role, full_name')
+    .eq('id', session.user.id)
+    .single()
+
+  if (!profile) return null
+
+  return {
+    id:        session.user.id,
+    email:     session.user.email ?? '',
+    full_name: profile.full_name ?? session.user.email ?? '',
+    role:      profile.role as PlatformRole,
+    tenant_id: profile.tenant_id,
+  }
+}
+
+/**
+ * Supabase oturumunu kapat.
+ */
+export async function signOut(): Promise<void> {
+  await supabase.auth.signOut()
+  if (typeof window !== 'undefined') {
+    window.location.href = '/login'
+  }
+}
+
+// ── Legacy demo auth (geriye dönük uyumluluk) ───────────────
+
 export type Rol = 'birim' | 'uzman' | 'board' | 'oda' | 'admin'
 
 // types/index.ts ile senkronize
