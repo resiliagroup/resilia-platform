@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { mevcutKullanici } from '@/lib/auth';
 import Link from 'next/link';
-import { BarChart3, Map, Building2, Settings, Activity, AlertTriangle, Database, History, Home, LayoutGrid, FileText, Siren, SlidersHorizontal, TableProperties, ClipboardList, Zap } from 'lucide-react';
+import { BarChart3, Building2, LayoutGrid, FileText, Siren, TableProperties, Zap, Database, TrendingDown, ShieldCheck, Upload, Factory } from 'lucide-react';
 import OmniverselLogo from '@/components/OmniverselLogo';
 
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
@@ -24,97 +24,75 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
         </div>
 
         <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
-          <Link href="/hub" className="flex items-center gap-3 px-3 py-2.5 mb-3 hover:bg-slate-800/40 hover:text-white text-slate-300 rounded-lg transition-all text-sm font-semibold bg-slate-800/20">
+
+          {/* Ana */}
+          <Link href="/hub" className="flex items-center gap-3 px-3 py-2.5 mb-4 hover:bg-slate-800/40 hover:text-white text-slate-300 rounded-lg transition-all text-sm font-semibold bg-slate-800/20">
             <LayoutGrid className="w-4 h-4 text-[#E8C97A]" />
             <span>Hub</span>
           </Link>
 
-          <p className="px-3 mb-3 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Risk Motoru</p>
-          
-          <Link href="/hfe-motoru" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
+          {/* Risk */}
+          <p className="px-3 mb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Risk</p>
+          <Link href="/hub/form/banking" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
             <BarChart3 className="w-4 h-4 text-[#E8C97A]" />
-            <span>HFE-360 Analiz</span>
+            <span>omniRISK Bankacılık</span>
+          </Link>
+          <Link href="/hub/form/industrial" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
+            <Factory className="w-4 h-4 text-[#E8C97A]" />
+            <span>omniRISK Sanayi</span>
           </Link>
 
-          <Link href="/natech-simulator" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-            <AlertTriangle className="w-4 h-4 text-[#E8C97A]" />
-            <span>NATECH Simülatör</span>
+          {/* Analiz */}
+          <p className="px-3 mt-5 mb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Analiz</p>
+          <Link href="/hub/omniimpact" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
+            <TrendingDown className="w-4 h-4 text-[#7B9FD4]" />
+            <span>omniIMPACT</span>
+          </Link>
+          <Link href="/hub/omniaudit" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
+            <ShieldCheck className="w-4 h-4 text-[#6ABFB8]" />
+            <span>omniAUDIT</span>
           </Link>
 
-          <Link href="/ai-analiz" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-            <Activity className="w-4 h-4 text-[#7B9FD4]" />
-            <span>AI Analiz</span>
-          </Link>
-
-          <p className="px-3 mt-6 mb-3 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Operasyon</p>
-
-          <Link href="/eoc-dashboard" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-            <Home className="w-4 h-4 text-[#6ABFB8]" />
-            <span>EOC Dashboard</span>
-          </Link>
-
-          <Link href="/harita" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-            <Map className="w-4 h-4 text-[#6ABFB8]" />
-            <span>Harita</span>
-            </Link>
-            <Link href="/beylikduzu-komuta" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors hover:bg-white/5 text-slate-400 hover:text-white">
-              <span>🏛️</span>
-              <span>Beylikdüzü</span>
-          </Link>
-
-          <Link href="/tesis-agi" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-            <Building2 className="w-4 h-4 text-slate-400" />
-            <span>Tesis Ağı</span>
-          </Link>
-
-          <Link href="/omniplan" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
+          {/* Planlama */}
+          <p className="px-3 mt-5 mb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Planlama</p>
+          <Link href="/hub/omniplan" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
             <FileText className="w-4 h-4 text-[#3B82F6]" />
             <span>omniPLAN</span>
           </Link>
+          <Link href="/hub/omnivendor" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
+            <Building2 className="w-4 h-4 text-[#3B82F6]" />
+            <span>omniVENDOR</span>
+          </Link>
 
-          <Link href="/omnicrisis" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
+          {/* Operasyon */}
+          <p className="px-3 mt-5 mb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Operasyon</p>
+          <Link href="/hub/omnicrisis" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
             <Siren className="w-4 h-4 text-[#8B5CF6]" />
             <span>omniCRISIS</span>
           </Link>
-
-          <p className="px-3 mt-6 mb-3 text-[10px] font-bold text-slate-600 uppercase tracking-widest">YGG / HRO</p>
-
-          <Link href="/ygg-pano" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-            <TableProperties className="w-4 h-4 text-[#E8C97A]" />
-            <span>YGG Pano</span>
-          </Link>
-
-          <Link href="/near-miss" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-            <ClipboardList className="w-4 h-4 text-[#F97316]" />
-            <span>Near Miss</span>
-          </Link>
-
-          <Link href="/omni-sprint" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
+          <Link href="/hub/omnipipe" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
             <Zap className="w-4 h-4 text-[#A78BFA]" />
-            <span>omniSPRINT</span>
+            <span>omniPIPE</span>
           </Link>
 
-          <p className="px-3 mt-6 mb-3 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Yönetim</p>
-
-          <Link href="/gecmis-analizler" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-            <History className="w-4 h-4 text-slate-400" />
-            <span>Geçmiş Analizler</span>
+          {/* Araştırma */}
+          <p className="px-3 mt-5 mb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Araştırma</p>
+          <Link href="/hub/omniqra" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
+            <Database className="w-4 h-4 text-[#F97316]" />
+            <span>omniQRA</span>
           </Link>
 
-          <Link href="/sistem-ayarlari" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-            <Settings className="w-4 h-4 text-slate-400" />
-            <span>Sistem Ayarları</span>
+          {/* Yönetim */}
+          <p className="px-3 mt-5 mb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Yönetim</p>
+          <Link href="/hub/admin/import" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
+            <Upload className="w-4 h-4 text-slate-400" />
+            <span>Toplu Import</span>
+          </Link>
+          <Link href="/hub/admin/matrix" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
+            <TableProperties className="w-4 h-4 text-slate-400" />
+            <span>Matris Editörü</span>
           </Link>
 
-          <Link href="/settings" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-            <SlidersHorizontal className="w-4 h-4 text-[#E8C97A]" />
-            <span>Form Ayarları</span>
-          </Link>
-
-          <Link href="/board/ozet" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-            <Database className="w-4 h-4 text-slate-400" />
-            <span>Yönetici Özeti</span>
-          </Link>
         </nav>
 
         <div className="p-4 border-t border-slate-800/40">
