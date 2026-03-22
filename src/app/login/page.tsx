@@ -50,30 +50,43 @@ export default function LoginPage() {
         .login-container {
           display: flex;
           min-height: 100vh;
-          background: #060D1A;
+          background: #0A1628;
         }
         .login-left {
           width: 60%;
           background: #060D1A;
-          border-right: 1px solid #0F2240;
-          padding: 56px 72px;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-        }
-        .login-right {
-          width: 40%;
-          background: #0A1628;
-          padding: 56px 60px;
+          padding: 48px;
           display: flex;
           flex-direction: column;
           justify-content: center;
         }
-        .login-mobile-logo { display: none; }
+        .login-right {
+          width: 40%;
+          background: #0A1628;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 48px;
+        }
+        .login-form-box {
+          width: 100%;
+          max-width: 360px;
+        }
         @media (max-width: 768px) {
-          .login-left  { display: none; }
-          .login-right { width: 100%; padding: 32px 24px; }
-          .login-mobile-logo { display: block; margin-bottom: 32px; }
+          .login-container {
+            flex-direction: column;
+          }
+          .login-left {
+            display: none;
+          }
+          .login-right {
+            width: 100%;
+            min-height: 100vh;
+            padding: 32px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
         }
       `}</style>
 
@@ -148,15 +161,14 @@ export default function LoginPage() {
       {/* ── Right panel 40% ── */}
       <div className="login-right">
 
-        {/* Mobile-only logo */}
-        <div className="login-mobile-logo">
-          <a href="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 0 }}>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.4px' }}>OMNIVERSEL</div>
-            <div style={{ fontSize: 11, color: '#2D8A87', marginTop: 4, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Urban Resilience Platform</div>
-          </a>
-        </div>
+        <div className="login-form-box">
 
-        <div style={{ maxWidth: 360, width: '100%', margin: '0 auto', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div style={{ textAlign: 'center', marginBottom: 32 }}>
+            <a href="/" style={{ textDecoration: 'none' }}>
+              <div style={{ color: '#fff', fontWeight: 800, fontSize: 24, letterSpacing: 2 }}>OMNIVERSEL</div>
+              <div style={{ color: '#2D8A87', fontSize: 12, marginTop: 4 }}>Urban Resilience Platform</div>
+            </a>
+          </div>
 
           <div style={{
             display: 'inline-block', background: '#0D1F3C',
