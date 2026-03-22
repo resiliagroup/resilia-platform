@@ -1,48 +1,114 @@
-'use client';
+'use client'
 
-import React, { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
-import { Building2, MapPin, Server, Plus, AlertCircle } from 'lucide-react';
+import React, { useEffect, useState, useRef } from 'react'
+import { createClient } from '@supabase/supabase-js'
+import { Building2, MapPin, Server, Plus, AlertCircle, Upload, X, Image } from 'lucide-react'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const supabaseUrl  = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+const PHOTO_BUCKET = 'facility-photos'
+
+interface Facility {
+  id: string
+  name: string
+  type: string
+  city: string
+  status?: string
+  photo_url?: string | null
+  tenant_name?: string
+}
 
 export default function TesisAgi() {
-  const [facilities, setFacilities] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  
-  // Yeni Tesis Formu Eyaletleri
-  const [showForm, setShowForm] = useState(false);
-  const [name, setName] = useState('');
-  const [type, setType] = useState('Şube');
-  const [city, setCity] = useState('');
+  const [facilities, setFacilities] = useState<Facility[]>([])
+  const [loading, setLoading] = useState(true)
 
-  // Tesisleri Getir
+  // Form state
+  const [showForm, setShowForm] = useState(false)
+  const [name, setName] = useState('')
+  const [type, setType] = useState('Şube')
+  const [city, setCity] = useState('')
+
+  // Fotoğraf upload state
+  const [fotoFile, setFotoFile] = useState<File | null>(null)
+  const [fotoOnizleme, setFotoOnizleme] = useState<string | null>(null)
+  const [fotoYukleniyor, setFotoYukleniyor] = useState(false)
+  const [surukleniyorMu, setSurukleniyorMu] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   const fetchFacilities = async () => {
-    setLoading(true);
-    const { data } = await supabase.from('facilities').select('*').order('created_at', { ascending: false });
-    setFacilities(data || []);
-    setLoading(false);
-  };
+    setLoading(true)
+    const { data } = await supabase.from('facilities').select('*').order('created_at', { ascending: false })
+    setFacilities((data || []) as Facility[])
+    setLoading(false)
+  }
 
-  useEffect(() => { fetchFacilities(); }, []);
+  useEffect(() => { fetchFacilities() }, [])
 
-  // Yeni Tesis Ekle
+  // Fotoğraf sürükle-bırak
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setSurukleniyorMu(false)
+    const file = e.dataTransfer.files[0]
+    if (file && file.type.startsWith('image/')) secFoto(file)
+  }
+
+  const secFoto = (file: File) => {
+    setFotoFile(file)
+    const reader = new FileReader()
+    reader.onload = e => setFotoOnizleme(e.target?.result as string)
+    reader.readAsDataURL(file)
+  }
+
+  const fotoKaldir = () => { setFotoFile(null); setFotoOnizleme(null) }
+
+  // Supabase Storage'a yükle, public URL döndür
+  const fotoYukle = async (facilityId: string): Promise<string | null> => {
+    if (!fotoFile) return null
+    setFotoYukleniyor(true)
+    const uzanti = fotoFile.name.split('.').pop() ?? 'jpg'
+    const dosyaYolu = `${facilityId}/cover.${uzanti}`
+
+    const { error } = await supabase.storage
+      .from(PHOTO_BUCKET)
+      .upload(dosyaYolu, fotoFile, { upsert: true, contentType: fotoFile.type })
+
+    if (error) { console.error('Fotoğraf yükleme hatası:', error); setFotoYukleniyor(false); return null }
+
+    const { data: { publicUrl } } = supabase.storage.from(PHOTO_BUCKET).getPublicUrl(dosyaYolu)
+    setFotoYukleniyor(false)
+    return publicUrl
+  }
+
   const handleAddFacility = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const { error } = await supabase.from('facilities').insert([{ tenant_name: 'Akbank A.Ş.', name, type, city }]);
-    if (!error) {
-      setShowForm(false);
-      setName(''); setCity('');
-      fetchFacilities(); // Listeyi yenile
-    }
-  };
+    e.preventDefault()
+    // Önce tesis oluştur
+    const { data: yeniTesis, error } = await supabase
+      .from('facilities')
+      .insert([{ tenant_name: 'Akbank A.Ş.', name, type, city }])
+      .select()
+      .single()
 
-  const getIcon = (type: string) => {
-    if (type === 'Veri Merkezi') return <Server className="w-5 h-5 text-indigo-500" />;
-    return <Building2 className="w-5 h-5 text-blue-500" />;
-  };
+    if (error || !yeniTesis) return
+
+    // Fotoğraf varsa yükle ve URL'i kaydet
+    if (fotoFile) {
+      const url = await fotoYukle(yeniTesis.id)
+      if (url) {
+        await supabase.from('facilities').update({ photo_url: url }).eq('id', yeniTesis.id)
+      }
+    }
+
+    setShowForm(false)
+    setName(''); setCity(''); fotoKaldir()
+    fetchFacilities()
+  }
+
+  const getIcon = (t: string) => {
+    if (t === 'Veri Merkezi') return <Server className="w-5 h-5 text-indigo-500" />
+    return <Building2 className="w-5 h-5 text-blue-500" />
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-6 md:p-10 font-sans text-slate-800">
@@ -56,23 +122,69 @@ export default function TesisAgi() {
         </button>
       </div>
 
-      {/* Yeni Ekleme Formu */}
+      {/* Yeni Tesis Formu */}
       {showForm && (
-        <form onSubmit={handleAddFacility} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8 animate-in slide-in-from-top-4">
+        <form onSubmit={handleAddFacility} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
           <h3 className="font-bold text-lg mb-4">Yeni Lokasyon Tanımla</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <input required type="text" placeholder="Tesis Adı (Örn: Gebze DR Merkezi)" value={name} onChange={(e) => setName(e.target.value)} className="bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:border-blue-500" />
-            <select value={type} onChange={(e) => setType(e.target.value)} className="bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:border-blue-500">
+            <input required type="text" placeholder="Tesis Adı" value={name} onChange={e => setName(e.target.value)}
+              className="bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:border-blue-500" />
+            <select value={type} onChange={e => setType(e.target.value)}
+              className="bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:border-blue-500">
               <option value="Şube">Banka Şubesi</option>
               <option value="Veri Merkezi">Veri Merkezi / IT</option>
               <option value="Genel Müdürlük">Genel Müdürlük Binası</option>
               <option value="Depo">Lojistik / Depo</option>
             </select>
-            <input required type="text" placeholder="Şehir (Örn: İstanbul)" value={city} onChange={(e) => setCity(e.target.value)} className="bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:border-blue-500" />
+            <input required type="text" placeholder="Şehir" value={city} onChange={e => setCity(e.target.value)}
+              className="bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:border-blue-500" />
           </div>
+
+          {/* Drag-Drop Fotoğraf Alanı */}
+          <div className="mb-4">
+            <p className="text-sm font-semibold text-slate-600 mb-2">Tesis Fotoğrafı <span className="font-normal text-slate-400">(opsiyonel)</span></p>
+
+            {fotoOnizleme ? (
+              <div className="relative w-full h-40 rounded-xl overflow-hidden border border-slate-200">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={fotoOnizleme} alt="Önizleme" className="w-full h-full object-cover" />
+                <button type="button" onClick={fotoKaldir}
+                  className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md hover:bg-red-50 transition-colors">
+                  <X className="w-4 h-4 text-red-500" />
+                </button>
+                <div className="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded-lg">
+                  {fotoFile?.name}
+                </div>
+              </div>
+            ) : (
+              <div
+                onDragOver={e => { e.preventDefault(); setSurukleniyorMu(true) }}
+                onDragLeave={() => setSurukleniyorMu(false)}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+                className={`w-full h-32 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${
+                  surukleniyorMu ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'
+                }`}>
+                <div className={`p-2 rounded-full ${surukleniyorMu ? 'bg-blue-100' : 'bg-slate-100'}`}>
+                  <Image className={`w-5 h-5 ${surukleniyorMu ? 'text-blue-500' : 'text-slate-400'}`} />
+                </div>
+                <p className="text-sm text-slate-500">
+                  {surukleniyorMu ? 'Bırakın!' : 'Fotoğraf sürükleyin veya tıklayın'}
+                </p>
+                <p className="text-xs text-slate-400">PNG, JPG, WEBP · Maks 5MB</p>
+              </div>
+            )}
+            <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
+              onChange={e => { const f = e.target.files?.[0]; if (f) secFoto(f) }} />
+          </div>
+
           <div className="flex justify-end gap-3">
-            <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 text-slate-500 font-medium hover:bg-slate-100 rounded-lg">İptal</button>
-            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-all">Kaydet</button>
+            <button type="button" onClick={() => { setShowForm(false); fotoKaldir() }}
+              className="px-4 py-2 text-slate-500 font-medium hover:bg-slate-100 rounded-lg">İptal</button>
+            <button type="submit" disabled={fotoYukleniyor}
+              className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-bold py-2 px-6 rounded-lg transition-all flex items-center gap-2">
+              {fotoYukleniyor ? (<><Upload className="w-4 h-4 animate-bounce" /> Yükleniyor...</>) : 'Kaydet'}
+            </button>
           </div>
         </form>
       )}
@@ -88,24 +200,37 @@ export default function TesisAgi() {
             <p className="text-sm">Risk analizi yapabilmek için yukarıdan yeni bir tesis ekleyin.</p>
           </div>
         ) : (
-          facilities.map((fac) => (
-            <div key={fac.id} className="bg-white p-6 rounded-2xl border border-slate-200 hover:shadow-md transition-all hover:border-blue-200 group cursor-pointer">
-              <div className="flex justify-between items-start mb-4">
-                <div className="bg-slate-50 p-3 rounded-xl group-hover:bg-blue-50 transition-colors">
-                  {getIcon(fac.type)}
+          facilities.map(fac => (
+            <div key={fac.id} className="bg-white rounded-2xl border border-slate-200 hover:shadow-md transition-all hover:border-blue-200 group cursor-pointer overflow-hidden">
+              {/* Tesis fotoğrafı */}
+              {fac.photo_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={fac.photo_url} alt={fac.name} className="w-full h-36 object-cover" />
+              ) : (
+                <div className="w-full h-36 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+                  <Building2 className="w-10 h-10 text-slate-300" />
                 </div>
-                <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full">{fac.status}</span>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">{fac.name}</h3>
-              <p className="text-sm font-semibold text-blue-600 mb-4">{fac.type}</p>
-              
-              <div className="flex items-center gap-2 text-slate-500 text-sm pt-4 border-t border-slate-100">
-                <MapPin className="w-4 h-4" /> {fac.city}
+              )}
+
+              <div className="p-5">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="bg-slate-50 p-2.5 rounded-xl group-hover:bg-blue-50 transition-colors">
+                    {getIcon(fac.type)}
+                  </div>
+                  <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                    {fac.status ?? 'Aktif'}
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-1">{fac.name}</h3>
+                <p className="text-sm font-semibold text-blue-600 mb-3">{fac.type}</p>
+                <div className="flex items-center gap-2 text-slate-500 text-sm pt-3 border-t border-slate-100">
+                  <MapPin className="w-4 h-4" /> {fac.city}
+                </div>
               </div>
             </div>
           ))
         )}
       </div>
     </div>
-  );
+  )
 }
