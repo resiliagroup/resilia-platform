@@ -1,8 +1,9 @@
 'use client'
 import { useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { useRouter } from 'next/navigation'
+import { createBrowserClient } from '@supabase/ssr'
 
-const supabase = createClient(
+const supabase = createBrowserClient(
   'https://gqguwgbopgnpwzjwcexl.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzOTk4MzMsImV4cCI6MjA4ODk3NTgzM30.ZIFmmiGsB1rUAojvSG8uTfcknZi6LoXgrgApCL-e550'
 )
@@ -11,6 +12,7 @@ const C = { navy950: '#060D1A', navy900: '#0A1628', teal: '#2D8A87', tealHov: '#
 const F = "'Plus Jakarta Sans', sans-serif"
 
 export default function LoginPage() {
+  const router = useRouter()
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading]   = useState(false)
@@ -47,7 +49,8 @@ export default function LoginPage() {
       }
       setLoading(false)
     } else {
-      window.location.href = '/hub'
+      router.refresh()
+      router.push('/hub')
     }
   }
 
