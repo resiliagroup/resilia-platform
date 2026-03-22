@@ -1010,7 +1010,6 @@ export default function BeylikduzuKomuta() {
         .from('facilities')
         .select('id,name,sector,employee_count,building_age,operates_24h,extra_data')
         .eq('tenant_id', TENANT_BD)
-        .eq('is_active', true)
         .limit(1000)
       if (iptal) return
       if (error) { console.error('[page] Supabase hata:', error.message); setHata(error.message); setLoading(false); return }
