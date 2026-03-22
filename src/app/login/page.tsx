@@ -43,26 +43,44 @@ export default function LoginPage() {
   }
 
   return (
-    <div className={font.className} style={{ minHeight: '100vh', display: 'flex', background: '#060D1A' }}>
+    <div className={font.className}>
       <style>{`
         *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
         ::placeholder { color: #2A4266; }
+        .login-container {
+          display: flex;
+          min-height: 100vh;
+          background: #060D1A;
+        }
+        .login-left {
+          width: 60%;
+          background: #060D1A;
+          border-right: 1px solid #0F2240;
+          padding: 56px 72px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        .login-right {
+          width: 40%;
+          background: #0A1628;
+          padding: 56px 60px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+        .login-mobile-logo { display: none; }
         @media (max-width: 768px) {
-          .login-left  { display: none !important; }
-          .login-right { width: 100% !important; padding: 48px 28px !important; }
+          .login-left  { display: none; }
+          .login-right { width: 100%; padding: 32px 24px; }
+          .login-mobile-logo { display: block; margin-bottom: 32px; }
         }
       `}</style>
 
+      <div className="login-container">
+
       {/* ── Left panel 60% ── */}
-      <div className="login-left" style={{
-        width: '60%',
-        background: '#060D1A',
-        borderRight: '1px solid #0F2240',
-        padding: '56px 72px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-      }}>
+      <div className="login-left">
         <div>
           {/* Logo */}
           <a href="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 80 }}>
@@ -128,14 +146,16 @@ export default function LoginPage() {
       </div>
 
       {/* ── Right panel 40% ── */}
-      <div className="login-right" style={{
-        width: '40%',
-        background: '#0A1628',
-        padding: '56px 60px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-      }}>
+      <div className="login-right">
+
+        {/* Mobile-only logo */}
+        <div className="login-mobile-logo">
+          <a href="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 0 }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.4px' }}>OMNIVERSEL</div>
+            <div style={{ fontSize: 11, color: '#2D8A87', marginTop: 4, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Urban Resilience Platform</div>
+          </a>
+        </div>
+
         <div style={{ maxWidth: 360, width: '100%', margin: '0 auto', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
 
           <div style={{
@@ -250,6 +270,7 @@ export default function LoginPage() {
           © 2026 Omniversel · omniversel.com
         </p>
       </div>
+    </div>
     </div>
   )
 }
