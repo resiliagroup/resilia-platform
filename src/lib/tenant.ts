@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 // Bu fonksiyon API route'lardan veya Supabase Edge Function'lardan çağrılmalı.
 // İstemci tarafında çağrılması durumunda güvenlik riski oluşur.
 const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  'https://gqguwgbopgnpwzjwcexl.supabase.co',
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
