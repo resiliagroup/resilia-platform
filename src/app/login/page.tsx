@@ -3,16 +3,15 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
 
-const supabase = createBrowserClient(
-  'https://gqguwgbopgnpwzjwcexl.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzOTk4MzMsImV4cCI6MjA4ODk3NTgzM30.ZIFmmiGsB1rUAojvSG8uTfcknZi6LoXgrgApCL-e550'
-)
-
-const C = { navy950: '#060D1A', navy900: '#0A1628', teal: '#2D8A87', tealHov: '#3BA8A5', white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B', border: '#1E3A5F' }
+const C ={ navy950: '#060D1A', navy900: '#0A1628', teal: '#2D8A87', tealHov: '#3BA8A5', white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B', border: '#1E3A5F' }
 const F = "'Plus Jakarta Sans', sans-serif"
 
 export default function LoginPage() {
   const router = useRouter()
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading]   = useState(false)
@@ -38,18 +37,9 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
-      if (error.message?.includes('Invalid login credentials')) {
-        setError('E-posta veya şifre hatalı. Lütfen tekrar deneyin.')
-      } else if (error.message?.includes('Email not confirmed')) {
-        setError('E-posta adresiniz henüz onaylanmamış. Lütfen gelen kutunuzu kontrol edin.')
-      } else if (error.message?.includes('Too many requests')) {
-        setError('Çok fazla başarısız deneme. Lütfen birkaç dakika bekleyin.')
-      } else {
-        setError(error.message || 'Giriş yapılırken bir hata oluştu. Lütfen tekrar deneyin.')
-      }
+      setError('E-posta veya şifre hatalı.')
       setLoading(false)
     } else {
-      router.refresh()
       router.push('/hub')
     }
   }
