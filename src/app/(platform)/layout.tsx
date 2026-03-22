@@ -2,17 +2,19 @@
 import React, { useEffect, useState } from 'react';
 import { mevcutKullanici } from '@/lib/auth';
 import Link from 'next/link';
-import { BarChart3, Building2, LayoutGrid, FileText, Siren, TableProperties, Zap, Database, TrendingDown, ShieldCheck, Upload, Factory } from 'lucide-react';
+import { BarChart3, Building2, LayoutGrid, FileText, Siren, TableProperties, Zap, Database, TrendingDown, ShieldCheck, Upload, Factory, FileBarChart2 } from 'lucide-react';
 import OmniverselLogo from '@/components/OmniverselLogo';
 
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
   const [tenant, setTenant] = useState('...')
   const [tenantHarf, setTenantHarf] = useState('?')
+  const [isAdmin, setIsAdmin] = useState(false)
   useEffect(() => {
     const k = mevcutKullanici()
     if (k) {
       setTenant(k.tenant)
       setTenantHarf(k.tenant.charAt(0).toUpperCase())
+      setIsAdmin(k.rol === 'admin')
     }
   }, [])
   return (
@@ -92,6 +94,17 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
             <TableProperties className="w-4 h-4 text-slate-400" />
             <span>Matris Editörü</span>
           </Link>
+
+          {/* Admin */}
+          {isAdmin && (
+            <>
+              <p className="px-3 mt-5 mb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Admin</p>
+              <Link href="/hub/iso-brifing" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
+                <FileBarChart2 className="w-4 h-4 text-[#2D8A87]" />
+                <span>İSO Brifing</span>
+              </Link>
+            </>
+          )}
 
         </nav>
 
