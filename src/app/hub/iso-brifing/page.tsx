@@ -318,13 +318,13 @@ export default function IsoBrifingV3() {
           </div>
 
           {/* headline */}
-          <div style={{ maxWidth: 660, marginBottom: 56 }}>
-            <h1 style={{ fontSize: 'clamp(38px,6vw,68px)', fontWeight: 900, lineHeight: 1.0, letterSpacing: '-2.5px', marginBottom: 24 }}>
-              Veri var.<br />
-              <span style={{ color: '#2D8A87' }}>İçgörü yok.</span>
+          <div style={{ maxWidth: 720, marginBottom: 56 }}>
+            <h1 style={{ fontSize: 'clamp(32px,5.5vw,60px)', fontWeight: 900, lineHeight: 1.05, letterSpacing: '-2px', marginBottom: 24 }}>
+              İstanbul Sanayi Ekosistemi İçin<br />
+              <span style={{ color: '#2D8A87' }}>Yeni Bir Dayanıklılık Altyapısı.</span>
             </h1>
-            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', lineHeight: 1.8 }}>
-              İstanbul&apos;un <strong style={{ color: '#fff' }}>22.846</strong> sanayi tesisi kayıt altında. Afet direnci, iş sürekliliği ve kritik altyapı bağımlılıkları sistematik olarak ölçülmemiştir.
+            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', lineHeight: 1.85, maxWidth: 620 }}>
+              22.846 tesisin sektörel risk profili, öncelikli müdahale hedefleri ve iş sürekliliği kapasitesi — İSO&apos;nun kurumsal ağırlığı ile Omniversel&apos;in analitik motoru bir araya geliyor.
             </p>
           </div>
 
@@ -444,6 +444,65 @@ export default function IsoBrifingV3() {
               NATECH senaryosunda deprem + kimyasal yayılım + yangın üst üste geldiğinde etkilenen nüfus tahmini: <strong style={{ color: '#EF4444' }}>240.000+</strong>
             </p>
           </div>
+        </div>
+
+        <hr className="v3-hr" />
+
+        {/* ══ STRATEJİK GİRİŞ NOKTALARI ═══════════════════════════ */}
+        <div className="v3-label">Stratejik Fırsatlar</div>
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 10 }}>4 Stratejik Giriş Noktası</div>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, maxWidth: 600 }}>
+            İSO&apos;nun mevcut hizmet altyapısına entegre edilecek yeni değer katmanları
+          </p>
+        </div>
+        <div className="v3-g2" style={{ gap: 16 }}>
+          {[
+            {
+              num: '01', bc: '#2D8A87',
+              baslik: 'Kapasite Raporu 2.0',
+              desc: 'İSO kapasite raporu üretim kapasitesini ölçüyor. URI skoru dirençlilik kapasitesini ölçüyor. İkisi birleşince "İSO Dirençlilik Kapasite Raporu" — resmi nitelik kazanabilir yeni bir belge türü.',
+            },
+            {
+              num: '02', bc: '#3B82F6',
+              baslik: 'Mücbir Sebep Önleme Programı',
+              desc: 'İSO mücbir sebep ekspertizi afet sonrası veriyor. Omniversel afet öncesi riski ölçüyor. Üyelerinizin mücbir sebep yaşamasını önleyebilirsiniz — sigorta sektörü için net değer.',
+            },
+            {
+              num: '03', bc: '#F59E0B',
+              baslik: 'İSO 500 Dirençlilik Endeksi',
+              desc: 'Her yıl yayınlanan İSO 500 araştırmasına yeni modül: "İstanbul Sanayi Dirençlilik Endeksi." 279 büyük şirketin dirençlilik skorları — medya yansımasını katlayan, rakip odalardan farklılaştıran yıllık araştırma.',
+            },
+            {
+              num: '04', bc: '#8B5CF6',
+              baslik: 'Yatırım Teşvik Belgesi Bağlantısı',
+              desc: 'Sanayi Bakanlığı teşvik belgelerinde sürdürülebilirlik kriterleri artıyor. Afet dirençliliği kriteri eklenebilir. İSO bu savunuculuğu yaparak politika yapıcı konumuna taşınabilir.',
+            },
+          ].map(k => (
+            <div key={k.num} style={{
+              ...glass,
+              padding: '26px 22px',
+              borderLeft: `3px solid ${k.bc}`,
+              position: 'relative',
+              overflow: 'hidden',
+            }}>
+              {/* corner number */}
+              <div style={{
+                position: 'absolute', top: 18, right: 20,
+                fontSize: 28, fontWeight: 900, color: k.bc + '20',
+                fontFamily: 'var(--font-mono)', lineHeight: 1,
+                userSelect: 'none',
+              }}>{k.num}</div>
+
+              <div style={{ display: 'inline-block', fontSize: 9, fontWeight: 800, color: k.bc, background: k.bc + '18', border: `1px solid ${k.bc}40`, borderRadius: 20, padding: '2px 10px', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 14 }}>
+                {k.num} / 04
+              </div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 12, lineHeight: 1.25, paddingRight: 24 }}>{k.baslik}</div>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.75 }}>{k.desc}</p>
+
+              <div style={{ marginTop: 18, height: 1, background: `linear-gradient(90deg, ${k.bc}40 0%, transparent 100%)` }} />
+            </div>
+          ))}
         </div>
 
         <hr className="v3-hr" />
