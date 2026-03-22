@@ -9,6 +9,8 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 const PHOTO_BUCKET = 'facility-photos'
+// Signed URL geçerlilik süresi: 1 saat (saniye cinsinden)
+const SIGNED_URL_EXPIRY = 3600
 
 interface Facility {
   id: string
@@ -16,12 +18,16 @@ interface Facility {
   type: string
   city: string
   status?: string
+  // DB'de artık storage path saklanıyor (tam URL değil)
+  // örn: "abc123-facility-id/cover.jpg"
   photo_url?: string | null
   tenant_name?: string
 }
 
 export default function TesisAgi() {
   const [facilities, setFacilities] = useState<Facility[]>([])
+  // Signed URL cache: facility.id → signed URL string
+  const [signedUrls, setSignedUrls] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
 
   // Form state
@@ -37,10 +43,34 @@ export default function TesisAgi() {
   const [surukleniyorMu, setSurukleniyorMu] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Signed URL'leri toplu oluştur
+  const signedUrlOlustur = async (tesisler: Facility[]) => {
+    const fotoluTesisler = tesisler.filter(f => f.photo_url)
+    if (fotoluTesisler.length === 0) return
+
+    const urlMap: Record<string, string> = {}
+    await Promise.all(
+      fotoluTesisler.map(async fac => {
+        const { data, error } = await supabase.storage
+          .from(PHOTO_BUCKET)
+          .createSignedUrl(fac.photo_url!, SIGNED_URL_EXPIRY)
+        if (!error && data?.signedUrl) {
+          urlMap[fac.id] = data.signedUrl
+        }
+      })
+    )
+    setSignedUrls(prev => ({ ...prev, ...urlMap }))
+  }
+
   const fetchFacilities = async () => {
     setLoading(true)
-    const { data } = await supabase.from('facilities').select('*').order('created_at', { ascending: false })
-    setFacilities((data || []) as Facility[])
+    const { data } = await supabase
+      .from('facilities')
+      .select('*')
+      .order('created_at', { ascending: false })
+    const liste = (data || []) as Facility[]
+    setFacilities(liste)
+    await signedUrlOlustur(liste)
     setLoading(false)
   }
 
@@ -63,7 +93,9 @@ export default function TesisAgi() {
 
   const fotoKaldir = () => { setFotoFile(null); setFotoOnizleme(null) }
 
-  // Supabase Storage'a yükle, public URL döndür
+  // Supabase Storage'a yükle.
+  // Private bucket: publicUrl yerine storage PATH döndür.
+  // DB'ye path kaydedilir; gösterim sırasında signed URL oluşturulur.
   const fotoYukle = async (facilityId: string): Promise<string | null> => {
     if (!fotoFile) return null
     setFotoYukleniyor(true)
@@ -74,16 +106,19 @@ export default function TesisAgi() {
       .from(PHOTO_BUCKET)
       .upload(dosyaYolu, fotoFile, { upsert: true, contentType: fotoFile.type })
 
-    if (error) { console.error('Fotoğraf yükleme hatası:', error); setFotoYukleniyor(false); return null }
+    if (error) {
+      console.error('Fotoğraf yükleme hatası:', error)
+      setFotoYukleniyor(false)
+      return null
+    }
 
-    const { data: { publicUrl } } = supabase.storage.from(PHOTO_BUCKET).getPublicUrl(dosyaYolu)
+    // Yükleme başarılı → path döndür (tam URL değil)
     setFotoYukleniyor(false)
-    return publicUrl
+    return dosyaYolu
   }
 
   const handleAddFacility = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Önce tesis oluştur
     const { data: yeniTesis, error } = await supabase
       .from('facilities')
       .insert([{ tenant_name: 'Akbank A.Ş.', name, type, city }])
@@ -92,11 +127,10 @@ export default function TesisAgi() {
 
     if (error || !yeniTesis) return
 
-    // Fotoğraf varsa yükle ve URL'i kaydet
     if (fotoFile) {
-      const url = await fotoYukle(yeniTesis.id)
-      if (url) {
-        await supabase.from('facilities').update({ photo_url: url }).eq('id', yeniTesis.id)
+      const path = await fotoYukle(yeniTesis.id)
+      if (path) {
+        await supabase.from('facilities').update({ photo_url: path }).eq('id', yeniTesis.id)
       }
     }
 
@@ -200,35 +234,39 @@ export default function TesisAgi() {
             <p className="text-sm">Risk analizi yapabilmek için yukarıdan yeni bir tesis ekleyin.</p>
           </div>
         ) : (
-          facilities.map(fac => (
-            <div key={fac.id} className="bg-white rounded-2xl border border-slate-200 hover:shadow-md transition-all hover:border-blue-200 group cursor-pointer overflow-hidden">
-              {/* Tesis fotoğrafı */}
-              {fac.photo_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={fac.photo_url} alt={fac.name} className="w-full h-36 object-cover" />
-              ) : (
-                <div className="w-full h-36 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
-                  <Building2 className="w-10 h-10 text-slate-300" />
-                </div>
-              )}
-
-              <div className="p-5">
-                <div className="flex justify-between items-start mb-3">
-                  <div className="bg-slate-50 p-2.5 rounded-xl group-hover:bg-blue-50 transition-colors">
-                    {getIcon(fac.type)}
+          facilities.map(fac => {
+            // Signed URL varsa göster; yoksa placeholder
+            const gorselUrl = signedUrls[fac.id] ?? null
+            return (
+              <div key={fac.id} className="bg-white rounded-2xl border border-slate-200 hover:shadow-md transition-all hover:border-blue-200 group cursor-pointer overflow-hidden">
+                {/* Tesis fotoğrafı — signed URL ile */}
+                {gorselUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={gorselUrl} alt={fac.name} className="w-full h-36 object-cover" />
+                ) : (
+                  <div className="w-full h-36 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+                    <Building2 className="w-10 h-10 text-slate-300" />
                   </div>
-                  <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                    {fac.status ?? 'Aktif'}
-                  </span>
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-1">{fac.name}</h3>
-                <p className="text-sm font-semibold text-blue-600 mb-3">{fac.type}</p>
-                <div className="flex items-center gap-2 text-slate-500 text-sm pt-3 border-t border-slate-100">
-                  <MapPin className="w-4 h-4" /> {fac.city}
+                )}
+
+                <div className="p-5">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="bg-slate-50 p-2.5 rounded-xl group-hover:bg-blue-50 transition-colors">
+                      {getIcon(fac.type)}
+                    </div>
+                    <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                      {fac.status ?? 'Aktif'}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-1">{fac.name}</h3>
+                  <p className="text-sm font-semibold text-blue-600 mb-3">{fac.type}</p>
+                  <div className="flex items-center gap-2 text-slate-500 text-sm pt-3 border-t border-slate-100">
+                    <MapPin className="w-4 h-4" /> {fac.city}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            )
+          })
         )}
       </div>
     </div>

@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "framework": "nextjs",
+  "buildCommand": "next build",
+  "devCommand": "next dev",
+  "installCommand": "npm install",
+
+  "env": {
+    "NEXT_PUBLIC_APP_ENV": "staging",
+    "NEXT_PUBLIC_SUPABASE_URL":      "@supabase_staging_url",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase_staging_anon_key"
+  },
+
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_APP_ENV": "staging"
+    }
+  },
+
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag",           "value": "noindex, nofollow" },
+        { "key": "X-Content-Type-Options", "value": "nosniff"           },
+        { "key": "X-Frame-Options",        "value": "DENY"              }
+      ]
+    }
+  ],
+
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://omniversel-risk-engine-staging.up.railway.app/api/:path*"
+    }
+  ]
+}
