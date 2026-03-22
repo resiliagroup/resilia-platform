@@ -2,9 +2,12 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
+import { Plus_Jakarta_Sans } from 'next/font/google'
 
-const C ={ navy950: '#060D1A', navy900: '#0A1628', teal: '#2D8A87', tealHov: '#3BA8A5', white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B', border: '#1E3A5F' }
-const F = "'Plus Jakarta Sans', sans-serif"
+const font = Plus_Jakarta_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'] })
+
+const C = { navy950: '#060D1A', navy900: '#0A1628', teal: '#2D8A87', tealHov: '#3BA8A5', white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B', border: '#1E3A5F' }
+const F = font.style.fontFamily
 
 export default function LoginPage() {
   const router = useRouter()
@@ -45,8 +48,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', fontFamily: F }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}a{text-decoration:none;color:inherit}::placeholder{color:#475569}`}</style>
+    <div className={font.className} style={{ minHeight: '100vh', display: 'flex', fontFamily: F }}>
+      <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}a{text-decoration:none;color:inherit}::placeholder{color:#475569}`}</style>
 
       {/* Left column */}
       <div style={{ flex: 1, background: C.navy900, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', padding: '48px 64px' }}>
