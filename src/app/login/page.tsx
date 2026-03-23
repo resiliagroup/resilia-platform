@@ -26,7 +26,7 @@ function LoginForm() {
       setLoading(false)
     } else {
       const next = searchParams.get('next') || '/hub'
-      router.replace(next)
+      window.location.href = next
     }
   }
 
