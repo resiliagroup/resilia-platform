@@ -47,11 +47,7 @@ export default function LoginPage() {
       <style>{`
         *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
         ::placeholder { color: #2A4266; }
-        .login-container {
-          display: flex;
-          min-height: 100vh;
-          background: #0A1628;
-        }
+        .login-wrap { display: flex; min-height: 100vh; background: #0A1628; }
         .login-left {
           width: 60%;
           background: #060D1A;
@@ -73,12 +69,8 @@ export default function LoginPage() {
           max-width: 360px;
         }
         @media (max-width: 768px) {
-          .login-container {
-            flex-direction: column;
-          }
-          .login-left {
-            display: none;
-          }
+          .login-wrap { flex-direction: column; }
+          .login-left { display: none; }
           .login-right {
             width: 100%;
             min-height: 100vh;
@@ -88,9 +80,10 @@ export default function LoginPage() {
             justify-content: center;
           }
         }
+        @media (min-width: 769px) { .mobile-logo { display: none !important; } }
       `}</style>
 
-      <div className="login-container">
+      <div className="login-wrap">
 
       {/* ── Left panel 60% ── */}
       <div className="login-left">
@@ -163,9 +156,9 @@ export default function LoginPage() {
 
         <div className="login-form-box">
 
-          <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <div className="mobile-logo" style={{ textAlign: 'center', marginBottom: 32 }}>
             <a href="/" style={{ textDecoration: 'none' }}>
-              <div style={{ color: '#fff', fontWeight: 800, fontSize: 24, letterSpacing: 2 }}>OMNIVERSEL</div>
+              <div style={{ color: '#fff', fontWeight: 800, fontSize: 22, letterSpacing: 2 }}>OMNIVERSEL</div>
               <div style={{ color: '#2D8A87', fontSize: 12, marginTop: 4 }}>Urban Resilience Platform</div>
             </a>
           </div>
