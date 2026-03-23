@@ -21,7 +21,7 @@ export default function LoginPage() {
     )
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
-      setError('E-posta veya şifre hatalı.')
+      setError('Invalid email or password.')
       setLoading(false)
     } else {
       window.location.replace('/hub')
@@ -53,15 +53,15 @@ export default function LoginPage() {
             Enterprise Resilience Platform
           </div>
           <div style={{fontSize:'clamp(24px,3.5vw,42px)',fontWeight:800,lineHeight:1.12,color:'#fff',marginBottom:16}}>
-            İstanbul Sanayi Ekosistemi İçin<br/>
-            <span style={{color:'#2D8A87'}}>Yeni Bir Dirençlilik</span><br/>
-            Altyapısı.
+            <span>Quantify Risk.</span><br/>
+            <span style={{color:'#2D8A87'}}>Ensure Continuity.</span><br/>
+            <span>Manage Crises.</span>
           </div>
           <div style={{fontSize:14,color:'#64748B',maxWidth:480,lineHeight:1.7,marginBottom:40}}>
-            22.846 tesisin sektörel risk profili, öncelikli müdahale hedefleri ve iş sürekliliği kapasitesi — tek platformda.
+            An integrated platform for organizational resilience — disaster risk assessment, business continuity and crisis management in one workspace.
           </div>
           <div style={{display:'flex',flexDirection:'column',gap:12}}>
-            {['omniRISK — Tesis bazlı URI skorlama ve NATECH analizi','omniIMPACT — BDDK İSEDES uyumlu iş etki analizi','omniPLAN — ISO 22301 iş sürekliliği yönetimi','omniAUDIT — BDDK İklim Rehberi ve Basel IV uyum'].map(item => (
+            {['omniRISK — Facility-level URI scoring with NATECH analysis','omniIMPACT — Business Impact Analysis aligned with BDDK ISEDES','omniPLAN — ISO 22301 compliant BCP scenario management','omniAUDIT — BDDK Climate Guide & Basel IV compliance tracking'].map(item => (
               <div key={item} style={{display:'flex',alignItems:'center',gap:10,fontSize:13,color:'#94A3B8'}}>
                 <div style={{width:6,height:6,borderRadius:'50%',background:'#2D8A87',flexShrink:0}}></div>
                 {item}
@@ -79,22 +79,22 @@ export default function LoginPage() {
                 <div style={{color:'#2D8A87',fontSize:12,marginTop:4}}>Urban Resilience Platform</div>
               </a>
             </div>
-            <div style={{fontSize:18,fontWeight:700,color:'#fff',marginBottom:4}}>Platform Girişi</div>
-            <div style={{fontSize:13,color:'#64748B',marginBottom:28}}>Kurumsal hesabınızla giriş yapın</div>
+            <div style={{fontSize:18,fontWeight:700,color:'#fff',marginBottom:4}}>Platform Access</div>
+            <div style={{fontSize:13,color:'#64748B',marginBottom:28}}>Sign in to your workspace</div>
             <form onSubmit={handleLogin}>
               <div style={{marginBottom:16}}>
-                <label style={{display:'block',fontSize:11,color:'#64748B',marginBottom:6,letterSpacing:1}}>E-POSTA</label>
+                <label style={{display:'block',fontSize:11,color:'#64748B',marginBottom:6,letterSpacing:1}}>WORK EMAIL</label>
                 <input
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="ornek@kurum.com"
+                  placeholder="you@organization.com"
                   required
                   style={{width:'100%',background:'#060D1A',border:'1px solid #1E3A5F',borderRadius:10,padding:'12px 14px',color:'#fff',fontSize:14,outline:'none',boxSizing:'border-box'}}
                 />
               </div>
               <div style={{marginBottom:24}}>
-                <label style={{display:'block',fontSize:11,color:'#64748B',marginBottom:6,letterSpacing:1}}>ŞİFRE</label>
+                <label style={{display:'block',fontSize:11,color:'#64748B',marginBottom:6,letterSpacing:1}}>PASSWORD</label>
                 <input
                   type="password"
                   value={password}
@@ -110,7 +110,7 @@ export default function LoginPage() {
                 disabled={loading}
                 style={{width:'100%',background:'#2D8A87',border:'none',borderRadius:10,padding:'13px',color:'#fff',fontSize:15,fontWeight:600,cursor:'pointer'}}
               >
-                {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+                {loading ? 'Signing in...' : 'Sign In'}
               </button>
             </form>
             <div style={{textAlign:'center',marginTop:24,fontSize:12,color:'#334155'}}>
