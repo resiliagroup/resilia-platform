@@ -1,15 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -21,10 +22,11 @@ export default function LoginPage() {
     )
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
-      setError('Invalid email or password.')
+      setError('Geçersiz e-posta veya şifre.')
       setLoading(false)
     } else {
-      window.location.replace('/hub')
+      const next = searchParams.get('next') || '/hub'
+      router.replace(next)
     }
   }
 
@@ -120,5 +122,13 @@ export default function LoginPage() {
         </div>
       </div>
     </>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }

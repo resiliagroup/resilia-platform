@@ -1,10 +1,47 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
+
+const PROTECTED = ['/hub', '/uzman', '/dashboard', '/eoc-dashboard', '/omni-dashboard',
+  '/board', '/oda', '/form', '/harita', '/tesis-agi', '/gecmis-analizler',
+  '/sistem-ayarlari', '/settings', '/natech-simulator', '/hfe-motoru',
+  '/ai-analiz', '/near-miss', '/omnicrisis', '/omniplan', '/beylikduzu-komuta',
+  '/ygg-pano', '/omni-sprint']
 
 export async function middleware(request: NextRequest) {
-  return NextResponse.next()
+  const { pathname } = request.nextUrl
+
+  const isProtected = PROTECTED.some(p => pathname === p || pathname.startsWith(p + '/'))
+  if (!isProtected) return NextResponse.next()
+
+  const response = NextResponse.next()
+
+  const supabase = createServerClient(
+    'https://gqguwgbopgnpwzjwcexl.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzOTk4MzMsImV4cCI6MjA4ODk3NTgzM30.ZIFmmiGsB1rUAojvSG8uTfcknZi6LoXgrgApCL-e550',
+    {
+      cookies: {
+        getAll() { return request.cookies.getAll() },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options)
+          })
+        },
+      },
+    }
+  )
+
+  const { data: { session } } = await supabase.auth.getSession()
+  console.log('AUTH CHECK:', pathname, '→', session ? 'GEÇTİ' : 'YÖNLENDİR')
+
+  if (!session) {
+    const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('next', pathname)
+    return NextResponse.redirect(loginUrl)
+  }
+
+  return response
 }
 
 export const config = {
-  matcher: []
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/).*)'],
 }
