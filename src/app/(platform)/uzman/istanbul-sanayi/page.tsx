@@ -1,6 +1,10 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
 import dynamic from 'next/dynamic'
+
+const IstanbulHarita = dynamic(() => import('./IstanbulHarita'), { ssr: false, loading: () => (
+  <div style={{ height: 520, display:'flex', alignItems:'center', justifyContent:'center', color:'#64748B' }}>Harita yükleniyor...</div>
+) })
 import { createClient } from '@supabase/supabase-js'
 import {
   AlertTriangle, Building2, Users, MapPin, Activity, Shield,
@@ -626,28 +630,8 @@ function TabSektor() {
 function TabHarita() {
   return (
     <Card>
-      <SectionTitle icon={<MapPin size={14}/>} title="İstanbul Sanayi Tesis Haritası" sub="Leaflet CBS — Fay hatları + URI risk renklendirmesi"/>
-      <div style={{ height: 480, background: C.panel, borderRadius: 8, border:`1px solid ${C.border}`, display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap: 12 }}>
-        <MapPin size={40} color={C.dim}/>
-        <div style={{ fontSize: 14, fontWeight: 600, color: C.muted }}>Harita modülü</div>
-        <div style={{ fontSize: 12, color: C.dim, textAlign:'center', maxWidth: 320 }}>
-          Leaflet CBS haritası için <code style={{ background: C.border, padding:'2px 6px', borderRadius: 4, fontSize: 11 }}>CBSHarita.tsx</code> bileşenini bu sekmeye ekleyin.<br/>
-          Beylikdüzü-komuta'daki yapıyı kullanın.
-        </div>
-        <div style={{ display:'flex', gap: 8, marginTop: 8 }}>
-          {[
-            { label:'Kritik (URI ≥ 60)', color: C.red },
-            { label:'Yüksek (40-60)',    color: C.orange },
-            { label:'Orta (20-40)',      color: C.amber },
-            { label:'Düşük (< 20)',      color: C.green },
-          ].map(l => (
-            <div key={l.label} style={{ display:'flex', alignItems:'center', gap: 4, fontSize: 11, color: C.muted }}>
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: l.color }}/>
-              {l.label}
-            </div>
-          ))}
-        </div>
-      </div>
+      <SectionTitle icon={<MapPin size={14}/>} title="İstanbul Sanayi Tesis Haritası" sub="Leaflet CBS — URI risk renklendirmesi + NATECH bayrakları"/>
+      <IstanbulHarita />
     </Card>
   )
 }
