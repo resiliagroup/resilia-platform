@@ -1,4 +1,3 @@
-import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 const PROTECTED = ['/hub', '/uzman', '/dashboard', '/eoc-dashboard', '/omni-dashboard',
@@ -7,38 +6,34 @@ const PROTECTED = ['/hub', '/uzman', '/dashboard', '/eoc-dashboard', '/omni-dash
   '/ai-analiz', '/near-miss', '/omnicrisis', '/omniplan', '/beylikduzu-komuta',
   '/ygg-pano', '/omni-sprint']
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const isProtected = PROTECTED.some(p => pathname === p || pathname.startsWith(p + '/'))
   if (!isProtected) return NextResponse.next()
 
-  const response = NextResponse.next()
+  const authCookie = request.cookies.get('sb-gqguwgbopgnpwzjwcexl-auth-token')
 
-  const supabase = createServerClient(
-    'https://gqguwgbopgnpwzjwcexl.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzOTk4MzMsImV4cCI6MjA4ODk3NTgzM30.ZIFmmiGsB1rUAojvSG8uTfcknZi6LoXgrgApCL-e550',
-    {
-      cookies: {
-        getAll() { return request.cookies.getAll() },
-        setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, options as Parameters<typeof response.cookies.set>[2])
-          })
-        },
-      },
-    }
-  )
-
-  const { data: { session } } = await supabase.auth.getSession()
-
-  if (!session) {
+  if (!authCookie?.value) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('next', pathname)
     return NextResponse.redirect(loginUrl)
   }
 
-  return response
+  try {
+    const parsed = JSON.parse(decodeURIComponent(authCookie.value))
+    if (!parsed.access_token || parsed.expires_at < Math.floor(Date.now() / 1000)) {
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('next', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+  } catch {
+    const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('next', pathname)
+    return NextResponse.redirect(loginUrl)
+  }
+
+  return NextResponse.next()
 }
 
 export const config = {
