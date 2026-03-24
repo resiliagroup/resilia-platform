@@ -55,17 +55,16 @@ function LoginForm() {
             <span>Manage Crises.</span>
           </div>
           <div style={{fontSize:14,color:'#64748B',maxWidth:480,lineHeight:1.7,marginBottom:40}}>
-            An integrated platform for organizational resilience — disaster risk assessment, business continuity and crisis management in one workspace.
+            An integrated platform for organizational resilience.
           </div>
           <div style={{display:'flex',flexDirection:'column',gap:12}}>
-            {['omniRISK — Facility-level URI scoring with NATECH analysis','omniIMPACT — Business Impact Analysis aligned with BDDK ISEDES','omniPLAN — ISO 22301 compliant BCP scenario management','omniAUDIT — BDDK Climate Guide & Basel IV compliance tracking'].map(item=>(
+            {['omniRISK — Facility-level URI scoring with NATECH analysis','omniIMPACT — BIA aligned with BDDK ISEDES','omniPLAN — ISO 22301 compliant BCP management','omniAUDIT — BDDK Climate Guide & Basel IV tracking'].map(item=>(
               <div key={item} style={{display:'flex',alignItems:'center',gap:10,fontSize:13,color:'#94A3B8'}}>
                 <div style={{width:6,height:6,borderRadius:'50%',background:'#2D8A87',flexShrink:0}}></div>
                 {item}
               </div>
             ))}
           </div>
-          <div style={{marginTop:48,fontSize:11,color:'#334155'}}>ISO 22301 Aligned · FEMA Core Capabilities · ITU AYM Validated</div>
         </div>
         <div className="lp-right">
           <div className="lp-form">
@@ -77,21 +76,21 @@ function LoginForm() {
             <div style={{fontSize:13,color:'#64748B',marginBottom:28}}>Sign in to your workspace</div>
             <div style={{marginBottom:16}}>
               <label style={{display:'block',fontSize:11,color:'#64748B',marginBottom:6,letterSpacing:1}}>WORK EMAIL</label>
-              <input id="email" name="email" type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)}
+              <input type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)}
                 onKeyDown={e=>e.key==='Enter'&&handleLogin()}
                 placeholder="you@organization.com"
                 style={{width:'100%',background:'#060D1A',border:'1px solid #1E3A5F',borderRadius:10,padding:'12px 14px',color:'#fff',fontSize:14,outline:'none',boxSizing:'border-box'}}/>
             </div>
             <div style={{marginBottom:24}}>
               <label style={{display:'block',fontSize:11,color:'#64748B',marginBottom:6,letterSpacing:1}}>PASSWORD</label>
-              <input id="password" name="password" type="password" autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)}
+              <input type="password" autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)}
                 onKeyDown={e=>e.key==='Enter'&&handleLogin()}
                 placeholder="••••••••"
                 style={{width:'100%',background:'#060D1A',border:'1px solid #1E3A5F',borderRadius:10,padding:'12px 14px',color:'#fff',fontSize:14,outline:'none',boxSizing:'border-box'}}/>
             </div>
             {error&&<div style={{color:'#EF4444',fontSize:13,marginBottom:16,padding:'10px 12px',background:'rgba(239,68,68,0.08)',borderRadius:8}}>{error}</div>}
             <button onClick={handleLogin} disabled={loading}
-              style={{width:'100%',background:loading?'#1a5c5a':'#2D8A87',border:'none',borderRadius:10,padding:'13px',color:'#fff',fontSize:15,fontWeight:600,cursor:loading?'not-allowed':'pointer'}}>
+              style={{width:'100%',background:'#2D8A87',border:'none',borderRadius:10,padding:'13px',color:'#fff',fontSize:15,fontWeight:600,cursor:'pointer'}}>
               {loading?'Signing in...':'Sign In'}
             </button>
             <div style={{textAlign:'center',marginTop:24,fontSize:12,color:'#334155'}}>
