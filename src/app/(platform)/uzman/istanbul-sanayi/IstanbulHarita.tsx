@@ -315,7 +315,7 @@ function MarkerWithIcon({ lat, lng, renk, natech, tesis, skor, seviye }: {
 }) {
   const icon = markerIcon(renk, natech)
   return (
-    <L.Marker position={[lat, lng]} icon={icon}>
+    <Marker position={[lat, lng]} icon={icon}>
       <Popup>
         <div style={{ minWidth: 200, fontFamily: 'sans-serif' }}>
           <p style={{ fontWeight: 700, fontSize: 13, marginBottom: 4, lineHeight: 1.3 }}>{tesis.name}</p>
@@ -347,6 +347,6 @@ function MarkerWithIcon({ lat, lng, renk, natech, tesis, skor, seviye }: {
           )}
         </div>
       </Popup>
-    </L.Marker>
+    </Marker>
   )
 }
