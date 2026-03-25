@@ -68,7 +68,7 @@ function markerIcon(renk: string, natech: boolean) {
   })
 }
 
-function createClusterIcon(cluster: L.MarkerCluster) {
+function createClusterIcon(cluster: { getChildCount: () => number }) {
   const count = cluster.getChildCount()
   const size = count > 100 ? 44 : count > 20 ? 36 : 28
   return L.divIcon({
