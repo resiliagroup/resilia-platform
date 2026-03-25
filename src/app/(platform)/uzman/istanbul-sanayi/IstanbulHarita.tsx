@@ -1,7 +1,8 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
-import MarkerClusterGroup from 'react-leaflet-cluster'
+import MarkerClusterGroup from 'react-leaflet-markercluster'
+import 'react-leaflet-markercluster/dist/styles.min.css'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { createClient } from '@supabase/supabase-js'
@@ -195,7 +196,7 @@ export default function IstanbulHarita() {
             chunkInterval={100}
             chunkDelay={50}
             maxClusterRadius={60}
-            iconCreateFunction={createClusterIcon as unknown as (cluster: L.MarkerCluster) => L.Icon}
+            iconCreateFunction={createClusterIcon}
             showCoverageOnHover={false}
           >
             {gorunen.map(t => {
