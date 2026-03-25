@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Popup, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import 'react-leaflet-markercluster/dist/styles.min.css'
+
 import { createClient } from '@supabase/supabase-js'
 
 const sb = createClient(
