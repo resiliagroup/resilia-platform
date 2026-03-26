@@ -7,6 +7,18 @@ const sb = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzM5OTgzMywiZXhwIjoyMDg4OTc1ODMzfQ.Ku-JRx8JFH5a3SIj7sGP_Dy_nM89NMMW34gPyxVO_qI',
 )
 
+// NATECH riski taşıyan NACE kodları (Seveso / RAPID-N uyumlu)
+const NATECH_NACE = new Set([
+  '19','20','21','24','38','08','09','35',  // petrokimya, kimya, ilaç, maden, atık, enerji
+  '29','30','25',                            // taşıt, savunma, metal ürünleri
+  '52',                                      // depolama (tehlikeli madde)
+])
+function isNatech(nace: string | null | undefined, hazmat?: string, hazmatFlag?: boolean): boolean {
+  if (hazmat || hazmatFlag) return true
+  if (!nace) return false
+  return NATECH_NACE.has(String(nace).slice(0, 2))
+}
+
 function naceUriSkor(nace: string | null | undefined, calisan: number | null, binaYasi: number | null): number {
   if (!nace) return 15
   const n2 = String(nace).slice(0, 2)
@@ -159,7 +171,7 @@ export default function IstanbulHarita() {
       const skor = naceUriSkor(t.extra_data?.nace_kodu as string, t.employee_count, t.building_age)
       const sev = seviye(skor)
       const renk = RISK_RENK[sev]
-      const natech = !!(t.extra_data?.tehlikeli_madde_turu || t.extra_data?.hazmat_flag)
+      const natech = isNatech(t.extra_data?.nace_kodu as string, t.extra_data?.tehlikeli_madde_turu as string, t.extra_data?.hazmat_flag as boolean)
 
       // Filtre
       if (filtre === 'natech' && !natech) return
@@ -203,7 +215,7 @@ export default function IstanbulHarita() {
     high:     tesisler.filter(t => seviye(naceUriSkor(t.extra_data?.nace_kodu as string, t.employee_count, t.building_age)) === 'high').length,
     medium:   tesisler.filter(t => seviye(naceUriSkor(t.extra_data?.nace_kodu as string, t.employee_count, t.building_age)) === 'medium').length,
     low:      tesisler.filter(t => seviye(naceUriSkor(t.extra_data?.nace_kodu as string, t.employee_count, t.building_age)) === 'low').length,
-    natech:   tesisler.filter(t => !!(t.extra_data?.tehlikeli_madde_turu || t.extra_data?.hazmat_flag)).length,
+    natech:   tesisler.filter(t => isNatech(t.extra_data?.nace_kodu as string, t.extra_data?.tehlikeli_madde_turu as string, t.extra_data?.hazmat_flag as boolean)).length,
   }
 
   return (
