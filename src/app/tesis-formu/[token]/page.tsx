@@ -1,0 +1,480 @@
+'use client'
+import { useState, useEffect } from 'react'
+import { useParams } from 'next/navigation'
+import { createClient } from '@supabase/supabase-js'
+import {
+  TESIS_ENVANTER, DESTEK_KAPASITESI,
+  SORULAR_SANAYI, type SoruSanayi,
+  type TesisEnvanterAlani, type DestekKapasite,
+} from '@/lib/sorular-sanayi'
+
+const sb = createClient(
+  'https://gqguwgbopgnpwzjwcexl.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzM5OTgzMywiZXhwIjoyMDg4OTc1ODMzfQ.Ku-JRx8JFH5a3SIj7sGP_Dy_nM89NMMW34gPyxVO_qI',
+)
+
+const NAVY = '#0A1628'; const TEAL = '#009B8D'; const BORDER = '#E2E8F0'
+
+const TEHLIKE  = SORULAR_SANAYI.filter(s => s.bolum === 'TEHLİKE')
+const KIRILGAN = SORULAR_SANAYI.filter(s => s.bolum === 'KIRILGANLIK')
+const KAPASITE = SORULAR_SANAYI.filter(s => s.bolum === 'KAPASİTE' && s.boyut !== 'HRO')
+const HRO      = SORULAR_SANAYI.filter(s => s.boyut === 'HRO')
+
+const ADIM_ETIKET = [
+  'Tesis Kimlik & Konum',
+  'Tehlike Analizi',
+  'Kırılganlık',
+  'Kapasite & Yönetim',
+  'HRO Olgunluğu',
+  'Destek Kapasitesi',
+  'Sonuç & URI Skoru',
+]
+
+// ─── URI hesaplama ────────────────────────────────────────────────────────────
+function hesaplaUri(puanlar: Record<string, number>): number {
+  let H = 0, Hw = 0, F = 0, Fw = 0, C = 0, Cw = 0
+  SORULAR_SANAYI.forEach(s => {
+    const p = puanlar[s.kod] ?? 5
+    if (s.boyut === 'H')                        { H += p * s.agirlik; Hw += s.agirlik }
+    else if (s.boyut === 'F' || s.boyut === 'E') { F += p * s.agirlik; Fw += s.agirlik }
+    else if (s.boyut === 'C')                   { C += p * s.agirlik; Cw += s.agirlik }
+  })
+  const hN = Hw ? H / Hw / 10 : 0.5
+  const fN = Fw ? F / Fw / 10 : 0.5
+  const cN = Cw ? C / Cw / 10 : 0.5
+  return Math.round(Math.max(0, Math.min(100,
+    (hN * 0.35 + fN * 0.35) * 100 * 0.7 + (1 - cN) * 100 * 0.3
+  )))
+}
+
+function uriRenk(uri: number): string {
+  return uri < 30 ? '#22C55E' : uri < 50 ? '#EAB308' : uri < 70 ? '#F97316' : '#EF4444'
+}
+function uriEtiket(uri: number): string {
+  return uri < 30 ? 'Düşük Risk' : uri < 50 ? 'Orta Risk' : uri < 70 ? 'Yüksek Risk' : 'Kritik Risk'
+}
+
+// ─── Soru Kartı (ağırlık/kritik gösterilmez) ─────────────────────────────────
+function SoruKarti({ soru, puan, onDegis }: { soru: SoruSanayi; puan: number; onDegis: (v: number) => void }) {
+  const secenekler = soru.rehber
+    ? soru.rehber.map((label, i) => ({ label, puan: [1, 3, 6, 10][i] ?? i * 3 + 1 }))
+    : [1, 3, 6, 10].map((p, i) => ({ label: ['Çok Düşük', 'Düşük', 'Orta', 'Yüksek'][i], puan: p }))
+
+  return (
+    <div style={{ background: 'white', border: `1px solid ${BORDER}`, borderRadius: 10, padding: '16px 20px', marginBottom: 10 }}>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', marginBottom: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, color: 'white', background: soru.boyut === 'H' ? '#EF4444' : soru.boyut === 'C' || soru.boyut === 'HRO' ? '#10B981' : '#F97316', padding: '2px 8px', borderRadius: 4, flexShrink: 0 }}>
+          {soru.kod}
+        </span>
+        {soru.natech_flag && (
+          <span style={{ fontSize: 10, color: '#7C3AED', background: '#F5F3FF', border: '1px solid #DDD6FE', padding: '1px 6px', borderRadius: 4, fontWeight: 600 }}>NATECH</span>
+        )}
+        <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.55, margin: 0 }}>{soru.soru}</p>
+      </div>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {secenekler.map(s => (
+          <button key={s.puan} onClick={() => onDegis(s.puan)}
+            style={{ fontSize: 12, padding: '6px 14px', borderRadius: 6, border: `1px solid ${puan === s.puan ? TEAL : BORDER}`, background: puan === s.puan ? '#EBF8F7' : 'white', color: puan === s.puan ? TEAL : '#6B7280', fontWeight: puan === s.puan ? 700 : 400, cursor: 'pointer', maxWidth: 280, textAlign: 'left' as const }}>
+            {s.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ─── Konum Bileşeni ───────────────────────────────────────────────────────────
+function KonumAlani({ lat, lng, onDegis }: { lat: string; lng: string; onDegis: (lat: string, lng: string) => void }) {
+  const [yukleniyor, setYukleniyor] = useState(false)
+  const [hata, setHata] = useState('')
+
+  const konumAl = () => {
+    if (!navigator.geolocation) { setHata('Tarayıcı konum desteklemiyor.'); return }
+    setYukleniyor(true); setHata('')
+    navigator.geolocation.getCurrentPosition(
+      pos => { onDegis(pos.coords.latitude.toFixed(6), pos.coords.longitude.toFixed(6)); setYukleniyor(false) },
+      () => { setHata('Konum alınamadı. Manuel girin.'); setYukleniyor(false) }
+    )
+  }
+
+  return (
+    <div>
+      <button type="button" onClick={konumAl} disabled={yukleniyor}
+        style={{ padding: '8px 18px', background: yukleniyor ? '#94A3B8' : TEAL, color: 'white', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: yukleniyor ? 'not-allowed' : 'pointer', marginBottom: 12 }}>
+        {yukleniyor ? '⏳ Konum alınıyor...' : '📍 Konumumu Al'}
+      </button>
+      <div style={{ display: 'flex', gap: 12 }}>
+        <div style={{ flex: 1 }}>
+          <label style={lbl}>Enlem (Lat)</label>
+          <input value={lat} onChange={e => onDegis(e.target.value, lng)} placeholder="örn. 41.015276"
+            style={inp} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <label style={lbl}>Boylam (Lng)</label>
+          <input value={lng} onChange={e => onDegis(lat, e.target.value)} placeholder="örn. 28.979530"
+            style={inp} />
+        </div>
+      </div>
+      {lat && lng && (
+        <a href={`https://www.google.com/maps?q=${lat},${lng}`} target="_blank" rel="noreferrer"
+          style={{ display: 'inline-block', marginTop: 8, fontSize: 12, color: TEAL, textDecoration: 'underline' }}>
+          🗺 Google Maps&apos;te doğrula
+        </a>
+      )}
+      {hata && <p style={{ color: '#EF4444', fontSize: 12, marginTop: 6 }}>{hata}</p>}
+    </div>
+  )
+}
+
+// ─── Envanter Alan Render ─────────────────────────────────────────────────────
+function EnvanterAlan({ alan, deger, onDegis }: {
+  alan: TesisEnvanterAlani
+  deger: unknown
+  onDegis: (v: unknown) => void
+}) {
+  if (alan.tip === 'koordinat') {
+    const [lat, lng] = Array.isArray(deger) ? deger as string[] : ['', '']
+    return <KonumAlani lat={lat || ''} lng={lng || ''} onDegis={(la, ln) => onDegis([la, ln])} />
+  }
+  if (alan.tip === 'checkbox') {
+    return (
+      <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+        <input type="checkbox" checked={!!deger} onChange={e => onDegis(e.target.checked)}
+          style={{ width: 16, height: 16, accentColor: TEAL }} />
+        <span style={{ fontSize: 13, color: '#374151' }}>Evet</span>
+      </label>
+    )
+  }
+  if (alan.tip === 'select' && alan.secenek) {
+    return (
+      <select value={(deger as string) || ''} onChange={e => onDegis(e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
+        <option value="">— Seçin —</option>
+        {alan.secenek.map(s => <option key={s} value={s}>{s}</option>)}
+      </select>
+    )
+  }
+  if (alan.tip === 'multiselect' && alan.secenek) {
+    const secili: string[] = Array.isArray(deger) ? deger as string[] : []
+    return (
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        {alan.secenek.map(s => {
+          const aktif = secili.includes(s)
+          return (
+            <button key={s} type="button"
+              onClick={() => onDegis(aktif ? secili.filter(x => x !== s) : [...secili, s])}
+              style={{ padding: '6px 14px', borderRadius: 6, border: `1px solid ${aktif ? TEAL : BORDER}`, background: aktif ? '#EBF8F7' : 'white', color: aktif ? TEAL : '#6B7280', fontSize: 12, fontWeight: aktif ? 700 : 400, cursor: 'pointer' }}>
+              {s}
+            </button>
+          )
+        })}
+      </div>
+    )
+  }
+  if (alan.tip === 'belge') {
+    const secim = (deger as string) || ''
+    return (
+      <div style={{ display: 'flex', gap: 8 }}>
+        {['Var', 'Yok', 'Tarih Yok'].map(s => (
+          <button key={s} type="button" onClick={() => onDegis(s)}
+            style={{ padding: '6px 16px', borderRadius: 6, border: `1px solid ${secim === s ? TEAL : BORDER}`, background: secim === s ? '#EBF8F7' : 'white', color: secim === s ? TEAL : '#6B7280', fontSize: 12, fontWeight: secim === s ? 700 : 400, cursor: 'pointer' }}>
+            {s}
+          </button>
+        ))}
+      </div>
+    )
+  }
+  return (
+    <input type={alan.tip === 'number' ? 'number' : 'text'}
+      value={(deger as string | number) || ''}
+      onChange={e => onDegis(alan.tip === 'number' ? Number(e.target.value) : e.target.value)}
+      placeholder={alan.aciklama || ''}
+      style={inp} />
+  )
+}
+
+// ─── Destek Kapasitesi Render ─────────────────────────────────────────────────
+function DestekAlan({ alan, deger, onDegis }: {
+  alan: DestekKapasite
+  deger: unknown
+  onDegis: (v: unknown) => void
+}) {
+  if (alan.tip === 'checkbox') {
+    return (
+      <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+        <input type="checkbox" checked={!!deger} onChange={e => onDegis(e.target.checked)}
+          style={{ width: 16, height: 16, accentColor: TEAL }} />
+        <span style={{ fontSize: 13, color: '#374151' }}>Evet</span>
+      </label>
+    )
+  }
+  if (alan.tip === 'select' && alan.secenek) {
+    return (
+      <select value={(deger as string) || ''} onChange={e => onDegis(e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
+        <option value="">— Seçin —</option>
+        {alan.secenek.map(s => <option key={s} value={s}>{s}</option>)}
+      </select>
+    )
+  }
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <input type="number" value={(deger as number) || ''} onChange={e => onDegis(Number(e.target.value))}
+        placeholder="0" style={{ ...inp, width: 100 }} />
+      {alan.birim && <span style={{ fontSize: 12, color: '#94A3B8' }}>{alan.birim}</span>}
+    </div>
+  )
+}
+
+// ─── Stil sabitleri ───────────────────────────────────────────────────────────
+const lbl: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }
+const inp: React.CSSProperties = { width: '100%', padding: '10px 14px', border: `1px solid ${BORDER}`, borderRadius: 8, fontSize: 14, outline: 'none', boxSizing: 'border-box', background: 'white' }
+
+// ─── ANA SAYFA ────────────────────────────────────────────────────────────────
+export default function TesisFormuPage() {
+  const params = useParams()
+  const token = params?.token as string ?? ''
+
+  const [adim, setAdim] = useState(0)
+  const [envanter, setEnvanter] = useState<Record<string, unknown>>({})
+  const [puanlar, setPuanlar] = useState<Record<string, number>>({})
+  const [destek, setDestek] = useState<Record<string, unknown>>({})
+  const [hata, setHata] = useState('')
+  const [gonderiyor, setGonderiyor] = useState(false)
+  const [gonderildi, setGonderildi] = useState(false)
+  const [uri, setUri] = useState(0)
+
+  useEffect(() => { if (adim === 6) setUri(hesaplaUri(puanlar)) }, [adim, puanlar])
+
+  const setEnv = (kod: string, val: unknown) => setEnvanter(e => ({ ...e, [kod]: val }))
+  const setPuan = (kod: string, val: number) => setPuanlar(p => ({ ...p, [kod]: val }))
+  const setDst = (kod: string, val: unknown) => setDestek(d => ({ ...d, [kod]: val }))
+
+  // Koordinat kontrolü (E12)
+  const koordinatOk = () => {
+    const koord = envanter['E12'] as string[] | undefined
+    return Array.isArray(koord) && koord[0] && koord[1]
+  }
+
+  const ileri = () => {
+    setHata('')
+    if (adim === 0) {
+      if (!envanter['E01']) { setHata('Firma adı zorunludur (E01).'); return }
+      if (!envanter['E03']) { setHata('NACE kodu zorunludur (E03).'); return }
+      if (!koordinatOk()) { setHata('Konum (enlem/boylam) zorunludur (E12).'); return }
+    }
+    setAdim(a => Math.min(6, a + 1))
+  }
+  const geri = () => { setHata(''); setAdim(a => Math.max(0, a - 1)) }
+
+  const gonder = async () => {
+    setGonderiyor(true); setHata('')
+    const sonUri = hesaplaUri(puanlar)
+    const koord = envanter['E12'] as string[]
+    try {
+      const { error } = await sb.from('iso_tesis_formlari').upsert({
+        token,
+        envanter,
+        puanlar,
+        destek,
+        uri_skoru: sonUri,
+        lat: parseFloat(koord?.[0] ?? '0'),
+        lng: parseFloat(koord?.[1] ?? '0'),
+        dolduran_ip: null,
+        gonderim_tarihi: new Date().toISOString(),
+      }, { onConflict: 'token' })
+      if (error) throw error
+      setUri(sonUri)
+      setGonderildi(true)
+    } catch {
+      setHata('Kaydedilemedi, lütfen tekrar deneyin.')
+    }
+    setGonderiyor(false)
+  }
+
+  const uriR = uriRenk(uri)
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#F8FAFC', fontFamily: "'DM Sans', sans-serif" }}>
+      {/* Header */}
+      <div style={{ background: NAVY, padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ color: TEAL, fontWeight: 800, fontSize: 15, letterSpacing: '-0.3px' }}>İSO × Omniversel</span>
+          <span style={{ color: '#334155', fontSize: 13 }}>—</span>
+          <span style={{ color: '#94A3B8', fontSize: 13 }}>Tesis Dayanıklılık Formu</span>
+        </div>
+        <span style={{ fontSize: 11, color: '#475569', background: '#0D1F3C', padding: '3px 10px', borderRadius: 20 }}>
+          Token: {token.slice(0, 8)}…
+        </span>
+      </div>
+
+      {/* Progress Bar */}
+      <div style={{ background: 'white', borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 760, margin: '0 auto', padding: '0 16px', overflowX: 'auto' }}>
+          <div style={{ display: 'flex', gap: 0, whiteSpace: 'nowrap' as const }}>
+            {ADIM_ETIKET.map((et, i) => (
+              <div key={i} style={{ padding: '12px 16px', fontSize: 11, fontWeight: i === adim ? 700 : 500, color: i === adim ? TEAL : i < adim ? '#64748B' : '#CBD5E1', borderBottom: i === adim ? `2px solid ${TEAL}` : '2px solid transparent', flexShrink: 0 }}>
+                {i < adim ? '✓ ' : `${i}. `}{et}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ height: 3, background: '#F1F5F9' }}>
+          <div style={{ height: '100%', background: TEAL, width: `${(adim / 6) * 100}%`, transition: 'width .3s' }} />
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 760, margin: '32px auto', padding: '0 16px 60px' }}>
+
+        {/* ── ADIM 0 — Tesis Kimlik & Konum ── */}
+        {adim === 0 && (
+          <div style={{ background: 'white', borderRadius: 12, border: `1px solid ${BORDER}`, padding: 28 }}>
+            <h2 style={{ fontSize: 17, fontWeight: 700, color: NAVY, marginBottom: 4 }}>Tesis Kimlik & Yapısal Envanter</h2>
+            <p style={{ fontSize: 12, color: '#94A3B8', marginBottom: 24 }}>Kalıcı tesis verisi — URI hesabına dahil değildir</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
+              {TESIS_ENVANTER.map(alan => (
+                <div key={alan.kod} style={alan.tip === 'koordinat' ? { gridColumn: '1 / -1' } : {}}>
+                  <label style={lbl}>
+                    {alan.label}
+                    {alan.zorunlu && <span style={{ color: '#EF4444', marginLeft: 2 }}>*</span>}
+                  </label>
+                  {alan.aciklama && alan.tip !== 'koordinat' && (
+                    <p style={{ fontSize: 11, color: '#94A3B8', marginBottom: 4 }}>{alan.aciklama}</p>
+                  )}
+                  <EnvanterAlan alan={alan} deger={envanter[alan.kod]} onDegis={v => setEnv(alan.kod, v)} />
+                </div>
+              ))}
+            </div>
+            {hata && <p style={{ color: '#EF4444', fontSize: 13, marginTop: 16 }}>{hata}</p>}
+            <div style={{ marginTop: 28, display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={ileri} style={{ padding: '11px 32px', background: TEAL, color: 'white', fontWeight: 700, fontSize: 14, border: 'none', borderRadius: 8, cursor: 'pointer' }}>
+                İleri →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── ADIM 1 — Tehlike ── */}
+        {adim === 1 && (
+          <div>
+            <div style={{ marginBottom: 16 }}>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: NAVY }}>Bölüm 1 — Tehlike Analizi</h2>
+              <p style={{ fontSize: 12, color: '#94A3B8' }}>AFAD AADY 2025 · NATECH · {TEHLIKE.length} soru</p>
+            </div>
+            {TEHLIKE.map(s => <SoruKarti key={s.kod} soru={s} puan={puanlar[s.kod] ?? 0} onDegis={v => setPuan(s.kod, v)} />)}
+            <NavButtons onGeri={geri} onIleri={ileri} />
+          </div>
+        )}
+
+        {/* ── ADIM 2 — Kırılganlık ── */}
+        {adim === 2 && (
+          <div>
+            <div style={{ marginBottom: 16 }}>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: NAVY }}>Bölüm 2 — Kırılganlık & Maruziyet</h2>
+              <p style={{ fontSize: 12, color: '#94A3B8' }}>Yapısal · Operasyonel · İnsan · {KIRILGAN.length} soru</p>
+            </div>
+            {KIRILGAN.map(s => <SoruKarti key={s.kod} soru={s} puan={puanlar[s.kod] ?? 0} onDegis={v => setPuan(s.kod, v)} />)}
+            <NavButtons onGeri={geri} onIleri={ileri} />
+          </div>
+        )}
+
+        {/* ── ADIM 3 — Kapasite ── */}
+        {adim === 3 && (
+          <div>
+            <div style={{ marginBottom: 16 }}>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: NAVY }}>Bölüm 3 — Kapasite & Yönetim</h2>
+              <p style={{ fontSize: 12, color: '#94A3B8' }}>ISO 22301 · AFAD AADY · {KAPASITE.length} soru</p>
+            </div>
+            {KAPASITE.map(s => <SoruKarti key={s.kod} soru={s} puan={puanlar[s.kod] ?? 0} onDegis={v => setPuan(s.kod, v)} />)}
+            <NavButtons onGeri={geri} onIleri={ileri} />
+          </div>
+        )}
+
+        {/* ── ADIM 4 — HRO ── */}
+        {adim === 4 && (
+          <div>
+            <div style={{ marginBottom: 16 }}>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: NAVY }}>Bölüm 4 — HRO Olgunluğu</h2>
+              <p style={{ fontSize: 12, color: '#94A3B8' }}>Yüksek Güvenilirlik Organizasyonu İlkeleri · {HRO.length} soru</p>
+            </div>
+            {HRO.map(s => <SoruKarti key={s.kod} soru={s} puan={puanlar[s.kod] ?? 0} onDegis={v => setPuan(s.kod, v)} />)}
+            <NavButtons onGeri={geri} onIleri={ileri} />
+          </div>
+        )}
+
+        {/* ── ADIM 5 — Destek Kapasitesi ── */}
+        {adim === 5 && (
+          <div>
+            <div style={{ background: 'white', borderRadius: 12, border: `1px solid ${BORDER}`, padding: 28 }}>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: NAVY, marginBottom: 4 }}>Bölüm 5 — Destek Kapasitesi</h2>
+              <p style={{ fontSize: 12, color: '#94A3B8', marginBottom: 24 }}>İSO Kaynak Havuzu & Afet Sonrası Müdahale Planlaması</p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
+                {DESTEK_KAPASITESI.map(alan => (
+                  <div key={alan.kod}>
+                    <label style={lbl}>{alan.label}</label>
+                    {alan.aciklama && <p style={{ fontSize: 11, color: '#94A3B8', marginBottom: 4 }}>{alan.aciklama}</p>}
+                    <DestekAlan alan={alan} deger={destek[alan.kod]} onDegis={v => setDst(alan.kod, v)} />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <NavButtons onGeri={geri} onIleri={ileri} ileriLabel="Sonuca Git →" />
+          </div>
+        )}
+
+        {/* ── ADIM 6 — Sonuç ── */}
+        {adim === 6 && (
+          <div>
+            <div style={{ background: 'white', borderRadius: 16, border: `1px solid ${BORDER}`, padding: 40, textAlign: 'center', marginBottom: 20 }}>
+              <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 6, letterSpacing: 1, textTransform: 'uppercase' as const }}>URI Skoru</div>
+              <div style={{ fontSize: 88, fontWeight: 900, color: uriR, fontFamily: 'DM Mono, monospace', lineHeight: 1 }}>{uri}</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: uriR, marginTop: 8 }}>{uriEtiket(uri)}</div>
+              <div style={{ fontSize: 13, color: '#94A3B8', marginTop: 6 }}>
+                {(envanter['E01'] as string) || '—'}
+              </div>
+              <div style={{ fontSize: 11, color: '#CBD5E1', marginTop: 4 }}>
+                {new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })}
+              </div>
+            </div>
+
+            {!gonderildi ? (
+              <div style={{ background: 'white', borderRadius: 12, border: `1px solid ${BORDER}`, padding: 24, textAlign: 'center' }}>
+                <p style={{ fontSize: 14, color: '#374151', marginBottom: 16 }}>
+                  Formunuzu göndererek İSO Afet Yönetimi Şubesi&apos;ne iletebilirsiniz.
+                </p>
+                {hata && <p style={{ color: '#EF4444', fontSize: 13, marginBottom: 12 }}>{hata}</p>}
+                <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+                  <button onClick={geri} style={{ padding: '11px 24px', border: `1px solid ${BORDER}`, borderRadius: 8, background: 'white', cursor: 'pointer', fontSize: 14, color: '#374151' }}>← Geri</button>
+                  <button onClick={gonder} disabled={gonderiyor}
+                    style={{ padding: '11px 40px', background: gonderiyor ? '#94A3B8' : NAVY, color: 'white', fontWeight: 700, fontSize: 14, border: 'none', borderRadius: 8, cursor: gonderiyor ? 'not-allowed' : 'pointer' }}>
+                    {gonderiyor ? 'Gönderiliyor...' : '✓ Formu Gönder'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 12, padding: 28, textAlign: 'center' }}>
+                <div style={{ fontSize: 32, marginBottom: 8 }}>✅</div>
+                <p style={{ fontSize: 16, fontWeight: 700, color: '#15803D', marginBottom: 6 }}>Teşekkürler!</p>
+                <p style={{ fontSize: 13, color: '#166534' }}>
+                  Tesis değerlendirmeniz başarıyla kaydedildi. İSO Afet Yönetimi Şubesi en kısa sürede sizinle iletişime geçecektir.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div style={{ borderTop: `1px solid ${BORDER}`, padding: '16px 24px', textAlign: 'center', fontSize: 11, color: '#94A3B8', background: 'white' }}>
+        Bu form İstanbul Sanayi Odası Afet Yönetimi Şubesi adına Omniversel tarafından işlenmektedir.
+      </div>
+    </div>
+  )
+}
+
+function NavButtons({ onGeri, onIleri, ileriLabel = 'İleri →' }: { onGeri: () => void; onIleri: () => void; ileriLabel?: string }) {
+  return (
+    <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
+      <button onClick={onGeri} style={{ padding: '11px 24px', border: `1px solid ${BORDER}`, borderRadius: 8, background: 'white', cursor: 'pointer', fontSize: 14, color: '#374151' }}>← Geri</button>
+      <button onClick={onIleri} style={{ padding: '11px 32px', background: TEAL, color: 'white', fontWeight: 700, fontSize: 14, border: 'none', borderRadius: 8, cursor: 'pointer' }}>{ileriLabel}</button>
+    </div>
+  )
+}
