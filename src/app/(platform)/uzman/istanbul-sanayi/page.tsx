@@ -8,7 +8,8 @@ import {
   CheckCircle2, XCircle, Clock, RefreshCw,
   Flame, Droplets, Cpu, Target, BookOpen, Layers,
   ArrowUpRight, Loader2, Info, Factory, Globe, Award,
-  HeartHandshake, Lightbulb, Radio
+  HeartHandshake, Lightbulb, Radio,
+  CheckSquare, ArrowRight,
 } from 'lucide-react'
 
 const IstanbulHarita = dynamic(() => import('./IstanbulHarita'), {
@@ -56,7 +57,7 @@ const T = {
 }
 
 /* ── TABS ───────────────────────────────────────────────── */
-type TabKey = 'ozet' | 'tesis' | 'sektor' | 'harita' | 'natech' | 'bia' | 'satakol' | 'is-modeli'
+type TabKey = 'ozet' | 'tesis' | 'sektor' | 'harita' | 'natech' | 'bia' | 'satakol' | 'is-modeli' | 'hro-agile' | 'roi' | 'aksiyon'
 
 const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
   { key: 'ozet',       label: 'Genel Bakış',        icon: <BarChart3 size={14}/> },
@@ -67,6 +68,9 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
   { key: 'bia',        label: 'İş Sürekliliği',      icon: <Shield size={14}/> },
   { key: 'satakol',    label: 'SATAKOL Formu',       icon: <FileText size={14}/> },
   { key: 'is-modeli',  label: 'İş Modeli',           icon: <TrendingUp size={14}/> },
+  { key: 'hro-agile',  label: 'HRO & AGİLE',         icon: <Zap size={14}/> },
+  { key: 'roi',        label: 'ROI Analizi',          icon: <TrendingUp size={14}/> },
+  { key: 'aksiyon',    label: 'Aksiyon Merkezi',      icon: <CheckSquare size={14}/> },
 ]
 
 /* ── SHARED COMPONENTS ──────────────────────────────────── */
@@ -639,6 +643,9 @@ function TabBIA() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <Card style={{ padding: '20px 28px' }}>
+        <SectionTitle icon={<Shield size={16}/>} title="İş Sürekliliği & BCP" sub="Sanayi tesisleri — senaryo bazlı müdahale planları"/>
+      </Card>
       {/* Senaryo Seçici */}
       <div style={{ display: 'flex', gap: 12 }}>
         {SENARYOLAR.map((sen, i) => (
@@ -880,6 +887,385 @@ function TabIsModeli() {
   )
 }
 
+/* ── TAB: HRO & AGILE ───────────────────────────────────── */
+function TabHROAgile() {
+  const [altTab, setAltTab] = useState<'hro'|'agile'>('hro')
+
+  const HRO_ILKELER = [
+    {
+      no: 1, baslik: 'Başarısızlığa Takıntı', renk: T.red,
+      aciklama: 'Personel "sistemimiz güvenli" varsayımından kaçınıyor, zayıf sinyalleri aktif arıyor.',
+      gostergeler: ['Near-miss raporlama sayısı (aylık)', 'Anormallik tespiti süresi (saat)', 'Uyarı sinyali yanıt oranı (%)'],
+      olgunluk: 2,
+      bulgular: ['Kimya sektöründe near-miss raporlama %34 ortalamanın altında', 'Metal sektöründe anormallik tespiti ortalama 4.2 saat'],
+      aksiyon: 'Near-miss kültürü eğitimi + aylık raporlama zorunluluğu',
+    },
+    {
+      no: 2, baslik: 'Basitleştirmeye Direnç', renk: T.orange,
+      aciklama: 'Karmaşık sorunları tek nedene indirgemekten kaçınır, sistematik RCA uygular.',
+      gostergeler: ['RCA tamamlanma oranı (%)', 'Kök neden başına ortalama neden sayısı', '5-Why uygulaması (%)'],
+      olgunluk: 3,
+      bulgular: ['İSO tesislerinin %61\'i tek neden analizi yapıyor', 'Çok nedenli RCA sadece büyük tesislerde'],
+      aksiyon: '5-Why eğitimi + olay başına minimum 3 kök neden zorunluluğu',
+    },
+    {
+      no: 3, baslik: 'Operasyona Duyarlılık', renk: T.amber,
+      aciklama: 'Saha çalışanları anormallik gördüklerinde üretimi durdurma yetkisine sahip.',
+      gostergeler: ['Saha kaynaklı üretim durdurma sayısı', 'Durdurma sonrası ortalama süre (dk)', 'Yönetici destek skoru (1-5)'],
+      olgunluk: 2,
+      bulgular: ['Sanayi tesislerinin %78\'inde saha durdurma yetkisi yok', 'Üretim baskısı güvenlik kararlarını etkiliyor'],
+      aksiyon: 'Stop-Work Authority politikası + yönetici taahhütü + ödül sistemi',
+    },
+    {
+      no: 4, baslik: 'Dayanıklılığa Bağlılık', renk: T.teal,
+      aciklama: 'Beklenmedik olaylardan hızlı toparlanma kapasitesi — tatbikat ve senaryo planlaması.',
+      gostergeler: ['Toparlanma tatbikatı sayısı (yıllık)', 'Ortalama toparlanma süresi (saat)', 'BCP test skoru (%)'],
+      olgunluk: 3,
+      bulgular: ['Sadece %23 tesis yılda 2+ tatbikat yapıyor', 'BCP test ortalaması %41'],
+      aksiyon: 'Yılda minimum 2 senaryo tatbikatı + AAR zorunluluğu',
+    },
+    {
+      no: 5, baslik: 'Uzmanlığa Saygı', renk: T.purple,
+      aciklama: 'Kriz anında karar en üst kademeden değil en bilgili kişiden alınır.',
+      gostergeler: ['Uzman kaynaklı kriz kararı oranı (%)', 'Hiyerarşi atlama vakası sayısı', 'Uzman memnuniyet skoru'],
+      olgunluk: 2,
+      bulgular: ['%67 tesiste kriz kararı yöneticiden geliyor', 'Uzman görüşü %45 vakada görmezden geliniyor'],
+      aksiyon: 'Kriz komuta yapısı revizyonu + uzman yetki protokolü',
+    },
+  ]
+
+  const AGILE_SPRINTLER = [
+    {
+      sprint: 'Sprint 1', sure: '2 Hafta', durum: 'Tamamlandı', renk: T.green,
+      hedef: 'Acil Durum Ekibi Kurulumu',
+      gorevler: [
+        { baslik: 'ADE görev tanımları yazıldı', tamamlandi: true },
+        { baslik: 'İletişim hiyerarşisi oluşturuldu', tamamlandi: true },
+        { baslik: 'Telsiz ekipmanı temin edildi', tamamlandi: true },
+        { baslik: 'İlk tatbikat yapıldı', tamamlandi: false },
+      ],
+      velocity: 75,
+    },
+    {
+      sprint: 'Sprint 2', sure: '2 Hafta', durum: 'Devam Ediyor', renk: T.orange,
+      hedef: 'BCP Temel Senaryolar',
+      gorevler: [
+        { baslik: 'Deprem senaryosu yazıldı', tamamlandi: true },
+        { baslik: 'NATECH senaryo taslağı', tamamlandi: true },
+        { baslik: 'RTO/RPO hedefleri belirlendi', tamamlandi: false },
+        { baslik: 'Yedek tesis anlaşması', tamamlandi: false },
+      ],
+      velocity: 50,
+    },
+    {
+      sprint: 'Sprint 3', sure: '2 Hafta', durum: 'Planlandı', renk: T.muted,
+      hedef: 'Siber Güvenlik Temelleri',
+      gorevler: [
+        { baslik: 'OT ağ segmentasyonu', tamamlandi: false },
+        { baslik: 'SCADA güvenlik denetimi', tamamlandi: false },
+        { baslik: 'Yedekleme sistemi kurulumu', tamamlandi: false },
+        { baslik: 'Penetrasyon testi', tamamlandi: false },
+      ],
+      velocity: 0,
+    },
+  ]
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ display: 'flex', gap: 0, borderBottom: `1px solid ${T.border}` }}>
+        {(['hro', 'agile'] as const).map(t => (
+          <button key={t} onClick={() => setAltTab(t)}
+            style={{
+              padding: '10px 24px', fontSize: 13, fontWeight: altTab === t ? 700 : 400,
+              color: altTab === t ? T.teal : T.muted,
+              background: 'none', border: 'none',
+              borderBottom: altTab === t ? `2px solid ${T.teal}` : '2px solid transparent',
+              cursor: 'pointer',
+            }}>
+            {t === 'hro' ? '🎯 HRO Olgunluk Matrisi' : '⚡ AGILE Dayanıklılık Planı'}
+          </button>
+        ))}
+      </div>
+
+      {altTab === 'hro' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10 }}>
+            {HRO_ILKELER.map(h => (
+              <Card key={h.no} style={{ textAlign: 'center', padding: '16px 12px' }}>
+                <div style={{ fontSize: 22, fontWeight: 900, color: h.renk }}>{h.olgunluk}<span style={{ fontSize: 13, color: T.muted }}>/5</span></div>
+                <div style={{ fontSize: 11, color: T.muted, marginTop: 4, lineHeight: 1.3 }}>{h.baslik}</div>
+                <div style={{ marginTop: 8, height: 4, borderRadius: 2, background: T.borderL }}>
+                  <div style={{ height: '100%', width: `${h.olgunluk/5*100}%`, borderRadius: 2, background: h.renk }} />
+                </div>
+              </Card>
+            ))}
+          </div>
+          {HRO_ILKELER.map(h => (
+            <Card key={h.no}>
+              <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: `${h.renk}15`, color: h.renk, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 14, flexShrink: 0 }}>
+                  {h.no}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: T.navy, margin: 0 }}>{h.baslik}</p>
+                    <span style={{ fontSize: 11, padding: '2px 10px', borderRadius: 20, background: `${h.renk}15`, color: h.renk, fontWeight: 700 }}>Olgunluk {h.olgunluk}/5</span>
+                  </div>
+                  <p style={{ fontSize: 12, color: T.muted, margin: '0 0 12px', lineHeight: 1.6 }}>{h.aciklama}</p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                    <div>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: T.slate, margin: '0 0 6px', textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>Göstergeler</p>
+                      {h.gostergeler.map(g => (
+                        <div key={g} style={{ display: 'flex', gap: 6, marginBottom: 4 }}>
+                          <div style={{ width: 4, height: 4, borderRadius: '50%', background: h.renk, marginTop: 5, flexShrink: 0 }} />
+                          <span style={{ fontSize: 12, color: T.slate }}>{g}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: T.slate, margin: '0 0 6px', textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>İSO Bulguları</p>
+                      {h.bulgular.map(b => (
+                        <div key={b} style={{ display: 'flex', gap: 6, marginBottom: 4 }}>
+                          <AlertTriangle size={10} color={h.renk} style={{ marginTop: 3, flexShrink: 0 }} />
+                          <span style={{ fontSize: 12, color: T.slate }}>{b}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ marginTop: 12, padding: '10px 14px', background: `${h.renk}08`, borderRadius: 8, borderLeft: `3px solid ${h.renk}` }}>
+                    <span style={{ fontSize: 12, color: T.navy, fontWeight: 600 }}>🎯 Aksiyon: </span>
+                    <span style={{ fontSize: 12, color: T.slate }}>{h.aksiyon}</span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {altTab === 'agile' && (
+        <Card>
+          <SectionTitle icon={<Zap size={16}/>} title="AGILE Dayanıklılık Planı" sub="2 haftalık sprint döngüsü — sürekli iyileştirme"/>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+            {AGILE_SPRINTLER.map(s => (
+              <div key={s.sprint} style={{ border: `1px solid ${s.renk}30`, borderRadius: 12, padding: 16, background: `${s.renk}05` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: s.renk }}>{s.sprint}</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: `${s.renk}15`, color: s.renk }}>{s.durum}</span>
+                </div>
+                <p style={{ fontSize: 13, fontWeight: 700, color: T.navy, margin: '0 0 12px' }}>{s.hedef}</p>
+                {s.gorevler.map(g => (
+                  <div key={g.baslik} style={{ display: 'flex', gap: 8, marginBottom: 6, alignItems: 'flex-start' }}>
+                    <div style={{ width: 14, height: 14, borderRadius: 3, border: `1.5px solid ${g.tamamlandi ? T.green : T.border}`, background: g.tamamlandi ? T.green : 'white', flexShrink: 0, marginTop: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {g.tamamlandi && <span style={{ color: 'white', fontSize: 9, fontWeight: 900 }}>✓</span>}
+                    </div>
+                    <span style={{ fontSize: 12, color: g.tamamlandi ? T.muted : T.navy, textDecoration: g.tamamlandi ? 'line-through' : 'none' }}>{g.baslik}</span>
+                  </div>
+                ))}
+                <div style={{ marginTop: 12 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <span style={{ fontSize: 11, color: T.muted }}>Velocity</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: s.renk }}>{s.velocity}%</span>
+                  </div>
+                  <div style={{ height: 4, borderRadius: 2, background: T.borderL }}>
+                    <div style={{ height: '100%', width: `${s.velocity}%`, borderRadius: 2, background: s.renk }} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+    </div>
+  )
+}
+
+/* ── TAB: ROI ANALİZİ ───────────────────────────────────── */
+function TabROI() {
+  const [secilenSektor, setSecilenSektor] = useState('Kimya')
+  const [yatirim, setYatirim] = useState(500000)
+
+  const SEKTOR_PROFIL: Record<string, { ortUri: number; gunlukKayip: number; toparlanmaSure: number; sigorta: number }> = {
+    'Kimya':        { ortUri: 40.1, gunlukKayip: 850000, toparlanmaSure: 18, sigorta: 120000 },
+    'Metal':        { ortUri: 39.1, gunlukKayip: 620000, toparlanmaSure: 14, sigorta: 85000 },
+    'Motorlu Araç': { ortUri: 33.3, gunlukKayip: 980000, toparlanmaSure: 21, sigorta: 140000 },
+    'İlaç':         { ortUri: 41.9, gunlukKayip: 750000, toparlanmaSure: 16, sigorta: 110000 },
+    'Tekstil':      { ortUri: 28.4, gunlukKayip: 320000, toparlanmaSure: 9,  sigorta: 45000 },
+    'Gıda':         { ortUri: 25.1, gunlukKayip: 410000, toparlanmaSure: 7,  sigorta: 55000 },
+  }
+
+  const profil = SEKTOR_PROFIL[secilenSektor] ?? SEKTOR_PROFIL['Kimya']
+  const URI_IYILESME = 8
+  const riskAzaltmaOrani = URI_IYILESME / 100 * 0.7
+  const yillikKayipRiski = profil.gunlukKayip * profil.toparlanmaSure * 0.15
+  const onlenenKayip = yillikKayipRiski * riskAzaltmaOrani * 10
+  const sigortaIndirim = profil.sigorta * 0.15 * 10
+  const toplamFayda = onlenenKayip + sigortaIndirim
+  const netROI = ((toplamFayda - yatirim * 10) / (yatirim * 10) * 100).toFixed(0)
+  const geriOdeme = (yatirim / (toplamFayda / 10)).toFixed(1)
+  const fmt = (n: number) => new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(n)
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <Card>
+        <SectionTitle icon={<TrendingUp size={16}/>} title="ROI Hesaplayıcı" sub="Afet dayanıklılık yatırımının 10 yıllık geri dönüşü"/>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+          <div>
+            <p style={{ fontSize: 12, fontWeight: 600, color: T.slate, marginBottom: 8 }}>Sektör</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {Object.keys(SEKTOR_PROFIL).map(s => (
+                <button key={s} onClick={() => setSecilenSektor(s)}
+                  style={{ fontSize: 12, padding: '6px 14px', borderRadius: 20, cursor: 'pointer',
+                    border: `1px solid ${secilenSektor === s ? T.teal : T.border}`,
+                    background: secilenSektor === s ? T.tealL : 'white',
+                    color: secilenSektor === s ? T.teal : T.muted,
+                    fontWeight: secilenSektor === s ? 700 : 400 }}>
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p style={{ fontSize: 12, fontWeight: 600, color: T.slate, marginBottom: 8 }}>
+              Yıllık Dayanıklılık Yatırımı: <span style={{ color: T.navy, fontWeight: 900 }}>{fmt(yatirim)}</span>
+            </p>
+            <input type="range" min={100000} max={5000000} step={100000} value={yatirim}
+              onChange={e => setYatirim(Number(e.target.value))}
+              style={{ width: '100%', accentColor: T.teal }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: T.muted, marginTop: 4 }}>
+              <span>100K TRY</span><span>5M TRY</span>
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+        {[
+          { label: 'Önlenen Kayıp (10 yıl)', value: fmt(onlenenKayip), color: T.green, icon: '🛡️' },
+          { label: 'Sigorta Tasarrufu (10 yıl)', value: fmt(sigortaIndirim), color: T.teal, icon: '📋' },
+          { label: 'Net ROI (10 yıl)', value: `%${netROI}`, color: Number(netROI) > 0 ? T.green : T.red, icon: '📈' },
+          { label: 'Geri Ödeme Süresi', value: `${geriOdeme} yıl`, color: T.orange, icon: '⏱️' },
+        ].map(k => (
+          <Card key={k.label} style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 24, marginBottom: 8 }}>{k.icon}</div>
+            <div style={{ fontSize: 20, fontWeight: 900, color: k.color, marginBottom: 4 }}>{k.value}</div>
+            <div style={{ fontSize: 11, color: T.muted, lineHeight: 1.4 }}>{k.label}</div>
+          </Card>
+        ))}
+      </div>
+
+      <Card>
+        <SectionTitle icon={<Target size={16}/>} title="Sektör Kırılganlık Profili" sub={secilenSektor + ' sektörü — İSO verisi'}/>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+          {[
+            { label: 'Ortalama URI Skoru', value: profil.ortUri.toString(), sub: 'Yüksek = riskli', color: profil.ortUri > 35 ? T.red : T.orange },
+            { label: 'Günlük Üretim Kaybı', value: fmt(profil.gunlukKayip), sub: 'Tam duruş senaryosu', color: T.navy },
+            { label: 'Ortalama Toparlanma', value: profil.toparlanmaSure + ' gün', sub: 'M7.2 deprem senaryosu', color: T.orange },
+          ].map(p => (
+            <div key={p.label} style={{ padding: 16, border: `1px solid ${T.border}`, borderRadius: 10 }}>
+              <div style={{ fontSize: 11, color: T.muted, marginBottom: 6 }}>{p.label}</div>
+              <div style={{ fontSize: 18, fontWeight: 900, color: p.color }}>{p.value}</div>
+              <div style={{ fontSize: 11, color: T.muted, marginTop: 4 }}>{p.sub}</div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  )
+}
+
+/* ── TAB: AKSİYON MERKEZİ ───────────────────────────────── */
+function TabAksiyon() {
+  const [filtre, setFiltre] = useState<'tumu'|'acil'|'planlandi'|'tamamlandi'>('tumu')
+
+  const AKSIYONLAR = [
+    { id: 'A01', baslik: 'Tuzla OSB NATECH Acil Müdahale Planı', kategori: 'NATECH', oncelik: 'Acil', sorumlu: 'İSO-AYM + AFAD', sure: '30 gün', etki: 'Yüksek', durum: 'acil', uri_etkisi: -4.2, maliyet: '85,000 TRY' },
+    { id: 'A02', baslik: '193 Kritik Tesis Yapısal Değerlendirme', kategori: 'Yapısal', oncelik: 'Acil', sorumlu: 'İnşaat Müh.', sure: '60 gün', etki: 'Çok Yüksek', durum: 'acil', uri_etkisi: -6.1, maliyet: '420,000 TRY' },
+    { id: 'A03', baslik: 'Kimya Sektörü Near-Miss Raporlama Sistemi', kategori: 'HRO', oncelik: 'Yüksek', sorumlu: 'Tesis Yönetimleri', sure: '45 gün', etki: 'Orta', durum: 'planlandi', uri_etkisi: -2.8, maliyet: '12,000 TRY' },
+    { id: 'A04', baslik: 'Metal Sektörü Ekipman Ankraj Programı', kategori: 'Yapısal', oncelik: 'Yüksek', sorumlu: 'OSB Yönetimi', sure: '90 gün', etki: 'Yüksek', durum: 'planlandi', uri_etkisi: -3.4, maliyet: '280,000 TRY' },
+    { id: 'A05', baslik: 'OT/SCADA Siber Güvenlik Denetimi', kategori: 'Siber', oncelik: 'Yüksek', sorumlu: 'BT Ekipleri', sure: '45 gün', etki: 'Orta', durum: 'planlandi', uri_etkisi: -2.1, maliyet: '95,000 TRY' },
+    { id: 'A06', baslik: 'BCP Tatbikat Programı — Tüm Sektörler', kategori: 'BCP', oncelik: 'Orta', sorumlu: 'İSO-AYM', sure: '120 gün', etki: 'Yüksek', durum: 'planlandi', uri_etkisi: -3.9, maliyet: '45,000 TRY' },
+    { id: 'A07', baslik: 'Temel Afet Bilinci Eğitimi — 500 Tesis', kategori: 'Eğitim', oncelik: 'Orta', sorumlu: 'İSO-AYM', sure: '180 gün', etki: 'Orta', durum: 'planlandi', uri_etkisi: -1.8, maliyet: '180,000 TRY' },
+    { id: 'A08', baslik: 'ISO 22301 Sertifikasyon Danışmanlığı', kategori: 'Sertifikasyon', oncelik: 'Düşük', sorumlu: 'Danışman Firma', sure: '365 gün', etki: 'Orta', durum: 'planlandi', uri_etkisi: -2.5, maliyet: '320,000 TRY' },
+    { id: 'A09', baslik: 'Sel Erken Uyarı Sistemi — Kavaklı/Gürpınar', kategori: 'Altyapı', oncelik: 'Acil', sorumlu: 'İBB + İSO', sure: '45 gün', etki: 'Yüksek', durum: 'tamamlandi', uri_etkisi: -3.2, maliyet: '650,000 TRY' },
+    { id: 'A10', baslik: 'Üyeler Arası Kaynak Transferi Envanteri', kategori: 'Koordinasyon', oncelik: 'Orta', sorumlu: 'İSO-AYM', sure: '60 gün', etki: 'Orta', durum: 'tamamlandi', uri_etkisi: -1.2, maliyet: '8,000 TRY' },
+  ]
+
+  const filtrelenmis = filtre === 'tumu' ? AKSIYONLAR : AKSIYONLAR.filter(a => a.durum === filtre)
+  const ONCELIK_RENK: Record<string, string> = { 'Acil': T.red, 'Yüksek': T.orange, 'Orta': T.amber, 'Düşük': T.muted }
+  const DURUM_RENK:   Record<string, string> = { 'acil': T.red, 'planlandi': T.orange, 'tamamlandi': T.green }
+  const DURUM_LABEL:  Record<string, string> = { 'acil': 'Acil', 'planlandi': 'Planlandı', 'tamamlandi': 'Tamamlandı' }
+  const toplamURI     = AKSIYONLAR.reduce((s, a) => s + a.uri_etkisi, 0)
+  const tamamlananURI = AKSIYONLAR.filter(a => a.durum === 'tamamlandi').reduce((s, a) => s + a.uri_etkisi, 0)
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+        {[
+          { label: 'Toplam Aksiyon', value: AKSIYONLAR.length, color: T.navy, icon: '📋' },
+          { label: 'Acil Aksiyon', value: AKSIYONLAR.filter(a => a.durum === 'acil').length, color: T.red, icon: '🚨' },
+          { label: 'Tamamlanan URI İyileşmesi', value: tamamlananURI.toFixed(1), color: T.green, icon: '✅' },
+          { label: 'Potansiyel URI İyileşmesi', value: toplamURI.toFixed(1), color: T.teal, icon: '🎯' },
+        ].map(k => (
+          <Card key={k.label} style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 22, marginBottom: 4 }}>{k.icon}</div>
+            <div style={{ fontSize: 22, fontWeight: 900, color: k.color }}>{k.value}</div>
+            <div style={{ fontSize: 11, color: T.muted, marginTop: 4 }}>{k.label}</div>
+          </Card>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', gap: 8 }}>
+        {(['tumu', 'acil', 'planlandi', 'tamamlandi'] as const).map(f => (
+          <button key={f} onClick={() => setFiltre(f)}
+            style={{ padding: '6px 16px', borderRadius: 20, fontSize: 12, cursor: 'pointer',
+              border: `1px solid ${filtre === f ? T.teal : T.border}`,
+              background: filtre === f ? T.tealL : 'white',
+              color: filtre === f ? T.teal : T.muted,
+              fontWeight: filtre === f ? 700 : 400 }}>
+            {f === 'tumu' ? 'Tümü' : f === 'acil' ? '🚨 Acil' : f === 'planlandi' ? '📅 Planlandı' : '✅ Tamamlandı'}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {filtrelenmis.map(a => (
+          <Card key={a.id}>
+            <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: `${DURUM_RENK[a.durum]}15`, color: DURUM_RENK[a.durum], display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 11, flexShrink: 0 }}>
+                {a.id}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: T.navy, margin: 0, flex: 1 }}>{a.baslik}</p>
+                  <div style={{ display: 'flex', gap: 6, flexShrink: 0, marginLeft: 12 }}>
+                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: `${ONCELIK_RENK[a.oncelik]}15`, color: ONCELIK_RENK[a.oncelik], fontWeight: 700 }}>{a.oncelik}</span>
+                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: `${DURUM_RENK[a.durum]}15`, color: DURUM_RENK[a.durum], fontWeight: 700 }}>{DURUM_LABEL[a.durum]}</span>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' as const }}>
+                  {[
+                    { label: 'Kategori', value: a.kategori },
+                    { label: 'Sorumlu', value: a.sorumlu },
+                    { label: 'Süre', value: a.sure },
+                    { label: 'URI Etkisi', value: a.uri_etkisi.toFixed(1) + ' puan' },
+                    { label: 'Tahmini Maliyet', value: a.maliyet },
+                  ].map(p => (
+                    <div key={p.label}>
+                      <span style={{ fontSize: 10, color: T.muted }}>{p.label}: </span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: T.navy }}>{p.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 /* ── ANA SAYFA ───────────────────────────────────────────── */
 export default function IstanbulSanayiPage() {
   const [tab, setTab] = useState<TabKey>('ozet')
@@ -900,6 +1286,9 @@ export default function IstanbulSanayiPage() {
     bia:        <TabBIA />,
     satakol:    <TabSatakol />,
     'is-modeli': <TabIsModeli />,
+    'hro-agile': <TabHROAgile />,
+    'roi':       <TabROI />,
+    'aksiyon':   <TabAksiyon />,
   }
 
   return (
