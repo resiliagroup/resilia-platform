@@ -239,6 +239,28 @@ export default function TesisFormuPage() {
   const [gonderildi, setGonderildi] = useState(false)
   const [uri, setUri] = useState(0)
   const [detayliMod, setDetayliMod] = useState(false)
+  const [tesisYuklendi, setTesisYuklendi] = useState(false)
+  const [facilityId, setFacilityId] = useState<string | null>(null)
+
+  // Token ile tesis verisi önceden doldur
+  useEffect(() => {
+    if (!token) return
+    sb.from('iso_tokenlar').select('*').eq('token', token).single()
+      .then(({ data }) => {
+        if (data) {
+          setEnvanter(prev => ({
+            ...prev,
+            E01: data.tesis_adi ?? '',
+            E03: data.nace_kodu ?? '',
+            E10: data.employee_count?.toString() ?? '',
+            E13: data.ilce ?? '',
+            E16: data.building_age?.toString() ?? '',
+          }))
+          setTesisYuklendi(true)
+          setFacilityId(data.facility_id ?? null)
+        }
+      })
+  }, [token])
 
   useEffect(() => { if (adim === 6) setUri(hesaplaUri(puanlar)) }, [adim, puanlar])
 
@@ -270,6 +292,7 @@ export default function TesisFormuPage() {
     try {
       const { error } = await sb.from('iso_tesis_formlari').upsert({
         token,
+        facility_id: facilityId,
         envanter,
         puanlar,
         destek,
@@ -280,6 +303,7 @@ export default function TesisFormuPage() {
         gonderim_tarihi: new Date().toISOString(),
       }, { onConflict: 'token' })
       if (error) throw error
+      await sb.from('iso_tokenlar').update({ dolduruldu: true }).eq('token', token)
       setUri(sonUri)
       setGonderildi(true)
     } catch {
@@ -326,20 +350,28 @@ export default function TesisFormuPage() {
         {adim === 0 && (
           <div style={{ background: 'white', borderRadius: 12, border: `1px solid ${BORDER}`, padding: 28 }}>
             <h2 style={{ fontSize: 17, fontWeight: 700, color: NAVY, marginBottom: 4 }}>Tesis Kimlik & Yapısal Envanter</h2>
-            <p style={{ fontSize: 12, color: '#94A3B8', marginBottom: 24 }}>Kalıcı tesis verisi — URI hesabına dahil değildir</p>
+            <p style={{ fontSize: 12, color: tesisYuklendi ? '#15803D' : '#94A3B8', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 6 }}>
+              {tesisYuklendi
+                ? <><span style={{ fontSize: 14 }}>✓</span> Tesis bilgileriniz sisteme kayıtlı verilerden getirilmiştir. Lütfen kontrol edip eksik alanları tamamlayın.</>
+                : 'Lütfen tesis bilgilerinizi eksiksiz doldurun.'}
+            </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
-              {TESIS_ENVANTER.map(alan => (
-                <div key={alan.kod} style={alan.tip === 'koordinat' ? { gridColumn: '1 / -1' } : {}}>
-                  <label style={lbl}>
-                    {alan.label}
-                    {alan.zorunlu && <span style={{ color: '#EF4444', marginLeft: 2 }}>*</span>}
-                  </label>
-                  {alan.aciklama && alan.tip !== 'koordinat' && (
-                    <p style={{ fontSize: 11, color: '#94A3B8', marginBottom: 4 }}>{alan.aciklama}</p>
-                  )}
-                  <EnvanterAlan alan={alan} deger={envanter[alan.kod]} onDegis={v => setEnv(alan.kod, v)} />
-                </div>
-              ))}
+              {TESIS_ENVANTER.map(alan => {
+                const dolu = tesisYuklendi && !!envanter[alan.kod]
+                return (
+                  <div key={alan.kod} style={alan.tip === 'koordinat' ? { gridColumn: '1 / -1' } : {}}>
+                    <label style={lbl}>
+                      {alan.label}
+                      {alan.zorunlu && <span style={{ color: '#EF4444', marginLeft: 2 }}>*</span>}
+                      {dolu && <span style={{ color: '#22C55E', fontSize: 11, marginLeft: 6, fontWeight: 600 }}>✓ Doğrulandı</span>}
+                    </label>
+                    {alan.aciklama && alan.tip !== 'koordinat' && (
+                      <p style={{ fontSize: 11, color: '#94A3B8', marginBottom: 4 }}>{alan.aciklama}</p>
+                    )}
+                    <EnvanterAlan alan={alan} deger={envanter[alan.kod]} onDegis={v => setEnv(alan.kod, v)} />
+                  </div>
+                )
+              })}
             </div>
             {hata && <p style={{ color: '#EF4444', fontSize: 13, marginTop: 16 }}>{hata}</p>}
             <div style={{ marginTop: 28, display: 'flex', justifyContent: 'flex-end' }}>
