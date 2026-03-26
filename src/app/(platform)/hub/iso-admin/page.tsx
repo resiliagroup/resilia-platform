@@ -10,7 +10,7 @@ const sb = createClient(
 
 const NAVY = '#0A1628'; const TEAL = '#009B8D'; const BORDER = '#E2E8F0'
 
-type Sekme = 'izleme' | 'sorular' | 'kmatris'
+type Sekme = 'izleme' | 'sorular' | 'kmatris' | 'tokenlar'
 
 // ─── Risk rengi ───────────────────────────────────────────────────────────────
 function uriRenk(uri: number) {
@@ -315,13 +315,227 @@ function KMatrisSekme() {
 }
 
 // ─── ANA SAYFA ────────────────────────────────────────────────────────────────
+// ─── SEKME 4: Token Yönetimi ──────────────────────────────────────────────────
+const BASE_URL = 'https://omniversel.com/tesis-formu'
+
+type IsoToken = {
+  id?: string
+  token: string
+  tesis_adi: string
+  nace_kodu?: string
+  ilce?: string
+  employee_count?: number
+  building_age?: number
+  dolduruldu?: boolean
+  olusturma_tarihi?: string
+}
+
+const lbl2: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 5 }
+const inp2: React.CSSProperties = { width: '100%', padding: '9px 12px', border: `1px solid #E2E8F0`, borderRadius: 7, fontSize: 13, outline: 'none', boxSizing: 'border-box' as const }
+
+function TokenYonetimiSekme() {
+  const [tokenlar, setTokenlar] = useState<IsoToken[]>([])
+  const [yukleniyor, setYukleniyor] = useState(true)
+
+  // Form state
+  const [tesisAdi, setTesisAdi] = useState('')
+  const [naceKodu, setNaceKodu] = useState('')
+  const [ilce, setIlce] = useState('')
+  const [calisanSayisi, setCalisanSayisi] = useState('')
+  const [binaYasi, setBinaYasi] = useState('')
+  const [olusturuluyor, setOlusturuluyor] = useState(false)
+  const [yeniToken, setYeniToken] = useState<string | null>(null)
+  const [kopyalandi, setKopyalandi] = useState<string | null>(null)
+  const [formHata, setFormHata] = useState('')
+
+  const yukle = () => {
+    setYukleniyor(true)
+    sb.from('iso_tokenlar')
+      .select('*')
+      .order('olusturma_tarihi', { ascending: false })
+      .then(({ data }) => {
+        if (data) setTokenlar(data as IsoToken[])
+        setYukleniyor(false)
+      })
+  }
+
+  useEffect(() => { yukle() }, [])
+
+  const tokenOlustur = async () => {
+    if (!tesisAdi.trim()) { setFormHata('Tesis adı zorunludur.'); return }
+    setFormHata(''); setOlusturuluyor(true)
+    const uuid = crypto.randomUUID()
+    const token = `iso-${uuid.slice(0, 4)}-${new Date().getFullYear()}`
+    const { error } = await sb.from('iso_tokenlar').insert({
+      token,
+      tesis_adi: tesisAdi.trim(),
+      nace_kodu: naceKodu.trim() || null,
+      ilce: ilce.trim() || null,
+      employee_count: calisanSayisi ? parseInt(calisanSayisi) : null,
+      building_age: binaYasi ? parseInt(binaYasi) : null,
+      dolduruldu: false,
+      olusturma_tarihi: new Date().toISOString(),
+    })
+    if (error) { setFormHata('Hata: ' + error.message); setOlusturuluyor(false); return }
+    setYeniToken(token)
+    setTesisAdi(''); setNaceKodu(''); setIlce(''); setCalisanSayisi(''); setBinaYasi('')
+    setOlusturuluyor(false)
+    yukle()
+  }
+
+  const kopyala = (metin: string, id: string) => {
+    navigator.clipboard.writeText(metin)
+    setKopyalandi(id)
+    setTimeout(() => setKopyalandi(null), 2000)
+  }
+
+  const csvIndir = () => {
+    const satirlar = [
+      ['Tesis Adı', 'Token', 'Link', 'Durum', 'Oluşturma Tarihi'],
+      ...tokenlar.map(t => [
+        t.tesis_adi,
+        t.token,
+        `${BASE_URL}/${t.token}`,
+        t.dolduruldu ? 'Dolduruldu' : 'Bekliyor',
+        t.olusturma_tarihi ? new Date(t.olusturma_tarihi).toLocaleDateString('tr-TR') : '',
+      ]),
+    ]
+    const csv = satirlar.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n')
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a'); a.href = url; a.download = 'iso_tokenlar.csv'; a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const toplam    = tokenlar.length
+  const doldurulan = tokenlar.filter(t => t.dolduruldu).length
+  const bekleyen  = toplam - doldurulan
+  const oran      = toplam ? Math.round((doldurulan / toplam) * 100) : 0
+
+  return (
+    <div>
+      {/* KPI */}
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 24 }}>
+        <KpiKart baslik="Toplam Token" deger={toplam} />
+        <KpiKart baslik="Doldurulan" deger={doldurulan} renk="#22C55E" />
+        <KpiKart baslik="Bekleyen" deger={bekleyen} renk="#F97316" />
+        <KpiKart baslik="Doluluk Oranı" deger={`%${oran}`} renk={TEAL} />
+      </div>
+
+      {/* Token Oluşturma Formu */}
+      <div style={{ background: 'white', border: `1px solid #E2E8F0`, borderRadius: 12, padding: 24, marginBottom: 24 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 700, color: NAVY, marginBottom: 16 }}>Yeni Token Oluştur</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 14, marginBottom: 16 }}>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label style={lbl2}>Tesis Adı <span style={{ color: '#EF4444' }}>*</span></label>
+            <input value={tesisAdi} onChange={e => setTesisAdi(e.target.value)} placeholder="örn. Gebze OSB Metal A.Ş." style={inp2} />
+          </div>
+          <div>
+            <label style={lbl2}>NACE Kodu</label>
+            <input value={naceKodu} onChange={e => setNaceKodu(e.target.value)} placeholder="örn. 24.10" style={inp2} />
+          </div>
+          <div>
+            <label style={lbl2}>İlçe</label>
+            <input value={ilce} onChange={e => setIlce(e.target.value)} placeholder="örn. Gebze" style={inp2} />
+          </div>
+          <div>
+            <label style={lbl2}>Çalışan Sayısı</label>
+            <input type="number" value={calisanSayisi} onChange={e => setCalisanSayisi(e.target.value)} placeholder="örn. 150" style={inp2} />
+          </div>
+          <div>
+            <label style={lbl2}>Bina Yaşı</label>
+            <input type="number" value={binaYasi} onChange={e => setBinaYasi(e.target.value)} placeholder="örn. 18" style={inp2} />
+          </div>
+        </div>
+        {formHata && <p style={{ color: '#EF4444', fontSize: 12, marginBottom: 10 }}>{formHata}</p>}
+        <button onClick={tokenOlustur} disabled={olusturuluyor}
+          style={{ padding: '9px 24px', background: olusturuluyor ? '#94A3B8' : TEAL, color: 'white', fontWeight: 700, fontSize: 13, border: 'none', borderRadius: 8, cursor: olusturuluyor ? 'not-allowed' : 'pointer' }}>
+          {olusturuluyor ? 'Oluşturuluyor...' : '+ Token Oluştur'}
+        </button>
+
+        {yeniToken && (
+          <div style={{ marginTop: 16, padding: '12px 16px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' as const }}>
+            <span style={{ fontSize: 12, color: '#15803D', fontWeight: 600 }}>✓ Token oluşturuldu:</span>
+            <code style={{ fontSize: 12, color: '#0F766E', background: 'white', padding: '2px 8px', borderRadius: 4, border: '1px solid #BBF7D0' }}>
+              {BASE_URL}/{yeniToken}
+            </code>
+            <button onClick={() => kopyala(`${BASE_URL}/${yeniToken}`, 'yeni')}
+              style={{ padding: '4px 14px', border: `1px solid ${TEAL}`, borderRadius: 6, background: 'white', color: TEAL, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+              {kopyalandi === 'yeni' ? '✓ Kopyalandı' : 'Kopyala'}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Token Listesi */}
+      <div style={{ background: 'white', border: `1px solid #E2E8F0`, borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{ padding: '14px 20px', borderBottom: `1px solid #E2E8F0`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: NAVY }}>Token Listesi</span>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button onClick={yukle} style={{ fontSize: 12, color: TEAL, background: 'none', border: 'none', cursor: 'pointer' }}>↻ Yenile</button>
+            <button onClick={csvIndir}
+              style={{ padding: '6px 16px', border: `1px solid #E2E8F0`, borderRadius: 7, background: 'white', color: '#374151', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+              ⬇ CSV İndir
+            </button>
+          </div>
+        </div>
+        {yukleniyor ? (
+          <div style={{ padding: 32, textAlign: 'center', color: '#94A3B8', fontSize: 13 }}>Yükleniyor...</div>
+        ) : tokenlar.length === 0 ? (
+          <div style={{ padding: 32, textAlign: 'center', color: '#94A3B8', fontSize: 13 }}>Henüz token oluşturulmamış.</div>
+        ) : (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' as const, fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: '#F8FAFC' }}>
+                  {['Tesis Adı', 'Token', 'Link', 'Durum', 'Oluşturma Tarihi'].map(h => (
+                    <th key={h} style={{ padding: '10px 16px', textAlign: 'left' as const, fontWeight: 600, color: '#64748B', borderBottom: `1px solid #E2E8F0`, fontSize: 12 }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {tokenlar.map((t, i) => (
+                  <tr key={t.token} style={{ background: i % 2 === 0 ? 'white' : '#FAFBFC' }}>
+                    <td style={{ padding: '10px 16px', fontWeight: 600, color: NAVY }}>{t.tesis_adi}</td>
+                    <td style={{ padding: '10px 16px', fontFamily: 'monospace', fontSize: 12, color: '#64748B' }}>{t.token}</td>
+                    <td style={{ padding: '10px 16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: 11, color: '#94A3B8', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>
+                          {BASE_URL}/{t.token}
+                        </span>
+                        <button onClick={() => kopyala(`${BASE_URL}/${t.token}`, t.token)}
+                          style={{ padding: '3px 10px', border: `1px solid #E2E8F0`, borderRadius: 5, background: 'white', color: kopyalandi === t.token ? '#22C55E' : '#64748B', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' as const }}>
+                          {kopyalandi === t.token ? '✓' : 'Kopyala'}
+                        </button>
+                      </div>
+                    </td>
+                    <td style={{ padding: '10px 16px' }}>
+                      {t.dolduruldu
+                        ? <span style={{ fontSize: 11, fontWeight: 600, color: '#15803D', background: '#F0FDF4', padding: '2px 8px', borderRadius: 20, border: '1px solid #BBF7D0' }}>✓ Dolduruldu</span>
+                        : <span style={{ fontSize: 11, fontWeight: 600, color: '#C2410C', background: '#FFF7ED', padding: '2px 8px', borderRadius: 20, border: '1px solid #FED7AA' }}>⏳ Bekliyor</span>}
+                    </td>
+                    <td style={{ padding: '10px 16px', color: '#64748B', fontSize: 12 }}>
+                      {t.olusturma_tarihi ? new Date(t.olusturma_tarihi).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function IsoAdminPage() {
   const [sekme, setSekme] = useState<Sekme>('izleme')
 
   const sekmeler: { id: Sekme; label: string }[] = [
-    { id: 'izleme',  label: '📋 Form İzleme' },
-    { id: 'sorular', label: '⚙️ Soru Yönetimi' },
-    { id: 'kmatris', label: '🔢 k Katsayısı Editörü' },
+    { id: 'izleme',   label: '📋 Form İzleme' },
+    { id: 'sorular',  label: '⚙️ Soru Yönetimi' },
+    { id: 'kmatris',  label: '🔢 k Katsayısı Editörü' },
+    { id: 'tokenlar', label: '🔑 Token Yönetimi' },
   ]
 
   return (
@@ -346,9 +560,10 @@ export default function IsoAdminPage() {
       </div>
 
       <div style={{ maxWidth: 1100, margin: '32px auto', padding: '0 24px 60px' }}>
-        {sekme === 'izleme'  && <FormIzlemeSekme />}
-        {sekme === 'sorular' && <SoruYonetimiSekme />}
-        {sekme === 'kmatris' && <KMatrisSekme />}
+        {sekme === 'izleme'   && <FormIzlemeSekme />}
+        {sekme === 'sorular'  && <SoruYonetimiSekme />}
+        {sekme === 'kmatris'  && <KMatrisSekme />}
+        {sekme === 'tokenlar' && <TokenYonetimiSekme />}
       </div>
     </div>
   )
