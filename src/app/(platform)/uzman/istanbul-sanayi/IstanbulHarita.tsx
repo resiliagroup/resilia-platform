@@ -139,10 +139,13 @@ export default function IstanbulHarita() {
       maxClusterRadius: 50,
       showCoverageOnHover: false,
       iconCreateFunction: (c: any) => {
+        const markers = c.getAllChildMarkers()
+        const avg = markers.length ? markers.reduce((s: number, m: any) => s + (m.options.uriScore ?? 35), 0) / markers.length : 35
+        const clrBg = avg < 20 ? '#22C55E' : avg < 30 ? '#EAB308' : avg < 40 ? '#F97316' : '#EF4444'
         const n = c.getChildCount()
         const sz = n > 1000 ? 44 : n > 100 ? 36 : 28
         return L.divIcon({
-          html: `<div style="width:${sz}px;height:${sz}px;border-radius:50%;background:#0F172A;color:white;display:flex;align-items:center;justify-content:center;font-size:${sz > 36 ? 13 : 11}px;font-weight:700;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,.3);">${n > 999 ? (n / 1000).toFixed(1) + 'K' : n}</div>`,
+          html: `<div style="width:${sz}px;height:${sz}px;border-radius:50%;background:${clrBg};color:white;display:flex;align-items:center;justify-content:center;font-size:${sz > 36 ? 13 : 11}px;font-weight:700;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,.3);">${n > 999 ? (n / 1000).toFixed(1) + 'K' : n}</div>`,
           className: '', iconSize: [sz, sz], iconAnchor: [sz / 2, sz / 2],
         })
       },
@@ -169,7 +172,7 @@ export default function IstanbulHarita() {
         iconSize: [sz, sz], iconAnchor: [sz / 2, sz / 2],
       })
 
-      const marker = L.marker([lat, lng], { icon })
+      const marker = L.marker([lat, lng], { icon, uriScore: skor } as any)
       marker.bindPopup(`
         <div style="min-width:190px;font-family:sans-serif;font-size:12px;">
           <p style="font-weight:700;font-size:13px;margin:0 0 4px;line-height:1.3;">${t.name}</p>
