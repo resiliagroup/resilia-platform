@@ -116,7 +116,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'T8', bolum: 'TEHLİKE', boyut: 'H', agirlik: 3, kritik: false, ters: true,
-    soru: 'Üretim kesintisinin tedarik zinciri ve stratejik müşterilere zincirleme etkisi ne düzeyde? (TOC darboğaz kritikliği)',
+    soru: 'Üretim kesintisinin tedarik zinciri ve stratejik müşterilere zincirleme etkisi ne düzeyde?',
     rehber: [
       'Tesis yerel tedarikçi, ikame kolayca bulunabilir',
       'Bölgesel önemi var, alternatif temin süresi 1-4 hafta',
@@ -132,7 +132,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
 
   {
     kod: 'S1', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 5, kritik: true, ters: true,
-    soru: 'Binanın inşa yılı, deprem yönetmeliği uyumu ve yapısal hasar riski nasıl değerlendirilir? (AADY Md.11-25)',
+    soru: 'Binanın inşa yılı, deprem yönetmeliği uyumu ve yapısal hasar riski nasıl değerlendirilir?',
     rehber: [
       '2019 sonrası, TBDY uyumlu, yapısal değerlendirme tamam',
       '2007-2018 arası, deprem yönetmeliğine uygun',
@@ -142,7 +142,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'S2', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 4, kritik: true, ters: true,
-    soru: 'Zemin sınıflaması, sıvılaşma ve oturma potansiyeli nasıl? (AADY Md.23-24)',
+    soru: 'Zemin sınıflaması, sıvılaşma ve oturma potansiyeli nasıl?',
     rehber: [
       'ZA/ZB zemin, sıvılaşma riski yok, etüt raporu mükemmel',
       'ZC zemin, etüt raporu mevcut, risk düşük',
@@ -162,7 +162,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'S4', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 4, kritik: false, ters: true,
-    soru: 'Kritik üretim ekipmanı ve makinelerin afet anında hasar görme riski nasıl? (AADY Md.65)',
+    soru: 'Kritik üretim ekipmanı ve makinelerin afet anında hasar görme riski nasıl?',
     rehber: [
       'Tüm kritik ekipman ankrajlı, titreşim izolatörlü',
       'Büyük ekipman sabitlenmiş, küçükler kısmen',
@@ -223,7 +223,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'S10', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 4, kritik: true, ters: true,
-    soru: 'Operasyonun tek bir makine, sistem, process veya kilit kişiye bağımlılık düzeyi (TOC SPOF analizi)?',
+    soru: 'Operasyonun tek bir makine, sistem, process veya kilit kişiye bağımlılık düzeyi?',
     rehber: [
       'Tam paralel kapasite, hiçbir SPOF tespit edilmedi',
       'Kısmi bağımlılık, yedek plan mevcut',
@@ -342,7 +342,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   // ── Acil Durum Planlaması (Y6-Y10) ────────────────────────
   {
     kod: 'Y6', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
-    soru: 'Afet ve Acil Durum Yönetim Planı (AADYP) güncel, test edilmiş ve tüm personele duyurulmuş mu? (AADY Md.67-68)',
+    soru: 'Afet ve Acil Durum Yönetim Planı (AADYP) güncel, test edilmiş ve tüm personele duyurulmuş mu?',
     rehber: [
       'Plan yok',
       'Var ama hiç güncellenmemiş ve tatbikat yapılmamış',
@@ -362,7 +362,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'Y8', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
-    soru: 'Alternatif üretim yeri (yedek tesis) veya fason üretim anlaşması belirlenmiş ve aktif mi? (AADY Md.77)',
+    soru: 'Alternatif üretim yeri (yedek tesis) veya fason üretim anlaşması belirlenmiş ve aktif mi?',
     rehber: [
       'Alternatif tesis veya anlaşma yok',
       'Fikir aşamasında, somut adım atılmamış',
@@ -394,7 +394,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   // ── Fiziksel Güvenlik Sistemleri (Y11-Y18) ─────────────────
   {
     kod: 'Y11', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
-    soru: 'Yangın algılama, ihbar, sprinkler ve söndürme sistemleri mevcut ve periyodik kontrollü mu? (AADY Md.33-39)',
+    soru: 'Yangın algılama, ihbar, sprinkler ve söndürme sistemleri mevcut ve periyodik kontrollü mu?',
     rehber: [
       'Hiç yok',
       'Yalnızca taşınabilir söndürücü var',
@@ -404,7 +404,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'Y12', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
-    soru: 'Enerji güvenliği: çift besleme, topraklama, kaçak akım koruması, yedek jeneratör ve UPS mevcut mu? (AADY Md.43-48)',
+    soru: 'Enerji güvenliği: çift besleme, topraklama, kaçak akım koruması, yedek jeneratör ve UPS mevcut mu?',
     rehber: [
       'Hiçbiri yok',
       'Yalnızca jeneratör var',
@@ -414,7 +414,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'Y13', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: false, ters: false,
-    soru: 'Sel/taşkın önlemleri: su geçirmez bariyer, tahliye pompası, algılama sistemi var mı? (AADY Md.40-42)',
+    soru: 'Sel/taşkın önlemleri: su geçirmez bariyer, tahliye pompası, algılama sistemi var mı?',
     rehber: [
       'Hiç yok',
       'Yalnızca pompa var',
@@ -435,7 +435,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'Y15', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
-    soru: 'Makine koruma: emniyetli durdurma (ESD), aşırı ısınma koruması ve basınç tahliye valfi mevcut mu? (AADY Md.53-54)',
+    soru: 'Makine koruma: emniyetli durdurma (ESD), aşırı ısınma koruması ve basınç tahliye valfi mevcut mu?',
     rehber: [
       'Hiç yok',
       'Yalnızca manuel durdurma',
@@ -455,7 +455,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'Y17', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
-    soru: 'Acil durum yönlendirme, kaçış yolu aydınlatması ve push-bar acil çıkış kapıları periyodik test ediliyor mu? (AADY Md.55-57)',
+    soru: 'Acil durum yönlendirme, kaçış yolu aydınlatması ve push-bar acil çıkış kapıları periyodik test ediliyor mu?',
     rehber: [
       'Hiç yok',
       'Yalnızca tabelalar var',
@@ -477,7 +477,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   // ── Personel ve Eğitim (Y19-Y24) ──────────────────────────
   {
     kod: 'Y19', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
-    soru: 'Afet operasyon personeli: ilkyardım, hafif USAR (arama-kurtarma) ve yangın müdahale ekipleri aktif mi? (AADY Md.138-145)',
+    soru: 'Afet operasyon personeli: ilkyardım, hafif USAR (arama-kurtarma) ve yangın müdahale ekipleri aktif mi?',
     rehber: [
       'Hiç yok',
       'Yalnızca temel ilkyardım sertifikalı personel var',
@@ -497,7 +497,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'Y21', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
-    soru: 'Yönetici ve personele yönelik düzenli afet yönetimi eğitimi ve farkındalık programı uygulanıyor mu? (AADY Md.71)',
+    soru: 'Yönetici ve personele yönelik düzenli afet yönetimi eğitimi ve farkındalık programı uygulanıyor mu?',
     rehber: [
       'Hiç yapılmıyor',
       'İşe girişte tek seferlik yapılıyor',
@@ -507,7 +507,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'Y22', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
-    soru: 'Düzenli tatbikat: masa başı ve tam saha tatbikatları yapılıyor, öğrenilen dersler kayıt altına alınıyor mu? (AADY Md.72)',
+    soru: 'Düzenli tatbikat: masa başı ve tam saha tatbikatları yapılıyor, öğrenilen dersler kayıt altına alınıyor mu?',
     rehber: [
       'Hiç tatbikat yapılmıyor',
       'Yılda bir masa başı tatbikatı',
@@ -517,7 +517,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'Y23', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: false, ters: false,
-    soru: 'Aktif Acil Durum Ekipleri (ADE): görev tanımı, iletişim hiyerarşisi ve 7/24 ulaşılabilirlik sağlanmış mı? (AADY Md.73)',
+    soru: 'Aktif Acil Durum Ekipleri (ADE): görev tanımı, iletişim hiyerarşisi ve 7/24 ulaşılabilirlik sağlanmış mı?',
     rehber: [
       'ADE yok',
       'ADE var, görev tanımı belirsiz',
@@ -659,7 +659,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
 
   {
     kod: 'HRO1', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 5, kritik: true, ters: false,
-    soru: 'Başarısızlığa takıntı: personel "sistemimiz güvenli, sorun olmaz" varsayımından kaçınıyor mu? (HRO İlke 1)',
+    soru: 'Başarısızlığa takıntı: personel "sistemimiz güvenli, sorun olmaz" varsayımından kaçınıyor mu?',
     rehber: [
       'Aşırı güven yaygın, uyarı sinyalleri görmezden geliniyor',
       'Kısmi farkındalık, bazı ekiplerde iyilik',
@@ -669,7 +669,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'HRO2', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
-    soru: 'Basitleştirmeye direnç: tesis, karmaşık sorunları tek bir nedene indirgemekten kaçınıyor mu? (HRO İlke 2)',
+    soru: 'Basitleştirmeye direnç: tesis, karmaşık sorunları tek bir nedene indirgemekten kaçınıyor mu?',
     rehber: [
       'Kök neden analizi yapılmıyor, tek nedene bağlanıyor',
       'Bazen çok nedenli analiz yapılıyor',
@@ -679,7 +679,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'HRO3', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
-    soru: 'Operasyona duyarlılık: saha çalışanları anormallik gördüklerinde üretimi durdurma yetkisine sahip mi? (HRO İlke 3)',
+    soru: 'Operasyona duyarlılık: saha çalışanları anormallik gördüklerinde üretimi durdurma yetkisine sahip mi?',
     rehber: [
       'Saha yetkisi yok, üretim her şeyin önünde',
       'Teorik yetki var, uygulanmıyor',
@@ -689,7 +689,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'HRO4', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
-    soru: 'Dayanıklılığa bağlılık: tesis beklenmedik olaylardan hızlı toparlanma kapasitesi geliştiriyor mu? (HRO İlke 4)',
+    soru: 'Dayanıklılığa bağlılık: tesis beklenmedik olaylardan hızlı toparlanma kapasitesi geliştiriyor mu?',
     rehber: [
       'Toparlanma planı yok, reaktif yaklaşım',
       'Kısmi toparlanma planı',
@@ -699,7 +699,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'HRO5', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
-    soru: 'Uzmanlığa saygı: kriz anında karar en üst kademeden değil en bilgili kişiden mi alınıyor? (HRO İlke 5)',
+    soru: 'Uzmanlığa saygı: kriz anında karar en üst kademeden değil en bilgili kişiden mi alınıyor?',
     rehber: [
       'Her zaman hiyerarşi, uzman görüşü görmezden geliniyor',
       'Bazen uzman görüşüne başvuruluyor',
