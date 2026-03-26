@@ -66,9 +66,6 @@ function SoruKarti({ soru, puan, onDegis }: { soru: SoruSanayi; puan: number; on
         <span style={{ fontSize: 11, fontWeight: 700, color: 'white', background: soru.boyut === 'H' ? '#EF4444' : soru.boyut === 'C' || soru.boyut === 'HRO' ? '#10B981' : '#F97316', padding: '2px 8px', borderRadius: 4, flexShrink: 0 }}>
           {soru.kod}
         </span>
-        {soru.natech_flag && (
-          <span style={{ fontSize: 10, color: '#7C3AED', background: '#F5F3FF', border: '1px solid #DDD6FE', padding: '1px 6px', borderRadius: 4, fontWeight: 600 }}>NATECH</span>
-        )}
         <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.55, margin: 0 }}>{soru.soru}</p>
       </div>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -423,22 +420,10 @@ export default function TesisFormuPage() {
         {/* ── ADIM 6 — Sonuç ── */}
         {adim === 6 && (
           <div>
-            <div style={{ background: 'white', borderRadius: 16, border: `1px solid ${BORDER}`, padding: 40, textAlign: 'center', marginBottom: 20 }}>
-              <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 6, letterSpacing: 1, textTransform: 'uppercase' as const }}>URI Skoru</div>
-              <div style={{ fontSize: 88, fontWeight: 900, color: uriR, fontFamily: 'DM Mono, monospace', lineHeight: 1 }}>{uri}</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: uriR, marginTop: 8 }}>{uriEtiket(uri)}</div>
-              <div style={{ fontSize: 13, color: '#94A3B8', marginTop: 6 }}>
-                {(envanter['E01'] as string) || '—'}
-              </div>
-              <div style={{ fontSize: 11, color: '#CBD5E1', marginTop: 4 }}>
-                {new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })}
-              </div>
-            </div>
-
             {!gonderildi ? (
-              <div style={{ background: 'white', borderRadius: 12, border: `1px solid ${BORDER}`, padding: 24, textAlign: 'center' }}>
-                <p style={{ fontSize: 14, color: '#374151', marginBottom: 16 }}>
-                  Formunuzu göndererek İSO Afet Yönetimi Şubesi&apos;ne iletebilirsiniz.
+              <div style={{ background: 'white', borderRadius: 12, border: `1px solid ${BORDER}`, padding: 32, textAlign: 'center' }}>
+                <p style={{ fontSize: 14, color: '#374151', marginBottom: 20 }}>
+                  Tüm bölümler tamamlandı. Formunuzu göndererek İSO Afet Yönetimi Şubesi&apos;ne iletebilirsiniz.
                 </p>
                 {hata && <p style={{ color: '#EF4444', fontSize: 13, marginBottom: 12 }}>{hata}</p>}
                 <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
@@ -450,12 +435,19 @@ export default function TesisFormuPage() {
                 </div>
               </div>
             ) : (
-              <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 12, padding: 28, textAlign: 'center' }}>
-                <div style={{ fontSize: 32, marginBottom: 8 }}>✅</div>
-                <p style={{ fontSize: 16, fontWeight: 700, color: '#15803D', marginBottom: 6 }}>Teşekkürler!</p>
-                <p style={{ fontSize: 13, color: '#166534' }}>
-                  Tesis değerlendirmeniz başarıyla kaydedildi. İSO Afet Yönetimi Şubesi en kısa sürede sizinle iletişime geçecektir.
+              <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 16, padding: 48, textAlign: 'center' }}>
+                <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#22C55E', color: 'white', fontSize: 32, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>✓</div>
+                <h2 style={{ fontSize: 20, fontWeight: 800, color: '#15803D', marginBottom: 12 }}>Formunuz Başarıyla Alındı</h2>
+                <p style={{ fontSize: 14, color: '#166534', maxWidth: 420, margin: '0 auto 20px', lineHeight: 1.6 }}>
+                  Değerlendirmeniz İSO Afet Yönetimi Şubesi uzmanları tarafından incelenecek ve en kısa sürede sizinle iletişime geçilecektir.
                 </p>
+                <div style={{ background: 'white', borderRadius: 8, padding: '10px 20px', display: 'inline-block', border: '1px solid #BBF7D0' }}>
+                  <span style={{ fontSize: 12, color: '#64748B' }}>Referans No: </span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#15803D', fontFamily: 'DM Mono, monospace' }}>{token}</span>
+                </div>
+                <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 12 }}>
+                  {new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                </div>
               </div>
             )}
           </div>
