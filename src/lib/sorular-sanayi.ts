@@ -124,6 +124,56 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
       'Stratejik / ihracat ürünü, global tedarik zinciri etkisi',
     ],
   },
+  {
+    kod: 'T9', bolum: 'TEHLİKE', boyut: 'H', agirlik: 4, kritik: true, ters: true,
+    soru: 'Tesisin bulunduğu bölgede sel, taşkın veya aşırı yağış riski ve son 10 yıldaki tekerrür sıklığı nedir?',
+    rehber: [
+      'Taşkın alanı dışında, Q500 sınırı ötesinde, hiç su baskını yaşanmadı',
+      'Q100 dışında, bölgede seyrek su baskını geçmişi var',
+      'Q100 taşkın alanı içinde veya son 10 yılda 1-2 kez su baskını yaşandı',
+      'Q50 veya daha sık tekerrürlü taşkın alanı, rutin su baskını problemi var',
+    ],
+  },
+  {
+    kod: 'T10', bolum: 'TEHLİKE', boyut: 'H', agirlik: 3, kritik: false, ters: true,
+    soru: 'Aşırı sıcak veya soğuk hava dalgaları tesisin üretim kapasitesini ve enerji maliyetlerini nasıl etkiliyor?',
+    rehber: [
+      'İklim kontrolü tam, aşırı sıcak/soğuk üretimi etkilemiyor',
+      'Kısmi etki var, üretim yavaşlıyor ancak durmuyor',
+      'Yılda birkaç kez üretim durması veya ciddi enerji maliyeti artışı',
+      'Aşırı hava olayları üretimi düzenli olarak durduruyor, soğutma/ısıtma altyapısı yetersiz',
+    ],
+  },
+  {
+    kod: 'T11', bolum: 'TEHLİKE', boyut: 'H', agirlik: 3, kritik: false, ters: true,
+    soru: 'Tesisin enerji tüketim profili iklim kaynaklı şebeke yükü artışlarına (yaz zirvesi, kış zirvesi) ne kadar duyarlı?',
+    rehber: [
+      'Yenilenebilir enerji + kendi üretim kapasitesi var, şebekeye bağımlılık düşük',
+      'Yedek jeneratör mevcut, kısa süreli kesintiler tolere edilebilir',
+      'Şebekeye tam bağımlı, zirve dönemlerinde kesinti yaşandı',
+      'Tek hat, yedek yok, enerji kesintisi üretimi hemen durduruyor',
+    ],
+  },
+  {
+    kod: 'T12', bolum: 'TEHLİKE', boyut: 'H', agirlik: 4, kritik: true, ters: true,
+    soru: 'Tesisin bulunduğu bölgede toplumsal olaylar, grev, sabotaj veya terör saldırısı riski nasıl değerlendiriliyor?',
+    rehber: [
+      'Düşük risk bölgesi, geçmişte hiç olay yaşanmadı, güvenli sanayi bölgesi',
+      'Düşük-orta risk, bölgede nadiren küçük çaplı olaylar yaşanıyor',
+      'Orta risk, tesis sektörü veya konumu nedeniyle hedef olabilir, güvenlik önlemleri kısmi',
+      'Yüksek risk, kritik altyapı veya stratejik tesis, daha önce güvenlik olayı yaşandı',
+    ],
+  },
+  {
+    kod: 'T13', bolum: 'TEHLİKE', boyut: 'H', agirlik: 5, kritik: true, ters: true,
+    soru: 'Tesisin tedarik zinciri, üretim ortağı veya ihracat pazarları jeopolitik çatışma veya savaş bölgelerine yakınlık açısından nasıl değerlendiriliyor?',
+    rehber: [
+      'Tedarik zinciri tamamen iç piyasaya yönelik, jeopolitik etki minimal',
+      'Bazı tedarikçi veya pazarlar risk bölgelerine yakın, alternatif mevcut',
+      'Kritik hammadde veya ihracat pazarlarının önemli kısmı risk bölgelerinde, ikame zor',
+      'Tedarik zinciri veya pazar yapısı doğrudan çatışma bölgesine bağımlı, ciddi kırılganlık',
+    ],
+  },
 
   // ══════════════════════════════════════════════════════════════
   // BÖLÜM 2 — SAVUNMASIZLIK / MARUZİYET (S1-S15)  ·  boyut: F/E
@@ -811,8 +861,8 @@ export const DESTEK_KAPASITESI: DestekKapasite[] = [
 
 // Meta bilgi
 export const SANAYI_SORU_META = {
-  toplam: 63,
-  h:  8,
+  toplam: 68,
+  h:  13,
   fe: 15,
   c:  35,
   hro: 5,
@@ -820,6 +870,6 @@ export const SANAYI_SORU_META = {
   destek_kalemi: 22,
   kaynaklar: ['HIFYEA Metodolojisi', 'ISO 22301:2019', 'AFAD AADY 2025', 'TOC / HRO Sentezi', 'Hikmet Hoca AADY Kontrol Listesi 2025', 'SATAKOL/MARAP'],
   sektor: 'uretim',
-  versiyon: '3.0',
+  versiyon: '3.1',
   tarih: '2026-03-27',
 }

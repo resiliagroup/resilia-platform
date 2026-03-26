@@ -238,6 +238,7 @@ export default function TesisFormuPage() {
   const [gonderiyor, setGonderiyor] = useState(false)
   const [gonderildi, setGonderildi] = useState(false)
   const [uri, setUri] = useState(0)
+  const [detayliMod, setDetayliMod] = useState(false)
 
   useEffect(() => { if (adim === 6) setUri(hesaplaUri(puanlar)) }, [adim, puanlar])
 
@@ -351,50 +352,58 @@ export default function TesisFormuPage() {
 
         {/* ── ADIM 1 — Tehlike ── */}
         {adim === 1 && (
-          <div>
-            <div style={{ marginBottom: 16 }}>
-              <h2 style={{ fontSize: 16, fontWeight: 700, color: NAVY }}>Bölüm 1 — Tehlike Analizi</h2>
-              <p style={{ fontSize: 12, color: '#94A3B8' }}>AFAD AADY 2025 · NATECH · {TEHLIKE.length} soru</p>
-            </div>
-            {TEHLIKE.map(s => <SoruKarti key={s.kod} soru={s} puan={puanlar[s.kod] ?? 0} onDegis={v => setPuan(s.kod, v)} />)}
-            <NavButtons onGeri={geri} onIleri={ileri} />
-          </div>
+          <BolumSoru
+            baslik="Bölüm 1 — Tehlike Analizi"
+            sorular={TEHLIKE}
+            puanlar={puanlar}
+            setPuan={setPuan}
+            detayliMod={detayliMod}
+            onDetayliMod={() => setDetayliMod(true)}
+            onGeri={geri}
+            onIleri={ileri}
+          />
         )}
 
         {/* ── ADIM 2 — Kırılganlık ── */}
         {adim === 2 && (
-          <div>
-            <div style={{ marginBottom: 16 }}>
-              <h2 style={{ fontSize: 16, fontWeight: 700, color: NAVY }}>Bölüm 2 — Kırılganlık & Maruziyet</h2>
-              <p style={{ fontSize: 12, color: '#94A3B8' }}>Yapısal · Operasyonel · İnsan · {KIRILGAN.length} soru</p>
-            </div>
-            {KIRILGAN.map(s => <SoruKarti key={s.kod} soru={s} puan={puanlar[s.kod] ?? 0} onDegis={v => setPuan(s.kod, v)} />)}
-            <NavButtons onGeri={geri} onIleri={ileri} />
-          </div>
+          <BolumSoru
+            baslik="Bölüm 2 — Kırılganlık & Maruziyet"
+            sorular={KIRILGAN}
+            puanlar={puanlar}
+            setPuan={setPuan}
+            detayliMod={detayliMod}
+            onDetayliMod={() => setDetayliMod(true)}
+            onGeri={geri}
+            onIleri={ileri}
+          />
         )}
 
         {/* ── ADIM 3 — Kapasite ── */}
         {adim === 3 && (
-          <div>
-            <div style={{ marginBottom: 16 }}>
-              <h2 style={{ fontSize: 16, fontWeight: 700, color: NAVY }}>Bölüm 3 — Kapasite & Yönetim</h2>
-              <p style={{ fontSize: 12, color: '#94A3B8' }}>ISO 22301 · AFAD AADY · {KAPASITE.length} soru</p>
-            </div>
-            {KAPASITE.map(s => <SoruKarti key={s.kod} soru={s} puan={puanlar[s.kod] ?? 0} onDegis={v => setPuan(s.kod, v)} />)}
-            <NavButtons onGeri={geri} onIleri={ileri} />
-          </div>
+          <BolumSoru
+            baslik="Bölüm 3 — Kapasite & Yönetim"
+            sorular={KAPASITE}
+            puanlar={puanlar}
+            setPuan={setPuan}
+            detayliMod={detayliMod}
+            onDetayliMod={() => setDetayliMod(true)}
+            onGeri={geri}
+            onIleri={ileri}
+          />
         )}
 
         {/* ── ADIM 4 — HRO ── */}
         {adim === 4 && (
-          <div>
-            <div style={{ marginBottom: 16 }}>
-              <h2 style={{ fontSize: 16, fontWeight: 700, color: NAVY }}>Bölüm 4 — HRO Olgunluğu</h2>
-              <p style={{ fontSize: 12, color: '#94A3B8' }}>Yüksek Güvenilirlik Organizasyonu İlkeleri · {HRO.length} soru</p>
-            </div>
-            {HRO.map(s => <SoruKarti key={s.kod} soru={s} puan={puanlar[s.kod] ?? 0} onDegis={v => setPuan(s.kod, v)} />)}
-            <NavButtons onGeri={geri} onIleri={ileri} />
-          </div>
+          <BolumSoru
+            baslik="Bölüm 4 — HRO Olgunluğu"
+            sorular={HRO}
+            puanlar={puanlar}
+            setPuan={setPuan}
+            detayliMod={detayliMod}
+            onDetayliMod={() => setDetayliMod(true)}
+            onGeri={geri}
+            onIleri={ileri}
+          />
         )}
 
         {/* ── ADIM 5 — Destek Kapasitesi ── */}
@@ -458,6 +467,65 @@ export default function TesisFormuPage() {
       <div style={{ borderTop: `1px solid ${BORDER}`, padding: '16px 24px', textAlign: 'center', fontSize: 11, color: '#94A3B8', background: 'white' }}>
         Bu form İstanbul Sanayi Odası Afet Yönetimi Şubesi adına Omniversel tarafından işlenmektedir.
       </div>
+    </div>
+  )
+}
+
+// ─── Adaptif Bölüm Soru Bileşeni ─────────────────────────────────────────────
+function BolumSoru({
+  baslik, sorular, puanlar, setPuan, detayliMod, onDetayliMod, onGeri, onIleri,
+}: {
+  baslik: string
+  sorular: SoruSanayi[]
+  puanlar: Record<string, number>
+  setPuan: (kod: string, val: number) => void
+  detayliMod: boolean
+  onDetayliMod: () => void
+  onGeri: () => void
+  onIleri: () => void
+}) {
+  const kritikler = sorular.filter(s => s.kritik)
+  const ekler     = sorular.filter(s => !s.kritik)
+  const gosterilenler = detayliMod ? sorular : kritikler
+  const yanitlanan = gosterilenler.filter(s => puanlar[s.kod] !== undefined).length
+  const toplamGos  = gosterilenler.length
+  const tahminiDak = Math.ceil(toplamGos * 0.75)
+
+  return (
+    <div>
+      <div style={{ marginBottom: 16 }}>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: NAVY, marginBottom: 4 }}>{baslik}</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' as const }}>
+          <span style={{ fontSize: 12, color: '#94A3B8' }}>
+            {detayliMod ? `${toplamGos} soru` : `${kritikler.length} kritik soru`} · ~{tahminiDak} dakika
+          </span>
+          {/* Doluluk progress bar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 120 }}>
+            <div style={{ flex: 1, height: 4, background: '#E2E8F0', borderRadius: 2, overflow: 'hidden' }}>
+              <div style={{ height: '100%', background: TEAL, width: toplamGos ? `${(yanitlanan / toplamGos) * 100}%` : '0%', transition: 'width .2s' }} />
+            </div>
+            <span style={{ fontSize: 11, color: '#94A3B8', whiteSpace: 'nowrap' as const }}>{yanitlanan}/{toplamGos}</span>
+          </div>
+        </div>
+      </div>
+
+      {gosterilenler.map(s => (
+        <SoruKarti key={s.kod} soru={s} puan={puanlar[s.kod] ?? 0} onDegis={v => setPuan(s.kod, v)} />
+      ))}
+
+      {!detayliMod && ekler.length > 0 && (
+        <div style={{ margin: '16px 0', padding: '14px 20px', border: `1px dashed ${TEAL}`, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: '#F0FDFA' }}>
+          <span style={{ fontSize: 13, color: '#0F766E' }}>
+            Bu bölümde <b>{ekler.length}</b> ek soru daha var
+          </span>
+          <button onClick={onDetayliMod}
+            style={{ padding: '7px 18px', border: `1.5px solid ${TEAL}`, borderRadius: 8, background: 'white', color: TEAL, fontWeight: 700, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap' as const }}>
+            Detaylı Değerlendirme Ekle
+          </button>
+        </div>
+      )}
+
+      <NavButtons onGeri={onGeri} onIleri={onIleri} />
     </div>
   )
 }
