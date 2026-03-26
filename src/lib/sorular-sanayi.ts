@@ -14,6 +14,26 @@ export type SoruSanayi = Soru & {
   natech_flag?: boolean
 }
 
+// Tesis Kimlik & Yapısal Envanter (URI hesabına dahil değil — kalıcı tesis verisi)
+export type TesisEnvanterAlani = {
+  kod: string
+  label: string
+  tip: 'text' | 'number' | 'select' | 'checkbox' | 'belge' | 'koordinat' | 'multiselect'
+  zorunlu: boolean
+  secenek?: string[]
+  aciklama?: string
+}
+
+// Destek Kapasitesi (URI hesabına dahil değil — İSO kaynak havuzu)
+export type DestekKapasite = {
+  kod: string
+  label: string
+  tip: 'number' | 'checkbox' | 'select'
+  birim?: string
+  aciklama?: string
+  secenek?: string[]
+}
+
 export const SORULAR_SANAYI: SoruSanayi[] = [
 
   // ══════════════════════════════════════════════════════════════
@@ -695,6 +715,100 @@ export const SORULAR_SANAYI_F    = SORULAR_SANAYI.filter(s => s.bolum === 'KIRIL
 export const SORULAR_SANAYI_C    = SORULAR_SANAYI.filter(s => s.bolum === 'KAPASİTE' && s.boyut !== 'HRO')
 export const SORULAR_SANAYI_HRO  = SORULAR_SANAYI.filter(s => s.boyut === 'HRO')
 
+// ══════════════════════════════════════════════════════════════
+// BÖLÜM 0 — TESİS KİMLİK & YAPISAL ENVANTER
+// URI hesabına dahil değil — kalıcı tesis verisi, İSO Check-Up
+// Kaynak: Hikmet Hoca AADY Kontrol Listesi 2025 + SATAKOL/MARAP
+// ══════════════════════════════════════════════════════════════
+export const TESIS_ENVANTER: TesisEnvanterAlani[] = [
+
+  // ── Kimlik Bilgileri ──────────────────────────────────────
+  { kod: 'E01', label: 'Firma Adı ve Ünvanı', tip: 'text', zorunlu: true },
+  { kod: 'E02', label: 'Ticaret Sicil No', tip: 'text', zorunlu: false },
+  { kod: 'E03', label: 'NACE Kodu', tip: 'text', zorunlu: true, aciklama: 'Örn: 20.13 — Diğer inorganik temel kimyasalların imalatı' },
+  { kod: 'E04', label: 'ISG Tehlike Sınıfı', tip: 'select', zorunlu: true, secenek: ['1 — Çok Tehlikeli', '2 — Tehlikeli', '3 — Az Tehlikeli'] },
+  { kod: 'E05', label: 'Faaliyet Tanımı', tip: 'text', zorunlu: false },
+  { kod: 'E06', label: 'Üretilen Ürünlerin Stratejik Önemi', tip: 'select', zorunlu: false, secenek: ['Ticari (yerel)', 'Bölgesel', 'Ulusal', 'Global / İhracat'] },
+  { kod: 'E07', label: 'Yıllık İhracat Cirosu (USD)', tip: 'select', zorunlu: false, secenek: ['İhracat yok', '< 500K', '500K – 5M', '5M – 50M', '> 50M'] },
+  { kod: 'E08', label: 'Organize Sanayi Bölgesi İçinde mi?', tip: 'checkbox', zorunlu: false },
+
+  // ── Çalışan Bilgileri ─────────────────────────────────────
+  { kod: 'E09', label: 'Beyaz Yaka Çalışan Sayısı', tip: 'number', zorunlu: false },
+  { kod: 'E10', label: 'Mavi Yaka Çalışan Sayısı', tip: 'number', zorunlu: true },
+  { kod: 'E11', label: 'Vardiya Sayısı', tip: 'select', zorunlu: false, secenek: ['1 vardiya', '2 vardiya', '3 vardiya (7/24)'] },
+
+  // ── Konum & Yapısal ───────────────────────────────────────
+  { kod: 'E12', label: 'Konum (Enlem / Boylam)', tip: 'koordinat', zorunlu: true, aciklama: 'GPS veya haritadan pin ile doğrulayın' },
+  { kod: 'E13', label: 'İlçe', tip: 'text', zorunlu: true },
+  { kod: 'E14', label: 'Binanın Kullanım Amacı', tip: 'multiselect', zorunlu: false, secenek: ['Üretim', 'Depo', 'Ofis / İdari', 'Mağaza / Showroom'] },
+  { kod: 'E15', label: 'İnşa Tipi', tip: 'select', zorunlu: true, secenek: ['Betonarme', 'Çelik', 'Prefabrik', 'Kârgir', 'Ahşap'] },
+  { kod: 'E16', label: 'İnşa Tarihi (Yıl)', tip: 'number', zorunlu: true, aciklama: 'Bilinmiyorsa yaklaşık yıl girin' },
+  { kod: 'E17', label: 'Yapı Kullanım Belgesi (İskan)', tip: 'select', zorunlu: false, secenek: ['Var', 'Yok', 'Başvuruda'] },
+  { kod: 'E18', label: 'Sahiplik Durumu', tip: 'select', zorunlu: false, secenek: ['Mülk Sahibi', 'Kiracı'] },
+  { kod: 'E19', label: 'Kapalı Alan (m²)', tip: 'number', zorunlu: false },
+  { kod: 'E20', label: 'Açık Alan (m²)', tip: 'number', zorunlu: false },
+
+  // ── Yapısal Belgeler ──────────────────────────────────────
+  { kod: 'E21', label: 'Mimari Proje', tip: 'belge', zorunlu: false },
+  { kod: 'E22', label: 'Taşıyıcı Sistem Proje Çizimleri', tip: 'belge', zorunlu: false },
+  { kod: 'E23', label: 'Taşıyıcı Sistem Proje Hesap Dosyası', tip: 'belge', zorunlu: false },
+  { kod: 'E24', label: 'Onaylı Projeden Sonra Eklenti Yapılmış mı?', tip: 'select', zorunlu: false, secenek: ['Hayır', 'Evet — kayıt altında', 'Evet — kayıtsız'] },
+  { kod: 'E25', label: 'Onarım ve/veya Güçlendirme Çalışması', tip: 'belge', zorunlu: false, aciklama: 'Varsa tarihi ile birlikte' },
+  { kod: 'E26', label: 'Zemin Sınıflaması (TBDY)', tip: 'select', zorunlu: false, secenek: ['ZA', 'ZB', 'ZC', 'ZD', 'ZE', 'ZF', 'Bilinmiyor'] },
+  { kod: 'E27', label: 'Zemin Etüt Çalışması', tip: 'belge', zorunlu: false },
+  { kod: 'E28', label: 'Binanın Yapısal Durumu (genel kanı)', tip: 'select', zorunlu: false, secenek: ['1 — Çok Kötü', '2 — Kötü', '3 — İyi', '4 — Çok İyi'] },
+
+  // ── Süreç & Tehlikeli Madde ───────────────────────────────
+  { kod: 'E29', label: 'Riskli Girdi (hammadde)', tip: 'text', zorunlu: false, aciklama: 'Parlayıcı, patlayıcı, yanıcı, yakıcı vb.' },
+  { kod: 'E30', label: 'Riskli Proses / Süreç', tip: 'text', zorunlu: false },
+  { kod: 'E31', label: 'Riskli Ürün', tip: 'text', zorunlu: false },
+  { kod: 'E32', label: 'Riskli Depolama', tip: 'text', zorunlu: false },
+  { kod: 'E33', label: 'Riskli Atık', tip: 'text', zorunlu: false },
+  { kod: 'E34', label: 'Riskli Makine-Ekipman', tip: 'text', zorunlu: false },
+  { kod: 'E35', label: 'Riskli Lojistik (tedarik/nakliye)', tip: 'text', zorunlu: false },
+
+  // ── Sigorta ───────────────────────────────────────────────
+  { kod: 'E36', label: 'İşyeri Sigortası', tip: 'select', zorunlu: false, secenek: ['Yok', 'Temel (bina)', 'Kapsamlı', 'Kapsamlı + İş Durması'] },
+]
+
+// ══════════════════════════════════════════════════════════════
+// BÖLÜM 4 — DESTEK KAPASİTESİ ENVANTERİ
+// URI hesabına dahil değil — İSO Kaynak Havuzu & Müdahale Planlaması
+// Kaynak: Hikmet Hoca AADY Kontrol Listesi 2025 — Afet Sonrası Destek
+// ══════════════════════════════════════════════════════════════
+export const DESTEK_KAPASITESI: DestekKapasite[] = [
+
+  // ── Alan & Lokasyon ───────────────────────────────────────
+  { kod: 'D01', label: 'Tesis Alanı Afet Sonrası Destek Tesisi Olarak Kullanılabilir mi?', tip: 'checkbox' },
+  { kod: 'D02', label: 'Barındırma Kapasitesi (kişi)', tip: 'number', birim: 'kişi', aciklama: 'Afet sonrası geçici barınma için tesis kapasitesi' },
+  { kod: 'D03', label: 'Kullanım Amaçları', tip: 'select', birim: '', secenek: ['İncinebilir nüfus (yaşlı/engelli/çocuk)', 'Kritik altyapı destek tesisi', 'Okul/hastane/spor tesisi benzeri özel tesis', 'Lojistik üs'] },
+
+  // ── Ekipman ───────────────────────────────────────────────
+  { kod: 'D04', label: 'Seyyar Jeneratör', tip: 'number', birim: 'adet (KW kapasitesiyle)' },
+  { kod: 'D05', label: 'Forklift', tip: 'number', birim: 'adet (ton)' },
+  { kod: 'D06', label: 'Seyyar Vinç', tip: 'number', birim: 'adet (HP)' },
+  { kod: 'D07', label: 'Kamyon', tip: 'number', birim: 'adet (ton)' },
+  { kod: 'D08', label: 'Soğuk Zincir Taşımacılığı Aracı', tip: 'number', birim: 'adet (ton)' },
+  { kod: 'D09', label: 'Konteyner', tip: 'number', birim: 'adet' },
+  { kod: 'D10', label: 'Çadır', tip: 'number', birim: 'adet' },
+  { kod: 'D11', label: 'Prefabrik Yapı', tip: 'number', birim: 'adet' },
+  { kod: 'D12', label: 'Transpalet', tip: 'number', birim: 'adet (ton)' },
+  { kod: 'D13', label: 'Beton Kırıcı', tip: 'number', birim: 'adet' },
+  { kod: 'D14', label: 'Medikal Ekipman / Cihaz', tip: 'checkbox', aciklama: 'Varsa türünü belirtin' },
+
+  // ── Sarf Malzeme ──────────────────────────────────────────
+  { kod: 'D15', label: 'Hazır Yemek Üretim Kapasitesi', tip: 'number', birim: 'öğün/gün' },
+  { kod: 'D16', label: 'Gıda Malzemesi (Un/Şeker/Yağ)', tip: 'checkbox', aciklama: 'Varsa stok miktarını belirtin' },
+  { kod: 'D17', label: 'İçme Suyu Depolama', tip: 'number', birim: 'litre' },
+
+  // ── Uzman Personel ────────────────────────────────────────
+  { kod: 'D18', label: 'İlkyardım Sertifikalı Personel', tip: 'number', birim: 'kişi' },
+  { kod: 'D19', label: 'Yangın Söndürme Eğitimli Personel', tip: 'number', birim: 'kişi' },
+  { kod: 'D20', label: 'USAR (Arama-Kurtarma) Eğitimli Personel', tip: 'number', birim: 'kişi' },
+  { kod: 'D21', label: 'ISO 22301 Sertifikalı Uzman', tip: 'number', birim: 'kişi' },
+  { kod: 'D22', label: 'Siber Güvenlik / OT Uzmanı', tip: 'number', birim: 'kişi' },
+]
+
 // Meta bilgi
 export const SANAYI_SORU_META = {
   toplam: 63,
@@ -702,8 +816,10 @@ export const SANAYI_SORU_META = {
   fe: 15,
   c:  35,
   hro: 5,
-  kaynaklar: ['HIFYEA Metodolojisi', 'ISO 22301:2019', 'AFAD AADY 2025', 'TOC / HRO Sentezi'],
+  envanter_alani: 36,
+  destek_kalemi: 22,
+  kaynaklar: ['HIFYEA Metodolojisi', 'ISO 22301:2019', 'AFAD AADY 2025', 'TOC / HRO Sentezi', 'Hikmet Hoca AADY Kontrol Listesi 2025', 'SATAKOL/MARAP'],
   sektor: 'uretim',
-  versiyon: '2.0',
-  tarih: '2026-03-19',
+  versiyon: '3.0',
+  tarih: '2026-03-27',
 }
