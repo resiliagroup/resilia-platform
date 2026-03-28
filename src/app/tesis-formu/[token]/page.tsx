@@ -240,6 +240,7 @@ export default function TesisFormuPage() {
   const [uri, setUri] = useState(0)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [cozumler, setCozumler] = useState<any[]>([])
+  const [tehlikeSinifi, setTehlikeSinifi] = useState<{ sinif: number; label: string; mevzuat: string[] } | null>(null)
   const [detayliMod, setDetayliMod] = useState(false)
   const [tesisYuklendi, setTesisYuklendi] = useState(false)
   const [facilityId, setFacilityId] = useState<string | null>(null)
@@ -271,6 +272,29 @@ export default function TesisFormuPage() {
   useEffect(() => { if (adim === 6) setUri(hesaplaUri(puanlar)) }, [adim, puanlar])
 
   const setEnv = (kod: string, val: unknown) => setEnvanter(e => ({ ...e, [kod]: val }))
+
+  const naceChange = async (nace: string) => {
+    setEnvanter(prev => ({ ...prev, E03: nace }))
+    if (nace.length >= 5) {
+      const r = await fetch(
+        `${SUPA_URL}/rest/v1/nace_tehlike?nace_alti_kod=eq.${encodeURIComponent(nace)}&select=tehlike_sinifi,tehlike_label,zorunlu_mevzuat,seveso_kapsam,natech_olasilik`,
+        { headers: { 'apikey': SUPA_KEY } }
+      )
+      if (r.ok) {
+        const data = await r.json()
+        if (data.length > 0) {
+          const d = data[0]
+          setTehlikeSinifi({ sinif: d.tehlike_sinifi, label: d.tehlike_label, mevzuat: d.zorunlu_mevzuat ?? [] })
+          const isgLabel = d.tehlike_sinifi === 1 ? '1 — Çok Tehlikeli' : d.tehlike_sinifi === 2 ? '2 — Tehlikeli' : '3 — Az Tehlikeli'
+          setEnvanter(prev => ({ ...prev, E04: isgLabel }))
+        } else {
+          setTehlikeSinifi(null)
+        }
+      }
+    } else {
+      setTehlikeSinifi(null)
+    }
+  }
   const setPuan = (kod: string, val: number) => setPuanlar(p => ({ ...p, [kod]: val }))
   const setDst = (kod: string, val: unknown) => setDestek(d => ({ ...d, [kod]: val }))
 
@@ -391,8 +415,9 @@ export default function TesisFormuPage() {
         .map(([k]) => k)
         .slice(0, 8)
       if (dusukPuanlar.length > 0) {
+        const sinifFilter = tehlikeSinifi ? `&tehlike_siniflar=cs.{${tehlikeSinifi.sinif}}` : ''
         const cozumRes = await fetch(
-          `${SUPA_URL}/rest/v1/cozum_bankasi?soru_kod=in.(${dusukPuanlar.join(',')})&aktif=eq.true&order=oncelik.asc&limit=6`,
+          `${SUPA_URL}/rest/v1/cozum_bankasi?soru_kod=in.(${dusukPuanlar.join(',')})&aktif=eq.true${sinifFilter}&order=oncelik.asc&limit=6`,
           { headers: { 'apikey': SUPA_KEY } }
         )
         const cozumData = cozumRes.ok ? await cozumRes.json() : []
@@ -463,7 +488,35 @@ export default function TesisFormuPage() {
                     {alan.aciklama && alan.tip !== 'koordinat' && (
                       <p style={{ fontSize: 11, color: '#94A3B8', marginBottom: 4 }}>{alan.aciklama}</p>
                     )}
-                    <EnvanterAlan alan={alan} deger={envanter[alan.kod]} onDegis={v => setEnv(alan.kod, v)} />
+                    <EnvanterAlan
+                      alan={alan}
+                      deger={envanter[alan.kod]}
+                      onDegis={alan.kod === 'E03' ? (v) => naceChange(String(v)) : (v) => setEnv(alan.kod, v)}
+                    />
+                    {alan.kod === 'E03' && tehlikeSinifi && (
+                      <div style={{
+                        marginTop: 8, padding: '10px 14px', borderRadius: 8,
+                        background: tehlikeSinifi.sinif === 1 ? '#FEF2F2' : tehlikeSinifi.sinif === 2 ? '#FFF7ED' : '#F0FDF4',
+                        border: `1px solid ${tehlikeSinifi.sinif === 1 ? '#FECACA' : tehlikeSinifi.sinif === 2 ? '#FED7AA' : '#BBF7D0'}`,
+                        display: 'flex', flexDirection: 'column', gap: 6,
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span style={{
+                            fontSize: 11, fontWeight: 700, padding: '2px 10px', borderRadius: 20,
+                            background: tehlikeSinifi.sinif === 1 ? '#EF4444' : tehlikeSinifi.sinif === 2 ? '#F97316' : '#22C55E',
+                            color: 'white',
+                          }}>
+                            {tehlikeSinifi.label}
+                          </span>
+                          <span style={{ fontSize: 12, color: '#374151', fontWeight: 600 }}>
+                            6331 sayılı Kanun EK-1 kapsamında sınıflandırılmıştır
+                          </span>
+                        </div>
+                        <div style={{ fontSize: 11, color: '#64748B' }}>
+                          Zorunlu mevzuat: {tehlikeSinifi.mevzuat.slice(0, 3).join(' · ')}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )
               })}
