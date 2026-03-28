@@ -1,10 +1,13 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Outfit, DM_Mono } from 'next/font/google'
 
 const outfit = Outfit({ subsets: ['latin'], weight: ['300','400','500','600','700','800','900'] })
 const dmMono = DM_Mono({ subsets: ['latin'], weight: ['300','400','500'], variable: '--font-mono' })
+
+const SUPA_URL = 'https://gqguwgbopgnpwzjwcexl.supabase.co'
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzM5OTgzMywiZXhwIjoyMDg4OTc1ODMzfQ.Ku-JRx8JFH5a3SIj7sGP_Dy_nM89NMMW34gPyxVO_qI'
 
 /* ─── DATA ──────────────────────────────────────────────── */
 const KPI = [
@@ -57,6 +60,12 @@ const IS_MODELI = [
     desc: 'Büyük ölçekli kurumsal lisanslar ve Türkiye modeli ihracatı.',
     detaylar: ['AFAD / Bakanlık entegrasyonu', 'MENA bölgesi genişleme', 'Sigorta sektörü verisi'],
     hedef: '₺35M · Y5',
+  },
+  {
+    bc: '#10B981', icon: '🎓', baslik: 'Eğitim & Sertifikasyon',
+    desc: 'İSO-AYM ortak sertifika programı. 10+ hoca kadrosu ile ölçekli eğitim.',
+    detaylar: ['Temel Afet Bilinci (online)', 'BCP Planlama Sertifikası', 'HRO Yönetici Programı'],
+    hedef: '₺55M · Y5',
   },
 ]
 
@@ -154,7 +163,21 @@ export default function IsoBrifingV3() {
   const sectorChart     = useRef<unknown>(null)
   const projChart       = useRef<unknown>(null)
 
+  const [formStat, setFormStat] = useState({ toplam: 0, ortalama_uri: 0, bu_hafta: 0 })
+
   useEffect(() => {
+    fetch(`${SUPA_URL}/rest/v1/iso_tesis_formlari?select=uri_skoru,gonderim_tarihi`, {
+      headers: { 'apikey': SUPA_KEY },
+    }).then(r => r.json()).then((rows: { uri_skoru: number; gonderim_tarihi: string }[]) => {
+      if (!Array.isArray(rows) || rows.length === 0) return
+      const birHaftaOnce = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+      setFormStat({
+        toplam: rows.length,
+        ortalama_uri: Math.round(rows.reduce((s, r) => s + (r.uri_skoru ?? 0), 0) / rows.length),
+        bu_hafta: rows.filter(r => r.gonderim_tarihi > birHaftaOnce).length,
+      })
+    })
+
     const buildCharts = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const C = (window as any).Chart
@@ -273,12 +296,14 @@ export default function IsoBrifingV3() {
         .v3-g2    { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .v3-g3    { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
         .v3-g2x4  { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .v3-g5    { display: grid; grid-template-columns: repeat(5,1fr); gap: 14px; }
         .v3-hr    { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 60px 0; }
         .v3-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.3);
                     letter-spacing: .18em; text-transform: uppercase; margin-bottom: 20px; }
         @media (max-width: 900px) {
           .v3-g4 { grid-template-columns: repeat(2,1fr); }
           .v3-g3 { grid-template-columns: 1fr 1fr; }
+          .v3-g5 { grid-template-columns: repeat(2,1fr); }
         }
         @media (max-width: 600px) {
           .v3-wrap { padding: 0 16px 64px; }
@@ -286,6 +311,7 @@ export default function IsoBrifingV3() {
           .v3-g2   { grid-template-columns: 1fr; }
           .v3-g3   { grid-template-columns: 1fr; }
           .v3-g2x4 { grid-template-columns: 1fr; }
+          .v3-g5   { grid-template-columns: 1fr; }
         }
       `}</style>
 
@@ -336,6 +362,21 @@ export default function IsoBrifingV3() {
                 <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: 10 }}>{k.lbl}</div>
                 <div style={{ fontSize: 'clamp(20px,2.5vw,30px)', fontWeight: 800, color: k.color, letterSpacing: '-0.8px', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>{k.val}</div>
                 <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{k.sub}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Canlı Form İstatistiği */}
+          <div className="v3-g3" style={{ marginTop: 14, marginBottom: '-1px' }}>
+            {[
+              { icon: '🟢', lbl: 'Doldurulan Form',       val: formStat.toplam, sub: `Bu hafta: ${formStat.bu_hafta}`,                        bc: '#22C55E' },
+              { icon: '📊', lbl: 'Ortalama URI (Gerçek)', val: formStat.ortalama_uri, sub: 'Form bazlı · canlı',                               bc: '#2D8A87' },
+              { icon: '⏳', lbl: 'Kalan Tesis',           val: (22846 - formStat.toplam).toLocaleString('tr'), sub: 'Henüz form doldurmadı',   bc: '#F97316' },
+            ].map(c => (
+              <div key={c.lbl} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${c.bc}33`, borderBottom: `3px solid ${c.bc}`, borderRadius: 14, padding: '16px 18px' }}>
+                <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: 8 }}>{c.icon} {c.lbl}</div>
+                <div style={{ fontSize: 'clamp(18px,2vw,26px)', fontWeight: 800, color: c.bc, fontFamily: 'var(--font-mono)', marginBottom: 5 }}>{c.val}</div>
+                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{c.sub}</div>
               </div>
             ))}
           </div>
@@ -433,6 +474,73 @@ export default function IsoBrifingV3() {
 
         <hr className="v3-hr" />
 
+        {/* ══ KOBİ SEGMENTASYON ══════════════════════════════════ */}
+        <div className="v3-label">Hedef Segment Analizi — KOBİ Odağı</div>
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 8 }}>KOBİ Segmentasyon</div>
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7 }}>İSO üyelerinin %72&apos;si 50&apos;den az çalışanlı KOBİ</p>
+        </div>
+        <div className="v3-g3" style={{ alignItems: 'start' }}>
+          {/* Sol: ISG Sınıfı */}
+          <div style={{ ...glass, padding: '22px 20px' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 16 }}>ISG Tehlike Sınıfı Dağılımı</div>
+            {[
+              { sinif: '1 — Çok Tehlikeli', tesis: '2.847', pct: 12.5, color: '#EF4444' },
+              { sinif: '2 — Tehlikeli',     tesis: '8.234', pct: 36.0, color: '#F97316' },
+              { sinif: '3 — Az Tehlikeli',  tesis: '11.765', pct: 51.5, color: '#22C55E' },
+            ].map(s => (
+              <div key={s.sinif} style={{ marginBottom: 18 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span style={{ fontSize: 12, color: s.color, fontWeight: 600 }}>{s.sinif}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: 'var(--font-mono)' }}>{s.tesis} · %{s.pct}</span>
+                </div>
+                <div style={{ height: 6, background: 'rgba(255,255,255,0.05)', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ width: `${s.pct}%`, height: '100%', background: s.color, borderRadius: 3 }} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Orta: Çalışan büyüklüğü */}
+          <div style={{ ...glass, padding: '22px 20px' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 16 }}>Çalışan Büyüklüğü Dağılımı</div>
+            {[
+              { grup: '1–10 (mikro)',   pct: 34, color: '#3B82F6' },
+              { grup: '11–50 (küçük)',  pct: 38, color: '#8B5CF6' },
+              { grup: '51–250 (orta)',  pct: 21, color: '#2D8A87' },
+              { grup: '250+ (büyük)',   pct: 7,  color: '#64748B' },
+            ].map(g => (
+              <div key={g.grup} style={{ marginBottom: 18 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>{g.grup}</span>
+                  <span style={{ fontSize: 12, color: g.color, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>%{g.pct}</span>
+                </div>
+                <div style={{ height: 6, background: 'rgba(255,255,255,0.05)', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ width: `${g.pct}%`, height: '100%', background: g.color, borderRadius: 3 }} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Sağ: Strateji kartı */}
+          <div style={{ background: 'rgba(45,138,135,0.08)', border: '2px solid rgba(45,138,135,0.4)', borderRadius: 16, padding: '22px 20px' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#2D8A87', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 16 }}>Omniversel KOBİ Stratejisi</div>
+            {[
+              'ISG Sınıf 2+3 → %87.5 erişim alanı',
+              '50\'den az çalışan → Hızlı karar, düşük edinim maliyeti',
+              'DIY çözümler → Minimum bütçe, maksimum etki',
+              'İSO köprüsü → Güven ve erişim hazır',
+            ].map(item => (
+              <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 12 }}>
+                <span style={{ color: '#2D8A87', fontWeight: 800, fontSize: 14, flexShrink: 0 }}>✓</span>
+                <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.55 }}>{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <hr className="v3-hr" />
+
         {/* ══ 5. KİMYA UYARI ═════════════════════════════════════ */}
         <div style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderLeft: '4px solid #EF4444', borderRadius: 14, padding: '22px 24px', display: 'flex', gap: 16, alignItems: 'flex-start' }}>
           <div style={{ fontSize: 22, flexShrink: 0, marginTop: 2 }}>⚠️</div>
@@ -507,9 +615,56 @@ export default function IsoBrifingV3() {
 
         <hr className="v3-hr" />
 
+        {/* ══ PRATİK AKSİYON ÖNERİLERİ ══════════════════════════ */}
+        <div className="v3-label">Tesis Başına Pratik Yaklaşım</div>
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 8 }}>Minimum Bütçe · Maksimum Etki · DIY Odaklı</div>
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7 }}>Her adım bağımsız, her KOBİ kendi hızında uygulayabilir</p>
+        </div>
+        <div className="v3-g4" style={{ gap: 14 }}>
+          {[
+            {
+              baslik: 'Bu Hafta Ücretsiz', bc: '#22C55E', sure: '₺0',
+              iyilesme: '-3 puan',
+              items: ['Acil çıkış yollarını işaretle (boya/stiker: ~500 TRY)', 'Yangın söndürücü konumlarını kontrol et', 'Ekip iletişim listesi oluştur (WhatsApp grubu)', 'Deprem çantasını hazırla'],
+            },
+            {
+              baslik: 'Bu Ay', bc: '#2D8A87', sure: '< 5.000 TRY',
+              iyilesme: '-6 puan',
+              items: ['Temel yangın tatbikatı yaptır', 'Kritik ekipmanları sabitle (ankraj malzemesi)', 'Verilerini yedekle (bulut depolama)', 'ISG tehlike sınıfını belgele'],
+            },
+            {
+              baslik: 'Bu Çeyrek', bc: '#3B82F6', sure: '< 25.000 TRY',
+              iyilesme: '-10 puan',
+              items: ['Acil Durum Yönetim Planı hazırla (şablon ile)', 'İlkyardım eğitimi (1 gün, 2–3 kişi)', 'Jeneratör veya UPS temin et', 'Tedarikçi alternatifi belirle'],
+            },
+            {
+              baslik: 'Bu Yıl', bc: '#8B5CF6', sure: '< 100.000 TRY',
+              iyilesme: '-18 puan',
+              items: ['BCP danışmanlık paketi', 'Yapısal değerlendirme raporu', 'ISO 22301 farkındalık eğitimi', 'Omniversel Pro abonelik'],
+            },
+          ].map(k => (
+            <div key={k.baslik} style={{ ...glass, padding: '22px 18px', borderTop: `3px solid ${k.bc}`, position: 'relative' }}>
+              <div style={{ fontSize: 9, fontWeight: 800, color: k.bc, letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 6 }}>{k.baslik}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 16, fontFamily: 'var(--font-mono)' }}>{k.sure}</div>
+              {k.items.map(item => (
+                <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 9 }}>
+                  <div style={{ width: 5, height: 5, borderRadius: '50%', background: k.bc, flexShrink: 0, marginTop: 6 }} />
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.55 }}>{item}</span>
+                </div>
+              ))}
+              <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.06)', fontSize: 10, color: k.bc, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+                Tahmini URI İyileşmesi: {k.iyilesme}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <hr className="v3-hr" />
+
         {/* ══ 6. İŞ MODELİ ═══════════════════════════════════════ */}
-        <div className="v3-label">İş Modeli — 4 Gelir Akışı</div>
-        <div className="v3-g2">
+        <div className="v3-label">İş Modeli — 5 Gelir Akışı</div>
+        <div className="v3-g5">
           {IS_MODELI.map(m => (
             <div key={m.baslik} style={{ ...glass, padding: '22px 20px', borderLeft: `3px solid ${m.bc}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
