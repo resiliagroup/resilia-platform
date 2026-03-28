@@ -265,6 +265,25 @@ export default function TesisFormuPage() {
           }))
           setTesisYuklendi(true)
           setFacilityId((data.facility_id as string) ?? null)
+
+          if (data.nace_kodu && (data.nace_kodu as string).length >= 4) {
+            const temiz = (data.nace_kodu as string).replace(/\s/g, '')
+            fetch(
+              `${SUPA_URL}/rest/v1/nace_tehlike?nace_alti_kod=like.${encodeURIComponent(temiz)}*&select=tehlike_sinifi,tehlike_label,zorunlu_mevzuat&order=nace_alti_kod.asc&limit=1`,
+              { headers: { 'apikey': SUPA_KEY } }
+            ).then(r => r.json()).then((rows: Record<string, unknown>[]) => {
+              if (rows.length > 0) {
+                const d = rows[0]
+                setTehlikeSinifi({
+                  sinif: d.tehlike_sinifi as number,
+                  label: d.tehlike_label as string,
+                  mevzuat: (d.zorunlu_mevzuat as string[]) ?? [],
+                })
+                const isgLabel = d.tehlike_sinifi === 1 ? '1 — Çok Tehlikeli' : d.tehlike_sinifi === 2 ? '2 — Tehlikeli' : '3 — Az Tehlikeli'
+                setEnvanter(prev => ({ ...prev, E04: isgLabel }))
+              }
+            })
+          }
         }
       })
   }, [token])
