@@ -7,6 +7,7 @@ import {
   type TesisEnvanterAlani, type DestekKapasite,
 } from '@/lib/sorular-sanayi'
 import { mapFormToAssessment } from '@/lib/form-to-assessment'
+import { kural_motoru_calistir, paket_oner } from '@/lib/kural-motoru'
 
 const BACKEND_URL = 'https://omniversel-risk-engine-production.up.railway.app/api/v1'
 const TENANT_ID   = '11111111-0000-0000-0000-000000000001'
@@ -240,6 +241,7 @@ export default function TesisFormuPage() {
   const [uri, setUri] = useState(0)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [cozumler, setCozumler] = useState<any[]>([])
+  const [riskUyarilari, setRiskUyarilari] = useState<any[]>([])
   const [tehlikeSinifi, setTehlikeSinifi] = useState<{ sinif: number; label: string; mevzuat: string[] } | null>(null)
   const [detayliMod, setDetayliMod] = useState(false)
   const [tesisYuklendi, setTesisYuklendi] = useState(false)
@@ -443,6 +445,11 @@ export default function TesisFormuPage() {
         const cozumData = cozumRes.ok ? await cozumRes.json() : []
         setCozumler(Array.isArray(cozumData) ? cozumData : [])
       }
+
+      const uyarilar = kural_motoru_calistir(puanlar)
+      setRiskUyarilari(uyarilar)
+      const paket = paket_oner(puanlar, tehlikeSinifi?.sinif ?? null)
+      void paket // kullanılacak
 
       setUri(sonUri)
       setGonderildi(true)
@@ -704,6 +711,25 @@ export default function TesisFormuPage() {
                 <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 12 }}>
                   {new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })}
                 </div>
+
+                {riskUyarilari.length > 0 && (
+                  <div style={{ marginBottom: 20 }}>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: '#0A1628', marginBottom: 10 }}>
+                      Önemli Risk Uyarıları
+                    </p>
+                    {riskUyarilari.map(u => (
+                      <div key={u.kod} style={{
+                        padding: '12px 14px', borderRadius: 8, marginBottom: 8,
+                        background: u.seviye === 'kirmizi' ? '#FEF2F2' : u.seviye === 'turuncu' ? '#FFF7ED' : '#FEFCE8',
+                        borderLeft: `4px solid ${u.seviye === 'kirmizi' ? '#EF4444' : u.seviye === 'turuncu' ? '#F97316' : '#EAB308'}`,
+                      }}>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: '#0A1628', margin: '0 0 4px' }}>{u.baslik}</p>
+                        <p style={{ fontSize: 11, color: '#64748B', margin: '0 0 4px', lineHeight: 1.5 }}>{u.mesaj}</p>
+                        <p style={{ fontSize: 11, color: '#94A3B8', margin: 0 }}>Mevzuat: {u.mevzuat}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {cozumler.length > 0 && (
                   <div style={{ marginTop: 32 }}>
