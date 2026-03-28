@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { createClient } from '@supabase/supabase-js'
 import {
   TESIS_ENVANTER, DESTEK_KAPASITESI,
   SORULAR_SANAYI, type SoruSanayi,
@@ -11,11 +10,8 @@ import { mapFormToAssessment } from '@/lib/form-to-assessment'
 
 const BACKEND_URL = 'https://omniversel-risk-engine-production.up.railway.app/api/v1'
 const TENANT_ID   = '11111111-0000-0000-0000-000000000001'
-
-const sb = createClient(
-  'https://gqguwgbopgnpwzjwcexl.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzM5OTgzMywiZXhwIjoyMDg4OTc1ODMzfQ.Ku-JRx8JFH5a3SIj7sGP_Dy_nM89NMMW34gPyxVO_qI',
-)
+const SUPA_URL    = 'https://gqguwgbopgnpwzjwcexl.supabase.co'
+const SUPA_KEY    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzM5OTgzMywiZXhwIjoyMDg4OTc1ODMzfQ.Ku-JRx8JFH5a3SIj7sGP_Dy_nM89NMMW34gPyxVO_qI'
 
 const NAVY = '#0A1628'; const TEAL = '#009B8D'; const BORDER = '#E2E8F0'
 
@@ -249,19 +245,23 @@ export default function TesisFormuPage() {
   // Token ile tesis verisi önceden doldur
   useEffect(() => {
     if (!token) return
-    sb.from('iso_tokenlar').select('*').eq('token', token).single()
-      .then(({ data }) => {
+    fetch(`${SUPA_URL}/rest/v1/iso_tokenlar?token=eq.${token}&limit=1`, {
+      headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` },
+    })
+      .then(r => r.json())
+      .then((rows: Record<string, unknown>[]) => {
+        const data = rows?.[0]
         if (data) {
           setEnvanter(prev => ({
             ...prev,
-            E01: data.tesis_adi ?? '',
-            E03: data.nace_kodu ?? '',
-            E10: data.employee_count?.toString() ?? '',
-            E13: data.ilce ?? '',
-            E16: data.building_age?.toString() ?? '',
+            E01: (data.tesis_adi as string) ?? '',
+            E03: (data.nace_kodu as string) ?? '',
+            E10: data.employee_count != null ? String(data.employee_count) : '',
+            E13: (data.ilce as string) ?? '',
+            E16: data.building_age != null ? String(data.building_age) : '',
           }))
           setTesisYuklendi(true)
-          setFacilityId(data.facility_id ?? null)
+          setFacilityId((data.facility_id as string) ?? null)
         }
       })
   }, [token])
@@ -336,23 +336,52 @@ export default function TesisFormuPage() {
         }
       }
 
-      // Adım 3: Supabase'e kaydet
-      const { error } = await sb.from('iso_tesis_formlari').upsert({
-        token,
-        facility_id: fId,
-        envanter,
-        puanlar,
-        destek,
-        uri_skoru: sonUri,
-        lat: parseFloat(String(koord?.[0] ?? '0')),
-        lng: parseFloat(String(koord?.[1] ?? '0')),
-        dolduran_ip: null,
-        gonderim_tarihi: new Date().toISOString(),
-      }, { onConflict: 'token' })
-      if (error) throw error
+      // Adım 3: Supabase REST upsert
+      const uriSkoru = sonUri
+      const lat = parseFloat(String(koord?.[0] ?? '')) || null
+      const lng = parseFloat(String(koord?.[1] ?? '')) || null
+      const destekCevaplari = destek
 
-      // Adım 4: Token'ı kapat
-      await sb.from('iso_tokenlar').update({ dolduruldu: true }).eq('token', token)
+      const saveRes = await fetch(`${SUPA_URL}/rest/v1/iso_tesis_formlari`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPA_KEY,
+          'Authorization': `Bearer ${SUPA_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates',
+        },
+        body: JSON.stringify({
+          token,
+          facility_id: fId ?? null,
+          envanter,
+          puanlar,
+          destek: destekCevaplari,
+          uri_skoru: uriSkoru,
+          lat: lat ?? null,
+          lng: lng ?? null,
+          tesis_adi: envanter['E01'] ?? null,
+          nace_kodu: envanter['E03'] ?? null,
+          ilce: envanter['E13'] ?? null,
+          gonderim_tarihi: new Date().toISOString(),
+        }),
+      })
+
+      if (!saveRes.ok) {
+        const errText = await saveRes.text()
+        console.error('Supabase hata:', errText)
+        throw new Error(`Supabase ${saveRes.status}: ${errText}`)
+      }
+
+      // Adım 4: Token kapat
+      await fetch(`${SUPA_URL}/rest/v1/iso_tokenlar?token=eq.${token}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': SUPA_KEY,
+          'Authorization': `Bearer ${SUPA_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ dolduruldu: true }),
+      })
 
       setUri(sonUri)
       setGonderildi(true)
