@@ -385,8 +385,8 @@ export default function OmniCrisisPage() {
                   <div style={{ fontSize: 13, fontWeight: 600, color: NAVY, marginBottom: 3 }}>{k.karar}</div>
                   <div style={{ display: 'flex', gap: 16, fontSize: 11, color: '#94A3B8' }}>
                     <span>👤 {k.karar_veren}</span>
-                    <span>📅 {k.zaman}</span>
-                    {k.gerekce && <span>💬 {k.gerekce}</span>}
+                    <span> {k.zaman}</span>
+                    {k.gerekce && <span> {k.gerekce}</span>}
                   </div>
                 </div>
               ))}
@@ -541,7 +541,7 @@ export default function OmniCrisisPage() {
                   </div>
                   <div style={{ display: 'flex', gap: 20, fontSize: 12, color: '#64748B' }}>
                     <span>👤 {k.karar_veren}</span>
-                    {k.gerekce && <span>💬 {k.gerekce}</span>}
+                    {k.gerekce && <span> {k.gerekce}</span>}
                   </div>
                 </div>
               ))}
@@ -581,9 +581,9 @@ export default function OmniCrisisPage() {
                     <label style={{ fontSize: 12, color: '#94A3B8', display: 'block', marginBottom: 4 }}>Kategori</label>
                     <select style={inputStyle} value={yeniBulgu.kategori || 'iyi_giden'}
                       onChange={e => setYeniBulgu(p => ({ ...p, kategori: e.target.value as AarBulgu['kategori'] }))}>
-                      <option value="iyi_giden">✅ İyi Giden</option>
-                      <option value="gelistirilecek">⚠️ Geliştirilecek</option>
-                      <option value="aksiyon">📋 Aksiyon Kalemi</option>
+                      <option value="iyi_giden"> İyi Giden</option>
+                      <option value="gelistirilecek"> Geliştirilecek</option>
+                      <option value="aksiyon"> Aksiyon Kalemi</option>
                     </select>
                   </div>
                   <div>
@@ -609,9 +609,9 @@ export default function OmniCrisisPage() {
             {/* 3 kategori kolonları */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
               {([
-                { kat: 'iyi_giden', label: '✅ İyi Giden', renk: '#DCFCE7', border: '#86EFAC', textRenk: '#166534' },
-                { kat: 'gelistirilecek', label: '⚠️ Geliştirilecek', renk: '#FEF9C3', border: '#FDE047', textRenk: '#854D0E' },
-                { kat: 'aksiyon', label: '📋 Aksiyon Kalemleri', renk: '#EFF6FF', border: '#93C5FD', textRenk: '#1E40AF' },
+                { kat: 'iyi_giden', label: ' İyi Giden', renk: '#DCFCE7', border: '#86EFAC', textRenk: '#166534' },
+                { kat: 'gelistirilecek', label: ' Geliştirilecek', renk: '#FEF9C3', border: '#FDE047', textRenk: '#854D0E' },
+                { kat: 'aksiyon', label: ' Aksiyon Kalemleri', renk: '#EFF6FF', border: '#93C5FD', textRenk: '#1E40AF' },
               ] as const).map(col => (
                 <div key={col.kat}>
                   <div style={{ background: col.renk, border: `1px solid ${col.border}`, borderRadius: 10, padding: '10px 14px', marginBottom: 10 }}>

@@ -313,11 +313,11 @@ export default function SubeDetay() {
           <div className="card fi" style={{padding:20}}>
             <p className="fm" style={{fontSize:9,color:'#A8A29E',textTransform:'uppercase',letterSpacing:'.12em',marginBottom:14}}>Son Aktiviteler</p>
             {[
-              {i:'📋',l:'Son Risk Değerlendirmesi',v:sonForm?new Date(sonForm.gonderilme||'').toLocaleDateString('tr-TR'):'—'},
-              {i:'🎯',l:'Son Tatbikat',v:'22 Ağu 2025'},
+              {i:'',l:'Son Risk Değerlendirmesi',v:sonForm?new Date(sonForm.gonderilme||'').toLocaleDateString('tr-TR'):'—'},
+              {i:'',l:'Son Tatbikat',v:'22 Ağu 2025'},
               {i:'📄',l:'Son BCP Güncelleme',v:'30 Eyl 2025'},
               {i:'🔄',l:'Bu Yıl Tatbikat',v:'4 adet'},
-              {i:'👥',l:'Personel Katılım',v:'%87.5'},
+              {i:'',l:'Personel Katılım',v:'%87.5'},
             ].map(it=>(
               <div key={it.l} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid #F7F6F5'}}>
                 <div style={{display:'flex',alignItems:'center',gap:8}}>
@@ -335,9 +335,9 @@ export default function SubeDetay() {
           {/* Sekme başlıkları */}
           <div style={{borderBottom:'1px solid #F1F0EF',padding:'0 24px',display:'flex',gap:0,overflowX:'auto'}}>
             {([
-              {id:'overview',label:'📊 Genel Bakış'},
+              {id:'overview',label:' Genel Bakış'},
               {id:'gap',label:'🔍 GAP Analizi'},
-              {id:'aksiyonlar',label:`✅ Aksiyon Listesi (${DEMO_AKSIYONLAR.length})`},
+              {id:'aksiyonlar',label:` Aksiyon Listesi (${DEMO_AKSIYONLAR.length})`},
               {id:'bcp',label:'🔁 İş Sürekliliği'},
             ] as {id:Sekme,label:string}[]).map(s=>(
               <button key={s.id} className={'sb'+(sekme===s.id?' on':'')} onClick={()=>setSekme(s.id)}>{s.label}</button>
@@ -422,10 +422,10 @@ export default function SubeDetay() {
                     <h4 style={{fontSize:12,fontWeight:700,color:'#0A1628',marginBottom:10,marginTop:16}}>Hızlı Erişim</h4>
                     <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
                       {[
-                        {l:'GAP Analizi',i:'📊',s:'gap' as Sekme},
-                        {l:'Aksiyon Listesi',i:'✅',s:'aksiyonlar' as Sekme},
+                        {l:'GAP Analizi',i:'',s:'gap' as Sekme},
+                        {l:'Aksiyon Listesi',i:'',s:'aksiyonlar' as Sekme},
                         {l:'İş Sürekliliği',i:'🔁',s:'bcp' as Sekme},
-                        {l:'Risk Haritası',i:'🗺️',href:'/harita'},
+                        {l:'Risk Haritası',i:'',href:'/harita'},
                       ].map(h=>(
                         h.href
                           ? <a key={h.l} href={h.href} style={{display:'flex',alignItems:'center',gap:8,padding:'10px 12px',background:'white',borderRadius:10,border:'1px solid #E5E3E1',textDecoration:'none',fontSize:12,fontWeight:600,color:'#374151',transition:'all .15s'}}
@@ -527,7 +527,7 @@ export default function SubeDetay() {
                   {/* Sağ Panel */}
                   <div>
                     <div style={{background:'#FAFAF9',borderRadius:12,padding:18,border:'1px solid #F1F0EF',marginBottom:14}}>
-                      <p style={{fontSize:12,fontWeight:700,color:'#0A1628',marginBottom:12}}>✅ Güçlü Yönler</p>
+                      <p style={{fontSize:12,fontWeight:700,color:'#0A1628',marginBottom:12}}> Güçlü Yönler</p>
                       {gapSkorlar.filter(s=>s.puan>=s.hedef).length===0
                         ?<p style={{fontSize:12,color:'#A8A29E',fontStyle:'italic'}}>Bu kategoride hedef karşılanan alan bulunmuyor.</p>
                         :gapSkorlar.filter(s=>s.puan>=s.hedef).map(s=>(
@@ -555,7 +555,7 @@ export default function SubeDetay() {
                     </div>
 
                     <div style={{background:'#EFF6FF',borderRadius:12,padding:18,border:'1px solid #BFDBFE',marginBottom:14}}>
-                      <p style={{fontSize:12,fontWeight:700,color:'#1E40AF',marginBottom:8}}>💡 Öneri</p>
+                      <p style={{fontSize:12,fontWeight:700,color:'#1E40AF',marginBottom:8}}> Öneri</p>
                       <p style={{fontSize:12,color:'#1E3A8A',lineHeight:1.65}}>
                         {aktifGap==='deprem'&&'Zemin etüdü ve yapısal güçlendirme çalışmalarının önceliklendirilmesi, sismik sensör kurulumunun planlanması tavsiye edilir.'}
                         {aktifGap==='yangin'&&'Personel eğitim programlarının yenilenmesi ve tahliye planlarının düzenli test edilmesi tavsiye edilir.'}
@@ -685,11 +685,11 @@ export default function SubeDetay() {
                 {/* BCP KPI Bandı */}
                 <div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:10,marginBottom:20}}>
                   {[
-                    {l:'Senaryolar',v:DEMO_BCP_SENARYOLAR.length,i:'⚠️'},
+                    {l:'Senaryolar',v:DEMO_BCP_SENARYOLAR.length,i:''},
                     {l:'Kurtarma Planı',v:2,i:'🔁'},
                     {l:'Kilit Personel',v:DEMO_PERSONEL.length,i:'👤'},
-                    {l:'Eğitim Programı',v:DEMO_EGITIMLER.length,i:'🎓'},
-                    {l:'Genel Hazırlık',v:'%78',i:'📊'},
+                    {l:'Eğitim Programı',v:DEMO_EGITIMLER.length,i:''},
+                    {l:'Genel Hazırlık',v:'%78',i:''},
                   ].map(k=>(
                     <div key={k.l} style={{background:'#FAFAF9',borderRadius:12,padding:'14px 16px',border:'1px solid #F1F0EF',textAlign:'center'}}>
                       <div style={{fontSize:22,marginBottom:6}}>{k.i}</div>

@@ -147,7 +147,7 @@ export default function TopluImportPage() {
               onDrop={handleDrop}
               onClick={() => fileRef.current?.click()}
               style={{ border: `2px dashed ${surukleniyorMu ? TEAL : BORDER}`, borderRadius: 12, padding: '48px 24px', textAlign: 'center', cursor: 'pointer', background: surukleniyorMu ? '#F0FDF9' : '#F8F9FA', transition: 'all .2s' }}>
-              <div style={{ fontSize: 40, marginBottom: 12 }}>📊</div>
+              <div style={{ fontSize: 40, marginBottom: 12 }}></div>
               <p style={{ fontSize: 15, fontWeight: 600, color: '#374151' }}>
                 {surukleniyorMu ? 'Bırakın!' : 'Excel veya CSV sürükleyin'}
               </p>

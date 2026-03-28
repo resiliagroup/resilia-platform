@@ -282,7 +282,7 @@ export default function OmniPipePage() {
                           <span>📥 {b.kaynak}</span>
                           <span>📤 {b.hedef}</span>
                           <span>🕐 {b.zamanlamа}</span>
-                          {b.kayit_sayisi > 0 && <span>📊 {b.kayit_sayisi.toLocaleString('tr-TR')} kayıt</span>}
+                          {b.kayit_sayisi > 0 && <span> {b.kayit_sayisi.toLocaleString('tr-TR')} kayıt</span>}
                         </div>
                       </div>
 
@@ -470,7 +470,7 @@ export default function OmniPipePage() {
 
             {/* Pilot bilgi bannerı */}
             <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 10, padding: 16, marginBottom: 20 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: BLUE, marginBottom: 6 }}>🔬 Pilot Modülü Hakkında</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: BLUE, marginBottom: 6 }}> Pilot Modülü Hakkında</div>
               <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.7 }}>
                 omniPIPE, Omniversel platformunun tüm modüllerine veri besleyen merkezi entegrasyon katmanıdır. Pilot aşamasında bağlantı yapılandırmaları demo modunda çalışmaktadır. Prodüksiyon entegrasyonu için Omniversel teknik ekibiyle iletişime geçin.
               </div>

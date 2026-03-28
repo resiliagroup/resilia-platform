@@ -98,7 +98,7 @@ function KonumAlani({ lat, lng, onDegis }: { lat: string; lng: string; onDegis: 
     <div>
       <button type="button" onClick={konumAl} disabled={yukleniyor}
         style={{ padding: '8px 18px', background: yukleniyor ? '#94A3B8' : TEAL, color: 'white', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: yukleniyor ? 'not-allowed' : 'pointer', marginBottom: 12 }}>
-        {yukleniyor ? '⏳ Konum alınıyor...' : '📍 Konumumu Al'}
+        {yukleniyor ? '⏳ Konum alınıyor...' : ' Konumumu Al'}
       </button>
       <div style={{ display: 'flex', gap: 12 }}>
         <div style={{ flex: 1 }}>

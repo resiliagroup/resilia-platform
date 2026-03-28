@@ -393,10 +393,10 @@ export default function SanayiMaliyetPage() {
           </div>
           <div style={{ display: 'flex' }}>
             {([
-              { id: 'envanter', l: '🏭 Tesis Envanteri (SATAKOL)' },
-              { id: 'aady', l: '📋 Dayanıklılık Kontrol (AADY)' },
-              { id: 'maliyet', l: `💰 Maliyet & Öncelik (${aksiyonlar.length})` },
-              { id: 'bia', l: '⚠️ İş Etki Analizi' },
+              { id: 'envanter', l: ' Tesis Envanteri (SATAKOL)' },
+              { id: 'aady', l: ' Dayanıklılık Kontrol (AADY)' },
+              { id: 'maliyet', l: ` Maliyet & Öncelik (${aksiyonlar.length})` },
+              { id: 'bia', l: ' İş Etki Analizi' },
               { id: 'parametreler', l: '⚙️ Öncelikleme' },
             ] as { id: typeof sekme; l: string }[]).map(s => (
               <button key={s.id} className={'sb' + (sekme === s.id ? ' on' : '')} onClick={() => setSekme(s.id)}>{s.l}</button>
@@ -413,7 +413,7 @@ export default function SanayiMaliyetPage() {
         {sekme === 'envanter' && (
           <div className="fi">
             <div className="info">
-              📋 <strong>SATAKOL — Sanayi Tesisleri Acil Durum/Afet Kontrol Listesi.</strong> Her tesis için ayrı doldurulmalıdır.
+               <strong>SATAKOL — Sanayi Tesisleri Acil Durum/Afet Kontrol Listesi.</strong> Her tesis için ayrı doldurulmalıdır.
               Toplanan veriler; risk haritası, tedarik zinciri analizi, AFAD koordinasyonu ve bölgesel dayanıklılık değerlendirmesinde kullanılacaktır.
             </div>
 
@@ -614,7 +614,7 @@ export default function SanayiMaliyetPage() {
         {sekme === 'aady' && (
           <div className="fi">
             <div className="info">
-              📊 <strong>AADY Kontrol Listesi 2025</strong> — Afet/Acil Durum Dayanıklılık Kontrol Listesi.
+               <strong>AADY Kontrol Listesi 2025</strong> — Afet/Acil Durum Dayanıklılık Kontrol Listesi.
               Her bölüme <strong>0–4 puan</strong> verin (0=Yok, 1=Çok Yetersiz, 2=Kısmi, 3=Yeterli, 4=Tam/İdeal).
               Her bina/mekan için ayrı ayrı doldurulmalıdır.
             </div>

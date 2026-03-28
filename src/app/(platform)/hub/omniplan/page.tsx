@@ -395,8 +395,8 @@ export default function OmniPlanPage() {
                           <span style={{ fontSize: 11, fontWeight: 700, color: 'white', background: durumRenk(s.durum), padding: '2px 8px', borderRadius: 20 }}>{durumEtiket(s.durum)}</span>
                         </div>
                         <div style={{ display: 'flex', gap: 16, fontSize: 12, color: '#64748B' }}>
-                          <span>📋 {s.tur}</span>
-                          <span>🎯 {s.etki_alani || '—'}</span>
+                          <span> {s.tur}</span>
+                          <span> {s.etki_alani || '—'}</span>
                           <span>👤 {s.sorumlu || '—'}</span>
                         </div>
                       </div>
@@ -632,9 +632,9 @@ export default function OmniPlanPage() {
                         <span style={{ fontSize: 11, padding: '2px 9px', borderRadius: 20, background: '#EFF6FF', color: '#2563EB', fontWeight: 600 }}>{t.tur}</span>
                       </div>
                       <div style={{ display: 'flex', gap: 20, fontSize: 12, color: '#64748B' }}>
-                        <span>📅 {t.planlanan_tarih || '—'}</span>
-                        <span>👥 {t.katilimcilar || '—'}</span>
-                        {t.bulgular && <span>📝 {t.bulgular}</span>}
+                        <span> {t.planlanan_tarih || '—'}</span>
+                        <span> {t.katilimcilar || '—'}</span>
+                        {t.bulgular && <span> {t.bulgular}</span>}
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: 6 }}>

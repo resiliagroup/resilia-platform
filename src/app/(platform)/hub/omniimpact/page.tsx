@@ -290,7 +290,7 @@ export default function OmniImpactPage() {
             {/* URI uyarı bandı */}
             {uriYuksekTesisler.length > 0 && (
               <div style={{ background: '#FEF9C3', border: `1px solid ${AMBER}`, borderRadius: 10, padding: '12px 16px', marginBottom: 20, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                <span style={{ fontSize: 18 }}>⚠️</span>
+                <span style={{ fontSize: 18 }}></span>
                 <div>
                   <p style={{ fontSize: 13, fontWeight: 700, color: '#92400E' }}>
                     {uriYuksekTesisler.length} tesiste URI skoru 75&apos;in altında — BIA değerlendirmesi önerilir

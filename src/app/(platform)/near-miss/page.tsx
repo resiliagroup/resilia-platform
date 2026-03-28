@@ -498,7 +498,7 @@ export default function NearMissPage() {
                   border: `1px solid ${(s === 'liste') === listeleme ? TEAL : 'rgba(148,163,184,.3)'}`,
                   fontWeight: 600,
                 }}>
-                {s === 'form' ? '+ New Record' : `📋 Recent Records (${kayitlar.length})`}
+                {s === 'form' ? '+ New Record' : ` Recent Records (${kayitlar.length})`}
               </button>
             ))}
             <button onClick={pdfIndir} disabled={indiriyor}

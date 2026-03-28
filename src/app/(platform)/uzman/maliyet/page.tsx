@@ -361,9 +361,9 @@ export default function MaliyetPage() {
           </div>
           <div style={{ display: 'flex' }}>
             {([
-              { id: 'ozet', l: '📊 Özet' },
-              { id: 'liste', l: `📋 Aksiyonlar (${aksiyonlar.length})` },
-              { id: 'bia', l: '⚠️ İş Etki Analizi' },
+              { id: 'ozet', l: ' Özet' },
+              { id: 'liste', l: ` Aksiyonlar (${aksiyonlar.length})` },
+              { id: 'bia', l: ' İş Etki Analizi' },
               { id: 'parametreler', l: '⚙️ Öncelikleme Parametreleri' },
             ] as { id: typeof sekme, l: string }[]).map(s => (
               <button key={s.id} className={'sb' + (sekme === s.id ? ' on' : '')} onClick={() => setSekme(s.id)}>{s.l}</button>
@@ -431,9 +431,9 @@ export default function MaliyetPage() {
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: '#0A1628', marginBottom: 12 }}>Seçili Paket</h3>
                 <div className="card" style={{ padding: 20, marginBottom: 14 }}>
                   {[
-                    { l: 'Toplam Yatırım', v: tl(topMaliyet), r: '#EF4444', i: '💰' },
-                    { l: 'Yıllık Fayda', v: tl(topFayda), r: '#22C55E', i: '📈' },
-                    { l: 'ROI', v: '%' + roi, r: '#F59E0B', i: '📊' },
+                    { l: 'Toplam Yatırım', v: tl(topMaliyet), r: '#EF4444', i: '' },
+                    { l: 'Yıllık Fayda', v: tl(topFayda), r: '#22C55E', i: '' },
+                    { l: 'ROI', v: '%' + roi, r: '#F59E0B', i: '' },
                     { l: 'Geri Ödeme', v: geriOdeme + ' yıl', r: '#1B4FD8', i: '🕐' },
                   ].map(k => (
                     <div key={k.l} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #F7F6F5' }}>

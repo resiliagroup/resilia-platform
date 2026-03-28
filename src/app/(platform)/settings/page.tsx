@@ -502,7 +502,7 @@ export default function SettingsPage() {
 
           {/* ── ETKİ SİMÜLATÖRÜ ──────────────────────────────────── */}
           <div style={{ ...card, marginTop: 24 }}>
-            <h2 style={{ ...cardTitle, marginBottom: 20 }}>⚡ Impact Simulator</h2>
+            <h2 style={{ ...cardTitle, marginBottom: 20 }}> Impact Simulator</h2>
             <p style={{ fontSize: 13, color: '#6B7280', marginBottom: 20 }}>
               See in real time how the URI score is affected when you change the k value.
               <em style={{ color: '#9CA3AF', fontSize: 12 }}> (H=0.6, F=0.5, E=0.5, C-deficit=0.5, B=1.0 fixed assumptions)</em>

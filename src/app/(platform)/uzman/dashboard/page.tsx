@@ -171,7 +171,7 @@ export default function UzmanDashboard() {
                           </div>
                           {f.inceleme_notu && (
                             <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 4, fontStyle: 'italic' }}>
-                              📝 {f.inceleme_notu}
+                               {f.inceleme_notu}
                             </div>
                           )}
                         </div>
@@ -197,7 +197,7 @@ export default function UzmanDashboard() {
               <div style={card({ padding: 32 })}>
                 {bia.length === 0 ? (
                   <div style={{ textAlign: 'center', color: '#64748B', padding: 32 }}>
-                    <div style={{ fontSize: 32, marginBottom: 12 }}>📊</div>
+                    <div style={{ fontSize: 32, marginBottom: 12 }}></div>
                     <div style={{ fontWeight: 600, color: '#94A3B8' }}>BIA kaydı bulunamadı.</div>
                     <div style={{ fontSize: 13, marginTop: 6 }}>bia_assessments tablosuna veri ekleyin.</div>
                   </div>
@@ -218,7 +218,7 @@ export default function UzmanDashboard() {
               <div style={card({ padding: 32 })}>
                 {bcp.length === 0 ? (
                   <div style={{ textAlign: 'center', color: '#64748B', padding: 32 }}>
-                    <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
+                    <div style={{ fontSize: 32, marginBottom: 12 }}></div>
                     <div style={{ fontWeight: 600, color: '#94A3B8' }}>BCP planı bulunamadı.</div>
                     <div style={{ fontSize: 13, marginTop: 6 }}>bcp_plans tablosuna veri ekleyin.</div>
                   </div>
@@ -271,7 +271,7 @@ export default function UzmanDashboard() {
                       border: `1px solid ${t.durum === 'Tamamlandı' ? '#22C55E44' : '#F59E0B44'}`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
                     }}>
-                      {t.durum === 'Tamamlandı' ? '✓' : '📅'}
+                      {t.durum === 'Tamamlandı' ? '✓' : ''}
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600, color: '#fff', fontSize: 14 }}>{t.ad}</div>
@@ -298,7 +298,7 @@ export default function UzmanDashboard() {
               <div>
                 {tesisler.length === 0 ? (
                   <div style={card({ textAlign: 'center', padding: 48, color: '#64748B' })}>
-                    <div style={{ fontSize: 32, marginBottom: 12 }}>🗺️</div>
+                    <div style={{ fontSize: 32, marginBottom: 12 }}></div>
                     <div style={{ fontWeight: 600, color: '#94A3B8' }}>Tesis kaydı bulunamadı.</div>
                     <div style={{ fontSize: 13, marginTop: 6 }}>facilities tablosuna veri ekleyin.</div>
                   </div>

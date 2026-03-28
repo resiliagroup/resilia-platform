@@ -365,7 +365,7 @@ export default function BasvuruPage() {
           <div className="fi" style={{ textAlign: 'center' }}>
             <div style={{ background: 'white', borderRadius: 20, border: `2px solid ${skorRenk}30`, padding: '36px 28px', marginBottom: 16 }}>
               <div style={{ fontSize: 52, marginBottom: 16 }}>
-                {sonucSkor >= 70 ? '✅' : sonucSkor >= 40 ? '⚠️' : '🔴'}
+                {sonucSkor >= 70 ? '' : sonucSkor >= 40 ? '' : ''}
               </div>
               <p style={{ fontSize: 12, fontWeight: 700, color: '#9CA3AF', letterSpacing: '.08em', textTransform: 'uppercase', marginBottom: 8 }}>
                 HFE-360 Dayanıklılık Skoru

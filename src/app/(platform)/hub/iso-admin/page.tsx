@@ -126,7 +126,7 @@ function FormIzlemeSekme() {
                       <td style={{ padding: '10px 16px' }}>
                         {f.lat && f.lng ? (
                           <a href={`https://www.google.com/maps?q=${f.lat},${f.lng}`} target="_blank" rel="noreferrer"
-                            style={{ fontSize: 12, color: TEAL, textDecoration: 'none' }}>📍 Harita</a>
+                            style={{ fontSize: 12, color: TEAL, textDecoration: 'none' }}> Harita</a>
                         ) : '—'}
                       </td>
                     </tr>
@@ -532,10 +532,10 @@ export default function IsoAdminPage() {
   const [sekme, setSekme] = useState<Sekme>('izleme')
 
   const sekmeler: { id: Sekme; label: string }[] = [
-    { id: 'izleme',   label: '📋 Form İzleme' },
+    { id: 'izleme',   label: ' Form İzleme' },
     { id: 'sorular',  label: '⚙️ Soru Yönetimi' },
     { id: 'kmatris',  label: '🔢 k Katsayısı Editörü' },
-    { id: 'tokenlar', label: '🔑 Token Yönetimi' },
+    { id: 'tokenlar', label: ' Token Yönetimi' },
   ]
 
   return (

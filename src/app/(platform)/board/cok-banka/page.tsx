@@ -247,8 +247,8 @@ function KritikSubeListesi({ subeler, renk }: any) {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: NAVY, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.ad}</div>
             <div style={{ display: 'flex', gap: 8, marginTop: 3 }}>
-              <span style={{ fontSize: 10, color: '#6B7280' }}>📍 {s.il}</span>
-              <span style={{ fontSize: 10, color: '#6B7280' }}>🔴 Deprem Bölgesi {s.dep}</span>
+              <span style={{ fontSize: 10, color: '#6B7280' }}> {s.il}</span>
+              <span style={{ fontSize: 10, color: '#6B7280' }}> Deprem Bölgesi {s.dep}</span>
               <span style={{ fontSize: 10, fontWeight: 700, color: RED }}>DERHAL MÜDAHALE</span>
             </div>
           </div>
@@ -393,8 +393,8 @@ export default function BoardCokBankaDashboard() {
         {/* ── Banka Seçici ──────────────────────────────────────────────── */}
         <div style={{ display: 'flex', gap: 10, marginBottom: 24, flexWrap: 'wrap' }}>
           {[
-            { key: 'akbank', label: 'Akbank A.Ş.', sub: '200 Şube · Özel', renk: AK_BLUE, icon: '🔵' },
-            { key: 'isbank', label: 'İş Bankası A.Ş.', sub: '200 Şube · Özel', renk: IB_RED, icon: '🔴' },
+            { key: 'akbank', label: 'Akbank A.Ş.', sub: '200 Şube · Özel', renk: AK_BLUE, icon: '' },
+            { key: 'isbank', label: 'İş Bankası A.Ş.', sub: '200 Şube · Özel', renk: IB_RED, icon: '' },
             { key: 'karsilastir', label: 'Karşılaştır', sub: 'Akbank vs İş Bankası', renk: TEAL, icon: '⚖️' },
           ].map(b => {
             const aktif = aktifBanka === b.key
@@ -457,10 +457,10 @@ export default function BoardCokBankaDashboard() {
               <div>
                 {/* Ana KPI grid */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
-                  <KPIKart label="Ortalama Dayanıklılık" value={banka.ort_skor} sub="Türkiye geneli" color={renk} icon="📊" animate={mounted} />
-                  <KPIKart label="Kritik Şube" value={banka.kritik} sub="Skor < 40, derhal müdahale" color={RED} icon="🚨" animate={mounted} />
-                  <KPIKart label="Orta Riskli" value={banka.orta} sub="Skor 40–69, yakın takip" color={AMBER} icon="⚠️" animate={mounted} />
-                  <KPIKart label="Güçlü Şube" value={banka.guclu} sub="Skor ≥ 70, model şube" color={GREEN} icon="✅" animate={mounted} />
+                  <KPIKart label="Ortalama Dayanıklılık" value={banka.ort_skor} sub="Türkiye geneli" color={renk} icon="" animate={mounted} />
+                  <KPIKart label="Kritik Şube" value={banka.kritik} sub="Skor < 40, derhal müdahale" color={RED} icon="" animate={mounted} />
+                  <KPIKart label="Orta Riskli" value={banka.orta} sub="Skor 40–69, yakın takip" color={AMBER} icon="" animate={mounted} />
+                  <KPIKart label="Güçlü Şube" value={banka.guclu} sub="Skor ≥ 70, model şube" color={GREEN} icon="" animate={mounted} />
                 </div>
 
                 {/* Dağılım bar */}
@@ -512,7 +512,7 @@ export default function BoardCokBankaDashboard() {
 
                 {/* Alarm kutusu */}
                 <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 16, padding: '16px 20px', display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                  <div style={{ fontSize: 24, flexShrink: 0 }}>🚨</div>
+                  <div style={{ fontSize: 24, flexShrink: 0 }}></div>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 700, color: '#991B1B', marginBottom: 6 }}>
                       Öncelikli Aksiyon Gerektiren {banka.kritik} Kritik Şube
@@ -542,9 +542,9 @@ export default function BoardCokBankaDashboard() {
                       Deprem Bölgesi Dağılımı
                     </div>
                     {[
-                      { bölge: '1. Derece Deprem Bölgesi', sub: 'Çok Yüksek Risk', sayi: Math.round(banka.toplam * 0.74), renk: RED, icon: '🔴' },
-                      { bölge: '2. Derece Deprem Bölgesi', sub: 'Yüksek Risk', sayi: Math.round(banka.toplam * 0.15), renk: AMBER, icon: '🟡' },
-                      { bölge: '3. Derece Deprem Bölgesi', sub: 'Orta Risk', sayi: Math.round(banka.toplam * 0.11), renk: GREEN, icon: '🟢' },
+                      { bölge: '1. Derece Deprem Bölgesi', sub: 'Çok Yüksek Risk', sayi: Math.round(banka.toplam * 0.74), renk: RED, icon: '' },
+                      { bölge: '2. Derece Deprem Bölgesi', sub: 'Yüksek Risk', sayi: Math.round(banka.toplam * 0.15), renk: AMBER, icon: '' },
+                      { bölge: '3. Derece Deprem Bölgesi', sub: 'Orta Risk', sayi: Math.round(banka.toplam * 0.11), renk: GREEN, icon: '' },
                     ].map(d => (
                       <div key={d.bölge} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid #F1F0EF' }}>
                         <span style={{ fontSize: 18, flexShrink: 0 }}>{d.icon}</span>
@@ -557,7 +557,7 @@ export default function BoardCokBankaDashboard() {
                     ))}
                   </div>
                   <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 16, padding: '16px 20px' }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: '#1E40AF', marginBottom: 8 }}>📍 Coğrafi Konsantrasyon</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#1E40AF', marginBottom: 8 }}> Coğrafi Konsantrasyon</div>
                     <p style={{ fontSize: 12, color: '#1E3A8A', lineHeight: 1.7 }}>
                       Şubelerin <strong>%{Math.round(banka.il_dagilim[0].sube/banka.toplam*100)}'i İstanbul</strong>,
                       %{Math.round((banka.il_dagilim[0].sube+banka.il_dagilim[1].sube)/banka.toplam*100)}'i İstanbul+Ankara'da.
@@ -596,7 +596,7 @@ export default function BoardCokBankaDashboard() {
                     ))}
                   </div>
                   <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 16, padding: '16px 20px' }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: '#991B1B', marginBottom: 8 }}>⚡ Önerilen Aksiyon Planı</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#991B1B', marginBottom: 8 }}> Önerilen Aksiyon Planı</div>
                     {['30 Gün: Hatay + K.maraş şubeleri yapısal ekspertiz', '60 Gün: İstanbul alt %10\'u için acil BCP', '90 Gün: Tüm kritik şubeler için fiziksel müdahale planı', '6 Ay: Jeneratör ve UPS kurulumu (kritik şubeler)', '12 Ay: ISO 22301 sertifika süreci başlatılması'].map((a, i) => (
                       <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 6, fontSize: 12, color: '#7F1D1D' }}>
                         <span style={{ color: RED, flexShrink: 0, fontWeight: 700 }}>{i + 1}.</span>{a}

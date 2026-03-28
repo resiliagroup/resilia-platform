@@ -1448,7 +1448,7 @@ export default function BeylikduzuKomuta() {
                             className="text-[11px] px-2.5 py-1 rounded-lg border font-semibold transition-all whitespace-nowrap"
                             style={{ borderColor: '#6366F1', color: '#6366F1', background: '#EEF2FF' }}
                           >
-                            {skor?.status === 'error' ? '↺ Retry' : '⚡ Calculate omniRISK'}
+                            {skor?.status === 'error' ? '↺ Retry' : ' Calculate omniRISK'}
                           </button>
                         ) : skor.status === 'loading' ? (
                           <span className="text-[11px] flex items-center gap-1 text-indigo-500 px-2">

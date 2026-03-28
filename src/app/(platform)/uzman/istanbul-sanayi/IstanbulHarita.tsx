@@ -200,7 +200,7 @@ export default function IstanbulHarita() {
             <span style="color:#64748B;">Bina Yaşı</span><span>${t.building_age ? t.building_age + ' yıl' : '—'}</span>
           </div>
           ${t.extra_data?.nace_kodu ? `<div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="color:#64748B;">NACE</span><code>${t.extra_data.nace_kodu}</code></div>` : ''}
-          ${natech ? `<div style="margin-top:8px;padding:4px 8px;background:#FEE2E2;border-radius:6px;color:#EF4444;font-weight:600;font-size:11px;">⚠️ NATECH — ${t.extra_data?.tehlikeli_madde_turu || 'Tehlikeli madde'}</div>` : ''}
+          ${natech ? `<div style="margin-top:8px;padding:4px 8px;background:#FEE2E2;border-radius:6px;color:#EF4444;font-weight:600;font-size:11px;"> NATECH — ${t.extra_data?.tehlikeli_madde_turu || 'Tehlikeli madde'}</div>` : ''}
         </div>
       `)
       cluster.addLayer(marker)
@@ -234,7 +234,7 @@ export default function IstanbulHarita() {
         ))}
         <button onClick={() => setFiltre('natech')}
           style={{ padding: '5px 12px', borderRadius: 20, border: `1px solid ${filtre === 'natech' ? '#EF4444' : '#D1D5DB'}`, background: filtre === 'natech' ? '#EF444418' : 'white', color: filtre === 'natech' ? '#EF4444' : '#6B7280', fontSize: 12, cursor: 'pointer', fontWeight: filtre === 'natech' ? 600 : 400 }}>
-          ⚠️ NATECH ({ist.natech})
+           NATECH ({ist.natech})
         </button>
         <span style={{ marginLeft: 'auto', fontSize: 11, color: '#9CA3AF' }}>
           {yukleniyor ? '⏳ Yükleniyor...' : `${tesisler.length.toLocaleString('tr')} tesis`}
@@ -245,7 +245,7 @@ export default function IstanbulHarita() {
       <div style={{ position: 'relative', borderRadius: 12, overflow: 'hidden', border: '1px solid #E5E7EB', height: 560 }}>
         {yukleniyor && (
           <div style={{ position: 'absolute', inset: 0, zIndex: 1000, background: 'rgba(255,255,255,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
-            <div style={{ fontSize: 28 }}>🗺️</div>
+            <div style={{ fontSize: 28 }}></div>
             <div style={{ color: '#0D9488', fontSize: 13, fontWeight: 600 }}>Tesis verileri yükleniyor...</div>
             <div style={{ color: '#94A3B8', fontSize: 11 }}>19.000+ koordinat işleniyor</div>
           </div>

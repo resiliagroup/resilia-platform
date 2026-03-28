@@ -254,7 +254,7 @@ export default function FormPage() {
       })
       setGonderiyor(false)
       if (error) { alert('Hata: ' + error.message); return }
-      alert('✅ Taslak kaydedildi.')
+      alert(' Taslak kaydedildi.')
       return
     }
 
@@ -459,7 +459,7 @@ export default function FormPage() {
           {/* Güven skoru + Railway notu */}
           <div style={{background:'#F0FDF4',border:'1px solid #BBFBD0',borderRadius:12,padding:'12px 16px',marginBottom:20,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
             <span style={{fontSize:12,color:'#166534'}}>
-              ✅ <strong>Railway HFER-720</strong> değerlendirmesi tamamlandı.
+               <strong>Railway HFER-720</strong> değerlendirmesi tamamlandı.
             </span>
             <span style={{fontSize:11,color:'#4ADE80',fontFamily:'monospace'}}>
               güven: %{Math.round((s.confidence ?? 0.85) * 100)}
@@ -539,8 +539,8 @@ export default function FormPage() {
         {/* Adım sekmeleri */}
         <div style={{display:'flex',gap:10,marginBottom:20}}>
           {([
-            {n:1 as const,icon:'🏢',l:'Tesis Kartı',sub:'Yapı · Sistemler · Yetkili'},
-            {n:2 as const,icon:'📋',l:'Risk Değerlendirme',sub:`HFE-360 · ${toplamSoru} soru`},
+            {n:1 as const,icon:'',l:'Tesis Kartı',sub:'Yapı · Sistemler · Yetkili'},
+            {n:2 as const,icon:'',l:'Risk Değerlendirme',sub:`HFE-360 · ${toplamSoru} soru`},
           ]).map(s=>{
             const dur=s.n===adim?'aktif':(s.n===1&&tesisTamam)?'tamam':''
             const dis=s.n===2&&!tesisTamam
@@ -564,7 +564,7 @@ export default function FormPage() {
         {adim===1&&(
           <div className="fi">
             <div style={{background:'rgba(0,155,141,.07)',border:'1px solid rgba(0,155,141,.25)',borderRadius:12,padding:'12px 16px',marginBottom:16,fontSize:12,color:'#065F46',lineHeight:1.7}}>
-              🏢 <strong>Şube Tesis Kartı</strong> — <em>Bir kez doldurulur, kalıcı kayıt oluşturur.</em> Yapısal bilgiler,
+               <strong>Şube Tesis Kartı</strong> — <em>Bir kez doldurulur, kalıcı kayıt oluşturur.</em> Yapısal bilgiler,
               kritik sistem envanteri ve acil iletişim bilgilerini içerir.
               <span style={{color:'#EF4444'}}> * </span>ile işaretli alanlar zorunludur.
             </div>
@@ -600,7 +600,7 @@ export default function FormPage() {
                   <div style={{display:'flex',gap:8,flexWrap:'wrap' as const}}>
                     <button type="button" onClick={() => setKonumModu(konumModu==='harita'?null:'harita')}
                       style={{flex:1,minWidth:100,padding:'8px 10px',borderRadius:8,border:`1.5px solid ${konumModu==='harita'?TEAL:'#CBD5E1'}`,background:konumModu==='harita'?`${TEAL}10`:'white',color:NAVY,fontSize:12,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>
-                      🗺️ Haritadan İşaretle
+                       Haritadan İşaretle
                     </button>
                     <button type="button" onClick={() => {
                       if (!navigator.geolocation) return alert('Tarayıcı konum desteği yok.')
@@ -612,7 +612,7 @@ export default function FormPage() {
                       }, () => alert('Konum alınamadı.'))
                     }}
                       style={{flex:1,minWidth:100,padding:'8px 10px',borderRadius:8,border:'1.5px solid #CBD5E1',background:'white',color:NAVY,fontSize:12,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>
-                      📍 Mevcut Konumumu Kullan
+                       Mevcut Konumumu Kullan
                     </button>
                     <button type="button" onClick={() => setKonumModu(konumModu==='koordinat'?null:'koordinat')}
                       style={{flex:1,minWidth:100,padding:'8px 10px',borderRadius:8,border:`1.5px solid ${konumModu==='koordinat'?TEAL:'#CBD5E1'}`,background:konumModu==='koordinat'?`${TEAL}10`:'white',color:NAVY,fontSize:12,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>
@@ -661,7 +661,7 @@ export default function FormPage() {
               {/* D) Konum belirlendi badge */}
               {tesis.lat && tesis.lng && (
                 <div style={{display:'inline-flex',alignItems:'center',gap:6,background:'#F0FDF4',border:'1px solid #BBF7D0',borderRadius:99,padding:'5px 14px',fontSize:12,color:'#166534',fontWeight:600}}>
-                  📍 Konum belirlendi: {parseFloat(tesis.lat).toFixed(4)}, {parseFloat(tesis.lng).toFixed(4)}
+                   Konum belirlendi: {parseFloat(tesis.lat).toFixed(4)}, {parseFloat(tesis.lng).toFixed(4)}
                 </div>
               )}
             </div>
@@ -744,7 +744,7 @@ export default function FormPage() {
                 <Inp l="KEP Adresi" k="kep_adresi" ph="akbank.sube@hs01.kep.tr" />
               </div>
               <div style={{background:'#FFFBF5',border:`1px solid #FDE68A`,borderLeft:`3px solid ${AMBER}`,borderRadius:10,padding:'12px 14px',marginBottom:12}}>
-                <span className="slbl" style={{color:'#92400E'}}>⚡ 2. Acil Yetkili (Müdür ulaşılamazsa)</span>
+                <span className="slbl" style={{color:'#92400E'}}> 2. Acil Yetkili (Müdür ulaşılamazsa)</span>
                 <div className="g2">
                   <Inp l="Ad Soyad / Unvan" k="acil_yetkili" ph="ör. Yönetmen" />
                   <Inp l="Cep Telefonu" k="acil_yetkili_tel" ph="05xx xxx xx xx" />
@@ -800,7 +800,7 @@ export default function FormPage() {
             </div>
             {tesisTamam&&(
               <div style={{marginTop:12,background:'#F0FFF4',border:'1px solid #BBFBD0',borderRadius:12,padding:'10px 16px',fontSize:12,color:'#166534',display:'flex',alignItems:'center',gap:8}}>
-                ✅ <strong>Tesis Kartı kaydedildi.</strong> Adım 2'de risk sorularını tamamlayıp gönderin.
+                 <strong>Tesis Kartı kaydedildi.</strong> Adım 2'de risk sorularını tamamlayıp gönderin.
               </div>
             )}
           </div>
@@ -817,7 +817,7 @@ export default function FormPage() {
                   <div style={{flex:1}}>
                     <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}>
                       <span style={{fontSize:11,fontWeight:700,textTransform:'uppercase' as const,letterSpacing:'.06em',color:bolgeRisk.seviye==='kritik'?'#DC2626':bolgeRisk.seviye==='yüksek'?'#D97706':'#2563EB'}}>
-                        📍 Bölge Risk Profili
+                         Bölge Risk Profili
                       </span>
                       <span style={{fontSize:10,padding:'2px 8px',borderRadius:99,fontWeight:700,
                         background:bolgeRisk.seviye==='kritik'?'#FEE2E2':bolgeRisk.seviye==='yüksek'?'#FEF3C7':'#DBEAFE',

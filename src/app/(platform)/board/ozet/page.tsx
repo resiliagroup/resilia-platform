@@ -71,11 +71,11 @@ export default function BoardOzet() {
               </a>
               <a href="/uzman/bia"
                 className="px-3 py-1.5 rounded-lg font-medium text-stone-500 hover:text-stone-900 hover:bg-stone-50 transition">
-                📊 BIA
+                 BIA
               </a>
               <a href="/uzman/istanbul-sanayi"
                 className="px-3 py-1.5 rounded-lg font-medium text-stone-500 hover:text-stone-900 hover:bg-stone-50 transition">
-                🏭 İst. Sanayi
+                 İst. Sanayi
               </a>
               <a href="/board/rapor"
                 className="px-3 py-1.5 rounded-lg font-medium text-stone-500 hover:text-stone-900 hover:bg-stone-50 transition">

@@ -14,11 +14,11 @@ function riskEtiket(s: number) { return s < 40 ? 'KRİTİK' : s < 70 ? 'ORTA' : 
 
 const SEKTOR_META: Record<string, { label: string; icon: string; renk: string }> = {
   bankacilik: { label: 'Bankacılık',  icon: '🏦', renk: '#1B4FD8' },
-  uretim:     { label: 'Sanayi',      icon: '🏭', renk: '#D97706' },
+  uretim:     { label: 'Sanayi',      icon: '', renk: '#D97706' },
   saglik:     { label: 'Sağlık',      icon: '🏥', renk: '#16A34A' },
   belediye:   { label: 'Belediye',    icon: '🏛️', renk: '#7C3AED' },
-  meb:        { label: 'Eğitim',      icon: '🎓', renk: '#0891B2' },
-  odalar:     { label: 'Odalar',      icon: '🏢', renk: '#9D4EDD' },
+  meb:        { label: 'Eğitim',      icon: '', renk: '#0891B2' },
+  odalar:     { label: 'Odalar',      icon: '', renk: '#9D4EDD' },
 }
 
 const TENANT_AD: Record<string, string> = {
@@ -173,10 +173,10 @@ export default function HaritaSayfasi() {
             {[
               { href: '/board/ozet',            label: 'Özet' },
               { href: '/uzman/dashboard',        label: 'Uzman' },
-              { href: '/harita',                 label: '🗺️ Harita', aktif: true },
+              { href: '/harita',                 label: ' Harita', aktif: true },
               { href: '/board/cok-banka',        label: '🏦 Çok Banka' },
-              { href: '/uzman/bia',              label: '📊 BIA' },
-              { href: '/uzman/istanbul-sanayi',  label: '🏭 Sanayi' },
+              { href: '/uzman/bia',              label: ' BIA' },
+              { href: '/uzman/istanbul-sanayi',  label: ' Sanayi' },
               { href: '/board/rapor',            label: 'PDF Rapor' },
             ].map(l => (
               <a key={l.href} href={l.href} style={{ fontSize: 11, fontWeight: 600, padding: '5px 9px', borderRadius: 7, textDecoration: 'none', transition: 'all .15s', background: l.aktif ? 'rgba(255,255,255,.15)' : 'transparent', color: l.aktif ? 'white' : 'rgba(255,255,255,.45)' }}>{l.label}</a>
@@ -231,7 +231,7 @@ export default function HaritaSayfasi() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <button onClick={() => setSektor('tumu')}
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px 9px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", transition: 'all .15s', background: sektor === 'tumu' ? NAVY : '#F8F6F3', color: sektor === 'tumu' ? 'white' : '#374151', fontSize: 11, fontWeight: 600 }}>
-                <span>🗺️ Tüm Sektörler</span><span style={{ fontSize: 10, opacity: .5 }}>{istat.toplam}</span>
+                <span> Tüm Sektörler</span><span style={{ fontSize: 10, opacity: .5 }}>{istat.toplam}</span>
               </button>
               {sektorSayilari.map(({ s, n }) => {
                 const m = SEKTOR_META[s]
@@ -260,7 +260,7 @@ export default function HaritaSayfasi() {
               </div>
               <div style={{ background: 'white', borderRadius: 13, border: '1px solid #ECEAE8', padding: '13px 14px' }}>
                 <div style={{ fontFamily: "'DM Mono',monospace", fontSize: 12, fontWeight: 700, color: NAVY, marginBottom: 3 }}>{secili.birim_kodu}</div>
-                {secili.il_adi && <div style={{ fontSize: 10, color: '#6B7280', marginBottom: 9 }}>📍 {secili.il_adi}</div>}
+                {secili.il_adi && <div style={{ fontSize: 10, color: '#6B7280', marginBottom: 9 }}> {secili.il_adi}</div>}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 11 }}>
                   <div style={{ width: 48, height: 48, borderRadius: 12, background: riskRenk(secili.dayaniklilik_skoru), display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontSize: 20 }}>
                     {secili.dayaniklilik_skoru}
@@ -285,7 +285,7 @@ export default function HaritaSayfasi() {
             </div>
           ) : (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#C4C0BB', padding: 20 }}>
-              <div style={{ fontSize: 32, marginBottom: 8 }}>📍</div>
+              <div style={{ fontSize: 32, marginBottom: 8 }}></div>
               <div style={{ fontSize: 11, textAlign: 'center', lineHeight: 1.6 }}>Haritada bir birime tıklayarak detayları görün</div>
             </div>
           )}
@@ -295,7 +295,7 @@ export default function HaritaSayfasi() {
         <div style={{ flex: 1, position: 'relative' }}>
           {yukleniyor && (
             <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#F8F6F3', zIndex: 10 }}>
-              <div style={{ fontSize: 28, marginBottom: 10 }}>🗺️</div>
+              <div style={{ fontSize: 28, marginBottom: 10 }}></div>
               <div style={{ fontSize: 13, fontWeight: 600, color: NAVY, marginBottom: 5 }}>Harita yükleniyor…</div>
               <div style={{ fontSize: 11, color: '#9CA3AF' }}>600 birim koordinatları alınıyor</div>
             </div>

@@ -237,10 +237,10 @@ function TabOzet() {
         </p>
         <div style={{ marginTop: 20, display: 'flex', gap: 8 }}>
           <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 8, padding: '6px 16px', fontSize: 12, fontWeight: 600 }}>
-            🏭 Afete Dayanıklı Sanayi
+             Afete Dayanıklı Sanayi
           </div>
           <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 8, padding: '6px 16px', fontSize: 12, fontWeight: 600 }}>
-            📍 İstanbul Geneli
+             İstanbul Geneli
           </div>
         </div>
       </div>
@@ -485,7 +485,7 @@ function TabSektor() {
               <h3 style={{ fontSize: 20, fontWeight: 800, color: T.navy, margin: '0 0 4px' }}>{s.ad}</h3>
               <p style={{ fontSize: 13, color: T.muted, margin: 0 }}>{s.tesis} tesis · Ort. URI: <strong style={{ color: s.color }}>{s.uri}</strong></p>
             </div>
-            {s.natech && <Badge label="⚠️ NATECH RİSKİ" color={T.red} bg={T.redL} />}
+            {s.natech && <Badge label=" NATECH RİSKİ" color={T.red} bg={T.redL} />}
           </div>
 
           {/* HIFYEA Bar */}
@@ -782,16 +782,16 @@ function TabSatakol() {
 /* ── TAB: İŞ MODELİ ─────────────────────────────────────── */
 function TabIsModeli() {
   const GELIR_AKISLARI = [
-    { icon: '🖥️', baslik: 'Platform SaaS', hedef: '₺130M', yil: 'Y5', color: T.teal,
+    { icon: '', baslik: 'Platform SaaS', hedef: '₺130M', yil: 'Y5', color: T.teal,
       desc: 'Yıllık abonelik — tesis başına veya kurumsal lisans. İSO üyelerine ölçekli fiyat.',
       detay: ['İSO üyelerine ölçekli fiyat', 'Kullanıcı başına veya tesis paketi', 'API erişimi ek modül'] },
-    { icon: '📊', baslik: 'Danışmanlık', hedef: '₺60M', yil: 'Y5', color: T.blue,
+    { icon: '', baslik: 'Danışmanlık', hedef: '₺60M', yil: 'Y5', color: T.blue,
       desc: 'Proje bazlı risk analizi, BCP geliştirme ve ISO 22301 uyum danışmanlığı.',
       detay: ['Tesis bazlı URI doğrulama', 'BCP hazırlama paketi', 'Sektör bazlı raporlama'] },
-    { icon: '🔬', baslik: 'Saha Doğrulama', hedef: '₺55M', yil: 'Y5', color: T.purple,
+    { icon: '', baslik: 'Saha Doğrulama', hedef: '₺55M', yil: 'Y5', color: T.purple,
       desc: 'Fiziksel saha ziyaretleri, tatbikat koordinasyonu ve gerçek zamanlı ölçüm.',
       detay: ['193 kritik tesis öncelikli', 'Tatbikat senaryo tasarımı', 'Saha doğrulama raporu'] },
-    { icon: '🌐', baslik: 'Kurumsal + Uluslararası', hedef: '₺35M', yil: 'Y5', color: T.orange,
+    { icon: '', baslik: 'Kurumsal + Uluslararası', hedef: '₺35M', yil: 'Y5', color: T.orange,
       desc: 'Büyük ölçekli kurumsal lisanslar ve Türkiye modeli ihracatı.',
       detay: ['AFAD / Bakanlık entegrasyonu', 'MENA bölgesi genişleme', 'Sigorta sektörü verisi'] },
   ]
@@ -982,7 +982,7 @@ function TabHROAgile() {
               borderBottom: altTab === t ? `2px solid ${T.teal}` : '2px solid transparent',
               cursor: 'pointer',
             }}>
-            {t === 'hro' ? '🎯 HRO Olgunluk Matrisi' : '⚡ AGILE Dayanıklılık Planı'}
+            {t === 'hro' ? ' HRO Olgunluk Matrisi' : ' AGILE Dayanıklılık Planı'}
           </button>
         ))}
       </div>
@@ -1033,7 +1033,7 @@ function TabHROAgile() {
                     </div>
                   </div>
                   <div style={{ marginTop: 12, padding: '10px 14px', background: `${h.renk}08`, borderRadius: 8, borderLeft: `3px solid ${h.renk}` }}>
-                    <span style={{ fontSize: 12, color: T.navy, fontWeight: 600 }}>🎯 Aksiyon: </span>
+                    <span style={{ fontSize: 12, color: T.navy, fontWeight: 600 }}> Aksiyon: </span>
                     <span style={{ fontSize: 12, color: T.slate }}>{h.aksiyon}</span>
                   </div>
                 </div>
@@ -1141,10 +1141,10 @@ function TabROI() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
         {[
-          { label: 'Önlenen Kayıp (10 yıl)', value: fmt(onlenenKayip), color: T.green, icon: '🛡️' },
-          { label: 'Sigorta Tasarrufu (10 yıl)', value: fmt(sigortaIndirim), color: T.teal, icon: '📋' },
-          { label: 'Net ROI (10 yıl)', value: `%${netROI}`, color: Number(netROI) > 0 ? T.green : T.red, icon: '📈' },
-          { label: 'Geri Ödeme Süresi', value: `${geriOdeme} yıl`, color: T.orange, icon: '⏱️' },
+          { label: 'Önlenen Kayıp (10 yıl)', value: fmt(onlenenKayip), color: T.green, icon: '' },
+          { label: 'Sigorta Tasarrufu (10 yıl)', value: fmt(sigortaIndirim), color: T.teal, icon: '' },
+          { label: 'Net ROI (10 yıl)', value: `%${netROI}`, color: Number(netROI) > 0 ? T.green : T.red, icon: '' },
+          { label: 'Geri Ödeme Süresi', value: `${geriOdeme} yıl`, color: T.orange, icon: '' },
         ].map(k => (
           <Card key={k.label} style={{ textAlign: 'center' }}>
             <div style={{ fontSize: 24, marginBottom: 8 }}>{k.icon}</div>
@@ -1202,10 +1202,10 @@ function TabAksiyon() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
         {[
-          { label: 'Toplam Aksiyon', value: AKSIYONLAR.length, color: T.navy, icon: '📋' },
-          { label: 'Acil Aksiyon', value: AKSIYONLAR.filter(a => a.durum === 'acil').length, color: T.red, icon: '🚨' },
-          { label: 'Tamamlanan URI İyileşmesi', value: tamamlananURI.toFixed(1), color: T.green, icon: '✅' },
-          { label: 'Potansiyel URI İyileşmesi', value: toplamURI.toFixed(1), color: T.teal, icon: '🎯' },
+          { label: 'Toplam Aksiyon', value: AKSIYONLAR.length, color: T.navy, icon: '' },
+          { label: 'Acil Aksiyon', value: AKSIYONLAR.filter(a => a.durum === 'acil').length, color: T.red, icon: '' },
+          { label: 'Tamamlanan URI İyileşmesi', value: tamamlananURI.toFixed(1), color: T.green, icon: '' },
+          { label: 'Potansiyel URI İyileşmesi', value: toplamURI.toFixed(1), color: T.teal, icon: '' },
         ].map(k => (
           <Card key={k.label} style={{ textAlign: 'center' }}>
             <div style={{ fontSize: 22, marginBottom: 4 }}>{k.icon}</div>
@@ -1223,7 +1223,7 @@ function TabAksiyon() {
               background: filtre === f ? T.tealL : 'white',
               color: filtre === f ? T.teal : T.muted,
               fontWeight: filtre === f ? 700 : 400 }}>
-            {f === 'tumu' ? 'Tümü' : f === 'acil' ? '🚨 Acil' : f === 'planlandi' ? '📅 Planlandı' : '✅ Tamamlandı'}
+            {f === 'tumu' ? 'Tümü' : f === 'acil' ? ' Acil' : f === 'planlandi' ? ' Planlandı' : ' Tamamlandı'}
           </button>
         ))}
       </div>

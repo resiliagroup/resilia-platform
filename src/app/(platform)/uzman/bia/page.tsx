@@ -40,7 +40,7 @@ const SEKTORLER = [
     ],
   },
   {
-    id: 'uretim', label: 'Sanayi & Üretim', icon: '🏭', renk: '#D97706', acik: '#FFFBEB',
+    id: 'uretim', label: 'Sanayi & Üretim', icon: '', renk: '#D97706', acik: '#FFFBEB',
     birim: 'Tesis', birim_sayisi: 200, calisan: 49411,
     gunluk_gelir: 28400,
     rto: 8, rpo: 4,
@@ -120,7 +120,7 @@ const SEKTORLER = [
     ],
   },
   {
-    id: 'meb', label: 'Eğitim (MEB)', icon: '🎓', renk: '#0891B2', acik: '#E0F2FE',
+    id: 'meb', label: 'Eğitim (MEB)', icon: '', renk: '#0891B2', acik: '#E0F2FE',
     birim: 'Okul', birim_sayisi: 1200, calisan: 28000,
     gunluk_gelir: 0,   // Kamu — maliyet tabanlı
     rto: 72, rpo: 48,
@@ -217,10 +217,10 @@ export default function BIAHub() {
           {[
             { href: '/board/ozet',           l: 'Özet' },
             { href: '/uzman/dashboard',      l: 'Uzman' },
-            { href: '/harita',               l: '🗺️ Harita' },
-            { href: '/uzman/bia',            l: '📊 BIA', aktif: true },
+            { href: '/harita',               l: ' Harita' },
+            { href: '/uzman/bia',            l: ' BIA', aktif: true },
             { href: '/board/cok-banka',      l: '🏦 Çok Banka' },
-            { href: '/uzman/istanbul-sanayi',l: '🏭 Sanayi' },
+            { href: '/uzman/istanbul-sanayi',l: ' Sanayi' },
           ].map(l => (
             <a key={l.href} href={l.href} style={{ fontSize: 11, fontWeight: 600, padding: '5px 9px', borderRadius: 7, textDecoration: 'none',
               background: l.aktif ? 'rgba(255,255,255,.15)' : 'transparent',
@@ -289,10 +289,10 @@ export default function BIAHub() {
           {/* Sekmeler */}
           <div style={{ display: 'flex', borderBottom: '1px solid #ECEAE8', padding: '0 24px' }}>
             {[
-              { v: 'ozet', l: '📋 Genel Özet' },
+              { v: 'ozet', l: ' Genel Özet' },
               { v: 'surec', l: '⚙️ Kritik Süreçler' },
-              { v: 'senaryo', l: '⚡ Senaryo EAL' },
-              { v: 'aksiyon', l: '🎯 Aksiyon Planı' },
+              { v: 'senaryo', l: ' Senaryo EAL' },
+              { v: 'aksiyon', l: ' Aksiyon Planı' },
             ].map(t => (
               <button key={t.v} onClick={() => setSekme(t.v as any)}
                 style={{ padding: '12px 16px', border: 'none', background: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600, fontFamily: "'DM Sans',sans-serif", color: sekme === t.v ? s.renk : '#9CA3AF', borderBottom: `2px solid ${sekme === t.v ? s.renk : 'transparent'}`, marginBottom: -1, transition: 'all .15s' }}>

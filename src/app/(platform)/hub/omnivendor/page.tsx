@@ -436,7 +436,7 @@ export default function OmniVendorPage() {
                   ['Kritiklik', secili.kritiklik],
                   ['Yıllık Sözleşme', `₺${secili.yillik_sozlesme.toLocaleString('tr-TR')}K`],
                   ['Son Denetim', secili.son_denetim || '—'],
-                  ['Tek Kaynak', secili.tek_kaynak ? 'Evet ⚠️' : 'Hayır'],
+                  ['Tek Kaynak', secili.tek_kaynak ? 'Evet ' : 'Hayır'],
                   ['BDDK Bildirimi', secili.bddk_bildirimi ? 'Yapıldı ✓' : 'Yapılmadı'],
                 ].map(([label, val]) => (
                   <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: `1px solid ${BORDER}`, fontSize: 12 }}>
@@ -447,7 +447,7 @@ export default function OmniVendorPage() {
 
                 {secili.notlar && (
                   <div style={{ marginTop: 10, fontSize: 12, color: '#64748B', background: '#F8F9FA', borderRadius: 8, padding: 10 }}>
-                    📝 {secili.notlar}
+                     {secili.notlar}
                   </div>
                 )}
 
@@ -470,9 +470,9 @@ export default function OmniVendorPage() {
 
             {/* Yüksek riskler */}
             {[
-              { baslik: '🔴 Yüksek Risk (≥ 70)', filtre: (t: Tedarikci) => (t.risk_skoru ?? 0) >= 70, renk: '#FFF7F7', kenarlık: '#FCA5A5' },
-              { baslik: '🟡 Orta Risk (40–69)', filtre: (t: Tedarikci) => (t.risk_skoru ?? 0) >= 40 && (t.risk_skoru ?? 0) < 70, renk: '#FFFBEB', kenarlık: '#FDE68A' },
-              { baslik: '🟢 Düşük Risk (< 40)', filtre: (t: Tedarikci) => (t.risk_skoru ?? 0) < 40, renk: '#F0FDF4', kenarlık: '#86EFAC' },
+              { baslik: ' Yüksek Risk (≥ 70)', filtre: (t: Tedarikci) => (t.risk_skoru ?? 0) >= 70, renk: '#FFF7F7', kenarlık: '#FCA5A5' },
+              { baslik: ' Orta Risk (40–69)', filtre: (t: Tedarikci) => (t.risk_skoru ?? 0) >= 40 && (t.risk_skoru ?? 0) < 70, renk: '#FFFBEB', kenarlık: '#FDE68A' },
+              { baslik: ' Düşük Risk (< 40)', filtre: (t: Tedarikci) => (t.risk_skoru ?? 0) < 40, renk: '#F0FDF4', kenarlık: '#86EFAC' },
             ].map(grup => {
               const liste = riskeSirali.filter(grup.filtre)
               if (liste.length === 0) return null
@@ -582,7 +582,7 @@ export default function OmniVendorPage() {
               {/* Uyarı banner */}
               {Object.entries(ulkeSayilari).some(([, v]) => v.toplam / toplamSozlesme >= 0.4) && (
                 <div style={{ gridColumn: '1 / -1', background: '#FFF7F7', border: '1px solid #FCA5A5', borderRadius: 10, padding: 14 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: RED, marginBottom: 4 }}>⚠️ Coğrafi Konsantrasyon Uyarısı</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: RED, marginBottom: 4 }}> Coğrafi Konsantrasyon Uyarısı</div>
                   <div style={{ fontSize: 12, color: '#374151' }}>
                     Bir veya birden fazla ülke toplam sözleşme değerinin %40'ını aşıyor. BDDK Operasyonel Risk Tebliği kapsamında konsantrasyon riski azaltma planı hazırlanması önerilir.
                   </div>

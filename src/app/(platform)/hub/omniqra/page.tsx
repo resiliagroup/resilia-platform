@@ -468,7 +468,7 @@ export default function OmniQraPage() {
 
               {/* Stres testi uyarısı */}
               <div style={{ gridColumn: '1 / -1', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 10, padding: 16 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#1D4ED8', marginBottom: 6 }}>📌 ICAAP Bağlantısı</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#1D4ED8', marginBottom: 6 }}> ICAAP Bağlantısı</div>
                 <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.7 }}>
                   Bu stres testi sonuçları BDDK İSEDES Madde 17 kapsamındaki İç Sermaye Yeterliliği Değerlendirme Süreci'ne (ICAAP) girdi sağlar. Ağır stres senaryosunda %28.7 sermaye tüketimi, mevcut sermaye tamponlarının yeterliliğini test etmektedir. Sonuçlar <strong>omniAUDIT</strong> modülüne aktarılabilir.
                 </div>
@@ -546,7 +546,7 @@ export default function OmniQraPage() {
 
             {/* Araştırma bildirimi */}
             <div style={{ gridColumn: '1 / -1', background: '#F5F3FF', border: '1px solid #C4B5FD', borderRadius: 10, padding: 16 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#6D28D9', marginBottom: 6 }}>🔬 Araştırma Modülü Bildirimi</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#6D28D9', marginBottom: 6 }}> Araştırma Modülü Bildirimi</div>
               <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.7 }}>
                 omniQRA bir araştırma ve prototip modülüdür. Sunulan modeller ve sonuçlar eğitim ve araştırma amaçlıdır; prodüksiyon ortamında kullanılacak VaR/ES hesaplamaları için validasyon ve bağımsız doğrulama süreçlerinden geçirilmelidir. BDDK onaylı risk ölçüm sistemi olarak kullanmadan önce Madde 17 kapsamında ICAAP dokümanı hazırlanmalı ve denetimden geçirilmelidir.
               </div>

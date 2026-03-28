@@ -277,7 +277,7 @@ export default function OmniAuditPage() {
                     </div>
                   ) : (
                     <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
-                      {m.bulgu && <span style={{ fontSize: 11, color: '#64748B', background: '#F8F9FA', padding: '2px 8px', borderRadius: 6 }}>📝 {m.bulgu}</span>}
+                      {m.bulgu && <span style={{ fontSize: 11, color: '#64748B', background: '#F8F9FA', padding: '2px 8px', borderRadius: 6 }}> {m.bulgu}</span>}
                       <button onClick={() => { setAcikBulgu(m.id); setBulguMetin(m.bulgu) }}
                         style={{ background: 'transparent', border: 'none', color: TEAL, fontSize: 11, fontWeight: 600, cursor: 'pointer', padding: 0 }}>
                         {m.bulgu ? 'Düzenle' : '+ Bulgu Ekle'}
@@ -382,14 +382,14 @@ export default function OmniAuditPage() {
             ].filter(x => x.maddeler.length > 0).map(x => (
               <div key={x.label} style={{ background: 'white', border: `1px solid ${BORDER}`, borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
                 <div style={{ padding: '12px 16px', borderBottom: `1px solid ${BORDER}`, background: '#FFF7F7' }}>
-                  <h3 style={{ fontSize: 13, fontWeight: 700, color: RED }}>⚠️ {x.label}</h3>
+                  <h3 style={{ fontSize: 13, fontWeight: 700, color: RED }}> {x.label}</h3>
                 </div>
                 {x.maddeler.map(m => (
                   <div key={m.id} style={{ padding: '10px 16px', borderBottom: `1px solid ${BORDER}`, display: 'flex', gap: 12 }}>
                     <span style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8', minWidth: 80, fontFamily: 'DM Mono,monospace' }}>{m.madde}</span>
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 600, color: NAVY }}>{m.baslik}</div>
-                      {m.bulgu && <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>📝 {m.bulgu}</div>}
+                      {m.bulgu && <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}> {m.bulgu}</div>}
                     </div>
                   </div>
                 ))}

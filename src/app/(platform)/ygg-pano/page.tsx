@@ -367,7 +367,7 @@ export default function YGGPano() {
               disabled={loading || autoCalc}
               style={{ background: TEAL, color: 'white', border: 'none', borderRadius: 10, padding: '8px 18px', fontSize: 13, fontWeight: 700, cursor: loading || autoCalc ? 'not-allowed' : 'pointer', opacity: autoCalc ? 0.7 : 1 }}
             >
-              {autoCalc ? '⏳ Calculating…' : '⚡ Auto Calculate'}
+              {autoCalc ? '⏳ Calculating…' : ' Auto Calculate'}
             </button>
             <button
               onClick={pdfIndir}
@@ -405,7 +405,7 @@ export default function YGGPano() {
         <div style={{ display: 'flex', gap: 8, marginBottom: 16, alignItems: 'center' }}>
           {([
             { key: 'hepsi',    label: 'All' },
-            { key: 'kritik',   label: '🔴 Critical (URI<50)' },
+            { key: 'kritik',   label: ' Critical (URI<50)' },
             { key: 'natech',   label: '⚠ NATECH' },
             { key: 'dusuk_hro', label: '🛡 Low HRO (α<1.0)' },
           ] as { key: Filtre; label: string }[]).map(f => (
