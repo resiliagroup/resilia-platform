@@ -21,7 +21,7 @@ function LoginForm() {
       })
       const data = await res.json()
       if (res.ok) {
-        window.location.href = searchParams.get('next') || '/hub'
+        window.location.href = searchParams.get('next') || '/hub/site-haritasi'
       } else {
         setError(data.error || 'Geçersiz e-posta veya şifre.')
         setLoading(false)
