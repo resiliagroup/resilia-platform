@@ -7,6 +7,10 @@ import {
   SORULAR_SANAYI, type SoruSanayi,
   type TesisEnvanterAlani, type DestekKapasite,
 } from '@/lib/sorular-sanayi'
+import { mapFormToAssessment } from '@/lib/form-to-assessment'
+
+const BACKEND_URL = 'https://omniversel-risk-engine-production.up.railway.app/api/v1'
+const TENANT_ID   = '11111111-0000-0000-0000-000000000001'
 
 const sb = createClient(
   'https://gqguwgbopgnpwzjwcexl.supabase.co',
@@ -287,23 +291,63 @@ export default function TesisFormuPage() {
 
   const gonder = async () => {
     setGonderiyor(true); setHata('')
-    const sonUri = hesaplaUri(puanlar)
     const koord = envanter['E12'] as string[]
     try {
+      // Adım 1: Tesis yoksa backend'de oluştur
+      let fId = facilityId
+      if (!fId) {
+        const facRes = await fetch(`${BACKEND_URL}/facilities/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tenant_id: TENANT_ID,
+            name: String(envanter['E01'] ?? token),
+            nace_code: String(envanter['E03'] ?? ''),
+            lat: parseFloat(String(koord?.[0] ?? '0')),
+            lng: parseFloat(String(koord?.[1] ?? '0')),
+          }),
+        })
+        if (facRes.ok) {
+          const facData = await facRes.json()
+          fId = facData.id ?? fId
+          setFacilityId(fId ?? null)
+        }
+      }
+
+      // Adım 2: Assessment çalıştır → gerçek URI skoru al
+      let sonUri = hesaplaUri(puanlar)
+      if (fId) {
+        const payload = mapFormToAssessment(fId, puanlar, envanter)
+        const assRes = await fetch(`${BACKEND_URL}/assessments/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        if (assRes.ok) {
+          const assData = await assRes.json()
+          if (typeof assData.uri_score === 'number') sonUri = assData.uri_score
+          else if (typeof assData.overall_uri === 'number') sonUri = assData.overall_uri
+        }
+      }
+
+      // Adım 3: Supabase'e kaydet
       const { error } = await sb.from('iso_tesis_formlari').upsert({
         token,
-        facility_id: facilityId,
+        facility_id: fId,
         envanter,
         puanlar,
         destek,
         uri_skoru: sonUri,
-        lat: parseFloat(koord?.[0] ?? '0'),
-        lng: parseFloat(koord?.[1] ?? '0'),
+        lat: parseFloat(String(koord?.[0] ?? '0')),
+        lng: parseFloat(String(koord?.[1] ?? '0')),
         dolduran_ip: null,
         gonderim_tarihi: new Date().toISOString(),
       }, { onConflict: 'token' })
       if (error) throw error
+
+      // Adım 4: Token'ı kapat
       await sb.from('iso_tokenlar').update({ dolduruldu: true }).eq('token', token)
+
       setUri(sonUri)
       setGonderildi(true)
     } catch {
