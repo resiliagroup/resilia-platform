@@ -296,15 +296,21 @@ export default function TesisFormuPage() {
       // Adım 1: Tesis yoksa backend'de oluştur
       let fId = facilityId
       if (!fId) {
+        const lat = parseFloat(String(koord?.[0] ?? '')) || null
+        const lng = parseFloat(String(koord?.[1] ?? '')) || null
         const facRes = await fetch(`${BACKEND_URL}/facilities/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             tenant_id: TENANT_ID,
-            name: String(envanter['E01'] ?? token),
-            nace_code: String(envanter['E03'] ?? ''),
-            lat: parseFloat(String(koord?.[0] ?? '0')),
-            lng: parseFloat(String(koord?.[1] ?? '0')),
+            code: `ISO-${token.slice(0, 8).toUpperCase()}`,
+            name: (envanter['E01'] as string) || 'İsimsiz Tesis',
+            sector: 'industrial',
+            ...(lat ? { latitude: lat } : {}),
+            ...(lng ? { longitude: lng } : {}),
+            ...(envanter['E16'] ? { building_age: parseInt(envanter['E16'] as string) } : {}),
+            ...(envanter['E10'] ? { employee_count: parseInt(envanter['E10'] as string) } : {}),
+            ...(envanter['E26'] && envanter['E26'] !== 'Bilinmiyor' ? { soil_class: envanter['E26'] as string } : {}),
           }),
         })
         if (facRes.ok) {
