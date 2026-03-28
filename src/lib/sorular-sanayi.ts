@@ -2,7 +2,7 @@
 //  OMNI Platform — Sanayi Tesisleri HIFYEA Soru Seti
 //  HIFYEA Metodolojisi: H·F×E·Y·A (Tehlike·Savunmasızlık·Yönetilebilirlik)
 //  ISO 22301 · AFAD AADY 2025 · TOC · HRO Sentezi
-//  Toplam: 63 soru — H:8, F×E:15, C:35, HRO:5
+//  Toplam: 68 soru — H:8, F×E:15, C:35, HRO:10
 // ═══════════════════════════════════════════════════════════════
 
 import type { Soru } from './sorular'
@@ -757,6 +757,60 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
       'Kriz anında karar her zaman en yetkili uzmana devrediliyor, kültür yerleşmiş',
     ],
   },
+
+  // ── Lean Six Sigma ──────────────────────────────────────────
+  {
+    kod: 'HRO6', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
+    soru: 'Yalın düşünce (Lean): tesis, afet hazırlığında israfı (waste) tanımlıyor ve sistematik olarak elimine ediyor mu?',
+    rehber: [
+      'İsraf analizi yok, kaynaklar verimsiz kullanılıyor',
+      'Bazı süreçlerde iyileştirme var, sistematik değil',
+      'Periyodik value stream mapping yapılıyor',
+      'Sürekli iyileştirme (Kaizen) kültürü var, afet planları da dahil',
+    ],
+  },
+  {
+    kod: 'HRO7', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
+    soru: 'Six Sigma kalite: kritik güvenlik proseslerinde değişkenlik (varyasyon) ölçülüyor ve kontrol altında tutuluyor mu?',
+    rehber: [
+      'Güvenlik proseslerinde kalite ölçümü yok',
+      'Temel ölçümler var, analiz yapılmıyor',
+      'SPC (istatistiksel proses kontrol) kısmi uygulanıyor',
+      'DMAIC döngüsü aktif, Cpk değerleri takip ediliyor',
+    ],
+  },
+  // ── Theory of Constraints (TOC) ─────────────────────────────
+  {
+    kod: 'HRO8', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 5, kritik: true, ters: false,
+    soru: 'Kısıt yönetimi (TOC): tesisin afet müdahale kapasitesindeki en kritik darboğaz (constraint) tanımlanmış mı?',
+    rehber: [
+      'Darboğaz analizi hiç yapılmamış',
+      'Sezgisel olarak biliniyor, belgelenmemiş',
+      'Kısıt tanımlanmış, iyileştirme planı yok',
+      'Kısıt tanımlanmış, subordinate edilmiş ve sürekli izleniyor (TOC 5 adım)',
+    ],
+  },
+  {
+    kod: 'HRO9', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
+    soru: 'Sistem düşüncesi: tesis, olayları bireysel hatalar yerine sistem zayıflıkları olarak mı değerlendiriyor?',
+    rehber: [
+      'Her kaza bir kişinin suçu, sistem sorgulanmıyor',
+      'Bazen sistem faktörleri de değerlendiriliyor',
+      'Çoğunlukla Swiss Cheese / sistem modeli kullanılıyor',
+      'Blame-free kültür yerleşmiş, sistemik kök neden analizi standart',
+    ],
+  },
+  // ── Agile Dayanıklılık ──────────────────────────────────────
+  {
+    kod: 'HRO10', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
+    soru: 'Çevik toparlanma (Agile Resilience): tesis, büyük planlar yerine kısa döngülerle (sprint) iyileşme yapıyor mu?',
+    rehber: [
+      'Yıllık plan var, hiç güncellenmemiyor',
+      'Yılda bir güncelleme yapılıyor',
+      'Çeyreklik gözden geçirme ve güncelleme',
+      'Aylık sprint döngüsü: plan → uygula → ölç → güncelle, retrospektif yapılıyor',
+    ],
+  },
 ]
 
 // Bölüm filtreleri (form rendering için)
@@ -865,10 +919,10 @@ export const SANAYI_SORU_META = {
   h:  13,
   fe: 15,
   c:  35,
-  hro: 5,
+  hro: 10,
   envanter_alani: 36,
   destek_kalemi: 22,
-  kaynaklar: ['HIFYEA Metodolojisi', 'ISO 22301:2019', 'AFAD AADY 2025', 'TOC / HRO Sentezi', 'Hikmet Hoca AADY Kontrol Listesi 2025', 'SATAKOL/MARAP'],
+  kaynaklar: ['HIFYEA Metodolojisi', 'ISO 22301:2019', 'AFAD AADY 2025', 'TOC / HRO Sentezi', 'Hikmet Hoca AADY Kontrol Listesi 2025', 'SATAKOL/MARAP', 'Lean Six Sigma (DMAIC)', 'Theory of Constraints (Goldratt)', 'Agile Resilience'],
   sektor: 'uretim',
   versiyon: '3.1',
   tarih: '2026-03-27',
