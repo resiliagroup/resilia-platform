@@ -9,7 +9,7 @@ import {
   Flame, Droplets, Cpu, Target, BookOpen, Layers,
   ArrowUpRight, Loader2, Info, Factory, Globe, Award,
   HeartHandshake, Lightbulb, Radio,
-  CheckSquare, ArrowRight,
+  CheckSquare, ArrowRight, FileCheck,
 } from 'lucide-react'
 
 const IstanbulHarita = dynamic(() => import('./IstanbulHarita'), {
@@ -162,11 +162,34 @@ function Badge({ label, color, bg }: { label: string; color: string; bg: string 
 
 /* ── TAB: GENEL BAKIŞ ───────────────────────────────────── */
 function TabOzet() {
+  const SUPA_URL = 'https://gqguwgbopgnpwzjwcexl.supabase.co'
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzM5OTgzMywiZXhwIjoyMDg4OTc1ODMzfQ.Ku-JRx8JFH5a3SIj7sGP_Dy_nM89NMMW34gPyxVO_qI'
+
+  const [formStat, setFormStat] = useState({ toplam: 0, ortUri: 0, natech: 0, aadyp: 0 })
+
+  useEffect(() => {
+    fetch(`${SUPA_URL}/rest/v1/iso_tesis_formlari?select=uri_skoru,puanlar&limit=500`, {
+      headers: { 'apikey': SUPA_KEY }
+    }).then(r => r.json()).then((rows: any[]) => {
+      if (!Array.isArray(rows) || rows.length === 0) return
+      const natech = rows.filter(r => (r.puanlar?.T3 ?? 0) >= 5 || (r.puanlar?.T7 ?? 0) >= 5).length
+      const aadyp = rows.filter(r => (r.puanlar?.Y6 ?? 10) <= 3).length
+      setFormStat({
+        toplam: rows.length,
+        ortUri: Math.round(rows.reduce((s, r) => s + (r.uri_skoru ?? 0), 0) / rows.length),
+        natech,
+        aadyp,
+      })
+    })
+  }, [])
+
   const KPI_DATA = [
     { value: '22.846', label: 'Toplam Tesis', sub: 'İSO kayıtlı üye', color: T.teal, icon: <Building2 size={20}/>, trend: 'İstanbul Geneli' },
     { value: '18.712', label: 'Koordinatlı', sub: '%81.9 kapsama oranı', color: T.blue, icon: <MapPin size={20}/>, trend: '+1.2% bu yıl' },
     { value: '1.053.058', label: 'Toplam İstihdam', sub: 'Kayıtlı çalışan', color: T.purple, icon: <Users size={20}/>, trend: 'Aktif işyeri' },
     { value: '193', label: 'Kritik Tesis', sub: 'URI skoru ≥ 60', color: T.red, icon: <AlertTriangle size={20}/>, trend: 'Öncelikli müdahale' },
+    { value: formStat.toplam.toString(), label: 'Form Dolduruldu', sub: 'İSO tesisi', color: T.teal, icon: <FileCheck size={20}/>, trend: 'Canlı veri' },
+    { value: `%${formStat.toplam > 0 ? Math.round(formStat.toplam/22846*100) : 0}`, label: 'Kapsama', sub: 'Form doluluk oranı', color: T.purple, icon: <Target size={20}/>, trend: `Ort. URI: ${formStat.ortUri}` },
   ]
 
   const RISK_DATA = [
@@ -246,9 +269,32 @@ function TabOzet() {
       </div>
 
       {/* KPI Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
         {KPI_DATA.map(k => <KPICard key={k.label} {...k} />)}
       </div>
+
+      {/* Kural Motoru Uyarıları */}
+      {formStat.toplam > 0 && (
+        <Card>
+          <SectionTitle icon={<AlertTriangle size={16} color={T.red}/>} title="Kural Motoru Uyarıları" sub="Doldurulan formlardan otomatik tespit"/>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 16 }}>
+            {[
+              { label: 'NATECH/Siber Risk', value: formStat.natech, color: T.red, oran: formStat.toplam > 0 ? Math.round(formStat.natech/formStat.toplam*100) : 0, aciklama: 'T3 veya T7 ≥ 5 — Seveso III kapsamı' },
+              { label: 'AADYP Eksik', value: formStat.aadyp, color: T.orange, oran: formStat.toplam > 0 ? Math.round(formStat.aadyp/formStat.toplam*100) : 0, aciklama: 'Y6 ≤ 3 — Yasal zorunluluk ihlali' },
+              { label: 'Ort. URI Skoru', value: formStat.ortUri, color: formStat.ortUri > 60 ? T.red : formStat.ortUri > 40 ? T.orange : T.green, oran: formStat.ortUri, aciklama: 'Doldurulan form ortalaması' },
+            ].map(k => (
+              <div key={k.label} style={{ padding: '16px', border: `1px solid ${k.color}30`, borderRadius: 12, background: `${k.color}05` }}>
+                <div style={{ fontSize: 28, fontWeight: 900, color: k.color }}>{k.value}</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: T.navy, margin: '4px 0 2px' }}>{k.label}</div>
+                <div style={{ fontSize: 11, color: T.muted }}>{k.aciklama}</div>
+                <div style={{ marginTop: 8, height: 3, borderRadius: 2, background: T.borderL }}>
+                  <div style={{ height: '100%', width: `${Math.min(100, k.oran)}%`, borderRadius: 2, background: k.color }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       {/* Risk Dağılımı + Veri Kalitesi */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
