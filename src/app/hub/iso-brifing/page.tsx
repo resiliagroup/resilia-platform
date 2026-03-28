@@ -1,7 +1,13 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Outfit, DM_Mono } from 'next/font/google'
+
+const CCDS = (name: string) => `/icons/ccds/${name}.png`
+const CIcon = ({ name, size = 36 }: { name: string; size?: number }) => (
+  // eslint-disable-next-line @next/next/no-img-element
+  <img src={CCDS(name)} width={size} height={size} alt="" style={{ filter: 'brightness(0) invert(1)', opacity: 0.85 }} />
+)
 
 const outfit = Outfit({ subsets: ['latin'], weight: ['300','400','500','600','700','800','900'] })
 const dmMono = DM_Mono({ subsets: ['latin'], weight: ['300','400','500'], variable: '--font-mono' })
@@ -36,33 +42,33 @@ const SEKTORLER = [
   { ad: 'Gıda ve İçecek',     tesis: 1565, uri: 21.0, badge: 'DÜŞÜK',  bc: '#22C55E' },
 ]
 
-const IS_MODELI = [
+const IS_MODELI: { bc: string; icon: React.ReactNode; baslik: string; desc: string; detaylar: string[]; hedef: string }[] = [
   {
-    bc: '#2D8A87', icon: '🖥️', baslik: 'Platform SaaS',
+    bc: '#2D8A87', icon: <CIcon name="Icon_MIT_06_Risk" size={40} />, baslik: 'Platform SaaS',
     desc: 'Yıllık abonelik bazlı dashboard erişimi. Tesis başına veya kurumsal lisans.',
     detaylar: ['İSO üyelerine ölçekli fiyat', 'Kullanıcı başına ya da tesis paketi', 'API erişimi ek modül'],
     hedef: '₺130M · Y5',
   },
   {
-    bc: '#3B82F6', icon: '📊', baslik: 'Danışmanlık Hizmetleri',
+    bc: '#3B82F6', icon: <CIcon name="Icon_MIT_01_Planning" size={40} />, baslik: 'Danışmanlık Hizmetleri',
     desc: 'Proje bazlı risk analizi, BCP geliştirme ve ISO 22301 uyum danışmanlığı.',
     detaylar: ['Tesis bazlı URI doğrulama', 'BCP hazırlama paketi', 'Sektör bazlı raporlama'],
     hedef: '₺60M · Y5',
   },
   {
-    bc: '#8B5CF6', icon: '🔬', baslik: 'Test & Saha Doğrulama',
+    bc: '#8B5CF6', icon: <CIcon name="Icon_RESP_15_Situational" size={40} />, baslik: 'Test & Saha Doğrulama',
     desc: 'Fiziksel saha ziyaretleri, tatbikat koordinasyonu ve gerçek zamanlı ölçüm.',
     detaylar: ['193 kritik tesis öncelikli', 'Tatbikat senaryo tasarımı', 'Saha doğrulama raporu'],
     hedef: '₺55M · Y5',
   },
   {
-    bc: '#F97316', icon: '🌐', baslik: 'Kurumsal + Uluslararası',
+    bc: '#F97316', icon: <CIcon name="Icon_PROTECT_11_Supply" size={40} />, baslik: 'Kurumsal + Uluslararası',
     desc: 'Büyük ölçekli kurumsal lisanslar ve Türkiye modeli ihracatı.',
     detaylar: ['AFAD / Bakanlık entegrasyonu', 'MENA bölgesi genişleme', 'Sigorta sektörü verisi'],
     hedef: '₺35M · Y5',
   },
   {
-    bc: '#10B981', icon: '🎓', baslik: 'Eğitim & Sertifikasyon',
+    bc: '#10B981', icon: <CIcon name="Icon_MIT_02_Public" size={40} />, baslik: 'Eğitim & Sertifikasyon',
     desc: 'İSO-AYM ortak sertifika programı. 10+ hoca kadrosu ile ölçekli eğitim.',
     detaylar: ['Temel Afet Bilinci (online)', 'BCP Planlama Sertifikası', 'HRO Yönetici Programı'],
     hedef: '₺55M · Y5',
@@ -91,19 +97,19 @@ const VERI_KALITE = [
 
 const FAZLAR = [
   {
-    faz: 'FAZ 1', sure: '0 – 3 Ay', baslik: 'Hızlı Tarama',
+    faz: 'FAZ 1', sure: '0 – 3 Ay', baslik: 'Hızlı Tarama', icon: 'Icon_RESP_15_Situational',
     bedel: 'ÜCRETSİZ', bedel_color: '#2D8A87', aktif: true,
     border: '#2D8A87',
     items: ['22.846 tesisin tamamı URI hesaplama','Risk haritası yayımı (herkese açık)','İSO üyelerine dashboard erişimi','Kritik 193 tesise öncelikli bildirim'],
   },
   {
-    faz: 'FAZ 2', sure: '3 – 9 Ay', baslik: 'Derinlemesine Analiz',
+    faz: 'FAZ 2', sure: '3 – 9 Ay', baslik: 'Derinlemesine Analiz', icon: 'Icon_PROTECT_04_Intelligence',
     bedel: 'Hibe / Kamu', bedel_color: '#3B82F6', aktif: false,
     border: 'rgba(255,255,255,0.08)',
     items: ['Kimya + metal sektörü detay formu','Saha doğrulama (193 kritik tesis)','BCP mevcut durum tespiti','NATECH senaryo modelleme'],
   },
   {
-    faz: 'FAZ 3', sure: '9 – 24 Ay', baslik: 'Sürekli İzleme',
+    faz: 'FAZ 3', sure: '9 – 24 Ay', baslik: 'Sürekli İzleme', icon: 'Icon_REC_03_OpCoord',
     bedel: 'Platform Aboneliği', bedel_color: '#8B5CF6', aktif: false,
     border: 'rgba(255,255,255,0.08)',
     items: ['Canlı URI güncelleme (tatbikat bazlı)','AFAD / Valilik entegrasyonu','Sigorta sektörü veri paylaşımı','ISO 22301 uyum takibi'],
@@ -476,9 +482,12 @@ export default function IsoBrifingV3() {
 
         {/* ══ KOBİ SEGMENTASYON ══════════════════════════════════ */}
         <div className="v3-label">Hedef Segment Analizi — KOBİ Odağı</div>
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 8 }}>KOBİ Segmentasyon</div>
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7 }}>İSO üyelerinin %72&apos;si 50&apos;den az çalışanlı KOBİ</p>
+        <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 16 }}>
+          <CIcon name="Icon_MIT_04_Community" size={40} />
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 4 }}>KOBİ Segmentasyon</div>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7 }}>İSO üyelerinin %72&apos;si 50&apos;den az çalışanlı KOBİ</p>
+          </div>
         </div>
         <div className="v3-g3" style={{ alignItems: 'start' }}>
           {/* Sol: ISG Sınıfı */}
@@ -624,27 +633,28 @@ export default function IsoBrifingV3() {
         <div className="v3-g4" style={{ gap: 14 }}>
           {[
             {
-              baslik: 'Bu Hafta Ücretsiz', bc: '#22C55E', sure: '₺0',
+              baslik: 'Bu Hafta Ücretsiz', bc: '#22C55E', sure: '₺0', icon: 'Icon_RESP_01_Planning',
               iyilesme: '-3 puan',
               items: ['Acil çıkış yollarını işaretle (boya/stiker: ~500 TRY)', 'Yangın söndürücü konumlarını kontrol et', 'Ekip iletişim listesi oluştur (WhatsApp grubu)', 'Deprem çantasını hazırla'],
             },
             {
-              baslik: 'Bu Ay', bc: '#2D8A87', sure: '< 5.000 TRY',
+              baslik: 'Bu Ay', bc: '#2D8A87', sure: '< 5.000 TRY', icon: 'Icon_PROTECT_01_Planning',
               iyilesme: '-6 puan',
               items: ['Temel yangın tatbikatı yaptır', 'Kritik ekipmanları sabitle (ankraj malzemesi)', 'Verilerini yedekle (bulut depolama)', 'ISG tehlike sınıfını belgele'],
             },
             {
-              baslik: 'Bu Çeyrek', bc: '#3B82F6', sure: '< 25.000 TRY',
+              baslik: 'Bu Çeyrek', bc: '#3B82F6', sure: '< 25.000 TRY', icon: 'Icon_RESP_08_Fire',
               iyilesme: '-10 puan',
               items: ['Acil Durum Yönetim Planı hazırla (şablon ile)', 'İlkyardım eğitimi (1 gün, 2–3 kişi)', 'Jeneratör veya UPS temin et', 'Tedarikçi alternatifi belirle'],
             },
             {
-              baslik: 'Bu Yıl', bc: '#8B5CF6', sure: '< 100.000 TRY',
+              baslik: 'Bu Yıl', bc: '#8B5CF6', sure: '< 100.000 TRY', icon: 'Icon_REC_01_Planning',
               iyilesme: '-18 puan',
               items: ['BCP danışmanlık paketi', 'Yapısal değerlendirme raporu', 'ISO 22301 farkındalık eğitimi', 'Omniversel Pro abonelik'],
             },
           ].map(k => (
             <div key={k.baslik} style={{ ...glass, padding: '22px 18px', borderTop: `3px solid ${k.bc}`, position: 'relative' }}>
+              <div style={{ marginBottom: 10 }}><CIcon name={k.icon} size={36} /></div>
               <div style={{ fontSize: 9, fontWeight: 800, color: k.bc, letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 6 }}>{k.baslik}</div>
               <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 16, fontFamily: 'var(--font-mono)' }}>{k.sure}</div>
               {k.items.map(item => (
@@ -669,7 +679,7 @@ export default function IsoBrifingV3() {
             <div key={m.baslik} style={{ ...glass, padding: '22px 20px', borderLeft: `3px solid ${m.bc}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{ fontSize: 20 }}>{m.icon}</span>
+                  <span style={{ flexShrink: 0 }}>{m.icon}</span>
                   <span style={{ fontSize: 15, fontWeight: 700 }}>{m.baslik}</span>
                 </div>
                 <span style={{ fontSize: 11, fontWeight: 700, color: m.bc, fontFamily: 'var(--font-mono)', background: m.bc + '18', border: `1px solid ${m.bc}40`, borderRadius: 6, padding: '2px 8px', whiteSpace: 'nowrap' }}>{m.hedef}</span>
@@ -777,6 +787,7 @@ export default function IsoBrifingV3() {
                   BAŞLANGIÇ NOKTASI
                 </div>
               )}
+              <div style={{ marginBottom: 14 }}><CIcon name={f.icon} size={36} /></div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
                 <div>
                   <div style={{ fontSize: 9, fontWeight: 800, color: f.aktif ? '#2D8A87' : 'rgba(255,255,255,0.25)', letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: 5 }}>{f.faz} · {f.sure}</div>
