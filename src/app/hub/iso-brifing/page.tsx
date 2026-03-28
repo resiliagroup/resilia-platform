@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { Outfit, DM_Mono } from 'next/font/google'
-import { Shield, TrendingUp, Globe, GraduationCap, AlertTriangle, Building2, Users, CheckCircle, Target, BarChart3, Zap, FileCheck, Radio, Eye, RefreshCw } from 'lucide-react'
+import { Shield, TrendingUp, Globe, GraduationCap, AlertTriangle, Building2, Users, CheckCircle, Clock, Target, BarChart3, Zap, FileCheck, Radio, Eye, RefreshCw } from 'lucide-react'
 
 const outfit = Outfit({ subsets: ['latin'], weight: ['300','400','500','600','700','800','900'] })
 const dmMono = DM_Mono({ subsets: ['latin'], weight: ['300','400','500'], variable: '--font-mono' })
@@ -331,7 +331,7 @@ export default function IsoBrifingV3() {
           {/* top bar */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 48 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(45,138,135,0.15)', border: '1px solid rgba(45,138,135,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🏭</div>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(45,138,135,0.15)', border: '1px solid rgba(45,138,135,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Building2 size={18} color="#2D8A87" /></div>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#2D8A87', letterSpacing: '.14em', textTransform: 'uppercase' }}>OMNIVERSEL × İSTANBUL SANAYİ ODASI</div>
                 <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>Sanayi Tesisleri Risk Brifing · Mart 2026</div>
@@ -373,12 +373,12 @@ export default function IsoBrifingV3() {
           {/* Canlı Form İstatistiği */}
           <div className="v3-g3" style={{ marginTop: 14, marginBottom: '-1px' }}>
             {[
-              { icon: '🟢', lbl: 'Doldurulan Form',       val: formStat.toplam, sub: `Bu hafta: ${formStat.bu_hafta}`,                        bc: '#22C55E' },
-              { icon: '📊', lbl: 'Ortalama URI (Gerçek)', val: formStat.ortalama_uri, sub: 'Form bazlı · canlı',                               bc: '#2D8A87' },
-              { icon: '⏳', lbl: 'Kalan Tesis',           val: (22846 - formStat.toplam).toLocaleString('tr'), sub: 'Henüz form doldurmadı',   bc: '#F97316' },
+              { icon: <CheckCircle size={14} color="#22C55E" />, lbl: 'Doldurulan Form',       val: formStat.toplam, sub: `Bu hafta: ${formStat.bu_hafta}`,                        bc: '#22C55E' },
+              { icon: <BarChart3   size={14} color="#2D8A87"  />, lbl: 'Ortalama URI (Gerçek)', val: formStat.ortalama_uri, sub: 'Form bazlı · canlı',                               bc: '#2D8A87' },
+              { icon: <Clock       size={14} color="#F97316"  />, lbl: 'Kalan Tesis',           val: (22846 - formStat.toplam).toLocaleString('tr'), sub: 'Henüz form doldurmadı',   bc: '#F97316' },
             ].map(c => (
               <div key={c.lbl} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${c.bc}33`, borderBottom: `3px solid ${c.bc}`, borderRadius: 14, padding: '16px 18px' }}>
-                <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: 8 }}>{c.icon} {c.lbl}</div>
+                <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>{c.icon}<span>{c.lbl}</span></div>
                 <div style={{ fontSize: 'clamp(18px,2vw,26px)', fontWeight: 800, color: c.bc, fontFamily: 'var(--font-mono)', marginBottom: 5 }}>{c.val}</div>
                 <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{c.sub}</div>
               </div>
@@ -550,7 +550,7 @@ export default function IsoBrifingV3() {
 
         {/* ══ 5. KİMYA UYARI ═════════════════════════════════════ */}
         <div style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderLeft: '4px solid #EF4444', borderRadius: 14, padding: '22px 24px', display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-          <div style={{ fontSize: 22, flexShrink: 0, marginTop: 2 }}>⚠️</div>
+          <div style={{ flexShrink: 0, marginTop: 2 }}><AlertTriangle size={22} color="#EF4444" /></div>
           <div>
             <div style={{ fontSize: 11, fontWeight: 800, color: '#EF4444', letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 8 }}>Kritik Bulgu — Kimya Sektörü</div>
             <p style={{ fontSize: 14, color: 'rgba(255,200,200,0.8)', lineHeight: 1.75 }}>
