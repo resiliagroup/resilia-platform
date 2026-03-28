@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { Outfit, DM_Mono } from 'next/font/google'
-import { Shield, TrendingUp, Globe, GraduationCap, AlertTriangle, Building2, Users, CheckCircle, Clock, Target, BarChart3, Zap, FileCheck, Radio, Eye, RefreshCw } from 'lucide-react'
+import { Shield, TrendingUp, Globe, GraduationCap, AlertTriangle, Building2, Factory, Users, CheckCircle, Clock, Target, BarChart3, Zap, FileCheck, Radio, Eye, RefreshCw } from 'lucide-react'
 
 const outfit = Outfit({ subsets: ['latin'], weight: ['300','400','500','600','700','800','900'] })
 const dmMono = DM_Mono({ subsets: ['latin'], weight: ['300','400','500'], variable: '--font-mono' })
@@ -331,7 +331,7 @@ export default function IsoBrifingV3() {
           {/* top bar */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 48 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(45,138,135,0.15)', border: '1px solid rgba(45,138,135,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Building2 size={18} color="#2D8A87" /></div>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(45,138,135,0.15)', border: '1px solid rgba(45,138,135,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Factory size={18} color="#2D8A87" /></div>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#2D8A87', letterSpacing: '.14em', textTransform: 'uppercase' }}>OMNIVERSEL × İSTANBUL SANAYİ ODASI</div>
                 <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>Sanayi Tesisleri Risk Brifing · Mart 2026</div>
