@@ -187,24 +187,65 @@ export default function IstanbulHarita() {
       })
 
       const marker = L.marker([lat, lng], { icon, uriScore: skor } as any)
+      const uriRenk = renk
+      const uriLabel = sev === 'critical' ? 'Kritik' : sev === 'high' ? 'Yüksek' : sev === 'medium' ? 'Orta' : 'Düşük'
+      const natechBadge = natech ? `<div style="margin-top:8px;padding:5px 10px;background:#FEE2E2;border-radius:6px;color:#EF4444;font-weight:700;font-size:10px;display:flex;align-items:center;gap:4px;">⚠️ NATECH — Tehlikeli Madde</div>` : ''
       marker.bindPopup(`
-        <div style="min-width:190px;font-family:sans-serif;font-size:12px;">
-          <p style="font-weight:700;font-size:13px;margin:0 0 4px;line-height:1.3;">${t.name}</p>
-          <p style="font-size:11px;color:#6B7280;margin:0 0 8px;">${t.sector}${t.extra_data?.tesis_turu ? ' · ' + t.extra_data.tesis_turu : ''}</p>
-          <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-            <span style="color:#64748B;">URI Skoru</span>
-            <b style="color:${renk};">${skor} — ${RISK_LABEL[sev]}</b>
+        <div style="min-width:220px;font-family:'DM Sans',sans-serif;padding:4px;">
+          <div style="background:linear-gradient(135deg,#0A1628,#0F2240);border-radius:10px;padding:12px 14px;margin:-4px -4px 12px;color:white;">
+            <div style="font-size:13px;font-weight:800;line-height:1.3;margin-bottom:4px;">${t.name}</div>
+            <div style="font-size:10px;opacity:0.7;">${t.sector}${t.extra_data?.tesis_turu ? ' · ' + t.extra_data.tesis_turu : ''}</div>
           </div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-            <span style="color:#64748B;">Çalışan</span><span>${t.employee_count?.toLocaleString('tr') || '—'}</span>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:${uriRenk}10;border:1px solid ${uriRenk}30;border-radius:8px;margin-bottom:8px;">
+            <div>
+              <div style="font-size:10px;color:#64748B;font-weight:600;">URI RİSK SKORU</div>
+              <div style="font-size:26px;font-weight:900;color:${uriRenk};line-height:1;">${skor}</div>
+              <div style="font-size:10px;color:${uriRenk};font-weight:700;">${uriLabel} Risk</div>
+            </div>
+            <div style="width:52px;height:52px;border-radius:50%;border:3px solid ${uriRenk};display:flex;align-items:center;justify-content:center;flex-direction:column;">
+              <div style="font-size:11px;font-weight:900;color:${uriRenk};">${Math.round(skor)}</div>
+              <div style="font-size:8px;color:#94A3B8;">/100</div>
+            </div>
           </div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-            <span style="color:#64748B;">Bina Yaşı</span><span>${t.building_age ? t.building_age + ' yıl' : '—'}</span>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
+            <div style="padding:8px 10px;background:#F8FAFC;border-radius:7px;border:1px solid #E2E8F0;">
+              <div style="font-size:9px;color:#94A3B8;font-weight:600;">ÇALIŞAN</div>
+              <div style="font-size:14px;font-weight:800;color:#0A1628;">${t.employee_count?.toLocaleString('tr') || '—'}</div>
+            </div>
+            <div style="padding:8px 10px;background:#F8FAFC;border-radius:7px;border:1px solid #E2E8F0;">
+              <div style="font-size:9px;color:#94A3B8;font-weight:600;">BİNA YAŞI</div>
+              <div style="font-size:14px;font-weight:800;color:#0A1628;">${t.building_age ? t.building_age + ' yıl' : '—'}</div>
+            </div>
+            ${t.extra_data?.nace_kodu ? `
+            <div style="padding:8px 10px;background:#F8FAFC;border-radius:7px;border:1px solid #E2E8F0;">
+              <div style="font-size:9px;color:#94A3B8;font-weight:600;">NACE KODU</div>
+              <div style="font-size:12px;font-weight:800;color:#0A1628;font-family:monospace;">${t.extra_data.nace_kodu}</div>
+            </div>` : ''}
+            ${t.extra_data?.isg_sinifi || t.extra_data?.tehlike_sinifi ? `
+            <div style="padding:8px 10px;background:#FFF7ED;border-radius:7px;border:1px solid #FED7AA;">
+              <div style="font-size:9px;color:#94A3B8;font-weight:600;">ISG SINIFI</div>
+              <div style="font-size:12px;font-weight:800;color:#EA580C;">${t.extra_data.isg_sinifi || t.extra_data.tehlike_sinifi}</div>
+            </div>` : ''}
           </div>
-          ${t.extra_data?.nace_kodu ? `<div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="color:#64748B;">NACE</span><code>${t.extra_data.nace_kodu}</code></div>` : ''}
-          ${natech ? `<div style="margin-top:8px;padding:4px 8px;background:#FEE2E2;border-radius:6px;color:#EF4444;font-weight:600;font-size:11px;"> NATECH — ${t.extra_data?.tehlikeli_madde_turu || 'Tehlikeli madde'}</div>` : ''}
+          <div style="margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;font-size:9px;color:#94A3B8;margin-bottom:3px;">
+              <span>Düşük Risk</span><span>Kritik Risk</span>
+            </div>
+            <div style="height:6px;background:#E2E8F0;border-radius:3px;overflow:hidden;">
+              <div style="height:100%;width:${Math.min(100,skor)}%;background:linear-gradient(90deg,#22C55E,#EAB308,#F97316,#EF4444);border-radius:3px;"></div>
+            </div>
+          </div>
+          ${natechBadge}
+          <div style="margin-top:8px;padding:7px 10px;background:#EBF8F7;border-radius:7px;border-left:3px solid #009B8D;">
+            <div style="font-size:9px;color:#009B8D;font-weight:700;margin-bottom:2px;">ÖNERİLEN AKSIYON</div>
+            <div style="font-size:10px;color:#374151;">
+              ${skor >= 60 ? 'Acil müdahale — Akademik danışman desteği alın' :
+                skor >= 40 ? 'BCP planı hazırlayın — Standart pakete geçin' :
+                'AADYP şablonunu doldurun — Ücretsiz başlayın'}
+            </div>
+          </div>
         </div>
-      `)
+      `, { maxWidth: 260, className: 'omni-popup' })
       cluster.addLayer(marker)
     })
 
@@ -248,29 +289,30 @@ export default function IstanbulHarita() {
     })
     ilceLayerRef.current = ilceLayer
     map.addLayer(ilceLayer)
-  }, [tesisler, filtre])
 
-  // Legend — sadece bir kez ekle
-  useEffect(() => {
-    const map = mapInstanceRef.current
-    const L = (window as any).L
-    if (!map || !L) return
-    if (legendRef.current) return
-
-    const legend = (L.control as any)({ position: 'topright' })
-    legend.onAdd = () => {
-      const div = L.DomUtil.create('div')
-      div.style.cssText = 'background:white;padding:8px 12px;border-radius:8px;font-size:11px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.15);'
-      div.innerHTML = `
-        <div style="font-weight:700;margin-bottom:6px;color:#0A1628">İlçe Risk Katmanı</div>
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><div style="width:12px;height:12px;border-radius:50%;background:#F97316;opacity:0.6"></div>Yüksek (URI>55)</div>
-        <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:50%;background:#EAB308;opacity:0.6"></div>Orta (URI 45-55)</div>
-      `
-      return div
+    // Legend — sadece bir kez ekle
+    if (!legendRef.current) {
+      const legend = (L.control as any)({ position: 'topright' })
+      legend.onAdd = () => {
+        const div = L.DomUtil.create('div')
+        div.style.cssText = 'background:white;padding:10px 14px;border-radius:10px;font-size:11px;font-family:sans-serif;box-shadow:0 2px 12px rgba(0,0,0,0.15);min-width:160px;'
+        div.innerHTML = `
+          <div style="font-weight:800;margin-bottom:8px;color:#0A1628;font-size:12px">İlçe Risk Katmanı</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <div style="width:14px;height:14px;border-radius:50%;background:#F97316;opacity:0.7;flex-shrink:0"></div>
+            <span>Yüksek (URI &gt; 55)</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:14px;height:14px;border-radius:50%;background:#EAB308;opacity:0.7;flex-shrink:0"></div>
+            <span>Orta (URI 45–55)</span>
+          </div>
+        `
+        return div
+      }
+      legend.addTo(map)
+      legendRef.current = legend
     }
-    legend.addTo(map)
-    legendRef.current = legend
-  }, [])
+  }, [tesisler, filtre])
 
   const ist = {
     critical: tesisler.filter(t => seviye(naceUriSkor(t.extra_data?.nace_kodu as string, t.employee_count, t.building_age)) === 'critical').length,
