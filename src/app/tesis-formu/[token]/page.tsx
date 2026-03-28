@@ -552,16 +552,31 @@ export default function TesisFormuPage() {
 
         {/* ── ADIM 1 — Tehlike ── */}
         {adim === 1 && (
-          <BolumSoru
-            baslik="Bölüm 1 — Tehlike Analizi"
-            sorular={TEHLIKE}
-            puanlar={puanlar}
-            setPuan={setPuan}
-            detayliMod={detayliMod}
-            onDetayliMod={() => setDetayliMod(true)}
-            onGeri={geri}
-            onIleri={ileri}
-          />
+          <div>
+            {tehlikeSinifi && (
+              <div style={{
+                padding: '10px 14px', borderRadius: 8, marginBottom: 16,
+                background: tehlikeSinifi.sinif === 1 ? '#FEF2F2' : tehlikeSinifi.sinif === 2 ? '#FFF7ED' : '#F0FDF4',
+                border: `1px solid ${tehlikeSinifi.sinif === 1 ? '#FECACA' : tehlikeSinifi.sinif === 2 ? '#FED7AA' : '#BBF7D0'}`,
+                fontSize: 12, color: '#374151',
+              }}>
+                {tehlikeSinifi.sinif === 1 && 'Çok Tehlikeli tesis — tüm sorular gösteriliyor. Zorunlu mevzuat uyumu için eksiksiz doldurmanız önerilir.'}
+                {tehlikeSinifi.sinif === 2 && 'Tehlikeli tesis — önce kritik sorular gösteriliyor. Detaylı değerlendirme için "Detay Ekle" butonunu kullanabilirsiniz.'}
+                {tehlikeSinifi.sinif === 3 && 'Az Tehlikeli tesis — minimum gereklilikler gösteriliyor. Kısa sürede tamamlayabilirsiniz.'}
+              </div>
+            )}
+            <BolumSoru
+              baslik="Bölüm 1 — Tehlike Analizi"
+              sorular={TEHLIKE}
+              puanlar={puanlar}
+              setPuan={setPuan}
+              detayliMod={detayliMod}
+              onDetayliMod={() => setDetayliMod(true)}
+              onGeri={geri}
+              onIleri={ileri}
+              tehlikeSinifi={tehlikeSinifi}
+            />
+          </div>
         )}
 
         {/* ── ADIM 2 — Kırılganlık ── */}
@@ -575,6 +590,7 @@ export default function TesisFormuPage() {
             onDetayliMod={() => setDetayliMod(true)}
             onGeri={geri}
             onIleri={ileri}
+            tehlikeSinifi={tehlikeSinifi}
           />
         )}
 
@@ -589,6 +605,7 @@ export default function TesisFormuPage() {
             onDetayliMod={() => setDetayliMod(true)}
             onGeri={geri}
             onIleri={ileri}
+            tehlikeSinifi={tehlikeSinifi}
           />
         )}
 
@@ -603,6 +620,7 @@ export default function TesisFormuPage() {
             onDetayliMod={() => setDetayliMod(true)}
             onGeri={geri}
             onIleri={ileri}
+            tehlikeSinifi={tehlikeSinifi}
           />
         )}
 
@@ -721,7 +739,7 @@ export default function TesisFormuPage() {
 
 // ─── Adaptif Bölüm Soru Bileşeni ─────────────────────────────────────────────
 function BolumSoru({
-  baslik, sorular, puanlar, setPuan, detayliMod, onDetayliMod, onGeri, onIleri,
+  baslik, sorular, puanlar, setPuan, detayliMod, onDetayliMod, onGeri, onIleri, tehlikeSinifi,
 }: {
   baslik: string
   sorular: SoruSanayi[]
@@ -731,13 +749,32 @@ function BolumSoru({
   onDetayliMod: () => void
   onGeri: () => void
   onIleri: () => void
+  tehlikeSinifi: { sinif: number; label: string; mevzuat: string[] } | null
 }) {
   const kritikler = sorular.filter(s => s.kritik)
   const ekler     = sorular.filter(s => !s.kritik)
-  const gosterilenler = detayliMod ? sorular : kritikler
+
+  // Tehlike sınıfına göre gösterilecek sorular
+  const gosterilenler = (() => {
+    if (tehlikeSinifi?.sinif === 1) return sorular               // Çok Tehlikeli: hepsi
+    if (tehlikeSinifi?.sinif === 3) return kritikler             // Az Tehlikeli: sadece kritik
+    return detayliMod ? sorular : kritikler                      // Tehlikeli + default: adaptif
+  })()
+  const detayGoster = tehlikeSinifi?.sinif !== 1 && tehlikeSinifi?.sinif !== 3
+
   const yanitlanan = gosterilenler.filter(s => puanlar[s.kod] !== undefined).length
   const toplamGos  = gosterilenler.length
   const tahminiDak = Math.ceil(toplamGos * 0.75)
+
+  // Soru sayısı etiketi
+  const soruEtiketi = (() => {
+    if (tehlikeSinifi?.sinif === 1) return `${toplamGos} soru · ~${tahminiDak} dakika`
+    if (tehlikeSinifi?.sinif === 3) return `${kritikler.length} kritik soru · ~${Math.ceil(kritikler.length * 0.75)} dakika`
+    if (tehlikeSinifi?.sinif === 2) return detayliMod
+      ? `${toplamGos} soru · ~${tahminiDak} dakika`
+      : `${kritikler.length} kritik soru · ~${Math.ceil(kritikler.length * 0.75)} dakika (+ ${ekler.length} opsiyonel)`
+    return detayliMod ? `${toplamGos} soru · ~${tahminiDak} dakika` : `${kritikler.length} kritik soru · ~${Math.ceil(kritikler.length * 0.75)} dakika`
+  })()
 
   return (
     <div>
@@ -745,7 +782,7 @@ function BolumSoru({
         <h2 style={{ fontSize: 16, fontWeight: 700, color: NAVY, marginBottom: 4 }}>{baslik}</h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' as const }}>
           <span style={{ fontSize: 12, color: '#94A3B8' }}>
-            {detayliMod ? `${toplamGos} soru` : `${kritikler.length} kritik soru`} · ~{tahminiDak} dakika
+            {soruEtiketi}
           </span>
           {/* Doluluk progress bar */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 120 }}>
@@ -761,7 +798,7 @@ function BolumSoru({
         <SoruKarti key={s.kod} soru={s} puan={puanlar[s.kod] ?? 0} onDegis={v => setPuan(s.kod, v)} />
       ))}
 
-      {!detayliMod && ekler.length > 0 && (
+      {detayGoster && !detayliMod && ekler.length > 0 && (
         <div style={{ margin: '16px 0', padding: '14px 20px', border: `1px dashed ${TEAL}`, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: '#F0FDFA' }}>
           <span style={{ fontSize: 13, color: '#0F766E' }}>
             Bu bölümde <b>{ekler.length}</b> ek soru daha var
