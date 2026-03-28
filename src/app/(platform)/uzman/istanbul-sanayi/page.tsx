@@ -1223,8 +1223,26 @@ function TabROI() {
 /* ── TAB: AKSİYON MERKEZİ ───────────────────────────────── */
 function TabAksiyon() {
   const [filtre, setFiltre] = useState<'tumu'|'acil'|'planlandi'|'tamamlandi'>('tumu')
+  const [kmStat, setKmStat] = useState({ natech: 0, aadyp: 0, yapisal: 0, tamamlanan_uri: 0 })
+
+  useEffect(() => {
+    fetch('https://gqguwgbopgnpwzjwcexl.supabase.co/rest/v1/iso_tesis_formlari?select=uri_skoru,puanlar&limit=500', {
+      headers: { 'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzM5OTgzMywiZXhwIjoyMDg4OTc1ODMzfQ.Ku-JRx8JFH5a3SIj7sGP_Dy_nM89NMMW34gPyxVO_qI' }
+    }).then(r => r.json()).then((rows: any[]) => {
+      if (!Array.isArray(rows)) return
+      setKmStat({
+        natech: rows.filter(r => (r.puanlar?.T3 ?? 0) >= 5 || (r.puanlar?.T7 ?? 0) >= 5).length,
+        aadyp: rows.filter(r => (r.puanlar?.Y6 ?? 10) <= 3).length,
+        yapisal: rows.filter(r => (r.puanlar?.T1 ?? 0) >= 6 && (r.puanlar?.S1 ?? 0) >= 5).length,
+        tamamlanan_uri: rows.length > 0 ? Math.round(rows.reduce((s,r) => s + (r.uri_skoru ?? 0), 0) / rows.length) : 0,
+      })
+    })
+  }, [])
 
   const AKSIYONLAR = [
+    { id: 'KM01', baslik: 'NATECH/Siber Risk — Acil Protokol', kategori: 'NATECH', oncelik: 'Acil', sorumlu: 'İSO-AYM + AFAD + BTK', sure: '14 gün', etki: 'Çok Yüksek', durum: 'acil', uri_etkisi: -5.8, maliyet: '0 TRY (mevzuat zorunluluğu)' },
+    { id: 'KM02', baslik: `AADYP Eksik ${kmStat.aadyp || 178} Tesis — Toplu Kayıt`, kategori: 'BCP', oncelik: 'Acil', sorumlu: 'İSO-AYM', sure: '30 gün', etki: 'Yüksek', durum: 'acil', uri_etkisi: -4.8, maliyet: '0 TRY (AFAD şablonu ücretsiz)' },
+    { id: 'KM03', baslik: `Yapısal Risk ${kmStat.yapisal || 85} Tesis — 6306 Başvurusu`, kategori: 'Yapısal', oncelik: 'Acil', sorumlu: 'Çevre Bakanlığı + İSO', sure: '45 gün', etki: 'Çok Yüksek', durum: 'acil', uri_etkisi: -6.1, maliyet: '0 TRY (6306 ücretsiz değerlendirme)' },
     { id: 'A01', baslik: 'Tuzla OSB NATECH Acil Müdahale Planı', kategori: 'NATECH', oncelik: 'Acil', sorumlu: 'İSO-AYM + AFAD', sure: '30 gün', etki: 'Yüksek', durum: 'acil', uri_etkisi: -4.2, maliyet: '85,000 TRY' },
     { id: 'A02', baslik: '193 Kritik Tesis Yapısal Değerlendirme', kategori: 'Yapısal', oncelik: 'Acil', sorumlu: 'İnşaat Müh.', sure: '60 gün', etki: 'Çok Yüksek', durum: 'acil', uri_etkisi: -6.1, maliyet: '420,000 TRY' },
     { id: 'A03', baslik: 'Kimya Sektörü Near-Miss Raporlama Sistemi', kategori: 'HRO', oncelik: 'Yüksek', sorumlu: 'Tesis Yönetimleri', sure: '45 gün', etki: 'Orta', durum: 'planlandi', uri_etkisi: -2.8, maliyet: '12,000 TRY' },
@@ -1248,13 +1266,13 @@ function TabAksiyon() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
         {[
-          { label: 'Toplam Aksiyon', value: AKSIYONLAR.length, color: T.navy, icon: '' },
-          { label: 'Acil Aksiyon', value: AKSIYONLAR.filter(a => a.durum === 'acil').length, color: T.red, icon: '' },
-          { label: 'Tamamlanan URI İyileşmesi', value: tamamlananURI.toFixed(1), color: T.green, icon: '' },
-          { label: 'Potansiyel URI İyileşmesi', value: toplamURI.toFixed(1), color: T.teal, icon: '' },
+          { label: 'Toplam Aksiyon', value: AKSIYONLAR.length.toString(), color: T.navy, icon: <CheckSquare size={18}/> },
+          { label: 'Acil Aksiyon', value: AKSIYONLAR.filter(a => a.durum === 'acil').length.toString(), color: T.red, icon: <AlertTriangle size={18}/> },
+          { label: 'NATECH/Siber', value: kmStat.natech.toString(), color: T.red, icon: <AlertTriangle size={18}/> },
+          { label: 'Kural Mot. URI', value: kmStat.tamamlanan_uri.toString(), color: T.orange, icon: <Activity size={18}/> },
         ].map(k => (
           <Card key={k.label} style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 22, marginBottom: 4 }}>{k.icon}</div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 4, color: k.color }}>{k.icon}</div>
             <div style={{ fontSize: 22, fontWeight: 900, color: k.color }}>{k.value}</div>
             <div style={{ fontSize: 11, color: T.muted, marginTop: 4 }}>{k.label}</div>
           </Card>
