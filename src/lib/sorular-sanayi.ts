@@ -924,6 +924,6 @@ export const SANAYI_SORU_META = {
   destek_kalemi: 22,
   kaynaklar: ['HIFYEA Metodolojisi', 'ISO 22301:2019', 'AFAD AADY 2025', 'TOC / HRO Sentezi', 'Hikmet Hoca AADY Kontrol Listesi 2025', 'SATAKOL/MARAP', 'Lean Six Sigma (DMAIC)', 'Theory of Constraints (Goldratt)', 'Agile Resilience'],
   sektor: 'uretim',
-  versiyon: '3.1',
-  tarih: '2026-03-27',
+  versiyon: '3.2',
+  tarih: '2026-03-29',
 }
