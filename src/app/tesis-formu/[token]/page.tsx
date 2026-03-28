@@ -238,6 +238,8 @@ export default function TesisFormuPage() {
   const [gonderiyor, setGonderiyor] = useState(false)
   const [gonderildi, setGonderildi] = useState(false)
   const [uri, setUri] = useState(0)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [cozumler, setCozumler] = useState<any[]>([])
   const [detayliMod, setDetayliMod] = useState(false)
   const [tesisYuklendi, setTesisYuklendi] = useState(false)
   const [facilityId, setFacilityId] = useState<string | null>(null)
@@ -382,6 +384,20 @@ export default function TesisFormuPage() {
         },
         body: JSON.stringify({ dolduruldu: true }),
       })
+
+      // Düşük puanlı sorulara ait çözümleri çek
+      const dusukPuanlar = Object.entries(puanlar)
+        .filter(([, v]) => v <= 4)
+        .map(([k]) => k)
+        .slice(0, 8)
+      if (dusukPuanlar.length > 0) {
+        const cozumRes = await fetch(
+          `${SUPA_URL}/rest/v1/cozum_bankasi?soru_kod=in.(${dusukPuanlar.join(',')})&aktif=eq.true&order=oncelik.asc&limit=6`,
+          { headers: { 'apikey': SUPA_KEY } }
+        )
+        const cozumData = cozumRes.ok ? await cozumRes.json() : []
+        setCozumler(Array.isArray(cozumData) ? cozumData : [])
+      }
 
       setUri(sonUri)
       setGonderildi(true)
@@ -568,6 +584,54 @@ export default function TesisFormuPage() {
                 <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 12 }}>
                   {new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })}
                 </div>
+
+                {cozumler.length > 0 && (
+                  <div style={{ marginTop: 32 }}>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: '#0A1628', marginBottom: 16, textAlign: 'center' }}>
+                      Tesisınız için Önerilen İlk Adımlar
+                    </p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      {cozumler.slice(0, 4).map((c) => (
+                        <div key={c.id} style={{
+                          background: 'white',
+                          border: '1px solid #E2E8F0',
+                          borderLeft: `4px solid ${
+                            c.maliyet_seviyesi === 'ucretsiz' ? '#22C55E' :
+                            c.maliyet_seviyesi === 'dusuk' ? '#009B8D' : '#F97316'
+                          }`,
+                          borderRadius: 10,
+                          padding: '14px 16px',
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                            <p style={{ fontSize: 13, fontWeight: 700, color: '#0A1628', margin: 0, flex: 1 }}>{c.baslik}</p>
+                            <span style={{
+                              fontSize: 10, padding: '2px 8px', borderRadius: 10, marginLeft: 8, flexShrink: 0,
+                              background: c.maliyet_seviyesi === 'ucretsiz' ? '#F0FDF4' : c.maliyet_seviyesi === 'dusuk' ? '#EBF8F7' : '#FFF7ED',
+                              color: c.maliyet_seviyesi === 'ucretsiz' ? '#16A34A' : c.maliyet_seviyesi === 'dusuk' ? '#009B8D' : '#EA580C',
+                              fontWeight: 700,
+                            }}>
+                              {c.maliyet_seviyesi === 'ucretsiz' ? 'Ücretsiz' : c.maliyet_seviyesi === 'dusuk' ? 'Düşük Maliyet' : 'Orta Maliyet'}
+                            </span>
+                          </div>
+                          <p style={{ fontSize: 12, color: '#64748B', margin: '0 0 8px', lineHeight: 1.5 }}>{c.aciklama}</p>
+                          {c.adimlar && c.adimlar.slice(0, 2).map((adim: string, i: number) => (
+                            <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 4 }}>
+                              <span style={{ fontSize: 11, color: '#009B8D', fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
+                              <span style={{ fontSize: 11, color: '#374151' }}>{adim}</span>
+                            </div>
+                          ))}
+                          <div style={{ marginTop: 8, display: 'flex', gap: 12 }}>
+                            <span style={{ fontSize: 10, color: '#94A3B8' }}>Süre: {c.tahmini_sure}</span>
+                            <span style={{ fontSize: 10, color: '#22C55E', fontWeight: 600 }}>URI iyileşmesi: -{c.uri_iyilesmesi} puan</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <p style={{ fontSize: 11, color: '#94A3B8', textAlign: 'center', marginTop: 12 }}>
+                      Detaylı aksiyon planı için İSO Afet Yönetimi Şubesi uzmanlarımız sizinle iletişime geçecektir.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>
