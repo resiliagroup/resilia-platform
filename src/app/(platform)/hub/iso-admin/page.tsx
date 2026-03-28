@@ -10,7 +10,7 @@ const sb = createClient(
 
 const NAVY = '#0A1628'; const TEAL = '#009B8D'; const BORDER = '#E2E8F0'
 
-type Sekme = 'izleme' | 'sorular' | 'kmatris' | 'tokenlar'
+type Sekme = 'izleme' | 'sorular' | 'kmatris' | 'tokenlar' | 'cozumler'
 
 // ─── Risk rengi ───────────────────────────────────────────────────────────────
 function uriRenk(uri: number) {
@@ -333,6 +333,260 @@ type IsoToken = {
 const lbl2: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 5 }
 const inp2: React.CSSProperties = { width: '100%', padding: '9px 12px', border: `1px solid #E2E8F0`, borderRadius: 7, fontSize: 13, outline: 'none', boxSizing: 'border-box' as const }
 
+// ─── SEKME 5: Çözüm Bankası ───────────────────────────────────────────────────
+type Cozum = {
+  id: string
+  soru_kod: string
+  baslik: string
+  aciklama: string
+  adimlar: string[]
+  maliyet_seviyesi: 'ucretsiz' | 'dusuk' | 'orta' | 'pro'
+  uri_iyilesmesi: number
+  oncelik: number
+  tehlike_siniflar: number[]
+  mevzuat_referans: string
+  kaynak: string
+  aktif: boolean
+}
+
+const MALIYET_LABEL: Record<string, string> = { ucretsiz: 'Ücretsiz', dusuk: 'Düşük', orta: 'Orta', pro: 'Pro' }
+const MALIYET_COLOR: Record<string, string> = { ucretsiz: '#22C55E', dusuk: '#009B8D', orta: '#F97316', pro: '#8B5CF6' }
+
+const SUPA_URL2 = 'https://gqguwgbopgnpwzjwcexl.supabase.co'
+const SUPA_KEY2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzM5OTgzMywiZXhwIjoyMDg4OTc1ODMzfQ.Ku-JRx8JFH5a3SIj7sGP_Dy_nM89NMMW34gPyxVO_qI'
+
+const BOSH_COZUM: Omit<Cozum, 'id'> = {
+  soru_kod: '', baslik: '', aciklama: '', adimlar: [],
+  maliyet_seviyesi: 'ucretsiz', uri_iyilesmesi: 3, oncelik: 5,
+  tehlike_siniflar: [1, 2, 3], mevzuat_referans: '', kaynak: '', aktif: true,
+}
+
+function CozumBankasiSekme() {
+  const [cozumler, setCozumler] = useState<Cozum[]>([])
+  const [yukleniyor, setYukleniyor] = useState(true)
+  const [sinifFiltre, setSinifFiltre] = useState<number | null>(null)
+  const [maliyetFiltre, setMaliyetFiltre] = useState<string>('')
+  const [formAcik, setFormAcik] = useState(false)
+  const [yeni, setYeni] = useState<Omit<Cozum, 'id'>>({ ...BOSH_COZUM })
+  const [kaydediyor, setKaydediyor] = useState(false)
+  const [hata, setHata] = useState('')
+  const [editId, setEditId] = useState<string | null>(null)
+  const [editOncelik, setEditOncelik] = useState(5)
+  const [editAktif, setEditAktif] = useState(true)
+
+  const yukle = () => {
+    setYukleniyor(true)
+    fetch(`${SUPA_URL2}/rest/v1/cozum_bankasi?select=*&order=oncelik.asc`, {
+      headers: { 'apikey': SUPA_KEY2, 'Authorization': `Bearer ${SUPA_KEY2}` },
+    }).then(r => r.json()).then((rows: Cozum[]) => {
+      setCozumler(Array.isArray(rows) ? rows : [])
+      setYukleniyor(false)
+    })
+  }
+
+  useEffect(() => { yukle() }, [])
+
+  const goruntu = cozumler.filter(c => {
+    if (sinifFiltre && !c.tehlike_siniflar?.includes(sinifFiltre)) return false
+    if (maliyetFiltre && c.maliyet_seviyesi !== maliyetFiltre) return false
+    return true
+  })
+
+  const toplam       = cozumler.length
+  const ucretsizS    = cozumler.filter(c => c.maliyet_seviyesi === 'ucretsiz').length
+  const dusukS       = cozumler.filter(c => c.maliyet_seviyesi === 'dusuk').length
+  const ortaS        = cozumler.filter(c => c.maliyet_seviyesi === 'orta').length
+  const uriPotansiyel = cozumler.reduce((s, c) => s + (c.uri_iyilesmesi ?? 0), 0)
+
+  const kaydet = async () => {
+    if (!yeni.baslik || !yeni.soru_kod) { setHata('Soru kodu ve başlık zorunlu.'); return }
+    setKaydediyor(true); setHata('')
+    const r = await fetch(`${SUPA_URL2}/rest/v1/cozum_bankasi`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPA_KEY2, 'Authorization': `Bearer ${SUPA_KEY2}`,
+        'Content-Type': 'application/json', 'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify({ ...yeni, adimlar: yeni.adimlar }),
+    })
+    if (r.ok) {
+      setYeni({ ...BOSH_COZUM }); setFormAcik(false); yukle()
+    } else {
+      setHata('Kaydedilemedi: ' + await r.text())
+    }
+    setKaydediyor(false)
+  }
+
+  const inline_kaydet = async (id: string) => {
+    await fetch(`${SUPA_URL2}/rest/v1/cozum_bankasi?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: {
+        'apikey': SUPA_KEY2, 'Authorization': `Bearer ${SUPA_KEY2}`,
+        'Content-Type': 'application/json', 'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify({ aktif: editAktif, oncelik: editOncelik }),
+    })
+    setEditId(null); yukle()
+  }
+
+  const inp3: React.CSSProperties = { width: '100%', padding: '8px 10px', border: `1px solid ${BORDER}`, borderRadius: 6, fontSize: 12, outline: 'none', boxSizing: 'border-box' as const }
+
+  return (
+    <div>
+      {/* KPI */}
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 28 }}>
+        <KpiKart baslik="Toplam Çözüm"  deger={toplam} />
+        <KpiKart baslik="Ücretsiz"       deger={ucretsizS}    renk="#22C55E" />
+        <KpiKart baslik="Düşük Maliyet"  deger={dusukS}       renk={TEAL} />
+        <KpiKart baslik="Orta Maliyet"   deger={ortaS}        renk="#F97316" />
+        <KpiKart baslik="URI Potansiyeli" deger={`-${uriPotansiyel}`} renk="#8B5CF6" />
+      </div>
+
+      {/* Filtreler + Yeni Ekle */}
+      <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
+        {[{ v: null, l: 'Tüm Sınıflar' }, { v: 1, l: 'Sınıf 1 — Çok Tehlikeli' }, { v: 2, l: 'Sınıf 2 — Tehlikeli' }, { v: 3, l: 'Sınıf 3 — Az Tehlikeli' }].map(f => (
+          <button key={String(f.v)} onClick={() => setSinifFiltre(f.v as number | null)}
+            style={{ padding: '6px 14px', fontSize: 12, borderRadius: 6, border: `1px solid ${sinifFiltre === f.v ? TEAL : BORDER}`, background: sinifFiltre === f.v ? '#EBF8F7' : 'white', color: sinifFiltre === f.v ? TEAL : '#374151', cursor: 'pointer', fontWeight: sinifFiltre === f.v ? 700 : 400 }}>
+            {f.l}
+          </button>
+        ))}
+        <select value={maliyetFiltre} onChange={e => setMaliyetFiltre(e.target.value)}
+          style={{ padding: '6px 10px', fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, outline: 'none', cursor: 'pointer' }}>
+          <option value="">Tüm Maliyetler</option>
+          {Object.entries(MALIYET_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+        </select>
+        <button onClick={() => setFormAcik(f => !f)}
+          style={{ marginLeft: 'auto', padding: '8px 18px', background: TEAL, color: 'white', fontWeight: 700, fontSize: 13, border: 'none', borderRadius: 7, cursor: 'pointer' }}>
+          {formAcik ? '× Kapat' : '+ Yeni Çözüm'}
+        </button>
+      </div>
+
+      {/* Yeni Çözüm Formu */}
+      {formAcik && (
+        <div style={{ background: 'white', border: `1px solid ${BORDER}`, borderRadius: 12, padding: 24, marginBottom: 24 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: NAVY, marginBottom: 20 }}>Yeni Çözüm Ekle</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div>
+              <label style={lbl2}>Soru Kodu *</label>
+              <input style={inp3} value={yeni.soru_kod} onChange={e => setYeni(p => ({ ...p, soru_kod: e.target.value }))} placeholder="örn. S7, Y12" />
+            </div>
+            <div>
+              <label style={lbl2}>Başlık *</label>
+              <input style={inp3} value={yeni.baslik} onChange={e => setYeni(p => ({ ...p, baslik: e.target.value }))} placeholder="Çözüm başlığı" />
+            </div>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={lbl2}>Açıklama</label>
+              <textarea style={{ ...inp3, minHeight: 72, resize: 'vertical' as const }} value={yeni.aciklama} onChange={e => setYeni(p => ({ ...p, aciklama: e.target.value }))} placeholder="Kısa açıklama" />
+            </div>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={lbl2}>Adımlar (her satır bir adım)</label>
+              <textarea style={{ ...inp3, minHeight: 72, resize: 'vertical' as const }}
+                value={yeni.adimlar.join('\n')}
+                onChange={e => setYeni(p => ({ ...p, adimlar: e.target.value.split('\n').filter(Boolean) }))}
+                placeholder={'1. adım\n2. adım\n3. adım'} />
+            </div>
+            <div>
+              <label style={lbl2}>Maliyet Seviyesi</label>
+              <select style={{ ...inp3, cursor: 'pointer' }} value={yeni.maliyet_seviyesi} onChange={e => setYeni(p => ({ ...p, maliyet_seviyesi: e.target.value as Cozum['maliyet_seviyesi'] }))}>
+                {Object.entries(MALIYET_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              </select>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <div>
+                <label style={lbl2}>URI İyileşmesi (0–10)</label>
+                <input style={inp3} type="number" min={0} max={10} value={yeni.uri_iyilesmesi} onChange={e => setYeni(p => ({ ...p, uri_iyilesmesi: Number(e.target.value) }))} />
+              </div>
+              <div>
+                <label style={lbl2}>Öncelik (1–10)</label>
+                <input style={inp3} type="number" min={1} max={10} value={yeni.oncelik} onChange={e => setYeni(p => ({ ...p, oncelik: Number(e.target.value) }))} />
+              </div>
+            </div>
+            <div>
+              <label style={lbl2}>Tehlike Sınıfları</label>
+              <div style={{ display: 'flex', gap: 12, marginTop: 4 }}>
+                {[1, 2, 3].map(s => (
+                  <label key={s} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, cursor: 'pointer' }}>
+                    <input type="checkbox" checked={yeni.tehlike_siniflar.includes(s)}
+                      onChange={e => setYeni(p => ({
+                        ...p,
+                        tehlike_siniflar: e.target.checked ? [...p.tehlike_siniflar, s] : p.tehlike_siniflar.filter(x => x !== s),
+                      }))} />
+                    Sınıf {s}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label style={lbl2}>Mevzuat Referansı</label>
+              <input style={inp3} value={yeni.mevzuat_referans} onChange={e => setYeni(p => ({ ...p, mevzuat_referans: e.target.value }))} placeholder="örn. 6331 EK-1 Md.12" />
+            </div>
+            <div>
+              <label style={lbl2}>Kaynak</label>
+              <input style={inp3} value={yeni.kaynak} onChange={e => setYeni(p => ({ ...p, kaynak: e.target.value }))} placeholder="örn. AFAD, NFPA, ISO 22301" />
+            </div>
+          </div>
+          {hata && <p style={{ fontSize: 12, color: '#EF4444', marginTop: 10 }}>{hata}</p>}
+          <div style={{ marginTop: 16, display: 'flex', gap: 10 }}>
+            <button onClick={kaydet} disabled={kaydediyor}
+              style={{ padding: '9px 24px', background: TEAL, color: 'white', fontWeight: 700, fontSize: 13, border: 'none', borderRadius: 7, cursor: 'pointer', opacity: kaydediyor ? .6 : 1 }}>
+              {kaydediyor ? 'Kaydediliyor…' : 'Kaydet'}
+            </button>
+            <button onClick={() => setFormAcik(false)}
+              style={{ padding: '9px 16px', background: 'white', color: '#64748B', fontWeight: 600, fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 7, cursor: 'pointer' }}>
+              İptal
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Tablo */}
+      {yukleniyor ? (
+        <p style={{ fontSize: 13, color: '#94A3B8' }}>Yükleniyor…</p>
+      ) : (
+        <div style={{ background: 'white', border: `1px solid ${BORDER}`, borderRadius: 12, overflow: 'hidden' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr 80px 60px 80px 60px 70px 100px', gap: '0 12px', padding: '10px 16px', borderBottom: `1px solid ${BORDER}`, fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' as const, letterSpacing: .5 }}>
+            <span>Soru Kodu</span><span>Başlık</span><span>Maliyet</span><span>URI</span><span>Sınıflar</span><span>Öncelik</span><span>Durum</span><span></span>
+          </div>
+          {goruntu.length === 0 && (
+            <div style={{ padding: '32px 16px', textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>Kayıt bulunamadı.</div>
+          )}
+          {goruntu.map((c, i) => (
+            <div key={c.id} style={{ display: 'grid', gridTemplateColumns: '90px 1fr 80px 60px 80px 60px 70px 100px', gap: '0 12px', padding: '12px 16px', borderBottom: i < goruntu.length - 1 ? `1px solid ${BORDER}` : 'none', alignItems: 'center', background: i % 2 === 0 ? 'white' : '#FAFAFA' }}>
+              <span style={{ fontSize: 11, fontFamily: 'DM Mono, monospace', color: TEAL }}>{c.soru_kod}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: NAVY }}>{c.baslik}</span>
+              <span style={{ fontSize: 10, fontWeight: 700, color: MALIYET_COLOR[c.maliyet_seviyesi] ?? '#64748B', background: (MALIYET_COLOR[c.maliyet_seviyesi] ?? '#64748B') + '18', border: `1px solid ${(MALIYET_COLOR[c.maliyet_seviyesi] ?? '#64748B')}40`, borderRadius: 20, padding: '2px 8px' }}>{MALIYET_LABEL[c.maliyet_seviyesi] ?? c.maliyet_seviyesi}</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#8B5CF6', fontFamily: 'DM Mono, monospace' }}>-{c.uri_iyilesmesi}</span>
+              <span style={{ fontSize: 11, color: '#64748B' }}>{(c.tehlike_siniflar ?? []).map(s => `S${s}`).join(', ')}</span>
+              {editId === c.id ? (
+                <input type="number" min={1} max={10} value={editOncelik} onChange={e => setEditOncelik(Number(e.target.value))}
+                  style={{ width: 48, padding: '3px 6px', border: `1px solid ${TEAL}`, borderRadius: 4, fontSize: 12 }} />
+              ) : (
+                <span style={{ fontSize: 12, color: '#374151' }}>{c.oncelik}</span>
+              )}
+              {editId === c.id ? (
+                <Toggle val={editAktif} onChange={setEditAktif} />
+              ) : (
+                <span style={{ fontSize: 10, fontWeight: 700, color: c.aktif ? '#22C55E' : '#94A3B8', background: c.aktif ? '#F0FDF4' : '#F8FAFC', border: `1px solid ${c.aktif ? '#BBF7D0' : '#E2E8F0'}`, borderRadius: 20, padding: '2px 8px' }}>{c.aktif ? 'Aktif' : 'Pasif'}</span>
+              )}
+              <div style={{ display: 'flex', gap: 6 }}>
+                {editId === c.id ? (
+                  <>
+                    <button onClick={() => inline_kaydet(c.id)} style={{ padding: '4px 10px', fontSize: 11, fontWeight: 700, background: TEAL, color: 'white', border: 'none', borderRadius: 5, cursor: 'pointer' }}>Kaydet</button>
+                    <button onClick={() => setEditId(null)} style={{ padding: '4px 8px', fontSize: 11, background: 'white', color: '#64748B', border: `1px solid ${BORDER}`, borderRadius: 5, cursor: 'pointer' }}>İptal</button>
+                  </>
+                ) : (
+                  <button onClick={() => { setEditId(c.id); setEditOncelik(c.oncelik); setEditAktif(c.aktif) }}
+                    style={{ padding: '4px 12px', fontSize: 11, fontWeight: 600, background: 'white', color: TEAL, border: `1px solid ${TEAL}40`, borderRadius: 5, cursor: 'pointer' }}>Düzenle</button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function TokenYonetimiSekme() {
   const [tokenlar, setTokenlar] = useState<IsoToken[]>([])
   const [yukleniyor, setYukleniyor] = useState(true)
@@ -532,10 +786,11 @@ export default function IsoAdminPage() {
   const [sekme, setSekme] = useState<Sekme>('izleme')
 
   const sekmeler: { id: Sekme; label: string }[] = [
-    { id: 'izleme',   label: ' Form İzleme' },
-    { id: 'sorular',  label: '⚙️ Soru Yönetimi' },
-    { id: 'kmatris',  label: '🔢 k Katsayısı Editörü' },
-    { id: 'tokenlar', label: ' Token Yönetimi' },
+    { id: 'izleme',   label: 'Form İzleme' },
+    { id: 'sorular',  label: 'Soru Yönetimi' },
+    { id: 'kmatris',  label: 'k Katsayısı' },
+    { id: 'tokenlar', label: 'Token Yönetimi' },
+    { id: 'cozumler', label: 'Çözüm Bankası' },
   ]
 
   return (
@@ -564,6 +819,7 @@ export default function IsoAdminPage() {
         {sekme === 'sorular'  && <SoruYonetimiSekme />}
         {sekme === 'kmatris'  && <KMatrisSekme />}
         {sekme === 'tokenlar' && <TokenYonetimiSekme />}
+        {sekme === 'cozumler' && <CozumBankasiSekme />}
       </div>
     </div>
   )
