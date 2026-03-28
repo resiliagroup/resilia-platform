@@ -61,6 +61,8 @@ export default function IstanbulHarita() {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
   const clusterRef = useRef<any>(null)
+  const ilceLayerRef = useRef<any>(null)
+  const legendRef = useRef<any>(null)
   const [tesisler, setTesisler] = useState<Tesis[]>([])
   const [yukleniyor, setYukleniyor] = useState(true)
   const [filtre, setFiltre] = useState<RiskSeviye | 'all' | 'natech'>('all')
@@ -209,7 +211,9 @@ export default function IstanbulHarita() {
     map.addLayer(cluster)
     clusterRef.current = cluster
 
-    // İlçe risk overlay
+    // İlçe risk overlay — önceki katmanı temizle
+    if (ilceLayerRef.current) map.removeLayer(ilceLayerRef.current)
+
     const ILCE_RISK = [
       { ilce: 'Tuzla',         lat: 40.8173, lng: 29.3008, uri: 56.1, tesis: 41, renk: '#F97316' },
       { ilce: 'Dilovası',      lat: 40.7759, lng: 29.5167, uri: 55.9, tesis: 40, renk: '#F97316' },
@@ -242,9 +246,17 @@ export default function IstanbulHarita() {
       `, { sticky: true })
       ilceLayer.addLayer(circle)
     })
+    ilceLayerRef.current = ilceLayer
     map.addLayer(ilceLayer)
+  }, [tesisler, filtre])
 
-    // Harita üstüne legend — sağ üst köşe
+  // Legend — sadece bir kez ekle
+  useEffect(() => {
+    const map = mapInstanceRef.current
+    const L = (window as any).L
+    if (!map || !L) return
+    if (legendRef.current) return
+
     const legend = (L.control as any)({ position: 'topright' })
     legend.onAdd = () => {
       const div = L.DomUtil.create('div')
@@ -257,7 +269,8 @@ export default function IstanbulHarita() {
       return div
     }
     legend.addTo(map)
-  }, [tesisler, filtre])
+    legendRef.current = legend
+  }, [])
 
   const ist = {
     critical: tesisler.filter(t => seviye(naceUriSkor(t.extra_data?.nace_kodu as string, t.employee_count, t.building_age)) === 'critical').length,
