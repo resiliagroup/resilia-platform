@@ -487,16 +487,44 @@ export default function TesisFormuPage() {
       <div style={{ maxWidth: 760, margin: '32px auto', padding: '0 16px 60px' }}>
 
         {/* ── ADIM 0 — Tesis Kimlik & Konum ── */}
-        {adim === 0 && (
+        {adim === 0 && (() => {
+          const TEMEL = ['E01','E03','E04','E10','E12','E13','E16','E15','E36']
+          const ORTA  = [...TEMEL, 'E02','E09','E11','E14','E17','E18','E19','E20','E26','E28']
+          const aktifEnvanter = !tehlikeSinifi || tehlikeSinifi.sinif === 3
+            ? TESIS_ENVANTER.filter(a => TEMEL.includes(a.kod))
+            : tehlikeSinifi.sinif === 2
+              ? TESIS_ENVANTER.filter(a => ORTA.includes(a.kod))
+              : TESIS_ENVANTER
+          return (
           <div style={{ background: 'white', borderRadius: 12, border: `1px solid ${BORDER}`, padding: 28 }}>
             <h2 style={{ fontSize: 17, fontWeight: 700, color: NAVY, marginBottom: 4 }}>Tesis Kimlik & Yapısal Envanter</h2>
-            <p style={{ fontSize: 12, color: tesisYuklendi ? '#15803D' : '#94A3B8', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <p style={{ fontSize: 12, color: tesisYuklendi ? '#15803D' : '#94A3B8', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
               {tesisYuklendi
                 ? <><span style={{ fontSize: 14 }}>✓</span> Tesis bilgileriniz sisteme kayıtlı verilerden getirilmiştir. Lütfen kontrol edip eksik alanları tamamlayın.</>
                 : 'Lütfen tesis bilgilerinizi eksiksiz doldurun.'}
             </p>
+            {!tehlikeSinifi && (
+              <p style={{ fontSize: 11, color: '#94A3B8', marginBottom: 12 }}>
+                NACE kodunuzu girdikten sonra form otomatik olarak tesisınıza özel hale gelir.
+              </p>
+            )}
+            {tehlikeSinifi?.sinif === 3 && (
+              <p style={{ fontSize: 11, color: '#16A34A', marginBottom: 12 }}>
+                Az Tehlikeli tesis — kısa form ({aktifEnvanter.length} alan). Hızlıca tamamlayabilirsiniz.
+              </p>
+            )}
+            {tehlikeSinifi?.sinif === 2 && (
+              <p style={{ fontSize: 11, color: '#EA580C', marginBottom: 12 }}>
+                Tehlikeli tesis — standart form ({aktifEnvanter.length} alan).
+              </p>
+            )}
+            {tehlikeSinifi?.sinif === 1 && (
+              <p style={{ fontSize: 11, color: '#DC2626', marginBottom: 12 }}>
+                Çok Tehlikeli tesis — detaylı form ({aktifEnvanter.length} alan). Zorunlu mevzuat uyumu için eksiksiz doldurun.
+              </p>
+            )}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
-              {TESIS_ENVANTER.map(alan => {
+              {aktifEnvanter.map(alan => {
                 const dolu = tesisYuklendi && !!envanter[alan.kod]
                 return (
                   <div key={alan.kod} style={alan.tip === 'koordinat' ? { gridColumn: '1 / -1' } : {}}>
@@ -548,7 +576,8 @@ export default function TesisFormuPage() {
               </button>
             </div>
           </div>
-        )}
+          )
+        })()}
 
         {/* ── ADIM 1 — Tehlike ── */}
         {adim === 1 && (
