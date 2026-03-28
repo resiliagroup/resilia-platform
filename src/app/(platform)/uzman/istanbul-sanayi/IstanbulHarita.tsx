@@ -208,6 +208,55 @@ export default function IstanbulHarita() {
 
     map.addLayer(cluster)
     clusterRef.current = cluster
+
+    // İlçe risk overlay
+    const ILCE_RISK = [
+      { ilce: 'Tuzla',         lat: 40.8173, lng: 29.3008, uri: 56.1, tesis: 41, renk: '#F97316' },
+      { ilce: 'Dilovası',      lat: 40.7759, lng: 29.5167, uri: 55.9, tesis: 40, renk: '#F97316' },
+      { ilce: 'Avcılar',       lat: 40.9797, lng: 28.7214, uri: 57.8, tesis: 39, renk: '#F97316' },
+      { ilce: 'Ümraniye',      lat: 41.0166, lng: 29.1141, uri: 55.1, tesis: 44, renk: '#F97316' },
+      { ilce: 'Pendik',        lat: 40.8773, lng: 29.2333, uri: 54.5, tesis: 40, renk: '#EAB308' },
+      { ilce: 'Gebze',         lat: 40.8026, lng: 29.4300, uri: 54.0, tesis: 40, renk: '#EAB308' },
+      { ilce: 'Başakşehir',    lat: 41.0934, lng: 28.8028, uri: 52.7, tesis: 43, renk: '#EAB308' },
+      { ilce: 'Esenyurt',      lat: 41.0290, lng: 28.6726, uri: 52.1, tesis: 34, renk: '#EAB308' },
+      { ilce: 'Bağcılar',      lat: 41.0394, lng: 28.8559, uri: 48.3, tesis: 89, renk: '#EAB308' },
+      { ilce: 'Güngören',      lat: 41.0190, lng: 28.8746, uri: 45.2, tesis: 67, renk: '#EAB308' },
+    ]
+
+    const ilceLayer = (L as any).layerGroup()
+    ILCE_RISK.forEach(ilce => {
+      const circle = L.circle([ilce.lat, ilce.lng], {
+        radius: ilce.tesis * 150,
+        color: ilce.renk,
+        fillColor: ilce.renk,
+        fillOpacity: 0.08,
+        weight: 1.5,
+        opacity: 0.4,
+      })
+      circle.bindTooltip(`
+        <div style="font-family:sans-serif;font-size:12px;padding:4px;">
+          <b>${ilce.ilce}</b><br/>
+          URI Ort: <b style="color:${ilce.renk}">${ilce.uri}</b><br/>
+          ${ilce.tesis} form dolduruldu
+        </div>
+      `, { sticky: true })
+      ilceLayer.addLayer(circle)
+    })
+    map.addLayer(ilceLayer)
+
+    // Harita üstüne legend — sağ üst köşe
+    const legend = (L.control as any)({ position: 'topright' })
+    legend.onAdd = () => {
+      const div = L.DomUtil.create('div')
+      div.style.cssText = 'background:white;padding:8px 12px;border-radius:8px;font-size:11px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.15);'
+      div.innerHTML = `
+        <div style="font-weight:700;margin-bottom:6px;color:#0A1628">İlçe Risk Katmanı</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><div style="width:12px;height:12px;border-radius:50%;background:#F97316;opacity:0.6"></div>Yüksek (URI>55)</div>
+        <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:50%;background:#EAB308;opacity:0.6"></div>Orta (URI 45-55)</div>
+      `
+      return div
+    }
+    legend.addTo(map)
   }, [tesisler, filtre])
 
   const ist = {
