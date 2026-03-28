@@ -275,9 +275,10 @@ export default function TesisFormuPage() {
 
   const naceChange = async (nace: string) => {
     setEnvanter(prev => ({ ...prev, E03: nace }))
-    if (nace.length >= 5) {
+    const temiz = nace.replace(/\s/g, '')
+    if (temiz.length >= 4) {
       const r = await fetch(
-        `${SUPA_URL}/rest/v1/nace_tehlike?nace_alti_kod=eq.${encodeURIComponent(nace)}&select=tehlike_sinifi,tehlike_label,zorunlu_mevzuat,seveso_kapsam,natech_olasilik`,
+        `${SUPA_URL}/rest/v1/nace_tehlike?nace_alti_kod=like.${encodeURIComponent(temiz)}*&select=tehlike_sinifi,tehlike_label,zorunlu_mevzuat,seveso_kapsam,natech_olasilik&order=nace_alti_kod.asc&limit=1`,
         { headers: { 'apikey': SUPA_KEY } }
       )
       if (r.ok) {

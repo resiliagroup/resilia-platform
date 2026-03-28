@@ -775,7 +775,7 @@ export const TESIS_ENVANTER: TesisEnvanterAlani[] = [
   // ── Kimlik Bilgileri ──────────────────────────────────────
   { kod: 'E01', label: 'Firma Adı ve Ünvanı', tip: 'text', zorunlu: true },
   { kod: 'E02', label: 'Ticaret Sicil No', tip: 'text', zorunlu: false },
-  { kod: 'E03', label: 'NACE Kodu', tip: 'text', zorunlu: true, aciklama: 'Örn: 20.13 — Diğer inorganik temel kimyasalların imalatı' },
+  { kod: 'E03', label: 'NACE Kodu', tip: 'text', zorunlu: true, aciklama: 'Örn: 20.13 — sistem otomatik tehlike sınıfını belirler' },
   { kod: 'E04', label: 'ISG Tehlike Sınıfı', tip: 'select', zorunlu: true, secenek: ['1 — Çok Tehlikeli', '2 — Tehlikeli', '3 — Az Tehlikeli'] },
   { kod: 'E05', label: 'Faaliyet Tanımı', tip: 'text', zorunlu: false },
   { kod: 'E06', label: 'Üretilen Ürünlerin Stratejik Önemi', tip: 'select', zorunlu: false, secenek: ['Ticari (yerel)', 'Bölgesel', 'Ulusal', 'Global / İhracat'] },
