@@ -4,10 +4,10 @@ import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 
 const C = {
-  navy950: '#001F5B', navy900: '#003087', navy800: '#004ABF',
-  teal: '#0066CC', tealL: '#1A80DD',
-  white: '#FFFFFF', muted: '#6B7280', dim: '#6B7280',
-  border: '#E0E6ED',
+  navy950: '#060D1A', navy900: '#0A1628', navy800: '#0F2240',
+  teal: '#2D8A87', tealL: '#3BA8A5',
+  white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B',
+  border: '#1E3A5F',
 }
 const FONT = "'Plus Jakarta Sans', sans-serif"
 
