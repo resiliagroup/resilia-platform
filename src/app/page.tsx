@@ -7,17 +7,17 @@ import Footer from '@/components/Footer'
 
 /* ── tokens ─────────────────────────────────────────────────────── */
 const C = {
-  navy950: '#060D1A',
-  navy900: '#0A1628',
-  navy800: '#0F2240',
-  navy700: '#1B3358',
-  teal:    '#2D8A87',
-  tealL:   '#3BA8A5',
+  navy950: '#001F5B',
+  navy900: '#003087',
+  navy800: '#004ABF',
+  navy700: '#0055D4',
+  teal:    '#0066CC',
+  tealL:   '#1A80DD',
   amber:   '#F59E0B',
   green:   '#22C55E',
-  muted:   '#94A3B8',
-  dim:     '#64748B',
-  border:  '#1E3A5F',
+  muted:   '#6B7280',
+  dim:     '#6B7280',
+  border:  '#E0E6ED',
 }
 
 const FONT = "'Plus Jakarta Sans', sans-serif"
