@@ -163,6 +163,7 @@ const toplamSayfa = KATEGORILER.reduce((s, k) => s + k.sayfalar.length, 0)
 export default function SiteHaritasiPage() {
   const [acikKategoriler, setAcikKategoriler] = useState<Set<string>>(new Set(['platform']))
   const [aktifUrl, setAktifUrl] = useState('')
+  const [iframeError, setIframeError] = useState(false)
 
   function toggleKat(id: string) {
     setAcikKategoriler(prev => {
@@ -249,7 +250,7 @@ export default function SiteHaritasiPage() {
                         return (
                           <button
                             key={s.url}
-                            onClick={() => setAktifUrl(s.url)}
+                            onClick={() => { setAktifUrl(s.url); setIframeError(false) }}
                             style={{
                               width: '100%', display: 'flex', alignItems: 'center', gap: 8,
                               padding: '6px 14px 6px 30px', border: 'none', cursor: 'pointer', textAlign: 'left',
@@ -283,12 +284,25 @@ export default function SiteHaritasiPage() {
         {/* Sağ Panel */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           {aktifUrl ? (
-            <iframe
-              key={aktifUrl}
-              src={aktifUrl}
-              style={{ flex: 1, border: 'none', width: '100%', height: '100%' }}
-              title={aktifSayfa?.baslik || aktifUrl}
-            />
+            <>
+              <iframe
+                key={aktifUrl}
+                src={aktifUrl}
+                onLoad={() => setIframeError(false)}
+                onError={() => setIframeError(true)}
+                style={{ flex: 1, border: 'none', width: '100%', height: '100%', display: iframeError ? 'none' : 'block' }}
+                title={aktifSayfa?.baslik || aktifUrl}
+              />
+              {iframeError && (
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 16 }}>
+                  <ExternalLink size={48} color={C.teal}/>
+                  <p style={{ fontSize: 16, color: '#374151', margin: 0 }}>Bu sayfa iframe içinde açılamıyor</p>
+                  <a href={aktifUrl} target="_blank" rel="noreferrer" style={{ padding: '10px 20px', background: C.teal, color: 'white', borderRadius: 8, textDecoration: 'none', fontWeight: 600, fontSize: 14 }}>
+                    Yeni Sekmede Aç
+                  </a>
+                </div>
+              )}
+            </>
           ) : (
             /* Karşılama Ekranı */
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 48, gap: 40 }}>
