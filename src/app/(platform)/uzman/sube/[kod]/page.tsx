@@ -1,9 +1,25 @@
+export const dynamic = 'force-dynamic'
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { mevcutKullanici, oturumKapat } from '@/lib/auth'
 import { getRiskRenk, getRiskEtiket, type FormCevabi } from '@/types'
+import { Building2, Zap, Shield, Droplets, AlertTriangle, CheckCircle, Clock, XCircle, Activity } from 'lucide-react'
+
+const KATEGORI_IKON = (id: string) => {
+  if (id === 'deprem') return <Building2 size={16} color="#EF4444"/>
+  if (id === 'yangin') return <Zap size={16} color="#F97316"/>
+  if (id === 'siber') return <Shield size={16} color="#8B5CF6"/>
+  if (id === 'sel') return <Droplets size={16} color="#0EA5E9"/>
+  return <AlertTriangle size={16}/>
+}
+
+const DURUM_IKON = (durum: string) => {
+  if (durum === 'tamamlandi') return <CheckCircle size={14} color="#22C55E"/>
+  if (durum === 'devam') return <Clock size={14} color="#F97316"/>
+  if (durum === 'gecikti') return <XCircle size={14} color="#EF4444"/>
+  return <Activity size={14} color="#94A3B8"/>
+}
 
 type Sekme = 'overview' | 'gap' | 'aksiyonlar' | 'bcp'
 
@@ -89,7 +105,6 @@ export default function SubeDetay() {
   const kod = params?.kod as string
   const [sekme, setSekme] = useState<Sekme>('overview')
   const [formlar, setFormlar] = useState<FormCevabi[]>([])
-  const [kullanici, setKullanici] = useState<ReturnType<typeof mevcutKullanici>>(null)
   const [yukleniyor, setYukleniyor] = useState(true)
   const [aktifGap, setAktifGap] = useState('deprem')
   const [aktifSenaryo, setAktifSenaryo] = useState(0)
@@ -99,9 +114,6 @@ export default function SubeDetay() {
   const [filtreOncelik, setFiltreOncelik] = useState('tumu')
 
   useEffect(() => {
-    const k = mevcutKullanici()
-    if (!k?.rol) { window.location.href = '/login'; return }
-    setKullanici(k)
     supabase.from('form_cevaplari').select('*')
       .eq('birim_kodu', kod).eq('durum', 'gonderildi')
       .order('gonderilme', { ascending: false })
@@ -194,10 +206,9 @@ export default function SubeDetay() {
         </div>
         <div style={{display:'flex',alignItems:'center',gap:14}}>
           <div style={{textAlign:'right'}}>
-            <div style={{fontSize:12,fontWeight:600,color:'#1c1917'}}>{kullanici?.ad_soyad}</div>
-            <div style={{fontSize:10,color:'#A8A29E'}}>{kullanici?.tenant} · Uzman</div>
+            <div style={{fontSize:12,fontWeight:600,color:'#1c1917'}}>Uzman Görünümü</div>
+            <div style={{fontSize:10,color:'#A8A29E'}}>Omniversel Platform</div>
           </div>
-          <button onClick={oturumKapat} style={{fontSize:11,color:'#9CA3AF',border:'1px solid #E5E3E1',padding:'5px 12px',borderRadius:8,background:'white',cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>Çıkış</button>
         </div>
       </nav>
 
@@ -266,7 +277,7 @@ export default function SubeDetay() {
                 <div key={k.id} style={{display:'flex',alignItems:'center',gap:12,marginBottom:12,cursor:'pointer',padding:'6px 8px',borderRadius:8,transition:'all .15s'}}
                   onClick={()=>{setSekme('gap');setAktifGap(k.id)}}
                   onMouseEnter={e=>e.currentTarget.style.background='#FAFAF9'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
-                  <span style={{fontSize:18,flexShrink:0}}>{k.ikon}</span>
+                  <span style={{flexShrink:0}}>{KATEGORI_IKON(k.id)}</span>
                   <div style={{flex:1}}>
                     <div style={{display:'flex',justifyContent:'space-between',marginBottom:3}}>
                       <span style={{fontSize:12,fontWeight:600,color:'#374151'}}>{k.label}</span>
@@ -402,7 +413,7 @@ export default function SubeDetay() {
                           onMouseEnter={e=>e.currentTarget.style.background='#F5F3F1'} onMouseLeave={e=>e.currentTarget.style.background='#FAFAF9'}>
                           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}}>
                             <div style={{display:'flex',alignItems:'center',gap:8}}>
-                              <span style={{fontSize:18}}>{k.ikon}</span>
+                              <span>{KATEGORI_IKON(k.id)}</span>
                               <span style={{fontSize:13,fontWeight:700,color:'#0A1628'}}>{k.label}</span>
                             </div>
                             <span className="fm" style={{fontSize:18,fontWeight:800,color:getRiskRenk(ort)}}>{ort}</span>
@@ -454,7 +465,7 @@ export default function SubeDetay() {
                   <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
                     {GAP_KATEGORILER.map(k=>(
                       <button key={k.id} className={'bsb'+(aktifGap===k.id?' on':'')} onClick={()=>setAktifGap(k.id)}>
-                        <span style={{marginRight:4}}>{k.ikon}</span>{k.label}
+                        <span style={{marginRight:4}}>{KATEGORI_IKON(k.id)}</span>{k.label}
                       </button>
                     ))}
                   </div>
