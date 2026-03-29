@@ -1,5 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { mevcutKullanici } from '@/lib/auth';
 import Link from 'next/link';
 import { BarChart3, Building2, LayoutGrid, FileText, Siren, TableProperties, Zap, Database, TrendingDown, ShieldCheck, Upload, Factory, FileBarChart2, Map } from 'lucide-react';
@@ -9,6 +10,8 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
   const [tenant, setTenant] = useState('...')
   const [tenantHarf, setTenantHarf] = useState('?')
   const [isAdmin, setIsAdmin] = useState(false)
+  const searchParams = useSearchParams()
+  const isEmbed = searchParams.get('embed') === '1'
   useEffect(() => {
     const k = mevcutKullanici()
     if (k) {
@@ -19,7 +22,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
   }, [])
   return (
     <div className="flex h-screen bg-[#0A1628] overflow-hidden">
-      <aside className="w-64 bg-[#0D1F3C] text-slate-300 flex flex-col border-r border-slate-800/40">
+      {!isEmbed && <aside className="w-64 bg-[#0D1F3C] text-slate-300 flex flex-col border-r border-slate-800/40">
         
         <div className="h-16 flex items-center px-4 border-b border-slate-800/40">
           <OmniverselLogo width={160} height={42} variant="navy" />
@@ -127,9 +130,9 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
           </div>
         </div>
 
-      </aside>
+      </aside>}
 
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto" style={isEmbed ? { marginLeft: 0, padding: 0 } : undefined}>
         {children}
       </main>
     </div>

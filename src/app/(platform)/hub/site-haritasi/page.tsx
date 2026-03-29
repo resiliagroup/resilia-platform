@@ -176,6 +176,14 @@ export default function SiteHaritasiPage() {
 
   const aktifSayfa = KATEGORILER.flatMap(k => k.sayfalar.map(s => ({ ...s, katLabel: k.label, katRenk: k.renk }))).find(s => s.url === aktifUrl)
 
+  const PUBLIC_KATEGORILER = ['public', 'urun']
+  const aktifKategoriId = KATEGORILER.find(k => k.sayfalar.some(s => s.url === aktifUrl))?.id
+  const iframeSrc = aktifUrl
+    ? `${typeof window !== 'undefined' ? window.location.origin : ''}${aktifUrl}${
+        PUBLIC_KATEGORILER.includes(aktifKategoriId || '') ? '' : '?embed=1'
+      }`
+    : null
+
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', flexDirection: 'column', fontFamily: "'DM Sans', 'Plus Jakarta Sans', sans-serif", background: C.bg, overflow: 'hidden' }}>
 
@@ -287,7 +295,7 @@ export default function SiteHaritasiPage() {
             <>
               <iframe
                 key={aktifUrl}
-                src={aktifUrl}
+                src={iframeSrc || aktifUrl}
                 onLoad={() => setIframeError(false)}
                 onError={() => setIframeError(true)}
                 style={{ flex: 1, border: 'none', width: '100%', height: '100%', display: iframeError ? 'none' : 'block' }}
