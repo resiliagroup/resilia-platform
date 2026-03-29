@@ -174,7 +174,7 @@ export default function SiteHaritasiPage() {
   const toplamSayfa = KATEGORILER.reduce((s, k) => s + k.sayfalar.length, 0)
 
   return (
-    <div style={{ display: 'flex', height: '100vh', fontFamily: "'DM Sans', sans-serif", background: C.bg, overflow: 'hidden' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', fontFamily: "'DM Sans', sans-serif", background: C.bg, overflow: 'hidden' }}>
 
       {/* Sol Panel */}
       <div style={{ width: 260, background: C.navy, display: 'flex', flexDirection: 'column', flexShrink: 0, borderRight: `1px solid ${C.border}` }}>
