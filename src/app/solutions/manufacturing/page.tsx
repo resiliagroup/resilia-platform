@@ -5,10 +5,10 @@ import Footer from '@/components/Footer'
 export const metadata = { title: 'Manufacturing Solutions', description: 'Operational continuity for manufacturers — supply chain risk, multi-site BCM, ISO 45001.' }
 
 const C = {
-  navy950: '#F8FAFC', navy900: '#F8FAFC',
+  navy950: '#060D1A', navy900: '#0A1628',
   teal: '#2D8A87',
   white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B',
-  border: '#E2E8F0',
+  border: '#1E3A5F',
 }
 const FONT = "'Plus Jakarta Sans', sans-serif"
 

@@ -5,10 +5,10 @@ import Footer from '@/components/Footer'
 export const metadata = { title: 'Public Sector Solutions', description: 'Urban resilience planning for municipalities — AFAD, Sendai Framework, FEMA Core Capabilities.' }
 
 const C = {
-  navy950: '#F8FAFC', navy900: '#F8FAFC', navy800: '#FFFFFF',
+  navy950: '#060D1A', navy900: '#0A1628', navy800: '#FFFFFF',
   teal: '#2D8A87',
   white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B',
-  border: '#E2E8F0',
+  border: '#1E3A5F',
 }
 const FONT = "'Plus Jakarta Sans', sans-serif"
 

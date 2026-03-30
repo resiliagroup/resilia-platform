@@ -4,7 +4,7 @@ import Footer from '@/components/Footer'
 
 export const metadata = { title: 'omniVENDOR — Third-Party Risk', description: 'Supply chain and vendor risk assessment — URI-aligned scoring, concentration analysis.' }
 
-const C = { navy950:'#F8FAFC', navy900:'#F8FAFC', teal:'#2D8A87', white:'#FFFFFF', muted:'#94A3B8', dim:'#64748B', border:'#E2E8F0' }
+const C = { navy950:'#060D1A', navy900:'#0A1628', teal:'#2D8A87', white:'#FFFFFF', muted:'#94A3B8', dim:'#64748B', border:'#1E3A5F' }
 const F = "'Plus Jakarta Sans',sans-serif"
 
 const STEPS = [

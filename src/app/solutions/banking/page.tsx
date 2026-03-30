@@ -5,10 +5,10 @@ import Footer from '@/components/Footer'
 export const metadata = { title: 'Banking & Finance Solutions', description: 'Operational resilience for financial institutions — BDDK aligned, ISO 22301, quantitative BCM.' }
 
 const C = {
-  navy950: '#F8FAFC', navy900: '#F8FAFC', navy800: '#FFFFFF',
+  navy950: '#060D1A', navy900: '#0A1628', navy800: '#FFFFFF',
   teal: '#2D8A87',
   white: '#FFFFFF', muted: '#374151', dim: '#374151',
-  border: '#E2E8F0',
+  border: '#1E3A5F',
 }
 const FONT = "'Plus Jakarta Sans', sans-serif"
 
