@@ -4,7 +4,7 @@ import Footer from '@/components/Footer'
 
 export const metadata = { title: 'omniRISK — Quantitative Risk Scoring', description: 'Multi-parameter URI scoring for every facility. Audit-ready, sector-calibrated, defensible.' }
 
-const C = { navy950:'#060D1A', navy900:'#0A1628', teal:'#2D8A87', white:'#FFFFFF', muted:'#94A3B8', dim:'#64748B', border:'#1E3A5F' }
+const C = { navy950:'#F8FAFC', navy900:'#F8FAFC', teal:'#2D8A87', white:'#FFFFFF', muted:'#94A3B8', dim:'#64748B', border:'#E2E8F0' }
 const F = "'Plus Jakarta Sans',sans-serif"
 
 const STEPS = [
@@ -119,7 +119,7 @@ export default function OmniRiskPage() {
         </div>
       </section>
 
-      <section style={{ background:'linear-gradient(135deg, #0F2240, #060D1A)', borderTop:`1px solid ${C.border}`, padding:'100px 48px', textAlign:'center' }}>
+      <section style={{ background:'linear-gradient(135deg, #FFFFFF, #F8FAFC)', borderTop:`1px solid ${C.border}`, padding:'100px 48px', textAlign:'center' }}>
         <h2 style={{ fontSize:'clamp(26px,3.5vw,40px)', fontWeight:800, color:C.white, marginBottom:40, letterSpacing:'-0.02em', maxWidth:560, margin:'0 auto 40px' }}>Start measuring risk across your facilities.</h2>
         <div style={{ display:'flex', gap:14, justifyContent:'center', flexWrap:'wrap' }}>
           <Link href="/login" style={{ background:C.teal, color:C.white, fontWeight:700, fontSize:15, padding:'16px 36px', borderRadius:9999, display:'inline-block' }}>Request Demo</Link>

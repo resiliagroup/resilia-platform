@@ -35,9 +35,9 @@ function LoginForm() {
   return (
     <>
       <style>{`
-        .lp{min-height:100vh;background:#060D1A;display:flex}
-        .lp-left{flex:3;background:#060D1A;padding:60px 48px;display:flex;flex-direction:column;justify-content:center}
-        .lp-right{flex:2;background:#0A1628;border-left:1px solid #1E3A5F;display:flex;align-items:center;justify-content:center;padding:40px 32px}
+        .lp{min-height:100vh;background:#F8FAFC;display:flex}
+        .lp-left{flex:3;background:#F8FAFC;padding:60px 48px;display:flex;flex-direction:column;justify-content:center}
+        .lp-right{flex:2;background:#F8FAFC;border-left:1px solid #1E3A5F;display:flex;align-items:center;justify-content:center;padding:40px 32px}
         .lp-form{width:100%;max-width:360px}
         @media(max-width:768px){.lp{flex-direction:column}.lp-left{display:none}.lp-right{flex:1;border-left:none;min-height:100vh;padding:48px 24px}}
       `}</style>
@@ -79,14 +79,14 @@ function LoginForm() {
               <input type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)}
                 onKeyDown={e=>e.key==='Enter'&&handleLogin()}
                 placeholder="you@organization.com"
-                style={{width:'100%',background:'#060D1A',border:'1px solid #1E3A5F',borderRadius:10,padding:'12px 14px',color:'#fff',fontSize:14,outline:'none',boxSizing:'border-box'}}/>
+                style={{width:'100%',background:'#F8FAFC',border:'1px solid #1E3A5F',borderRadius:10,padding:'12px 14px',color:'#fff',fontSize:14,outline:'none',boxSizing:'border-box'}}/>
             </div>
             <div style={{marginBottom:24}}>
               <label style={{display:'block',fontSize:11,color:'#64748B',marginBottom:6,letterSpacing:1}}>PASSWORD</label>
               <input type="password" autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)}
                 onKeyDown={e=>e.key==='Enter'&&handleLogin()}
                 placeholder="••••••••"
-                style={{width:'100%',background:'#060D1A',border:'1px solid #1E3A5F',borderRadius:10,padding:'12px 14px',color:'#fff',fontSize:14,outline:'none',boxSizing:'border-box'}}/>
+                style={{width:'100%',background:'#F8FAFC',border:'1px solid #1E3A5F',borderRadius:10,padding:'12px 14px',color:'#fff',fontSize:14,outline:'none',boxSizing:'border-box'}}/>
             </div>
             {error&&<div style={{color:'#EF4444',fontSize:13,marginBottom:16,padding:'10px 12px',background:'rgba(239,68,68,0.08)',borderRadius:8}}>{error}</div>}
             <button onClick={handleLogin} disabled={loading}

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import OmniverselLogo from '@/components/OmniverselLogo'
 
 /* ─── tokens ─────────────────────────────────────────────────── */
-const N      = '#0A1628'
+const N      = '#F8FAFC'
 const T      = '#2D8A87'
 const G      = '#E8C97A'
 const GR     = '#F4F7F6'
@@ -150,7 +150,7 @@ export default function HakkimizdaPage() {
                   onMouseEnter={e => (e.currentTarget.style.color = T)}
                   onMouseLeave={e => (e.currentTarget.style.color = MG)}>Ana Sayfa</Link>
             <Link href="/hakkimizda" style={{ color: T, fontSize: 14, fontWeight: 600 }}>Hakkımızda</Link>
-            <Link href="/login" style={{ background: T, color: '#fff', fontWeight: 700, fontSize: 14,
+            <Link href="/login" style={{ background: T, color: '#0A1628', fontWeight: 700, fontSize: 14,
                                           padding: '9px 22px', borderRadius: 6, display: 'inline-block' }}>
               Demo Talep
             </Link>
@@ -171,7 +171,7 @@ export default function HakkimizdaPage() {
             </span>
           </div>
           <h1 style={{ fontSize: 'clamp(36px, 5vw, 60px)', fontWeight: 700,
-                       lineHeight: 1.1, color: '#fff', marginBottom: 24 }}>
+                       lineHeight: 1.1, color: '#0A1628', marginBottom: 24 }}>
             Omniversel Hakkında
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 18, lineHeight: 1.8,
@@ -407,7 +407,7 @@ export default function HakkimizdaPage() {
                         boxShadow: '0 8px 48px rgba(10,22,40,.14)' }}>
             <p style={{ color: T, fontSize: 12, fontWeight: 700, letterSpacing: 3,
                         textTransform: 'uppercase', marginBottom: 16 }}>İletişim</p>
-            <h2 style={{ color: '#fff', fontSize: 'clamp(26px, 3.5vw, 42px)', fontWeight: 700,
+            <h2 style={{ color: '#0A1628', fontSize: 'clamp(26px, 3.5vw, 42px)', fontWeight: 700,
                           lineHeight: 1.15, marginBottom: 20 }}>
               İş Birliği ve Demo Talebi için
             </h2>
@@ -418,7 +418,7 @@ export default function HakkimizdaPage() {
             </p>
             <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
               <Link href="/form/basvuru" style={{
-                background: T, color: '#fff', fontWeight: 700, fontSize: 15,
+                background: T, color: '#0A1628', fontWeight: 700, fontSize: 15,
                 padding: '14px 40px', borderRadius: 8, display: 'inline-block',
                 transition: 'opacity .18s',
               }}>

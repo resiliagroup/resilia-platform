@@ -7,17 +7,17 @@ import Footer from '@/components/Footer'
 
 /* ── tokens ─────────────────────────────────────────────────────── */
 const C = {
-  navy950: '#060D1A',
-  navy900: '#0A1628',
-  navy800: '#0F2240',
-  navy700: '#1B3358',
+  navy950: '#F8FAFC',
+  navy900: '#F8FAFC',
+  navy800: '#FFFFFF',
+  navy700: '#F1F5F9',
   teal:    '#2D8A87',
   tealL:   '#3BA8A5',
   amber:   '#F59E0B',
   green:   '#22C55E',
   muted:   '#94A3B8',
   dim:     '#64748B',
-  border:  '#1E3A5F',
+  border:  '#E2E8F0',
 }
 
 const FONT = "'Plus Jakarta Sans', sans-serif"
@@ -138,9 +138,9 @@ export default function HomePage() {
             </div>
 
             <h1 style={{ lineHeight: 1.0, marginBottom: 24 }}>
-              <span style={{ display: 'block', fontSize: 'clamp(44px,5.5vw,72px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em' }}>Quantify Risk.</span>
+              <span style={{ display: 'block', fontSize: 'clamp(44px,5.5vw,72px)', fontWeight: 800, color: '#0A1628', letterSpacing: '-0.03em' }}>Quantify Risk.</span>
               <span style={{ display: 'block', fontSize: 'clamp(44px,5.5vw,72px)', fontWeight: 800, color: C.teal, letterSpacing: '-0.03em', marginTop: 4 }}>Ensure Continuity.</span>
-              <span style={{ display: 'block', fontSize: 'clamp(44px,5.5vw,72px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', marginTop: 4 }}>Manage Crises.</span>
+              <span style={{ display: 'block', fontSize: 'clamp(44px,5.5vw,72px)', fontWeight: 800, color: '#0A1628', letterSpacing: '-0.03em', marginTop: 4 }}>Manage Crises.</span>
             </h1>
 
             <p style={{ fontSize: 18, color: C.muted, lineHeight: 1.7, maxWidth: 480, marginBottom: 40 }}>
@@ -149,7 +149,7 @@ export default function HomePage() {
 
             <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 32 }}>
               <Link href="/platform/omnirisk" className="cta-pill" style={{
-                fontSize: 16, fontWeight: 600, color: '#fff', fontFamily: FONT,
+                fontSize: 16, fontWeight: 600, color: '#0A1628', fontFamily: FONT,
                 background: C.teal, padding: '14px 32px', borderRadius: 30, display: 'inline-block',
               }}>
                 Explore Platform
@@ -230,7 +230,7 @@ export default function HomePage() {
             <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '3px', textTransform: 'uppercase', marginBottom: 16 }}>
               THE PLATFORM
             </p>
-            <h2 style={{ fontSize: 'clamp(36px,4.5vw,52px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 16 }}>
+            <h2 style={{ fontSize: 'clamp(36px,4.5vw,52px)', fontWeight: 800, color: '#0A1628', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 16 }}>
               One Platform. <span style={{ color: C.teal }}>Every Risk.</span>
             </h2>
             <p style={{ fontSize: 18, color: C.muted, maxWidth: 600, margin: '0 auto', lineHeight: 1.7 }}>
@@ -272,7 +272,7 @@ export default function HomePage() {
             {/* Right detail */}
             <div style={{ background: C.navy900, border: `1px solid ${C.border}`, borderRadius: 16, padding: '40px 36px', minHeight: 360 }}>
               <div style={{ borderLeft: `3px solid ${C.teal}`, paddingLeft: 16, marginBottom: 20 }}>
-                <h3 style={{ fontSize: 28, fontWeight: 700, color: '#fff', fontFamily: FONT, marginBottom: 8 }}>{mod.code}</h3>
+                <h3 style={{ fontSize: 28, fontWeight: 700, color: '#0A1628', fontFamily: FONT, marginBottom: 8 }}>{mod.code}</h3>
                 <p style={{ fontSize: 16, color: C.muted }}>{mod.short}</p>
               </div>
               <p style={{ fontSize: 15, color: C.dim, lineHeight: 1.75, marginBottom: 28 }}>{mod.detail}</p>
@@ -280,7 +280,7 @@ export default function HomePage() {
                 {mod.features.map(f => (
                   <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <span style={{ color: C.teal, fontWeight: 700, fontSize: 14, flexShrink: 0 }}>✓</span>
-                    <span style={{ fontSize: 14, color: '#fff' }}>{f}</span>
+                    <span style={{ fontSize: 14, color: '#0A1628' }}>{f}</span>
                   </div>
                 ))}
               </div>
@@ -297,7 +297,7 @@ export default function HomePage() {
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div className="metrics-grid" style={{
             display: 'grid', gridTemplateColumns: 'repeat(4,1fr)',
-            background: 'linear-gradient(135deg, #0F2240 0%, #0A1628 100%)',
+            background: 'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)',
             border: `1px solid ${C.border}`, borderRadius: 16, overflow: 'hidden',
           }}>
             {[
@@ -311,7 +311,7 @@ export default function HomePage() {
                 borderRight: i < 3 ? `1px solid ${C.border}` : 'none',
               }}>
                 <div style={{ fontSize: 48, fontWeight: 800, color: C.teal, fontFamily: "'DM Mono', monospace", lineHeight: 1, marginBottom: 12 }}>{m.num}</div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 6 }}>{m.title}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#0A1628', marginBottom: 6 }}>{m.title}</div>
                 <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.5 }}>{m.sub}</div>
               </div>
             ))}
@@ -323,7 +323,7 @@ export default function HomePage() {
       <section style={{ background: C.navy950, padding: '80px 40px 120px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <h2 style={{ fontSize: 'clamp(32px,4vw,42px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', marginBottom: 16 }}>
+            <h2 style={{ fontSize: 'clamp(32px,4vw,42px)', fontWeight: 800, color: '#0A1628', letterSpacing: '-0.02em', marginBottom: 16 }}>
               Purpose-Built for Every Sector
             </h2>
             <p style={{ fontSize: 18, color: C.muted, maxWidth: 540, margin: '0 auto' }}>
@@ -343,7 +343,7 @@ export default function HomePage() {
                 background: C.navy900, border: `1px solid ${C.border}`,
                 borderRadius: 12, padding: 32,
               }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8 }}>{s.name}</h3>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0A1628', marginBottom: 8 }}>{s.name}</h3>
                 <p style={{ fontSize: 12, color: C.dim, marginBottom: 12, letterSpacing: '0.3px' }}>{s.ref}</p>
                 <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.6, marginBottom: 16 }}>{s.desc}</p>
                 <Link href={s.href} style={{ fontSize: 13, fontWeight: 600, color: C.teal, fontFamily: FONT }}>View solutions →</Link>
@@ -356,7 +356,7 @@ export default function HomePage() {
       {/* ── CASE STUDIES ───────────────────────────────────────────── */}
       <section style={{ background: C.navy900, padding: '120px 40px', borderTop: `1px solid ${C.border}` }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(28px,3.5vw,42px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', marginBottom: 48 }}>
+          <h2 style={{ fontSize: 'clamp(28px,3.5vw,42px)', fontWeight: 800, color: '#0A1628', letterSpacing: '-0.02em', marginBottom: 48 }}>
             Real Deployments. Measurable Outcomes.
           </h2>
           <div className="cs-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
@@ -376,7 +376,7 @@ export default function HomePage() {
                 <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 20 }}>{cs.label}</p>
                 <div style={{ fontSize: 'clamp(52px,6vw,72px)', fontWeight: 800, color: C.teal, fontFamily: "'DM Mono', monospace", lineHeight: 1, marginBottom: 12 }}>{cs.num}</div>
                 <p style={{ fontSize: 15, color: C.muted, lineHeight: 1.7, marginBottom: 20 }}>{cs.numSub}</p>
-                <p style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>{cs.result}</p>
+                <p style={{ fontSize: 15, fontWeight: 600, color: '#0A1628' }}>{cs.result}</p>
               </div>
             ))}
           </div>
@@ -386,19 +386,19 @@ export default function HomePage() {
       {/* ── CTA ────────────────────────────────────────────────────── */}
       <section style={{
         padding: '160px 40px',
-        background: 'linear-gradient(135deg, #0F2240 0%, #0A1628 50%, #060D1A 100%)',
+        background: 'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 50%, #F8FAFC 100%)',
         borderTop: `1px solid ${C.border}`,
         textAlign: 'center',
       }}>
         <div style={{ maxWidth: 640, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(36px,5vw,56px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 16 }}>
+          <h2 style={{ fontSize: 'clamp(36px,5vw,56px)', fontWeight: 800, color: '#0A1628', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 16 }}>
             Start measuring resilience.
           </h2>
           <p style={{ fontSize: 20, color: C.muted, lineHeight: 1.7, marginBottom: 48 }}>
             No commitment. Our advisory team walks you through your first assessment.
           </p>
           <Link href="/login" className="cta-pill" style={{
-            fontSize: 18, fontWeight: 600, color: '#fff', fontFamily: FONT,
+            fontSize: 18, fontWeight: 600, color: '#0A1628', fontFamily: FONT,
             background: C.teal, padding: '18px 48px', borderRadius: 30, display: 'inline-block',
           }}>
             Request Free Assessment →

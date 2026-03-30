@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 
-const C = { navy950: '#060D1A', navy900: '#0A1628', teal: '#2D8A87', amber: '#F59E0B', white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B', border: '#1E3A5F' }
+const C = { navy950: '#F8FAFC', navy900: '#F8FAFC', teal: '#2D8A87', amber: '#F59E0B', white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B', border: '#E2E8F0' }
 const F = "'Plus Jakarta Sans', sans-serif"
 
 const CATEGORIES = [
@@ -93,7 +93,7 @@ export default function ResourcesPage() {
       </section>
 
       {/* NEWSLETTER */}
-      <section style={{ background: 'linear-gradient(135deg, #0F2240, #060D1A)', borderTop: `1px solid ${C.border}`, padding: '80px 48px', textAlign: 'center' }}>
+      <section style={{ background: 'linear-gradient(135deg, #FFFFFF, #F8FAFC)', borderTop: `1px solid ${C.border}`, padding: '80px 48px', textAlign: 'center' }}>
         <h2 style={{ fontSize: 'clamp(26px,3.5vw,36px)', fontWeight: 800, color: C.white, marginBottom: 16, letterSpacing: '-0.02em' }}>Stay Informed.</h2>
         <p style={{ fontSize: 16, color: C.muted, maxWidth: 480, margin: '0 auto 40px', lineHeight: 1.7 }}>
           Resilience insights and regulatory updates — delivered quarterly. No spam.

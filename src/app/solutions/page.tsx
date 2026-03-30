@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import OmniverselLogo from '@/components/OmniverselLogo'
 
-const N = '#0A1628'; const T = '#2D8A87'
+const N = '#F8FAFC'; const T = '#2D8A87'
 const GR = '#F4F7F6'; const MG = '#566B66'; const BG = '#FFFFFF'; const BORDER = '#E8EDED'
 
 const SECTORS = [

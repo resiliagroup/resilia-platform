@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 
-const C = { navy950:'#060D1A', navy900:'#0A1628', teal:'#2D8A87', amber:'#F59E0B', white:'#FFFFFF', muted:'#94A3B8', dim:'#64748B', border:'#1E3A5F' }
+const C = { navy950:'#F8FAFC', navy900:'#F8FAFC', teal:'#2D8A87', amber:'#F59E0B', white:'#FFFFFF', muted:'#94A3B8', dim:'#64748B', border:'#E2E8F0' }
 const F = "'Plus Jakarta Sans',sans-serif"
 
 const CAPABILITIES = [
@@ -88,7 +88,7 @@ export default function OmniPipePage() {
         </div>
       </section>
 
-      <section style={{ background:'linear-gradient(135deg, #0F2240, #060D1A)', borderTop:`1px solid ${C.border}`, padding:'100px 48px', textAlign:'center' }}>
+      <section style={{ background:'linear-gradient(135deg, #FFFFFF, #F8FAFC)', borderTop:`1px solid ${C.border}`, padding:'100px 48px', textAlign:'center' }}>
         <div style={{ display:'inline-block', background:'rgba(245,158,11,0.10)', border:'1px solid rgba(245,158,11,0.25)', borderRadius:9999, padding:'6px 18px', marginBottom:24 }}>
           <span style={{ fontSize:11, fontWeight:700, color:C.amber, letterSpacing:'0.10em', textTransform:'uppercase' }}>Early Access — Q4 2026</span>
         </div>

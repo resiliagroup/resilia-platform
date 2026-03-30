@@ -5,10 +5,10 @@ import Footer from '@/components/Footer'
 export const metadata = { title: 'Energy & Utilities Solutions', description: 'Risk intelligence for energy infrastructure — EPDK aligned, pipeline safety, consequence modeling.' }
 
 const C = {
-  navy950: '#060D1A', navy900: '#0A1628', navy800: '#0F2240',
+  navy950: '#F8FAFC', navy900: '#F8FAFC', navy800: '#FFFFFF',
   teal: '#2D8A87',
   white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B',
-  border: '#1E3A5F',
+  border: '#E2E8F0',
 }
 const FONT = "'Plus Jakarta Sans', sans-serif"
 
@@ -189,7 +189,7 @@ export default function EnergyPage() {
       </section>
 
       {/* CTA */}
-      <section style={{ background: 'linear-gradient(135deg, #0F2240, #060D1A)',
+      <section style={{ background: 'linear-gradient(135deg, #FFFFFF, #F8FAFC)',
         borderTop: `1px solid ${C.border}`, padding: '100px 48px', textAlign: 'center' }}>
         <h2 style={{ fontSize: 'clamp(28px,3.5vw,42px)', fontWeight: 800, color: C.white, marginBottom: 20,
           letterSpacing: '-0.02em', maxWidth: 640, margin: '0 auto 20px' }}>
