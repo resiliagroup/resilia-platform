@@ -121,9 +121,9 @@ export default function HomePage() {
         {/* Background glows */}
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
           <div style={{ position: 'absolute', top: 0, right: 0, width: '70%', height: '100%',
-            background: 'radial-gradient(ellipse 80% 60% at 70% 40%, rgba(45,138,135,0.12) 0%, transparent 60%)' }} />
+            background: 'radial-gradient(ellipse 80% 60% at 70% 40%, rgba(0,155,141,0.06) 0%, transparent 60%)' }} />
           <div style={{ position: 'absolute', bottom: 0, left: 0, width: '50%', height: '70%',
-            background: 'radial-gradient(ellipse 50% 40% at 10% 80%, rgba(27,51,88,0.8) 0%, transparent 70%)' }} />
+            background: 'radial-gradient(ellipse 50% 40% at 10% 80%, rgba(0,155,141,0.04) 0%, transparent 70%)' }} />
         </div>
 
         <div className="hero-grid" style={{ maxWidth: 1200, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: '55% 45%', gap: 80, alignItems: 'center', position: 'relative', zIndex: 1 }}>
