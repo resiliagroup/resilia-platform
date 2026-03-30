@@ -62,3 +62,20 @@ body { margin: 0; }
   /* Max-width overrides for hero text blocks */
   .mw-full { max-width: 100% !important; }
 }
+
+/* ── LIGHT THEME (public sayfalar) ── */
+[data-theme="light"] {
+  --bg:        #F8FAFC;
+  --bg-card:   #FFFFFF;
+  --text:      #0A1628;
+  --text-muted:#64748B;
+  --border:    #E2E8F0;
+  --primary:   #009B8D;
+  --primary-bg:#E8F7F6;
+  background-color: #F8FAFC;
+  color: #0A1628;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-track { background: #F1F5F9; }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
