@@ -174,7 +174,7 @@ export default function HakkimizdaPage() {
                        lineHeight: 1.1, color: '#0A1628', marginBottom: 24 }}>
             Omniversel Hakkında
           </h1>
-          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 18, lineHeight: 1.8,
+          <p style={{ color: 'rgba(10,22,40,0.6)', fontSize: 18, lineHeight: 1.8,
                       maxWidth: 640, margin: '0 auto' }}>
             Kentsel dirençlilik araştırması ile kurumsal uygulama arasındaki köprü
           </p>
@@ -304,7 +304,7 @@ export default function HakkimizdaPage() {
               <p style={{ color: T, fontSize: 13, fontWeight: 600, marginBottom: 16 }}>Teknoloji & Platform</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {['omniRISK Platform', 'Yazılım Geliştirme', 'Veri Mühendisliği', 'Ürün Yönetimi'].map(item => (
-                  <span key={item} style={{ background: `${T}15`, color: 'rgba(255,255,255,0.8)', fontSize: 12,
+                  <span key={item} style={{ background: `${T}15`, color: 'rgba(10,22,40,0.8)', fontSize: 12,
                                             fontWeight: 500, padding: '5px 12px', borderRadius: 8,
                                             border: `1px solid ${T}25` }}>{item}</span>
                 ))}
@@ -411,7 +411,7 @@ export default function HakkimizdaPage() {
                           lineHeight: 1.15, marginBottom: 20 }}>
               İş Birliği ve Demo Talebi için
             </h2>
-            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 16, lineHeight: 1.75,
+            <p style={{ color: 'rgba(10,22,40,0.55)', fontSize: 16, lineHeight: 1.75,
                          maxWidth: 520, margin: '0 auto 40px' }}>
               Platform demo talebi, akademik iş birliği görüşmesi veya proje danışmanlığı
               için aşağıdaki formu doldurun. Ekibimiz en kısa sürede sizinle iletişime geçecektir.
@@ -425,7 +425,7 @@ export default function HakkimizdaPage() {
                 Başvuru Formuna Git
               </Link>
               <a href="mailto:info@omniversel.com" style={{
-                border: '1.5px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.72)',
+                border: '1.5px solid rgba(255,255,255,0.2)', color: 'rgba(10,22,40,0.72)',
                 fontWeight: 600, fontSize: 15, padding: '13px 32px', borderRadius: 8,
                 display: 'inline-block',
               }}>
@@ -452,14 +452,14 @@ export default function HakkimizdaPage() {
               { l: 'Demo Talep', h: '/login' },
             ].map(item => (
               <Link key={item.l} href={item.h}
-                    style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, transition: 'color .18s' }}
+                    style={{ color: 'rgba(10,22,40,0.45)', fontSize: 14, transition: 'color .18s' }}
                     onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
                     onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
                 {item.l}
               </Link>
             ))}
           </div>
-          <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13 }}>
+          <span style={{ color: 'rgba(10,22,40,0.3)', fontSize: 13 }}>
             © {new Date().getFullYear()} Omniversel Teknoloji A.Ş.
           </span>
         </div>

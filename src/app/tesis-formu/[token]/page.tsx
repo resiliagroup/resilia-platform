@@ -431,20 +431,37 @@ export default function TesisFormuPage() {
         body: JSON.stringify({ dolduruldu: true }),
       })
 
-      // Düşük puanlı sorulara ait çözümleri çek
+      // Düşük puanlı sorulara ait çözümleri çek — iki geçişli
       const dusukPuanlar = Object.entries(puanlar)
         .filter(([, v]) => v <= 4)
         .map(([k]) => k)
         .slice(0, 8)
+      const sinifFilter = tehlikeSinifi ? `&tehlike_siniflar=cs.{${tehlikeSinifi.sinif}}` : ''
+      const birlesik: any[] = []
+
+      // Geçiş 1: Soru koduna doğrudan eşleşen çözümler (tehlike/kırılganlık/kapasite T/S/Y/HRO)
       if (dusukPuanlar.length > 0) {
-        const sinifFilter = tehlikeSinifi ? `&tehlike_siniflar=cs.{${tehlikeSinifi.sinif}}` : ''
-        const cozumRes = await fetch(
+        const res1 = await fetch(
           `${SUPA_URL}/rest/v1/cozum_bankasi?soru_kod=in.(${dusukPuanlar.join(',')})&aktif=eq.true${sinifFilter}&order=oncelik.asc&limit=6`,
           { headers: { 'apikey': SUPA_KEY } }
         )
-        const cozumData = cozumRes.ok ? await cozumRes.json() : []
-        setCozumler(Array.isArray(cozumData) ? cozumData : [])
+        const d1 = res1.ok ? await res1.json() : []
+        if (Array.isArray(d1)) birlesik.push(...d1)
       }
+
+      // Geçiş 2: Kalan slotları yönetim/kapasite çözümleriyle doldur (BCM/RISK/CYBER/ISG/TED/TAT)
+      if (birlesik.length < 6) {
+        const mevcutIdler = birlesik.map((c: any) => c.id).join(',')
+        const idFilter = mevcutIdler ? `&id=not.in.(${mevcutIdler})` : ''
+        const res2 = await fetch(
+          `${SUPA_URL}/rest/v1/cozum_bankasi?boyut=eq.kapasite&aktif=eq.true${sinifFilter}${idFilter}&order=oncelik.asc&limit=${6 - birlesik.length}`,
+          { headers: { 'apikey': SUPA_KEY } }
+        )
+        const d2 = res2.ok ? await res2.json() : []
+        if (Array.isArray(d2)) birlesik.push(...d2)
+      }
+
+      setCozumler(birlesik.slice(0, 6))
 
       const uyarilar = kural_motoru_calistir(puanlar)
       setRiskUyarilari(uyarilar)

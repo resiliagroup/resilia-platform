@@ -15,8 +15,8 @@ const C = {
   tealL:   '#3BA8A5',
   amber:   '#F59E0B',
   green:   '#22C55E',
-  muted:   '#94A3B8',
-  dim:     '#64748B',
+  muted:   '#64748B',
+  dim:     '#374151',
   border:  '#E2E8F0',
 }
 
@@ -216,7 +216,7 @@ export default function HomePage() {
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 48, flexWrap: 'wrap' }}>
             {['BANKING','HEALTHCARE','ENERGY','INDUSTRY','PUBLIC SECTOR','EDUCATION','CRITICAL INFRASTRUCTURE'].map(s => (
-              <span key={s} style={{ fontSize: 12, fontWeight: 600, color: '#475569', letterSpacing: '1px' }}>{s}</span>
+              <span key={s} style={{ fontSize: 12, fontWeight: 600, color: '#374151', letterSpacing: '1px' }}>{s}</span>
             ))}
           </div>
         </div>
@@ -264,7 +264,7 @@ export default function HomePage() {
                       </span>
                     )}
                   </div>
-                  <div style={{ fontSize: 13, color: '#475569' }}>{m.short}</div>
+                  <div style={{ fontSize: 13, color: '#374151' }}>{m.short}</div>
                 </div>
               ))}
             </div>

@@ -7,7 +7,7 @@ import Footer from '@/components/Footer'
 const C = {
   navy950: '#F8FAFC', navy900: '#F8FAFC', navy800: '#FFFFFF',
   teal: '#2D8A87', tealL: '#3BA8A5',
-  white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B',
+  white: '#FFFFFF', muted: '#374151', dim: '#374151',
   border: '#E2E8F0',
 }
 const FONT = "'Plus Jakarta Sans', sans-serif"
