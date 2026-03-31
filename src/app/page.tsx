@@ -181,7 +181,7 @@ export default function HomePage() {
             ].map((card, i) => (
               <Link key={i} href={card.href} style={{
                 display: 'block',
-                background: card.active ? C.navy800 : C.navy900,
+                background: card.active ? '#E8F7F6' : '#FFFFFF',
                 border: `1px solid ${card.active ? C.teal : C.border}`,
                 borderRadius: 12, padding: '20px 20px 20px 20px',
                 textDecoration: 'none',
@@ -193,11 +193,11 @@ export default function HomePage() {
                   <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: card.active ? C.teal : C.muted, flexShrink: 0, marginTop: 5 }} />
                     <div>
-                      <div style={{ fontSize: 15, fontWeight: 600, color: card.active ? '#fff' : C.muted, marginBottom: 4 }}>{card.code}</div>
-                      <div style={{ fontSize: 13, color: card.active ? C.muted : '#475569' }}>{card.sub}</div>
+                      <div style={{ fontSize: 15, fontWeight: 600, color: card.active ? '#0A1628' : C.muted, marginBottom: 4 }}>{card.code}</div>
+                      <div style={{ fontSize: 13, color: card.active ? '#374151' : '#64748B' }}>{card.sub}</div>
                     </div>
                   </div>
-                  <span style={{ fontSize: 16, color: card.active ? C.teal : '#475569', flexShrink: 0 }}>→</span>
+                  <span style={{ fontSize: 16, color: card.active ? C.teal : '#64748B', flexShrink: 0 }}>→</span>
                 </div>
               </Link>
             ))}

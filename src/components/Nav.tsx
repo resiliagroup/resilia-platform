@@ -66,10 +66,10 @@ export default function Nav() {
     position: 'sticky',
     top: 0,
     zIndex: 50,
-    background: 'rgba(6,13,26,0.97)',
+    background: 'rgba(255,255,255,0.98)',
     backdropFilter: 'blur(12px)',
     WebkitBackdropFilter: 'blur(12px)',
-    borderBottom: '1px solid #1E3A5F',
+    borderBottom: '1px solid #E2E8F0',
     height: '64px',
     display: 'flex',
     alignItems: 'center',
@@ -81,7 +81,7 @@ export default function Nav() {
   if (!mounted) {
     return (
       <nav style={navBase}>
-        <span style={{ fontWeight: 800, fontSize: '18px', color: '#fff', letterSpacing: '-0.5px' }}>
+        <span style={{ fontWeight: 800, fontSize: '18px', color: '#0A1628', letterSpacing: '-0.5px' }}>
           OMNIVERSEL
         </span>
       </nav>
@@ -93,7 +93,7 @@ export default function Nav() {
     return (
       <>
         <nav style={navBase}>
-          <a href="/" style={{ textDecoration: 'none', fontWeight: 800, fontSize: '18px', color: '#fff', letterSpacing: '-0.5px' }}>
+          <a href="/" style={{ textDecoration: 'none', fontWeight: 800, fontSize: '18px', color: '#0A1628', letterSpacing: '-0.5px' }}>
             OMNIVERSEL
           </a>
           <button
@@ -112,12 +112,12 @@ export default function Nav() {
         {mobileOpen && (
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            background: '#060D1A', zIndex: 100, overflowY: 'auto',
+            background: '#FFFFFF', zIndex: 100, overflowY: 'auto',
             display: 'flex', flexDirection: 'column',
           }}>
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 24px', height: '64px', borderBottom: '1px solid #1E3A5F', flexShrink: 0 }}>
-              <a href="/" onClick={() => setMobileOpen(false)} style={{ textDecoration: 'none', fontWeight: 800, fontSize: '18px', color: '#fff', letterSpacing: '-0.5px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 24px', height: '64px', borderBottom: '1px solid #E2E8F0', flexShrink: 0 }}>
+              <a href="/" onClick={() => setMobileOpen(false)} style={{ textDecoration: 'none', fontWeight: 800, fontSize: '18px', color: '#0A1628', letterSpacing: '-0.5px' }}>
                 OMNIVERSEL
               </a>
               <button
@@ -138,13 +138,13 @@ export default function Nav() {
               {/* Platform accordion */}
               <button
                 onClick={() => setMobilePlatformOpen(v => !v)}
-                style={{ width: '100%', background: 'none', border: 'none', borderBottom: '1px solid #1E3A5F', padding: '18px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', color: '#FFFFFF', fontSize: '16px', fontWeight: 600, textAlign: 'left' }}
+                style={{ width: '100%', background: 'none', border: 'none', borderBottom: '1px solid #E2E8F0', padding: '18px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', color: '#FFFFFF', fontSize: '16px', fontWeight: 600, textAlign: 'left' }}
               >
                 Platform
                 <span style={{ fontSize: '11px', color: '#64748B', transition: 'transform 200ms', transform: mobilePlatformOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
               </button>
               {mobilePlatformOpen && (
-                <div style={{ background: '#0A1628', borderBottom: '1px solid #1E3A5F' }}>
+                <div style={{ background: '#0A1628', borderBottom: '1px solid #E2E8F0' }}>
                   {platformLinks.map(link => (
                     <a
                       key={link.href}
@@ -162,13 +162,13 @@ export default function Nav() {
               {/* Solutions accordion */}
               <button
                 onClick={() => setMobileSolutionsOpen(v => !v)}
-                style={{ width: '100%', background: 'none', border: 'none', borderBottom: '1px solid #1E3A5F', padding: '18px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', color: '#FFFFFF', fontSize: '16px', fontWeight: 600, textAlign: 'left' }}
+                style={{ width: '100%', background: 'none', border: 'none', borderBottom: '1px solid #E2E8F0', padding: '18px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', color: '#FFFFFF', fontSize: '16px', fontWeight: 600, textAlign: 'left' }}
               >
                 Solutions
                 <span style={{ fontSize: '11px', color: '#64748B', transition: 'transform 200ms', transform: mobileSolutionsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
               </button>
               {mobileSolutionsOpen && (
-                <div style={{ background: '#0A1628', borderBottom: '1px solid #1E3A5F' }}>
+                <div style={{ background: '#0A1628', borderBottom: '1px solid #E2E8F0' }}>
                   {solutionLinks.map(link => (
                     <a
                       key={link.href}
@@ -193,7 +193,7 @@ export default function Nav() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  style={{ display: 'block', padding: '18px 24px', color: '#94A3B8', textDecoration: 'none', fontSize: '16px', borderBottom: '1px solid #1E3A5F', fontWeight: 500 }}
+                  style={{ display: 'block', padding: '18px 24px', color: '#94A3B8', textDecoration: 'none', fontSize: '16px', borderBottom: '1px solid #E2E8F0', fontWeight: 500 }}
                 >
                   {link.label}
                 </a>
@@ -212,7 +212,7 @@ export default function Nav() {
               <a
                 href="/login"
                 onClick={() => setMobileOpen(false)}
-                style={{ display: 'block', padding: '14px', textAlign: 'center', background: '#2D8A87', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontSize: '15px', fontWeight: 600 }}
+                style={{ display: 'block', padding: '14px', textAlign: 'center', background: '#009B8D', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontSize: '15px', fontWeight: 600 }}
               >
                 Request Demo
               </a>
@@ -242,7 +242,7 @@ export default function Nav() {
   return (
     <nav style={navBase}>
       {/* Logo */}
-      <a href="/" style={{ textDecoration: 'none', fontWeight: 800, fontSize: '18px', color: '#fff', letterSpacing: '-0.5px', flexShrink: 0 }}>
+      <a href="/" style={{ textDecoration: 'none', fontWeight: 800, fontSize: '18px', color: '#0A1628', letterSpacing: '-0.5px', flexShrink: 0 }}>
         OMNIVERSEL
       </a>
 
@@ -255,21 +255,21 @@ export default function Nav() {
           onMouseLeave={handlePlatformLeave}
           style={{ position: 'relative' }}
         >
-          <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px 12px', color: openMenu === 'platform' ? '#fff' : '#94A3B8', fontSize: '14px', fontWeight: 500 }}>
+          <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px 12px', color: openMenu === 'platform' ? '#009B8D' : '#374151', fontSize: '14px', fontWeight: 500 }}>
             Platform ▾
           </button>
           {openMenu === 'platform' && (
             <div
               onMouseEnter={handlePlatformEnter}
               onMouseLeave={handlePlatformLeave}
-              style={{ position: 'absolute', top: '100%', left: 0, background: '#0A1628', border: '1px solid #1E3A5F', borderRadius: '12px', padding: '16px', minWidth: '220px', boxShadow: '0 20px 60px rgba(0,0,0,0.5)', zIndex: 60 }}
+              style={{ position: 'absolute', top: '100%', left: 0, background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px', minWidth: '220px', boxShadow: '0 8px 32px rgba(0,0,0,0.10)', zIndex: 60 }}
             >
               {platformLinks.map(link => (
                 <a
                   key={link.href}
                   href={link.href}
-                  style={{ display: 'flex', alignItems: 'center', padding: '8px 12px', color: '#94A3B8', textDecoration: 'none', fontSize: '14px', borderRadius: '6px' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#0F2240'; (e.currentTarget as HTMLElement).style.color = '#fff' }}
+                  style={{ display: 'flex', alignItems: 'center', padding: '8px 12px', color: '#374151', textDecoration: 'none', fontSize: '14px', borderRadius: '6px' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#F0FDF9'; (e.currentTarget as HTMLElement).style.color = '#009B8D' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = '#94A3B8' }}
                 >
                   {link.label}
@@ -286,14 +286,14 @@ export default function Nav() {
           onMouseLeave={handleSolutionsLeave}
           style={{ position: 'relative' }}
         >
-          <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px 12px', color: openMenu === 'solutions' ? '#fff' : '#94A3B8', fontSize: '14px', fontWeight: 500 }}>
+          <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px 12px', color: openMenu === 'solutions' ? '#009B8D' : '#374151', fontSize: '14px', fontWeight: 500 }}>
             Solutions ▾
           </button>
           {openMenu === 'solutions' && (
             <div
               onMouseEnter={handleSolutionsEnter}
               onMouseLeave={handleSolutionsLeave}
-              style={{ position: 'absolute', top: '100%', left: 0, background: '#0A1628', border: '1px solid #1E3A5F', borderRadius: '12px', padding: '16px', minWidth: '480px', boxShadow: '0 20px 60px rgba(0,0,0,0.5)', zIndex: 60, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}
+              style={{ position: 'absolute', top: '100%', left: 0, background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px', minWidth: '480px', boxShadow: '0 8px 32px rgba(0,0,0,0.10)', zIndex: 60, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}
             >
               <div>
                 <div style={{ fontSize: '11px', color: '#64748B', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '8px', padding: '0 12px' }}>By Sector</div>
@@ -301,8 +301,8 @@ export default function Nav() {
                   <a
                     key={link.href}
                     href={link.href}
-                    style={{ display: 'block', padding: '8px 12px', color: '#94A3B8', textDecoration: 'none', fontSize: '14px', borderRadius: '6px' }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#0F2240'; (e.currentTarget as HTMLElement).style.color = '#fff' }}
+                    style={{ display: 'block', padding: '8px 12px', color: '#374151', textDecoration: 'none', fontSize: '14px', borderRadius: '6px' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#F0FDF9'; (e.currentTarget as HTMLElement).style.color = '#009B8D' }}
                     onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = '#94A3B8' }}
                   >
                     {link.label}
@@ -315,8 +315,8 @@ export default function Nav() {
                   <a
                     key={link.href}
                     href={link.href}
-                    style={{ display: 'block', padding: '8px 12px', color: '#94A3B8', textDecoration: 'none', fontSize: '14px', borderRadius: '6px' }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#0F2240'; (e.currentTarget as HTMLElement).style.color = '#fff' }}
+                    style={{ display: 'block', padding: '8px 12px', color: '#374151', textDecoration: 'none', fontSize: '14px', borderRadius: '6px' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#F0FDF9'; (e.currentTarget as HTMLElement).style.color = '#009B8D' }}
                     onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = '#94A3B8' }}
                   >
                     {link.label}
@@ -336,8 +336,8 @@ export default function Nav() {
           <a
             key={link.href}
             href={link.href}
-            style={{ padding: '8px 12px', color: '#94A3B8', textDecoration: 'none', fontSize: '14px', fontWeight: 500 }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#fff'}
+            style={{ padding: '8px 12px', color: '#374151', textDecoration: 'none', fontSize: '14px', fontWeight: 500 }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#009B8D'}
             onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#94A3B8'}
           >
             {link.label}
@@ -349,15 +349,15 @@ export default function Nav() {
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
         <a
           href="/login"
-          style={{ padding: '7px 16px', border: '1px solid #1E3A5F', borderRadius: '999px', color: '#94A3B8', textDecoration: 'none', fontSize: '13px', fontWeight: 500 }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#2D8A87'; (e.currentTarget as HTMLElement).style.color = '#fff' }}
+          style={{ padding: '7px 16px', border: '1px solid #E2E8F0', borderRadius: '999px', color: '#374151', textDecoration: 'none', fontSize: '13px', fontWeight: 500 }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#2D8A87'; (e.currentTarget as HTMLElement).style.color = '#009B8D' }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = '#1E3A5F'; (e.currentTarget as HTMLElement).style.color = '#94A3B8' }}
         >
           Sign In
         </a>
         <a
           href="/login"
-          style={{ padding: '7px 16px', background: '#2D8A87', borderRadius: '999px', color: '#fff', textDecoration: 'none', fontSize: '13px', fontWeight: 600 }}
+          style={{ padding: '7px 16px', background: '#009B8D', borderRadius: '999px', color: '#fff', textDecoration: 'none', fontSize: '13px', fontWeight: 600 }}
           onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#3BA8A5'}
           onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = '#2D8A87'}
         >
