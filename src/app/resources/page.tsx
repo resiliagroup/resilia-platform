@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 
-const C = { navy950: '#F8FAFC', navy900: '#F8FAFC', teal: '#2D8A87', amber: '#F59E0B', white: '#FFFFFF', muted: '#94A3B8', dim: '#64748B', border: '#E2E8F0' }
+const C = { navy950: '#F8FAFC', navy900: '#F8FAFC', teal: '#2D8A87', amber: '#F59E0B', white: '#0A1628', muted: '#64748B', dim: '#374151', border: '#E2E8F0' }
 const F = "'Plus Jakarta Sans', sans-serif"
 
 const CATEGORIES = [
@@ -105,7 +105,7 @@ export default function ResourcesPage() {
               placeholder="your@email.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              style={{ flex: 1, background: 'rgba(255,255,255,0.06)', border: `1px solid ${C.border}`, borderRight: 'none', borderRadius: '9999px 0 0 9999px', padding: '14px 20px', fontSize: 14, color: C.white, outline: 'none', fontFamily: F }}
+              style={{ flex: 1, background: '#FFFFFF', border: `1px solid ${C.border}`, borderRight: 'none', borderRadius: '9999px 0 0 9999px', padding: '14px 20px', fontSize: 14, color: C.white, outline: 'none', fontFamily: F }}
             />
             <button
               onClick={() => { if (email) setSubbed(true) }}

@@ -149,7 +149,7 @@ function UriBar({ uri }: { uri: number }) {
   const c = uri >= 40 ? '#EF4444' : uri >= 30 ? '#F97316' : uri >= 25 ? '#EAB308' : '#22C55E'
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
-      <div style={{ flex: 1, height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
+      <div style={{ flex: 1, height: 5, background: 'rgba(0,0,0,0.06)', borderRadius: 3, overflow: 'hidden' }}>
         <div style={{ width: `${pct}%`, height: '100%', background: c, borderRadius: 3 }} />
       </div>
       <span style={{ fontSize: 13, fontWeight: 700, color: c, minWidth: 34, textAlign: 'right', fontFamily: 'var(--font-mono)' }}>{uri}</span>
@@ -210,7 +210,7 @@ export default function IsoBrifingV3() {
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: '#0D1B2E',
+              backgroundColor: '#FFFFFF',
               borderColor: 'rgba(255,255,255,0.1)',
               borderWidth: 1,
               titleColor: '#fff',
@@ -245,7 +245,7 @@ export default function IsoBrifingV3() {
           plugins: {
             legend: { labels: { color: 'rgba(255,255,255,0.5)', font: baseFont, boxWidth: 12, boxHeight: 12 } },
             tooltip: {
-              backgroundColor: '#0D1B2E',
+              backgroundColor: '#FFFFFF',
               borderColor: 'rgba(255,255,255,0.1)',
               borderWidth: 1,
               titleColor: '#fff',
@@ -278,20 +278,20 @@ export default function IsoBrifingV3() {
   }, [])
 
   const glass = {
-    background: 'rgba(255,255,255,0.04)',
+    background: 'rgba(0,0,0,0.03)',
     backdropFilter: 'blur(12px)',
     WebkitBackdropFilter: 'blur(12px)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid #E2E8F0',
     borderRadius: 16,
   } as const
 
   return (
     <div className={`${outfit.className} ${dmMono.variable}`}
-      style={{ background: '#0D1B2E', minHeight: '100vh', color: '#fff' }}>
+      style={{ background: '#F8FAFC', minHeight: '100vh', color: '#0A1628' }}>
 
       <style>{`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { background: #0D1B2E; }
+        html, body { background: #F8FAFC; }
         .v3-wrap  { max-width: 1100px; margin: 0 auto; padding: 0 28px 96px; }
         .v3-g4    { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
         .v3-g2    { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -318,8 +318,8 @@ export default function IsoBrifingV3() {
 
       {/* ══ 1. HERO + KPI ══════════════════════════════════════ */}
       <div style={{
-        background: 'linear-gradient(150deg, #0B2A28 0%, #0D1B2E 45%, #0F1540 100%)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        background: 'linear-gradient(150deg, #F0FDF9 0%, #F8FAFC 45%, #EEF2FF 100%)',
+        borderBottom: '1px solid #E2E8F0',
         padding: '72px 28px 0',
         position: 'relative', overflow: 'hidden',
       }}>
@@ -331,7 +331,7 @@ export default function IsoBrifingV3() {
           {/* top bar */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 48 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(45,138,135,0.15)', border: '1px solid rgba(45,138,135,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Factory size={18} color="#2D8A87" /></div>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(45,138,135,0.08)', border: '1px solid rgba(45,138,135,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Factory size={18} color="#2D8A87" /></div>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#2D8A87', letterSpacing: '.14em', textTransform: 'uppercase' }}>OMNIVERSEL × İSTANBUL SANAYİ ODASI</div>
                 <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>Sanayi Tesisleri Risk Brifing · Mart 2026</div>
@@ -377,7 +377,7 @@ export default function IsoBrifingV3() {
               { icon: <BarChart3   size={14} color="#2D8A87"  />, lbl: 'Ortalama URI (Gerçek)', val: formStat.ortalama_uri, sub: 'Form bazlı · canlı',                               bc: '#2D8A87' },
               { icon: <Clock       size={14} color="#F97316"  />, lbl: 'Kalan Tesis',           val: (22846 - formStat.toplam).toLocaleString('tr'), sub: 'Henüz form doldurmadı',   bc: '#F97316' },
             ].map(c => (
-              <div key={c.lbl} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${c.bc}33`, borderBottom: `3px solid ${c.bc}`, borderRadius: 14, padding: '16px 18px' }}>
+              <div key={c.lbl} style={{ background: 'rgba(0,0,0,0.02)', border: `1px solid ${c.bc}33`, borderBottom: `3px solid ${c.bc}`, borderRadius: 14, padding: '16px 18px' }}>
                 <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>{c.icon}<span>{c.lbl}</span></div>
                 <div style={{ fontSize: 'clamp(18px,2vw,26px)', fontWeight: 800, color: c.bc, fontFamily: 'var(--font-mono)', marginBottom: 5 }}>{c.val}</div>
                 <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{c.sub}</div>
@@ -401,12 +401,12 @@ export default function IsoBrifingV3() {
                     <span style={{ fontSize: 12, fontWeight: 700, color: d.color, letterSpacing: '.08em' }}>{d.label}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                    <span style={{ fontSize: 22, fontWeight: 800, color: '#fff', fontFamily: 'var(--font-mono)' }}>{d.count.toLocaleString('tr-TR')}</span>
+                    <span style={{ fontSize: 22, fontWeight: 800, color: '#0A1628', fontFamily: 'var(--font-mono)' }}>{d.count.toLocaleString('tr-TR')}</span>
                     <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>tesis</span>
                     <span style={{ fontSize: 13, fontWeight: 700, color: d.color, fontFamily: 'var(--font-mono)' }}>%{d.pct}</span>
                   </div>
                 </div>
-                <div style={{ height: 8, background: 'rgba(255,255,255,0.05)', borderRadius: 4, overflow: 'hidden' }}>
+                <div style={{ height: 8, background: 'rgba(0,0,0,0.05)', borderRadius: 4, overflow: 'hidden' }}>
                   <div style={{ width: `${d.pct}%`, minWidth: d.pct < 2 ? 14 : 0, height: '100%', background: d.color, borderRadius: 4 }} />
                 </div>
               </div>
@@ -457,7 +457,7 @@ export default function IsoBrifingV3() {
         {/* ══ 4. SEKTÖR TABLOSU ══════════════════════════════════ */}
         <div className="v3-label">Sektörel Analiz — Risk Sıralaması</div>
         <div style={{ ...glass, padding: 0, overflow: 'hidden' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '36px 1fr auto auto auto', gap: '0 16px', padding: '10px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)', fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.25)', letterSpacing: '.12em', textTransform: 'uppercase' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '36px 1fr auto auto auto', gap: '0 16px', padding: '10px 20px', borderBottom: '1px solid #E2E8F0', fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.25)', letterSpacing: '.12em', textTransform: 'uppercase' }}>
             <span>#</span><span>Sektör</span><span style={{ justifySelf: 'end' }}>URI</span><span style={{ justifySelf: 'end' }}>Tesis</span><span style={{ justifySelf: 'end' }}>Risk</span>
           </div>
           {SEKTORLER.map((s, i) => (
@@ -501,7 +501,7 @@ export default function IsoBrifingV3() {
                   <span style={{ fontSize: 12, color: s.color, fontWeight: 600 }}>{s.sinif}</span>
                   <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: 'var(--font-mono)' }}>{s.tesis} · %{s.pct}</span>
                 </div>
-                <div style={{ height: 6, background: 'rgba(255,255,255,0.05)', borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{ height: 6, background: 'rgba(0,0,0,0.05)', borderRadius: 3, overflow: 'hidden' }}>
                   <div style={{ width: `${s.pct}%`, height: '100%', background: s.color, borderRadius: 3 }} />
                 </div>
               </div>
@@ -522,7 +522,7 @@ export default function IsoBrifingV3() {
                   <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>{g.grup}</span>
                   <span style={{ fontSize: 12, color: g.color, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>%{g.pct}</span>
                 </div>
-                <div style={{ height: 6, background: 'rgba(255,255,255,0.05)', borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{ height: 6, background: 'rgba(0,0,0,0.05)', borderRadius: 3, overflow: 'hidden' }}>
                   <div style={{ width: `${g.pct}%`, height: '100%', background: g.color, borderRadius: 3 }} />
                 </div>
               </div>
@@ -554,8 +554,8 @@ export default function IsoBrifingV3() {
           <div>
             <div style={{ fontSize: 11, fontWeight: 800, color: '#EF4444', letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 8 }}>Kritik Bulgu — Kimya Sektörü</div>
             <p style={{ fontSize: 14, color: 'rgba(255,200,200,0.8)', lineHeight: 1.75 }}>
-              835 kimya tesisinin <strong style={{ color: '#fff' }}>95&apos;i (%11.4)</strong> URI eşiğinin üzerinde.{' '}
-              Bu tesislerin <strong style={{ color: '#fff' }}>%78&apos;inin aktif BCP planı bulunmuyor.</strong>{' '}
+              835 kimya tesisinin <strong style={{ color: '#0A1628' }}>95&apos;i (%11.4)</strong> URI eşiğinin üzerinde.{' '}
+              Bu tesislerin <strong style={{ color: '#0A1628' }}>%78&apos;inin aktif BCP planı bulunmuyor.</strong>{' '}
               NATECH senaryosunda deprem + kimyasal yayılım + yangın üst üste geldiğinde etkilenen nüfus tahmini: <strong style={{ color: '#EF4444' }}>240.000+</strong>
             </p>
           </div>
@@ -612,7 +612,7 @@ export default function IsoBrifingV3() {
               <div style={{ display: 'inline-block', fontSize: 9, fontWeight: 800, color: k.bc, background: k.bc + '18', border: `1px solid ${k.bc}40`, borderRadius: 20, padding: '2px 10px', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 14 }}>
                 {k.num} / 04
               </div>
-              <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 12, lineHeight: 1.25, paddingRight: 24 }}>{k.baslik}</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: '#0A1628', marginBottom: 12, lineHeight: 1.25, paddingRight: 24 }}>{k.baslik}</div>
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.75 }}>{k.desc}</p>
 
               <div style={{ marginTop: 18, height: 1, background: `linear-gradient(90deg, ${k.bc}40 0%, transparent 100%)` }} />
@@ -732,7 +732,7 @@ export default function IsoBrifingV3() {
                 })}
               </tbody>
               <tfoot>
-                <tr style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                <tr style={{ borderTop: '1px solid #E2E8F0' }}>
                   <td style={{ padding: '10px 0', fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>5Y Toplam</td>
                   <td colSpan={3} style={{ padding: '10px 0', textAlign: 'right', fontSize: 14, fontWeight: 900, color: '#2D8A87', fontFamily: 'var(--font-mono)' }}>₺{PROJ_TOPLAM.reduce((a, b) => a + b, 0)}M</td>
                 </tr>
@@ -754,7 +754,7 @@ export default function IsoBrifingV3() {
                 <div style={{ width: 30, height: 30, borderRadius: 8, background: c + '18', border: `1px solid ${c}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: c, flexShrink: 0, fontFamily: 'var(--font-mono)' }}>{icon}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{v.lbl}</div>
-                  <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{ height: 4, background: 'rgba(0,0,0,0.06)', borderRadius: 2, overflow: 'hidden' }}>
                     <div style={{ width: `${v.pct}%`, minWidth: v.pct > 0 ? 4 : 0, height: '100%', background: c, borderRadius: 2 }} />
                   </div>
                 </div>
@@ -781,7 +781,7 @@ export default function IsoBrifingV3() {
               background: f.aktif ? 'rgba(45,138,135,0.06)' : 'rgba(255,255,255,0.03)',
             }}>
               {f.aktif && (
-                <div style={{ position: 'absolute', top: -1, right: 16, background: '#2D8A87', color: '#fff', fontSize: 8, fontWeight: 900, letterSpacing: '.12em', padding: '3px 12px', borderRadius: '0 0 8px 8px' }}>
+                <div style={{ position: 'absolute', top: -1, right: 16, background: '#2D8A87', color: '#0A1628', fontSize: 8, fontWeight: 900, letterSpacing: '.12em', padding: '3px 12px', borderRadius: '0 0 8px 8px' }}>
                   BAŞLANGIÇ NOKTASI
                 </div>
               )}
@@ -818,7 +818,7 @@ export default function IsoBrifingV3() {
             22.846 tesisin tamamı için otomatik URI hesaplama ve risk haritası — 90 gün içinde, <strong style={{ color: '#2D8A87' }}>ücretsiz</strong>.
           </p>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="mailto:info@omniversel.com" style={{ textDecoration: 'none', background: '#2D8A87', color: '#fff', fontWeight: 700, fontSize: 14, padding: '14px 36px', borderRadius: 10, display: 'inline-block' }}>
+            <a href="mailto:info@omniversel.com" style={{ textDecoration: 'none', background: '#2D8A87', color: '#0A1628', fontWeight: 700, fontSize: 14, padding: '14px 36px', borderRadius: 10, display: 'inline-block' }}>
               İletişime Geç →
             </a>
             <a href="/hub" style={{ textDecoration: 'none', background: 'transparent', color: '#2D8A87', fontWeight: 700, fontSize: 14, padding: '14px 36px', borderRadius: 10, border: '1px solid #2D8A87', display: 'inline-block' }}>

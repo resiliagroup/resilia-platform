@@ -97,7 +97,7 @@ function SectorCard({ sector }: { sector: typeof SECTORS[number] }) {
         <img src={sector.icon} alt={sector.title} style={{ width: 44, height: 44, objectFit: 'contain' }}/>
       </div>
 
-      <h3 style={{ fontFamily:"'DM Sans',sans-serif", fontSize: 17, fontWeight: 700, color: N, margin: 0, lineHeight: 1.3 }}>
+      <h3 style={{ fontFamily:"'DM Sans',sans-serif", fontSize: 17, fontWeight: 700, color: '#0A1628', margin: 0, lineHeight: 1.3 }}>
         {sector.title}
       </h3>
 
@@ -129,11 +129,11 @@ export default function SolutionsPage() {
       `}</style>
 
       <nav style={{ position:'sticky', top:0, zIndex:100, background:N,
-        borderBottom:'1px solid rgba(255,255,255,0.07)', padding:'0 40px',
+        borderBottom:'1px solid #E2E8F0', padding:'0 40px',
         height:64, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <OmniverselLogo />
         <Link href="/" style={{ fontFamily:"'DM Sans',sans-serif", fontSize:14, fontWeight:600,
-          color:'#FFFFFF', textDecoration:'none', display:'flex', alignItems:'center', gap:6,
+          color:'#374151', textDecoration:'none', display:'flex', alignItems:'center', gap:6,
           opacity:0.85, transition:'opacity 0.15s' }}
           onMouseEnter={e => (e.currentTarget.style.opacity='1')}
           onMouseLeave={e => (e.currentTarget.style.opacity='0.85')}>
@@ -147,11 +147,11 @@ export default function SolutionsPage() {
           SECTOR SOLUTIONS
         </span>
         <h1 style={{ fontFamily:"'DM Sans',sans-serif", fontSize:'clamp(28px,5vw,48px)',
-          fontWeight:800, color:'#FFFFFF', lineHeight:1.15, marginBottom:20,
+          fontWeight:800, color:'#0A1628', lineHeight:1.15, marginBottom:20,
           maxWidth:700, margin:'0 auto 20px' }}>
           Sector Solutions
         </h1>
-        <p style={{ fontFamily:"'DM Sans',sans-serif", fontSize:17, color:'rgba(255,255,255,0.65)',
+        <p style={{ fontFamily:"'DM Sans',sans-serif", fontSize:17, color:'#64748B',
           maxWidth:580, margin:'0 auto', lineHeight:1.7 }}>
           Every sector has a distinct risk profile, regulatory framework and operational vulnerability structure.
           Omniversel calibrates to each.

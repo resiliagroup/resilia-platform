@@ -95,7 +95,7 @@ export default function HomePage() {
         .cta-pill{transition:background .15s,transform .15s}
         .cta-pill:hover{background:${C.tealL}!important;transform:scale(1.02)}
         .ghost-pill{transition:border-color .15s}
-        .ghost-pill:hover{border-color:${C.teal}!important;color:#fff!important}
+        .ghost-pill:hover{border-color:${C.teal}!important;color:${C.teal}!important}
         @media(max-width:900px){
           .hero-grid{grid-template-columns:1fr!important}
           .hero-right{display:none!important}
@@ -255,7 +255,7 @@ export default function HomePage() {
                     opacity: m.soon && activeMod !== i ? 0.6 : 1,
                   }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 3 }}>
-                    <span style={{ fontSize: 15, fontWeight: 600, color: activeMod === i ? '#fff' : C.muted, fontFamily: FONT }}>
+                    <span style={{ fontSize: 15, fontWeight: 600, color: activeMod === i ? '#0A1628' : C.muted, fontFamily: FONT }}>
                       {m.code}
                     </span>
                     {m.soon && (

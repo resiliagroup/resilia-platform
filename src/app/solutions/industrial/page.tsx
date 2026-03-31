@@ -5,10 +5,10 @@ import Footer from '@/components/Footer'
 export const metadata = { title: 'Industrial Solutions', description: 'Process safety and operational resilience for industrial facilities — NATECH, SEVESO III, ISO 45001.' }
 
 const C = {
-  navy950: '#060D1A', navy900: '#0A1628', navy800: '#FFFFFF',
+  navy950: '#F8FAFC', navy900: '#FFFFFF', navy800: '#F1F5F9',
   teal: '#2D8A87',
-  white: '#FFFFFF', muted: '#374151', dim: '#374151',
-  border: '#1E3A5F',
+  white: '#0A1628', muted: '#374151', dim: '#374151',
+  border: '#E2E8F0',
 }
 const FONT = "'Plus Jakarta Sans', sans-serif"
 

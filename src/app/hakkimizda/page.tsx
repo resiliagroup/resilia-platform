@@ -128,7 +128,7 @@ export default function HakkimizdaPage() {
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
         html{scroll-behavior:smooth}
-        body{background:${BG};color:${N};font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+        body{background:${BG};color:#0A1628;font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
         a{text-decoration:none;color:inherit}
         @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
       `}</style>
@@ -199,7 +199,7 @@ export default function HakkimizdaPage() {
                 <span style={{ fontSize: 12, fontWeight: 700, color: T, letterSpacing: 2,
                                 textTransform: 'uppercase' }}>Misyon</span>
               </div>
-              <p style={{ color: N, fontSize: 16, lineHeight: 1.85, fontWeight: 400 }}>
+              <p style={{ color: '#0A1628', fontSize: 16, lineHeight: 1.85, fontWeight: 400 }}>
                 Türkiye&apos;nin kentsel ve kurumsal dirençlilik kapasitesini, uluslararası standartlarla
                 uyumlu bilimsel yöntemler aracılığıyla <strong style={{ fontWeight: 700 }}>ölçmek,
                 geliştirmek ve sürdürülebilir kılmak.</strong>
@@ -220,7 +220,7 @@ export default function HakkimizdaPage() {
                 <span style={{ fontSize: 12, fontWeight: 700, color: '#C8A84A', letterSpacing: 2,
                                 textTransform: 'uppercase' }}>Vizyon</span>
               </div>
-              <p style={{ color: N, fontSize: 16, lineHeight: 1.85, fontWeight: 400 }}>
+              <p style={{ color: '#0A1628', fontSize: 16, lineHeight: 1.85, fontWeight: 400 }}>
                 2030 yılına kadar Sendai Çerçevesi hedefleri doğrultusunda Türkiye&apos;nin 81 ilinde
                 kurumsal risk atlasını tamamlamak ve <strong style={{ fontWeight: 700 }}>bölgesel ölçekte
                 referans platform olmak.</strong>
@@ -236,14 +236,14 @@ export default function HakkimizdaPage() {
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <p style={{ color: T, fontSize: 12, fontWeight: 700, letterSpacing: 3,
                         textTransform: 'uppercase', marginBottom: 14 }}>Akademik Ar-Ge İş Birliği</p>
-            <h2 style={{ fontSize: 'clamp(22px, 3vw, 36px)', fontWeight: 700, color: N,
+            <h2 style={{ fontSize: 'clamp(22px, 3vw, 36px)', fontWeight: 700, color: '#0A1628',
                           lineHeight: 1.2, marginBottom: 24, maxWidth: 800, margin: '0 auto 24px' }}>
               İTÜ Afet Yönetim Araştırma ve Uygulama Merkezi (AYM) ile Ar-Ge İş Birliği
             </h2>
             <p style={{ color: MG, fontSize: 16, lineHeight: 1.85, maxWidth: 780, margin: '0 auto 16px' }}>
               Omniversel, İstanbul Teknik Üniversitesi Afet Yönetim Araştırma ve Uygulama Merkezi
               (ITU AYM) ile stratejik Ar-Ge iş birliği çerçevesinde faaliyet göstermektedir.{' '}
-              <strong style={{ color: N }}>omniRISK metodolojisinin bilimsel temeli</strong>, ITU AYM
+              <strong style={{ color: '#0A1628' }}>omniRISK metodolojisinin bilimsel temeli</strong>, ITU AYM
               bünyesinde yürütülen akademik araştırmalar ve saha çalışmaları ile geliştirilmiş ve
               validasyon süreçleri tamamlanmıştır.
             </p>
@@ -272,7 +272,7 @@ export default function HakkimizdaPage() {
                                            borderTop: `4px solid ${T}`, borderRadius: 16,
                                            padding: '32px 28px' }}>
                 <div style={{ marginBottom: 14 }}><img src={k.icon} alt={k.title} width={48} height={48} style={{ objectFit: 'contain' }} /></div>
-                <h3 style={{ color: N, fontWeight: 700, fontSize: 17, marginBottom: 12 }}>{k.title}</h3>
+                <h3 style={{ color: '#0A1628', fontWeight: 700, fontSize: 17, marginBottom: 12 }}>{k.title}</h3>
                 <p style={{ color: MG, fontSize: 14, lineHeight: 1.75 }}>{k.desc}</p>
               </div>
             ))}
@@ -286,7 +286,7 @@ export default function HakkimizdaPage() {
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <p style={{ color: T, fontSize: 12, fontWeight: 700, letterSpacing: 3,
                         textTransform: 'uppercase', marginBottom: 12 }}>Kurumsal Yapı</p>
-            <h2 style={{ fontSize: 'clamp(26px, 4vw, 40px)', fontWeight: 700, color: N,
+            <h2 style={{ fontSize: 'clamp(26px, 4vw, 40px)', fontWeight: 700, color: '#0A1628',
                           lineHeight: 1.15, marginBottom: 16 }}>
               Stratejik Ortaklık Modeli
             </h2>
@@ -327,10 +327,10 @@ export default function HakkimizdaPage() {
               <div style={{ width: 72, height: 72, borderRadius: 16, background: `${T}10`,
                              border: `2px solid ${T}30`, display: 'flex', alignItems: 'center',
                              justifyContent: 'center', margin: '0 auto 20px' }}>
-                <span style={{ fontSize: 24, fontWeight: 900, color: N, fontFamily: 'DM Sans,sans-serif',
+                <span style={{ fontSize: 24, fontWeight: 900, color: '#0A1628', fontFamily: 'DM Sans,sans-serif',
                                 letterSpacing: -1 }}>İTÜ</span>
               </div>
-              <h3 style={{ color: N, fontWeight: 800, fontSize: 22, marginBottom: 8 }}>ITU AYM</h3>
+              <h3 style={{ color: '#0A1628', fontWeight: 800, fontSize: 22, marginBottom: 8 }}>ITU AYM</h3>
               <p style={{ color: T, fontSize: 13, fontWeight: 600, marginBottom: 16 }}>
                 Afet Yönetim Araştırma ve Uygulama Merkezi
               </p>
@@ -352,7 +352,7 @@ export default function HakkimizdaPage() {
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <p style={{ color: T, fontSize: 12, fontWeight: 700, letterSpacing: 3,
                         textTransform: 'uppercase', marginBottom: 12 }}>Uyum & Çerçeveler</p>
-            <h2 style={{ fontSize: 'clamp(24px, 3.5vw, 38px)', fontWeight: 700, color: N,
+            <h2 style={{ fontSize: 'clamp(24px, 3.5vw, 38px)', fontWeight: 700, color: '#0A1628',
                           lineHeight: 1.2, marginBottom: 16 }}>
               Uluslararası Standart ve Metodoloji Uyumu
             </h2>
@@ -376,7 +376,7 @@ export default function HakkimizdaPage() {
                   </svg>
                 </div>
                 <div>
-                  <div style={{ color: N, fontWeight: 700, fontSize: 15, marginBottom: 5 }}>{s.name}</div>
+                  <div style={{ color: '#0A1628', fontWeight: 700, fontSize: 15, marginBottom: 5 }}>{s.name}</div>
                   <p style={{ color: MG, fontSize: 13, lineHeight: 1.5 }}>{s.sub}</p>
                 </div>
               </div>
@@ -453,8 +453,8 @@ export default function HakkimizdaPage() {
             ].map(item => (
               <Link key={item.l} href={item.h}
                     style={{ color: 'rgba(10,22,40,0.45)', fontSize: 14, transition: 'color .18s' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
+                    onMouseEnter={e => (e.currentTarget.style.color = '#0A1628')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(10,22,40,0.45)')}>
                 {item.l}
               </Link>
             ))}
