@@ -287,6 +287,39 @@ function SoruYonetimiSekme() {
         </div>
       </div>
 
+      {/* Kategori Filtresi */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', letterSpacing: '0.06em', marginRight: 4 }}>KATEGORİ:</span>
+        {([
+          { id: 'hepsi',   label: 'Tümü',    renk: '#0A1628', ikon: '⬡' },
+          { id: 'insan',   label: 'İnsan',   renk: '#3B82F6', ikon: '👤' },
+          { id: 'mekan',   label: 'Mekan',   renk: '#F97316', ikon: '🏭' },
+          { id: 'proses',  label: 'Proses',  renk: '#10B981', ikon: '⚙️' },
+          { id: 'cevre',   label: 'Çevre',   renk: '#06B6D4', ikon: '🌿' },
+          { id: 'ekonomi', label: 'Ekonomi', renk: '#8B5CF6', ikon: '📊' },
+        ] as const).map(k => {
+          const aktif = kategoriFiltre === k.id
+          const sayi = k.id === 'hepsi'
+            ? SORULAR_SANAYI.length
+            : SORULAR_SANAYI.filter(s => (s as any).kategori === k.id).length
+          return (
+            <button key={k.id} onClick={() => setKategoriFiltre(k.id)}
+              style={{
+                padding: '5px 14px', borderRadius: 20,
+                border: `1.5px solid ${aktif ? k.renk : '#E2E8F0'}`,
+                background: aktif ? k.renk : 'white',
+                color: aktif ? 'white' : '#64748B',
+                fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 5,
+              }}>
+              <span>{k.ikon}</span>
+              <span>{k.label}</span>
+              <span style={{ fontSize: 10, opacity: 0.8 }}>({sayi})</span>
+            </button>
+          )
+        })}
+      </div>
+
       {/* Bölümler */}
       {BOLUMLER.map(({ baslik, bolum, renk, bg }) => {
         const sorular = sorularFor(bolum)
