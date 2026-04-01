@@ -8,6 +8,23 @@ import { BarChart3, Building2, LayoutGrid, FileText, Siren, TableProperties, Zap
 import OmniverselLogo from '@/components/OmniverselLogo'
 import { mevcutKullanici } from '@/lib/auth'
 
+function LockedLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
+  return (
+    <div
+      onClick={() => window.location.href = '/pricing'}
+      style={{ cursor: 'pointer' }}
+      className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 rounded-lg transition-all text-sm opacity-50"
+      title="Pro plana dahildir"
+    >
+      {icon}
+      <span className="text-slate-500 flex-1">{label}</span>
+      <span style={{ fontSize: 10, background: '#1E3A5F', color: '#64748B', padding: '2px 6px', borderRadius: 4, fontWeight: 600 }}>PRO</span>
+    </div>
+  )
+}
+
+
+
 function SidebarInner({ children }: { children: React.ReactNode }) {
   const [tenant, setTenant] = useState('...')
   const [isAdmin, setIsAdmin] = useState(false)
@@ -44,37 +61,16 @@ function SidebarInner({ children }: { children: React.ReactNode }) {
               <span>omniRISK Sanayi</span>
             </Link>
             <p className="px-3 mt-5 mb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Analiz</p>
-            <Link href="/hub/omniimpact" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-              <TrendingDown className="w-4 h-4 text-[#7B9FD4]" />
-              <span>omniIMPACT</span>
-            </Link>
-            <Link href="/hub/omniaudit" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-              <ShieldCheck className="w-4 h-4 text-[#6ABFB8]" />
-              <span>omniAUDIT</span>
-            </Link>
+            <LockedLink href="/hub/omniimpact" icon={<TrendingDown className="w-4 h-4 text-[#7B9FD4]" />} label="omniIMPACT" />
+            <LockedLink href="/hub/omniaudit" icon={<ShieldCheck className="w-4 h-4 text-[#6ABFB8]" />} label="omniAUDIT" />
             <p className="px-3 mt-5 mb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Planlama</p>
-            <Link href="/hub/omniplan" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-              <FileText className="w-4 h-4 text-[#3B82F6]" />
-              <span>omniPLAN</span>
-            </Link>
-            <Link href="/hub/omnivendor" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-              <Building2 className="w-4 h-4 text-[#3B82F6]" />
-              <span>omniVENDOR</span>
-            </Link>
+            <LockedLink href="/hub/omniplan" icon={<FileText className="w-4 h-4 text-[#3B82F6]" />} label="omniPLAN" />
+            <LockedLink href="/hub/omnivendor" icon={<Building2 className="w-4 h-4 text-[#3B82F6]" />} label="omniVENDOR" />
             <p className="px-3 mt-5 mb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Operasyon</p>
-            <Link href="/hub/omnicrisis" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-              <Siren className="w-4 h-4 text-[#8B5CF6]" />
-              <span>omniCRISIS</span>
-            </Link>
-            <Link href="/hub/omnipipe" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-              <Zap className="w-4 h-4 text-[#A78BFA]" />
-              <span>omniPIPE</span>
-            </Link>
+            <LockedLink href="/hub/omnicrisis" icon={<Siren className="w-4 h-4 text-[#8B5CF6]" />} label="omniCRISIS" />
+            <LockedLink href="/hub/omnipipe" icon={<Zap className="w-4 h-4 text-[#A78BFA]" />} label="omniPIPE" />
             <p className="px-3 mt-5 mb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Araştırma</p>
-            <Link href="/hub/omniqra" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
-              <Database className="w-4 h-4 text-[#F97316]" />
-              <span>omniQRA</span>
-            </Link>
+            <LockedLink href="/hub/omniqra" icon={<Database className="w-4 h-4 text-[#F97316]" />} label="omniQRA" />
             <p className="px-3 mt-5 mb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Yönetim</p>
             <Link href="/hub/admin/import" className="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800/40 hover:text-white text-slate-400 rounded-lg transition-all text-sm">
               <Upload className="w-4 h-4 text-slate-400" />
