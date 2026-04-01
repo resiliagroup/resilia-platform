@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { Users, Building2, Settings2, Leaf, TrendingUp, LayoutGrid } from 'lucide-react'
 import { createClient } from '@supabase/supabase-js'
 import { SORULAR_SANAYI } from '@/lib/sorular-sanayi'
 
@@ -291,12 +292,12 @@ function SoruYonetimiSekme() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
         <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', letterSpacing: '0.06em', marginRight: 4 }}>KATEGORİ:</span>
         {([
-          { id: 'hepsi',   label: 'Tümü',    renk: '#0A1628', ikon: '⬡' },
-          { id: 'insan',   label: 'İnsan',   renk: '#3B82F6', ikon: '👤' },
-          { id: 'mekan',   label: 'Mekan',   renk: '#F97316', ikon: '🏭' },
-          { id: 'proses',  label: 'Proses',  renk: '#10B981', ikon: '⚙️' },
-          { id: 'cevre',   label: 'Çevre',   renk: '#06B6D4', ikon: '🌿' },
-          { id: 'ekonomi', label: 'Ekonomi', renk: '#8B5CF6', ikon: '📊' },
+          { id: 'hepsi',   label: 'Tümü',    renk: '#0A1628', Ikon: LayoutGrid },
+          { id: 'insan',   label: 'İnsan',   renk: '#3B82F6', Ikon: Users },
+          { id: 'mekan',   label: 'Mekan',   renk: '#F97316', Ikon: Building2 },
+          { id: 'proses',  label: 'Proses',  renk: '#10B981', Ikon: Settings2 },
+          { id: 'cevre',   label: 'Çevre',   renk: '#06B6D4', Ikon: Leaf },
+          { id: 'ekonomi', label: 'Ekonomi', renk: '#8B5CF6', Ikon: TrendingUp },
         ] as const).map(k => {
           const aktif = kategoriFiltre === k.id
           const sayi = k.id === 'hepsi'
@@ -312,7 +313,7 @@ function SoruYonetimiSekme() {
                 fontSize: 12, fontWeight: 600, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 5,
               }}>
-              <span>{k.ikon}</span>
+              <k.Ikon size={13} />
               <span>{k.label}</span>
               <span style={{ fontSize: 10, opacity: 0.8 }}>({sayi})</span>
             </button>
