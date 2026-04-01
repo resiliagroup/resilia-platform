@@ -177,6 +177,7 @@ function SoruYonetimiSekme() {
   const [mesaj, setMesaj] = useState('')
   const [acikKod, setAcikKod] = useState<string | null>(null)
   const [sinifFiltre, setSinifFiltre] = useState<0 | 1 | 2 | 3>(0) // 0 = hepsi
+  const [kategoriFiltre, setKategoriFiltre] = useState<string>('hepsi')
   const [aramaMetni, setAramaMetni] = useState('')
 
   const setAlan = (kod: string, alan: Partial<SoruAyar>) =>
@@ -228,6 +229,8 @@ function SoruYonetimiSekme() {
     )
     if (sinifFiltre !== 0)
       liste = liste.filter(s => ayarlar[s.kod]?.siniflar?.includes(sinifFiltre as 1 | 2 | 3))
+    if (kategoriFiltre !== 'hepsi')
+      liste = liste.filter(s => (s as any).kategori === kategoriFiltre)
     if (aramaMetni.trim())
       liste = liste.filter(s =>
         s.soru.toLowerCase().includes(aramaMetni.toLowerCase()) ||
