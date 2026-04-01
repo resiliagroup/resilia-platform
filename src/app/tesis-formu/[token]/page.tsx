@@ -16,6 +16,35 @@ const SUPA_KEY    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 const NAVY = '#0A1628'; const TEAL = '#009B8D'; const BORDER = '#E2E8F0'
 
+// ─── Sektör bazlı 2x ağırlık haritası ─────────────────────────────────────────
+type SektorTipi = 'bankacılık' | 'saglik' | 'kimya' | 'imalat' | null
+
+const SEKTOR_2X: Record<string, string[]> = {
+  bankacılık: ['T7','S7','S12','Y8','Y9','Y10','Y11','Y12','Y13'],   // siber, BCM, iş sürekliliği
+  saglik:     ['S3','T1','T2','Y1','Y2','Y3','Y15','Y16','Y17'],      // can güvenliği, acil müdahale
+  kimya:      ['T3','T4','T5','S5','Y5','Y6','Y7'],                   // NATECH, kimyasal, acil eylem
+  imalat:     ['T6','T8','S4','S8','S10','Y18','Y19','Y20','Y21'],    // ekipman, tedarik zinciri
+}
+
+// Sektör kod numarasını çıkar (T6→6, HRO3→3)
+function kodNo(kod: string): number {
+  const m = kod.match(/(\d+)$/)
+  return m ? parseInt(m[1]) : 0
+}
+
+// Tehlike sınıfına göre maks soru sayısı
+const SINIF_LIMIT: Record<string, { 2: number; 3: number }> = {
+  T:   { 2: 6,  3: 3  },
+  S:   { 2: 8,  3: 5  },
+  Y:   { 2: 20, 3: 15 },
+  HRO: { 2: 5,  3: 3  },
+}
+
+function kodPrefix(kod: string): string {
+  const m = kod.match(/^([A-Z]+)/)
+  return m ? m[1] : ''
+}
+
 const TEHLIKE  = SORULAR_SANAYI.filter(s => s.bolum === 'TEHLİKE')
 const KIRILGAN = SORULAR_SANAYI.filter(s => s.bolum === 'KIRILGANLIK')
 const KAPASITE = SORULAR_SANAYI.filter(s => s.bolum === 'KAPASİTE' && s.boyut !== 'HRO')
@@ -32,13 +61,15 @@ const ADIM_ETIKET = [
 ]
 
 // ─── URI hesaplama ────────────────────────────────────────────────────────────
-function hesaplaUri(puanlar: Record<string, number>): number {
+function hesaplaUri(puanlar: Record<string, number>, sektorTipi?: SektorTipi): number {
+  const boost = sektorTipi ? (SEKTOR_2X[sektorTipi] ?? []) : []
   let H = 0, Hw = 0, F = 0, Fw = 0, C = 0, Cw = 0
   SORULAR_SANAYI.forEach(s => {
     const p = puanlar[s.kod] ?? 5
-    if (s.boyut === 'H')                        { H += p * s.agirlik; Hw += s.agirlik }
-    else if (s.boyut === 'F' || s.boyut === 'E') { F += p * s.agirlik; Fw += s.agirlik }
-    else if (s.boyut === 'C')                   { C += p * s.agirlik; Cw += s.agirlik }
+    const ag = s.agirlik * (boost.includes(s.kod) ? 2 : 1)
+    if (s.boyut === 'H')                        { H += p * ag; Hw += ag }
+    else if (s.boyut === 'F' || s.boyut === 'E') { F += p * ag; Fw += ag }
+    else if (s.boyut === 'C')                   { C += p * ag; Cw += ag }
   })
   const hN = Hw ? H / Hw / 10 : 0.5
   const fN = Fw ? F / Fw / 10 : 0.5
@@ -243,6 +274,7 @@ export default function TesisFormuPage() {
   const [cozumler, setCozumler] = useState<any[]>([])
   const [riskUyarilari, setRiskUyarilari] = useState<any[]>([])
   const [tehlikeSinifi, setTehlikeSinifi] = useState<{ sinif: number; label: string; mevzuat: string[] } | null>(null)
+  const [sektorTipi, setSektorTipi] = useState<SektorTipi>(null)
   const [detayliMod, setDetayliMod] = useState(false)
   const [tesisYuklendi, setTesisYuklendi] = useState(false)
   const [facilityId, setFacilityId] = useState<string | null>(null)
@@ -266,7 +298,23 @@ export default function TesisFormuPage() {
             E16: data.building_age != null ? String(data.building_age) : '',
           }))
           setTesisYuklendi(true)
-          setFacilityId((data.facility_id as string) ?? null)
+          const fid = (data.facility_id as string) ?? null
+          setFacilityId(fid)
+          // Sektör tespiti: tesis_profil tablosundan sektor çek
+          if (fid) {
+            fetch(`${SUPA_URL}/rest/v1/tesis_profil?facility_id=eq.${fid}&select=sektor&limit=1`, {
+              headers: { 'apikey': SUPA_KEY },
+            }).then(r => r.json()).then((rows: Record<string, unknown>[]) => {
+              const sektor = rows?.[0]?.sektor as string | undefined
+              if (sektor) {
+                const s = sektor.toLowerCase()
+                if (s.includes('banka') || s.includes('finans') || s.includes('sigorta')) setSektorTipi('bankacılık')
+                else if (s.includes('sağlık') || s.includes('hastane') || s.includes('tıp')) setSektorTipi('saglik')
+                else if (s.includes('kimya') || s.includes('ilaç') || s.includes('petrokimya')) setSektorTipi('kimya')
+                else if (s.includes('imalat') || s.includes('üretim') || s.includes('sanayi') || s.includes('otomotiv')) setSektorTipi('imalat')
+              }
+            }).catch(() => null)
+          }
 
           if (data.nace_kodu && (data.nace_kodu as string).length >= 4) {
             const temiz = (data.nace_kodu as string).replace(/\s/g, '')
@@ -290,7 +338,7 @@ export default function TesisFormuPage() {
       })
   }, [token])
 
-  useEffect(() => { if (adim === 6) setUri(hesaplaUri(puanlar)) }, [adim, puanlar])
+  useEffect(() => { if (adim === 6) setUri(hesaplaUri(puanlar, sektorTipi)) }, [adim, puanlar, sektorTipi])
 
   const setEnv = (kod: string, val: unknown) => setEnvanter(e => ({ ...e, [kod]: val }))
 
@@ -369,7 +417,7 @@ export default function TesisFormuPage() {
       }
 
       // Adım 2: Assessment çalıştır → gerçek URI skoru al
-      let sonUri = hesaplaUri(puanlar)
+      let sonUri = hesaplaUri(puanlar, sektorTipi)
       if (fId) {
         const payload = mapFormToAssessment(fId, puanlar, envanter)
         const assRes = await fetch(`${BACKEND_URL}/assessments/`, {
@@ -826,13 +874,29 @@ function BolumSoru({
   const kritikler = sorular.filter(s => s.kritik)
   const ekler     = sorular.filter(s => !s.kritik)
 
+  // Tehlike sınıfına göre count limit uygula
+  const sinifFiltre = (liste: SoruSanayi[]) => {
+    const sinif = tehlikeSinifi?.sinif
+    if (sinif !== 2 && sinif !== 3) return liste
+    const prefix = kodPrefix(liste[0]?.kod ?? '')
+    const maxN = SINIF_LIMIT[prefix]?.[sinif]
+    if (!maxN) return liste
+    return liste.filter(s => kodNo(s.kod) <= maxN)
+  }
+
   // Tehlike sınıfına göre gösterilecek sorular
   const gosterilenler = (() => {
     if (tehlikeSinifi?.sinif === 1) return sorular               // Çok Tehlikeli: hepsi
-    if (tehlikeSinifi?.sinif === 3) return kritikler             // Az Tehlikeli: sadece kritik
-    return detayliMod ? sorular : kritikler                      // Tehlikeli + default: adaptif
+    if (tehlikeSinifi?.sinif === 3) return sinifFiltre(sorular)  // Az Tehlikeli: count limit
+    if (tehlikeSinifi?.sinif === 2) {                            // Tehlikeli: count limit + adaptif
+      const capped = sinifFiltre(sorular)
+      return detayliMod ? capped : capped.filter(s => s.kritik)
+    }
+    return detayliMod ? sorular : kritikler                      // default: adaptif
   })()
-  const detayGoster = tehlikeSinifi?.sinif !== 1 && tehlikeSinifi?.sinif !== 3
+  const cappedSorular = (tehlikeSinifi?.sinif === 2 || tehlikeSinifi?.sinif === 3) ? sinifFiltre(sorular) : sorular
+  const cappedEkler = cappedSorular.filter(s => !s.kritik)
+  const detayGoster = tehlikeSinifi?.sinif !== 1 && tehlikeSinifi?.sinif !== 3 && cappedEkler.length > 0
 
   const yanitlanan = gosterilenler.filter(s => puanlar[s.kod] !== undefined).length
   const toplamGos  = gosterilenler.length
@@ -844,7 +908,7 @@ function BolumSoru({
     if (tehlikeSinifi?.sinif === 3) return `${kritikler.length} kritik soru · ~${Math.ceil(kritikler.length * 0.75)} dakika`
     if (tehlikeSinifi?.sinif === 2) return detayliMod
       ? `${toplamGos} soru · ~${tahminiDak} dakika`
-      : `${kritikler.length} kritik soru · ~${Math.ceil(kritikler.length * 0.75)} dakika (+ ${ekler.length} opsiyonel)`
+      : `${kritikler.length} kritik soru · ~${Math.ceil(kritikler.length * 0.75)} dakika (+ ${cappedEkler.length} opsiyonel)`
     return detayliMod ? `${toplamGos} soru · ~${tahminiDak} dakika` : `${kritikler.length} kritik soru · ~${Math.ceil(kritikler.length * 0.75)} dakika`
   })()
 
@@ -870,10 +934,10 @@ function BolumSoru({
         <SoruKarti key={s.kod} soru={s} puan={puanlar[s.kod] ?? 0} onDegis={v => setPuan(s.kod, v)} />
       ))}
 
-      {detayGoster && !detayliMod && ekler.length > 0 && (
+      {detayGoster && !detayliMod && cappedEkler.length > 0 && (
         <div style={{ margin: '16px 0', padding: '14px 20px', border: `1px dashed ${TEAL}`, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: '#F0FDFA' }}>
           <span style={{ fontSize: 13, color: '#0F766E' }}>
-            Bu bölümde <b>{ekler.length}</b> ek soru daha var
+            Bu bölümde <b>{cappedEkler.length}</b> ek soru daha var
           </span>
           <button onClick={onDetayliMod}
             style={{ padding: '7px 18px', border: `1.5px solid ${TEAL}`, borderRadius: 8, background: 'white', color: TEAL, fontWeight: 700, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap' as const }}>

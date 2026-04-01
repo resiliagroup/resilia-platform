@@ -100,13 +100,13 @@ const FAZLAR: { faz: string; sure: string; baslik: string; icon: React.ReactNode
   {
     faz: 'FAZ 2', sure: '3 – 9 Ay', baslik: 'Derinlemesine Analiz', icon: <Eye size={32} color="#3B82F6" />,
     bedel: 'Hibe / Kamu', bedel_color: '#3B82F6', aktif: false,
-    border: 'rgba(255,255,255,0.08)',
+    border: '#E2E8F0',
     items: ['Kimya + metal sektörü detay formu','Saha doğrulama (193 kritik tesis)','BCP mevcut durum tespiti','NATECH senaryo modelleme'],
   },
   {
     faz: 'FAZ 3', sure: '9 – 24 Ay', baslik: 'Sürekli İzleme', icon: <RefreshCw size={32} color="#8B5CF6" />,
     bedel: 'Platform Aboneliği', bedel_color: '#8B5CF6', aktif: false,
-    border: 'rgba(255,255,255,0.08)',
+    border: '#E2E8F0',
     items: ['Canlı URI güncelleme (tatbikat bazlı)','AFAD / Valilik entegrasyonu','Sigorta sektörü veri paylaşımı','ISO 22301 uyum takibi'],
   },
 ]
@@ -124,7 +124,7 @@ function Donut() {
   })
   return (
     <svg width={144} height={144} viewBox="0 0 144 144">
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={stroke} />
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(10,22,40,0.08)" strokeWidth={stroke} />
       {slices.map(s => (
         <circle key={s.label} cx={cx} cy={cy} r={r} fill="none"
           stroke={s.color} strokeWidth={stroke}
@@ -133,11 +133,11 @@ function Donut() {
           style={{ transform: 'rotate(-90deg)', transformOrigin: `${cx}px ${cy}px` }}
         />
       ))}
-      <text x={cx} y={cy - 10} textAnchor="middle" fill="#fff"
+      <text x={cx} y={cy - 10} textAnchor="middle" fill="#0A1628"
         fontSize={24} fontWeight={800} fontFamily="Outfit,sans-serif">193</text>
       <text x={cx} y={cx + 8} textAnchor="middle" fill="#EF4444"
         fontSize={10} fontWeight={700} letterSpacing={1} fontFamily="Outfit,sans-serif">YÜKSEK</text>
-      <text x={cx} y={cx + 22} textAnchor="middle" fill="rgba(255,255,255,0.3)"
+      <text x={cx} y={cx + 22} textAnchor="middle" fill="rgba(10,22,40,0.35)"
         fontSize={9} fontFamily="Outfit,sans-serif">RİSK</text>
     </svg>
   )
@@ -184,8 +184,8 @@ export default function IsoBrifingV3() {
       const C = (window as any).Chart
       if (!C || !sectorCanvasRef.current || !projCanvasRef.current) return
 
-      const gridColor = 'rgba(255,255,255,0.05)'
-      const tickColor = 'rgba(255,255,255,0.3)'
+      const gridColor = 'rgba(10,22,40,0.06)'
+      const tickColor = 'rgba(10,22,40,0.45)'
       const baseFont  = { family: 'Outfit, sans-serif', size: 11 }
 
       /* Sector bar chart */
@@ -211,10 +211,10 @@ export default function IsoBrifingV3() {
             legend: { display: false },
             tooltip: {
               backgroundColor: '#FFFFFF',
-              borderColor: 'rgba(255,255,255,0.1)',
+              borderColor: '#E2E8F0',
               borderWidth: 1,
-              titleColor: '#fff',
-              bodyColor: 'rgba(255,255,255,0.5)',
+              titleColor: '#0A1628',
+              bodyColor: 'rgba(10,22,40,0.55)',
               callbacks: { label: (ctx: { raw: number }) => ` URI: ${ctx.raw}` },
             },
           },
@@ -243,13 +243,13 @@ export default function IsoBrifingV3() {
         options: {
           responsive: true, maintainAspectRatio: false,
           plugins: {
-            legend: { labels: { color: 'rgba(255,255,255,0.5)', font: baseFont, boxWidth: 12, boxHeight: 12 } },
+            legend: { labels: { color: 'rgba(10,22,40,0.55)', font: baseFont, boxWidth: 12, boxHeight: 12 } },
             tooltip: {
               backgroundColor: '#FFFFFF',
-              borderColor: 'rgba(255,255,255,0.1)',
+              borderColor: '#E2E8F0',
               borderWidth: 1,
-              titleColor: '#fff',
-              bodyColor: 'rgba(255,255,255,0.6)',
+              titleColor: '#0A1628',
+              bodyColor: 'rgba(10,22,40,0.6)',
               callbacks: { label: (ctx: { dataset: { label: string }; raw: number }) => ` ${ctx.dataset.label}: ₺${ctx.raw}M` },
             },
           },
@@ -298,8 +298,8 @@ export default function IsoBrifingV3() {
         .v3-g3    { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
         .v3-g2x4  { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .v3-g5    { display: grid; grid-template-columns: repeat(5,1fr); gap: 14px; }
-        .v3-hr    { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 60px 0; }
-        .v3-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.3);
+        .v3-hr    { border: none; border-top: 1px solid #E2E8F0; margin: 60px 0; }
+        .v3-label { font-size: 10px; font-weight: 700; color: rgba(10,22,40,0.45);
                     letter-spacing: .18em; text-transform: uppercase; margin-bottom: 20px; }
         @media (max-width: 900px) {
           .v3-g4 { grid-template-columns: repeat(2,1fr); }
@@ -334,7 +334,7 @@ export default function IsoBrifingV3() {
               <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(45,138,135,0.08)', border: '1px solid rgba(45,138,135,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Factory size={18} color="#2D8A87" /></div>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#2D8A87', letterSpacing: '.14em', textTransform: 'uppercase' }}>OMNIVERSEL × İSTANBUL SANAYİ ODASI</div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>Sanayi Tesisleri Risk Brifing · Mart 2026</div>
+                <div style={{ fontSize: 12, color: 'rgba(10,22,40,0.45)', marginTop: 2 }}>Sanayi Tesisleri Risk Brifing · Mart 2026</div>
               </div>
             </div>
             <div style={{ display: 'flex', gap: 6 }}>
@@ -350,7 +350,7 @@ export default function IsoBrifingV3() {
               İstanbul Sanayi Ekosistemi İçin<br />
               <span style={{ color: '#2D8A87' }}>Yeni Bir Dayanıklılık Altyapısı.</span>
             </h1>
-            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', lineHeight: 1.85, maxWidth: 620 }}>
+            <p style={{ fontSize: 16, color: 'rgba(10,22,40,0.6)', lineHeight: 1.85, maxWidth: 620 }}>
               22.846 tesisin sektörel risk profili, öncelikli müdahale hedefleri ve iş sürekliliği kapasitesi — İSO&apos;nun kurumsal ağırlığı ile Omniversel&apos;in analitik motoru bir araya geliyor.
             </p>
           </div>
@@ -362,10 +362,10 @@ export default function IsoBrifingV3() {
                 <div style={{ position: 'absolute', top: 0, right: 0, width: 60, height: 60, borderRadius: '0 0 0 60px', background: k.color + '0C' }} />
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
                   {k.icon}
-                  <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '.14em', textTransform: 'uppercase' }}>{k.lbl}</span>
+                  <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(10,22,40,0.45)', letterSpacing: '.14em', textTransform: 'uppercase' }}>{k.lbl}</span>
                 </div>
                 <div style={{ fontSize: 'clamp(20px,2.5vw,30px)', fontWeight: 800, color: k.color, letterSpacing: '-0.8px', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>{k.val}</div>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{k.sub}</div>
+                <div style={{ fontSize: 10, color: 'rgba(10,22,40,0.35)' }}>{k.sub}</div>
               </div>
             ))}
           </div>
@@ -378,9 +378,9 @@ export default function IsoBrifingV3() {
               { icon: <Clock       size={14} color="#F97316"  />, lbl: 'Kalan Tesis',           val: (22846 - formStat.toplam).toLocaleString('tr'), sub: 'Henüz form doldurmadı',   bc: '#F97316' },
             ].map(c => (
               <div key={c.lbl} style={{ background: 'rgba(0,0,0,0.02)', border: `1px solid ${c.bc}33`, borderBottom: `3px solid ${c.bc}`, borderRadius: 14, padding: '16px 18px' }}>
-                <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>{c.icon}<span>{c.lbl}</span></div>
+                <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(10,22,40,0.45)', letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>{c.icon}<span>{c.lbl}</span></div>
                 <div style={{ fontSize: 'clamp(18px,2vw,26px)', fontWeight: 800, color: c.bc, fontFamily: 'var(--font-mono)', marginBottom: 5 }}>{c.val}</div>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{c.sub}</div>
+                <div style={{ fontSize: 10, color: 'rgba(10,22,40,0.35)' }}>{c.sub}</div>
               </div>
             ))}
           </div>
@@ -402,7 +402,7 @@ export default function IsoBrifingV3() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
                     <span style={{ fontSize: 22, fontWeight: 800, color: '#0A1628', fontFamily: 'var(--font-mono)' }}>{d.count.toLocaleString('tr-TR')}</span>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>tesis</span>
+                    <span style={{ fontSize: 11, color: 'rgba(10,22,40,0.45)' }}>tesis</span>
                     <span style={{ fontSize: 13, fontWeight: 700, color: d.color, fontFamily: 'var(--font-mono)' }}>%{d.pct}</span>
                   </div>
                 </div>
@@ -411,7 +411,7 @@ export default function IsoBrifingV3() {
                 </div>
               </div>
             ))}
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 14, marginTop: 4 }}>
+            <div style={{ fontSize: 11, color: 'rgba(10,22,40,0.3)', borderTop: '1px solid #E2E8F0', paddingTop: 14, marginTop: 4 }}>
               Metodoloji: FEMA HMA + NATECH katsayısı
             </div>
           </div>
@@ -422,7 +422,7 @@ export default function IsoBrifingV3() {
                 <div key={d.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{ width: 8, height: 8, borderRadius: 2, background: d.color }} />
-                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{d.label}</span>
+                    <span style={{ fontSize: 12, color: 'rgba(10,22,40,0.6)' }}>{d.label}</span>
                   </div>
                   <span style={{ fontSize: 12, fontWeight: 700, color: d.color, fontFamily: 'var(--font-mono)' }}>%{d.pct}</span>
                 </div>
@@ -442,7 +442,7 @@ export default function IsoBrifingV3() {
               {[{ c: '#EF4444', l: '≥40 Yüksek' }, { c: '#F97316', l: '30–40 Orta' }, { c: '#22C55E', l: '<25 Düşük' }].map(x => (
                 <div key={x.l} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                   <div style={{ width: 8, height: 8, borderRadius: 2, background: x.c }} />
-                  <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)' }}>{x.l}</span>
+                  <span style={{ fontSize: 10, color: 'rgba(10,22,40,0.45)' }}>{x.l}</span>
                 </div>
               ))}
             </div>
@@ -457,20 +457,20 @@ export default function IsoBrifingV3() {
         {/* ══ 4. SEKTÖR TABLOSU ══════════════════════════════════ */}
         <div className="v3-label">Sektörel Analiz — Risk Sıralaması</div>
         <div style={{ ...glass, padding: 0, overflow: 'hidden' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '36px 1fr auto auto auto', gap: '0 16px', padding: '10px 20px', borderBottom: '1px solid #E2E8F0', fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.25)', letterSpacing: '.12em', textTransform: 'uppercase' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '36px 1fr auto auto auto', gap: '0 16px', padding: '10px 20px', borderBottom: '1px solid #E2E8F0', fontSize: 9, fontWeight: 700, color: 'rgba(10,22,40,0.35)', letterSpacing: '.12em', textTransform: 'uppercase' }}>
             <span>#</span><span>Sektör</span><span style={{ justifySelf: 'end' }}>URI</span><span style={{ justifySelf: 'end' }}>Tesis</span><span style={{ justifySelf: 'end' }}>Risk</span>
           </div>
           {SEKTORLER.map((s, i) => (
             <div key={s.ad} style={{
               display: 'grid', gridTemplateColumns: '36px 1fr auto auto auto',
               alignItems: 'center', gap: '0 16px', padding: '13px 20px',
-              borderBottom: i < SEKTORLER.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-              background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)',
+              borderBottom: i < SEKTORLER.length - 1 ? '1px solid rgba(10,22,40,0.06)' : 'none',
+              background: i % 2 === 0 ? 'transparent' : 'rgba(10,22,40,0.02)',
             }}>
-              <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.2)', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>{i + 1}</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(10,22,40,0.3)', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>{i + 1}</span>
               <span style={{ fontSize: 13, fontWeight: 600 }}>{s.ad}</span>
               <span style={{ fontSize: 13, fontWeight: 800, color: s.bc, fontFamily: 'var(--font-mono)', textAlign: 'right' }}>{s.uri}</span>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>{s.tesis.toLocaleString('tr-TR')}</span>
+              <span style={{ fontSize: 11, color: 'rgba(10,22,40,0.45)', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>{s.tesis.toLocaleString('tr-TR')}</span>
               <span style={{ fontSize: 9, fontWeight: 800, color: s.bc, background: s.bc + '18', border: `1px solid ${s.bc}44`, borderRadius: 20, padding: '2px 9px', letterSpacing: '.08em', textAlign: 'center', whiteSpace: 'nowrap' }}>{s.badge}</span>
             </div>
           ))}
@@ -484,13 +484,13 @@ export default function IsoBrifingV3() {
           <Users size={28} color="#2D8A87" />
           <div>
             <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 4 }}>KOBİ Segmentasyon</div>
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7 }}>İSO üyelerinin %72&apos;si 50&apos;den az çalışanlı KOBİ</p>
+            <p style={{ fontSize: 13, color: 'rgba(10,22,40,0.5)', lineHeight: 1.7 }}>İSO üyelerinin %72&apos;si 50&apos;den az çalışanlı KOBİ</p>
           </div>
         </div>
         <div className="v3-g3" style={{ alignItems: 'start' }}>
           {/* Sol: ISG Sınıfı */}
           <div style={{ ...glass, padding: '22px 20px' }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 16 }}>ISG Tehlike Sınıfı Dağılımı</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(10,22,40,0.45)', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 16 }}>ISG Tehlike Sınıfı Dağılımı</div>
             {[
               { sinif: '1 — Çok Tehlikeli', tesis: '2.847', pct: 12.5, color: '#EF4444' },
               { sinif: '2 — Tehlikeli',     tesis: '8.234', pct: 36.0, color: '#F97316' },
@@ -499,7 +499,7 @@ export default function IsoBrifingV3() {
               <div key={s.sinif} style={{ marginBottom: 18 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                   <span style={{ fontSize: 12, color: s.color, fontWeight: 600 }}>{s.sinif}</span>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: 'var(--font-mono)' }}>{s.tesis} · %{s.pct}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(10,22,40,0.45)', fontFamily: 'var(--font-mono)' }}>{s.tesis} · %{s.pct}</span>
                 </div>
                 <div style={{ height: 6, background: 'rgba(0,0,0,0.05)', borderRadius: 3, overflow: 'hidden' }}>
                   <div style={{ width: `${s.pct}%`, height: '100%', background: s.color, borderRadius: 3 }} />
@@ -510,7 +510,7 @@ export default function IsoBrifingV3() {
 
           {/* Orta: Çalışan büyüklüğü */}
           <div style={{ ...glass, padding: '22px 20px' }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 16 }}>Çalışan Büyüklüğü Dağılımı</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(10,22,40,0.45)', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 16 }}>Çalışan Büyüklüğü Dağılımı</div>
             {[
               { grup: '1–10 (mikro)',   pct: 34, color: '#3B82F6' },
               { grup: '11–50 (küçük)',  pct: 38, color: '#8B5CF6' },
@@ -519,7 +519,7 @@ export default function IsoBrifingV3() {
             ].map(g => (
               <div key={g.grup} style={{ marginBottom: 18 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>{g.grup}</span>
+                  <span style={{ fontSize: 12, color: 'rgba(10,22,40,0.65)', fontWeight: 600 }}>{g.grup}</span>
                   <span style={{ fontSize: 12, color: g.color, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>%{g.pct}</span>
                 </div>
                 <div style={{ height: 6, background: 'rgba(0,0,0,0.05)', borderRadius: 3, overflow: 'hidden' }}>
@@ -540,7 +540,7 @@ export default function IsoBrifingV3() {
             ].map(item => (
               <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 12 }}>
                 <span style={{ color: '#2D8A87', fontWeight: 800, fontSize: 14, flexShrink: 0 }}>✓</span>
-                <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.55 }}>{item}</span>
+                <span style={{ fontSize: 13, color: 'rgba(10,22,40,0.65)', lineHeight: 1.55 }}>{item}</span>
               </div>
             ))}
           </div>
@@ -567,7 +567,7 @@ export default function IsoBrifingV3() {
         <div className="v3-label">Stratejik Fırsatlar</div>
         <div style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 10 }}>4 Stratejik Giriş Noktası</div>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, maxWidth: 600 }}>
+          <p style={{ fontSize: 14, color: 'rgba(10,22,40,0.5)', lineHeight: 1.7, maxWidth: 600 }}>
             İSO&apos;nun mevcut hizmet altyapısına entegre edilecek yeni değer katmanları
           </p>
         </div>
@@ -613,7 +613,7 @@ export default function IsoBrifingV3() {
                 {k.num} / 04
               </div>
               <div style={{ fontSize: 16, fontWeight: 800, color: '#0A1628', marginBottom: 12, lineHeight: 1.25, paddingRight: 24 }}>{k.baslik}</div>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.75 }}>{k.desc}</p>
+              <p style={{ fontSize: 13, color: 'rgba(10,22,40,0.55)', lineHeight: 1.75 }}>{k.desc}</p>
 
               <div style={{ marginTop: 18, height: 1, background: `linear-gradient(90deg, ${k.bc}40 0%, transparent 100%)` }} />
             </div>
@@ -626,7 +626,7 @@ export default function IsoBrifingV3() {
         <div className="v3-label">Tesis Başına Pratik Yaklaşım</div>
         <div style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 8 }}>Minimum Bütçe · Maksimum Etki · DIY Odaklı</div>
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7 }}>Her adım bağımsız, her KOBİ kendi hızında uygulayabilir</p>
+          <p style={{ fontSize: 13, color: 'rgba(10,22,40,0.5)', lineHeight: 1.7 }}>Her adım bağımsız, her KOBİ kendi hızında uygulayabilir</p>
         </div>
         <div className="v3-g4" style={{ gap: 14 }}>
           {([
@@ -654,14 +654,14 @@ export default function IsoBrifingV3() {
             <div key={k.baslik} style={{ ...glass, padding: '22px 18px', borderTop: `3px solid ${k.bc}`, position: 'relative' }}>
               <div style={{ marginBottom: 10 }}>{k.icon}</div>
               <div style={{ fontSize: 9, fontWeight: 800, color: k.bc, letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 6 }}>{k.baslik}</div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 16, fontFamily: 'var(--font-mono)' }}>{k.sure}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(10,22,40,0.65)', marginBottom: 16, fontFamily: 'var(--font-mono)' }}>{k.sure}</div>
               {k.items.map(item => (
                 <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 9 }}>
                   <div style={{ width: 5, height: 5, borderRadius: '50%', background: k.bc, flexShrink: 0, marginTop: 6 }} />
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.55 }}>{item}</span>
+                  <span style={{ fontSize: 12, color: 'rgba(10,22,40,0.55)', lineHeight: 1.55 }}>{item}</span>
                 </div>
               ))}
-              <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.06)', fontSize: 10, color: k.bc, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+              <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid #E2E8F0', fontSize: 10, color: k.bc, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
                 Tahmini URI İyileşmesi: {k.iyilesme}
               </div>
             </div>
@@ -682,11 +682,11 @@ export default function IsoBrifingV3() {
                 </div>
                 <span style={{ fontSize: 11, fontWeight: 700, color: m.bc, fontFamily: 'var(--font-mono)', background: m.bc + '18', border: `1px solid ${m.bc}40`, borderRadius: 6, padding: '2px 8px', whiteSpace: 'nowrap' }}>{m.hedef}</span>
               </div>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.65, marginBottom: 14 }}>{m.desc}</p>
+              <p style={{ fontSize: 12, color: 'rgba(10,22,40,0.5)', lineHeight: 1.65, marginBottom: 14 }}>{m.desc}</p>
               {m.detaylar.map(d => (
                 <div key={d} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 7 }}>
                   <div style={{ width: 5, height: 5, borderRadius: '50%', background: m.bc, flexShrink: 0, marginTop: 5 }} />
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{d}</span>
+                  <span style={{ fontSize: 12, color: 'rgba(10,22,40,0.6)' }}>{d}</span>
                 </div>
               ))}
             </div>
@@ -708,9 +708,9 @@ export default function IsoBrifingV3() {
             <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 20 }}>Yıllık Büyüme Tablosu</div>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
                   {['Yıl', 'Toplam', 'Büyüme', 'Öncü Kanal'].map(h => (
-                    <th key={h} style={{ padding: '8px 0', textAlign: h === 'Yıl' ? 'left' : 'right', fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.25)', letterSpacing: '.1em', textTransform: 'uppercase' }}>{h}</th>
+                    <th key={h} style={{ padding: '8px 0', textAlign: h === 'Yıl' ? 'left' : 'right', fontSize: 9, fontWeight: 700, color: 'rgba(10,22,40,0.35)', letterSpacing: '.1em', textTransform: 'uppercase' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -720,10 +720,10 @@ export default function IsoBrifingV3() {
                   const growth = prev ? Math.round(((PROJ_TOPLAM[i] - prev) / prev) * 100) : null
                   const maxIdx = PROJ_DATA.reduce((best, d, di) => d.data[i] > PROJ_DATA[best].data[i] ? di : best, 0)
                   return (
-                    <tr key={y} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                      <td style={{ padding: '10px 0', color: 'rgba(255,255,255,0.4)', fontFamily: 'var(--font-mono)' }}>{y}</td>
+                    <tr key={y} style={{ borderBottom: '1px solid rgba(10,22,40,0.06)' }}>
+                      <td style={{ padding: '10px 0', color: 'rgba(10,22,40,0.5)', fontFamily: 'var(--font-mono)' }}>{y}</td>
                       <td style={{ padding: '10px 0', textAlign: 'right', fontWeight: 800, color: '#2D8A87', fontFamily: 'var(--font-mono)' }}>₺{PROJ_TOPLAM[i]}M</td>
-                      <td style={{ padding: '10px 0', textAlign: 'right', fontFamily: 'var(--font-mono)', color: growth ? '#22C55E' : 'rgba(255,255,255,0.3)' }}>
+                      <td style={{ padding: '10px 0', textAlign: 'right', fontFamily: 'var(--font-mono)', color: growth ? '#22C55E' : 'rgba(10,22,40,0.45)' }}>
                         {growth ? `+%${growth}` : '—'}
                       </td>
                       <td style={{ padding: '10px 0', textAlign: 'right', color: PROJ_DATA[maxIdx].color, fontSize: 11 }}>{PROJ_DATA[maxIdx].label.split('+')[0].trim()}</td>
@@ -733,7 +733,7 @@ export default function IsoBrifingV3() {
               </tbody>
               <tfoot>
                 <tr style={{ borderTop: '1px solid #E2E8F0' }}>
-                  <td style={{ padding: '10px 0', fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>5Y Toplam</td>
+                  <td style={{ padding: '10px 0', fontSize: 11, color: 'rgba(10,22,40,0.45)' }}>5Y Toplam</td>
                   <td colSpan={3} style={{ padding: '10px 0', textAlign: 'right', fontSize: 14, fontWeight: 900, color: '#2D8A87', fontFamily: 'var(--font-mono)' }}>₺{PROJ_TOPLAM.reduce((a, b) => a + b, 0)}M</td>
                 </tr>
               </tfoot>
@@ -775,10 +775,10 @@ export default function IsoBrifingV3() {
             <div key={f.faz} style={{
               ...glass,
               padding: '24px 20px',
-              border: `1px solid ${f.aktif ? f.border : 'rgba(255,255,255,0.08)'}`,
+              border: `1px solid ${f.aktif ? f.border : '#E2E8F0'}`,
               borderTop: `3px solid ${f.border}`,
               position: 'relative',
-              background: f.aktif ? 'rgba(45,138,135,0.06)' : 'rgba(255,255,255,0.03)',
+              background: f.aktif ? 'rgba(45,138,135,0.06)' : '#FFFFFF',
             }}>
               {f.aktif && (
                 <div style={{ position: 'absolute', top: -1, right: 16, background: '#2D8A87', color: '#0A1628', fontSize: 8, fontWeight: 900, letterSpacing: '.12em', padding: '3px 12px', borderRadius: '0 0 8px 8px' }}>
@@ -788,7 +788,7 @@ export default function IsoBrifingV3() {
               <div style={{ marginBottom: 14 }}>{f.icon}</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
                 <div>
-                  <div style={{ fontSize: 9, fontWeight: 800, color: f.aktif ? '#2D8A87' : 'rgba(255,255,255,0.25)', letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: 5 }}>{f.faz} · {f.sure}</div>
+                  <div style={{ fontSize: 9, fontWeight: 800, color: f.aktif ? '#2D8A87' : 'rgba(10,22,40,0.35)', letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: 5 }}>{f.faz} · {f.sure}</div>
                   <div style={{ fontSize: 16, fontWeight: 800 }}>{f.baslik}</div>
                 </div>
                 <span style={{ fontSize: 9, fontWeight: 800, color: f.bedel_color, background: f.bedel_color + '18', border: `1px solid ${f.bedel_color}44`, borderRadius: 20, padding: '3px 11px', letterSpacing: '.08em', whiteSpace: 'nowrap', textTransform: 'uppercase' }}>
@@ -798,7 +798,7 @@ export default function IsoBrifingV3() {
               {f.items.map(item => (
                 <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 9 }}>
                   <div style={{ width: 5, height: 5, borderRadius: '50%', background: f.bedel_color, flexShrink: 0, marginTop: 6 }} />
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.55 }}>{item}</span>
+                  <span style={{ fontSize: 12, color: 'rgba(10,22,40,0.55)', lineHeight: 1.55 }}>{item}</span>
                 </div>
               ))}
             </div>
@@ -814,7 +814,7 @@ export default function IsoBrifingV3() {
             Faz 1 başlatmak için<br />
             <span style={{ color: '#2D8A87' }}>ortak olmaya hazır mısınız?</span>
           </h2>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.45)', marginBottom: 40, lineHeight: 1.75, maxWidth: 500, margin: '0 auto 40px' }}>
+          <p style={{ fontSize: 15, color: 'rgba(10,22,40,0.55)', marginBottom: 40, lineHeight: 1.75, maxWidth: 500, margin: '0 auto 40px' }}>
             22.846 tesisin tamamı için otomatik URI hesaplama ve risk haritası — 90 gün içinde, <strong style={{ color: '#2D8A87' }}>ücretsiz</strong>.
           </p>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -827,12 +827,12 @@ export default function IsoBrifingV3() {
           </div>
         </div>
 
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
           <div>
             <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: '-.2px', marginBottom: 2 }}>OMNIVERSEL</div>
             <div style={{ fontSize: 11, color: '#2D8A87' }}>Urban Resilience Platform</div>
           </div>
-          <div style={{ textAlign: 'right', fontSize: 11, color: 'rgba(255,255,255,0.15)', lineHeight: 1.7 }}>
+          <div style={{ textAlign: 'right', fontSize: 11, color: 'rgba(10,22,40,0.25)', lineHeight: 1.7 }}>
             <div>© 2026 Omniversel · omniversel.com</div>
             <div>Bu belge gizlidir. İzinsiz dağıtılamaz.</div>
           </div>

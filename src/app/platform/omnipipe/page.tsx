@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 
-const C = { navy950:'#060D1A', navy900:'#0A1628', teal:'#2D8A87', amber:'#F59E0B', white:'#FFFFFF', muted:'#94A3B8', dim:'#64748B', border:'#1E3A5F' }
+const C = { navy950:'#F8FAFC', navy900:'#FFFFFF', teal:'#2D8A87', amber:'#F59E0B', white:'#0A1628', muted:'#64748B', dim:'#374151', border:'#E2E8F0' }
 const F = "'Plus Jakarta Sans',sans-serif"
 
 const CAPABILITIES = [
