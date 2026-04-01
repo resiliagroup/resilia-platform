@@ -138,19 +138,19 @@ export default function Nav() {
               {/* Platform accordion */}
               <button
                 onClick={() => setMobilePlatformOpen(v => !v)}
-                style={{ width: '100%', background: 'none', border: 'none', borderBottom: '1px solid #E2E8F0', padding: '18px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', color: '#FFFFFF', fontSize: '16px', fontWeight: 600, textAlign: 'left' }}
+                style={{ width: '100%', background: 'none', border: 'none', borderBottom: '1px solid #E2E8F0', padding: '18px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', color: '#0F172A', fontSize: '16px', fontWeight: 600, textAlign: 'left' }}
               >
                 Platform
                 <span style={{ fontSize: '11px', color: '#64748B', transition: 'transform 200ms', transform: mobilePlatformOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
               </button>
               {mobilePlatformOpen && (
-                <div style={{ background: '#0A1628', borderBottom: '1px solid #E2E8F0' }}>
+                <div style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
                   {platformLinks.map(link => (
                     <a
                       key={link.href}
                       href={link.href}
                       onClick={() => setMobileOpen(false)}
-                      style={{ display: 'flex', alignItems: 'center', padding: '13px 24px 13px 40px', color: '#94A3B8', textDecoration: 'none', fontSize: '14px', borderBottom: '1px solid #0F2240' }}
+                      style={{ display: 'flex', alignItems: 'center', padding: '13px 24px 13px 40px', color: '#374151', textDecoration: 'none', fontSize: '14px', borderBottom: '1px solid #E2E8F0' }}
                     >
                       {link.label}
                       {link.soon && <span style={soonPill}>Soon</span>}
@@ -162,19 +162,19 @@ export default function Nav() {
               {/* Solutions accordion */}
               <button
                 onClick={() => setMobileSolutionsOpen(v => !v)}
-                style={{ width: '100%', background: 'none', border: 'none', borderBottom: '1px solid #E2E8F0', padding: '18px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', color: '#FFFFFF', fontSize: '16px', fontWeight: 600, textAlign: 'left' }}
+                style={{ width: '100%', background: 'none', border: 'none', borderBottom: '1px solid #E2E8F0', padding: '18px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', color: '#0F172A', fontSize: '16px', fontWeight: 600, textAlign: 'left' }}
               >
                 Solutions
                 <span style={{ fontSize: '11px', color: '#64748B', transition: 'transform 200ms', transform: mobileSolutionsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
               </button>
               {mobileSolutionsOpen && (
-                <div style={{ background: '#0A1628', borderBottom: '1px solid #E2E8F0' }}>
+                <div style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
                   {solutionLinks.map(link => (
                     <a
                       key={link.href}
                       href={link.href}
                       onClick={() => setMobileOpen(false)}
-                      style={{ display: 'block', padding: '13px 24px 13px 40px', color: '#94A3B8', textDecoration: 'none', fontSize: '14px', borderBottom: '1px solid #0F2240' }}
+                      style={{ display: 'block', padding: '13px 24px 13px 40px', color: '#374151', textDecoration: 'none', fontSize: '14px', borderBottom: '1px solid #E2E8F0' }}
                     >
                       {link.label}
                     </a>
@@ -193,7 +193,7 @@ export default function Nav() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  style={{ display: 'block', padding: '18px 24px', color: '#94A3B8', textDecoration: 'none', fontSize: '16px', borderBottom: '1px solid #E2E8F0', fontWeight: 500 }}
+                  style={{ display: 'block', padding: '18px 24px', color: '#374151', textDecoration: 'none', fontSize: '16px', borderBottom: '1px solid #E2E8F0', fontWeight: 500 }}
                 >
                   {link.label}
                 </a>
@@ -201,11 +201,11 @@ export default function Nav() {
             </div>
 
             {/* CTA */}
-            <div style={{ padding: '20px 24px', borderTop: '1px solid #1E3A5F', display: 'flex', flexDirection: 'column', gap: '10px', flexShrink: 0 }}>
+            <div style={{ padding: '20px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '10px', flexShrink: 0 }}>
               <a
                 href="/login"
                 onClick={() => setMobileOpen(false)}
-                style={{ display: 'block', padding: '14px', textAlign: 'center', border: '1px solid #1E3A5F', borderRadius: '8px', color: '#94A3B8', textDecoration: 'none', fontSize: '15px', fontWeight: 500 }}
+                style={{ display: 'block', padding: '14px', textAlign: 'center', border: '1px solid #E2E8F0', borderRadius: '8px', color: '#374151', textDecoration: 'none', fontSize: '15px', fontWeight: 500 }}
               >
                 Sign In
               </a>
