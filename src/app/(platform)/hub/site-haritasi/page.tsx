@@ -194,7 +194,7 @@ function TesisOzeti() {
           const uri = uriTahmini(t)
           const s = sinif(t)
           const uriRenk = uri >= 60 ? '#EF4444' : uri >= 40 ? '#F97316' : '#22C55E'
-          const sinifRenk = s === 1 ? '#EF4444' : s === 2 ? '#F97316' : '#22C55E'
+          const sinifRenk = s === 1 ? '#EF4444' : '#22C55E'
           return (
             <div key={i} style={{ background: C.navy, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12 }}>
               <p style={{ fontSize: 12, fontWeight: 600, color: C.white, marginBottom: 6, lineHeight: 1.3 }}>{t.name.length > 28 ? t.name.slice(0,28)+'…' : t.name}</p>
