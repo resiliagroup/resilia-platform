@@ -804,7 +804,7 @@ export default function TesisFormuPage() {
               style={{ padding: '12px 24px', background: '#0A1628', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
               📄 Raporu İndir
             </button>
-            
+            <a
               href="mailto:info@omniversel.com?subject=Uzman Desteği Talebi"
               style={{ padding: '12px 24px', background: '#009B8D', color: '#fff', borderRadius: 10, fontWeight: 600, fontSize: 14, textDecoration: 'none', display: 'inline-block' }}>
               💬 Uzman Desteği Al
