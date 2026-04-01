@@ -471,8 +471,10 @@ export default function SiteHaritasiPage() {
         </div>
 
         {/* Sağ Panel */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          {aktifUrl ? (
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
+          {secilenTesis ? (
+            <TesisDetay tesis={secilenTesis} onKapat={() => setSecilenTesis(null)} />
+          ) : aktifUrl ? (
             <>
               <iframe
                 key={aktifUrl}
