@@ -160,8 +160,127 @@ const ERISIM_DOT: Record<string, string> = {
 
 const toplamSayfa = KATEGORILER.reduce((s, k) => s + k.sayfalar.length, 0)
 
+const COZUMLER_MAP: Record<number, { baslik: string; sure: string; maliyet: string; uri: number; tags: string[] }[]> = {
+  1: [
+    { baslik: 'BEKRA Güvenlik Raporu Hazırlama', sure: '3 ay', maliyet: 'Ücretli', uri: 8.5, tags: ['BEKRA', 'Seveso III'] },
+    { baslik: 'NATECH Risk Analizi ve Acil Eylem Planı', sure: '6 hafta', maliyet: 'Ücretli', uri: 7.2, tags: ['NATECH', 'ISO 31000'] },
+    { baslik: 'Kimyasal Madde Envanter Sistemi', sure: '2 hafta', maliyet: 'Düşük', uri: 5.5, tags: ['BEKRA', 'İSG'] },
+    { baslik: 'Dahili Acil Durum Planı', sure: '1 ay', maliyet: 'Ücretsiz', uri: 6.0, tags: ['AFAD', 'ISO 22301'] },
+  ],
+  2: [
+    { baslik: 'İş Sürekliliği Planı (BCP)', sure: '2 ay', maliyet: 'Düşük', uri: 6.5, tags: ['ISO 22301', 'BCP'] },
+    { baslik: 'Deprem Tatbikatı ve Tahliye Planı', sure: '1 hafta', maliyet: 'Ücretsiz', uri: 4.5, tags: ['AFAD', 'ISO 22398'] },
+    { baslik: 'Kritik Ekipman Yedekleme', sure: '3 hafta', maliyet: 'Orta', uri: 4.0, tags: ['ISO 22301'] },
+    { baslik: 'Tedarikçi Risk Değerlendirmesi', sure: '1 ay', maliyet: 'Ücretsiz', uri: 3.5, tags: ['ISO 28000'] },
+  ],
+  3: [
+    { baslik: 'Acil Durum Yönetim Planı (ADYP)', sure: '1 ay', maliyet: 'Ücretsiz', uri: 4.0, tags: ['AFAD', 'İSG'] },
+    { baslik: 'Personel Afet Farkındalık Eğitimi', sure: '1 gün', maliyet: 'Ücretsiz', uri: 2.5, tags: ['AFAD'] },
+    { baslik: 'Yangın Söndürücü Bakım Sistemi', sure: '1 hafta', maliyet: 'Düşük', uri: 2.0, tags: ['BYKHY', 'TS 11827'] },
+    { baslik: 'BCP Temel Çerçeve Dokümanı', sure: '3 hafta', maliyet: 'Ücretsiz', uri: 3.5, tags: ['ISO 22301'] },
+  ],
+}
 
-function TesisOzeti() {
+function TesisDetay({ tesis, onKapat }: { tesis: any; onKapat: () => void }) {
+  const uriTahmini = (t: any) => {
+    let skor = 50
+    if (t.building_age > 20) skor += 15
+    if (t.seismic_zone === 1) skor += 10
+    if (t.sector === 'INDUSTRIAL') skor += 12
+    if (t.employee_count > 200) skor += 5
+    return Math.min(skor, 95)
+  }
+  const uri = uriTahmini(tesis)
+  const sinif = tesis.sector === 'INDUSTRIAL' ? 1 : 3
+  const uriRenk = uri >= 60 ? '#EF4444' : uri >= 40 ? '#F97316' : '#22C55E'
+  const sinifLabel = sinif === 1 ? 'Sınıf 1 — Çok Tehlikeli' : 'Sınıf 3 — Az Tehlikeli'
+  const sinifRenk = sinif === 1 ? '#EF4444' : '#22C55E'
+  const cozumler = COZUMLER_MAP[sinif] || []
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: C.bg, overflowY: 'auto', padding: 32 }}>
+      <div style={{ maxWidth: 720, margin: '0 auto' }}>
+        
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+          <div>
+            <p style={{ fontSize: 12, color: C.muted, marginBottom: 4 }}>{tesis.sector === 'INDUSTRIAL' ? 'Sanayi Tesisi' : 'Belediye Birimi'}</p>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, lineHeight: 1.2 }}>{tesis.name}</h1>
+          </div>
+          <button onClick={onKapat} style={{ background: 'none', border: `1px solid ${C.borderL}`, borderRadius: 8, padding: '6px 14px', cursor: 'pointer', fontSize: 13, color: C.muted }}>✕ Kapat</button>
+        </div>
+
+        {/* KPI Kartları */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
+          {[
+            { lbl: 'URI Skoru', val: String(uri), renk: uriRenk },
+            { lbl: 'Çalışan', val: String(tesis.employee_count), renk: C.text },
+            { lbl: 'Bina Yaşı', val: `${tesis.building_age}y`, renk: C.text },
+            { lbl: 'Deprem Zonu', val: `${tesis.seismic_zone}. Bölge`, renk: '#EF4444' },
+          ].map((k, i) => (
+            <div key={i} style={{ background: C.card, border: `1px solid ${C.borderL}`, borderRadius: 10, padding: '14px 16px' }}>
+              <p style={{ fontSize: 11, color: C.muted, marginBottom: 6 }}>{k.lbl}</p>
+              <p style={{ fontSize: 20, fontWeight: 700, color: k.renk }}>{k.val}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* URI Bar */}
+        <div style={{ background: C.card, border: `1px solid ${C.borderL}`, borderRadius: 12, padding: '16px 20px', marginBottom: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>Kentsel Dayanıklılık İndeksi (URI)</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: uriRenk }}>{uri} / 100</span>
+          </div>
+          <div style={{ height: 10, background: '#E2E8F0', borderRadius: 5, overflow: 'hidden' }}>
+            <div style={{ width: `${uri}%`, height: '100%', background: uriRenk, borderRadius: 5 }} />
+          </div>
+          <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: sinifRenk, background: sinif === 1 ? '#FCEBEB' : '#EAF3DE', padding: '3px 8px', borderRadius: 4 }}>{sinifLabel}</span>
+            <span style={{ fontSize: 11, color: C.muted }}>{uri >= 60 ? 'Yüksek risk — acil aksiyon gerekli' : uri >= 40 ? 'Orta risk — planlı iyileştirme önerilir' : 'Düşük risk — rutin takip yeterli'}</span>
+          </div>
+        </div>
+
+        {/* Çözüm Önerileri */}
+        <div style={{ background: C.card, border: `1px solid ${C.borderL}`, borderRadius: 12, padding: '16px 20px' }}>
+          <p style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 16 }}>Öncelikli Çözüm Önerileri</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {cozumler.map((c, i) => (
+              <div key={i} style={{ borderLeft: `3px solid ${uriRenk}`, paddingLeft: 14, paddingTop: 4, paddingBottom: 4 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{c.baslik}</p>
+                  <span style={{ fontSize: 12, color: '#22C55E', fontWeight: 600, flexShrink: 0, marginLeft: 12 }}>+{c.uri} URI</span>
+                </div>
+                <div style={{ display: 'flex', gap: 12, marginTop: 4, flexWrap: 'wrap' as const }}>
+                  <span style={{ fontSize: 11, color: C.muted }}>⏱ {c.sure}</span>
+                  <span style={{ fontSize: 11, color: C.muted }}>💰 {c.maliyet}</span>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    {c.tags.map((tag, j) => (
+                      <span key={j} style={{ fontSize: 10, background: '#EEF2FF', color: '#3730A3', padding: '2px 6px', borderRadius: 4 }}>{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 20, display: 'flex', gap: 10 }}>
+            <a href="/tesis-formu/iso-canli-test-001" style={{ flex: 1, display: 'block', padding: '10px', textAlign: 'center' as const, background: C.teal, color: '#fff', borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+              Detaylı Değerlendirme Başlat
+            </a>
+            <a href="mailto:info@omniversel.com?subject=Uzman Desteği — ${tesis.name}" style={{ flex: 1, display: 'block', padding: '10px', textAlign: 'center' as const, background: '#F8FAFC', border: `1px solid ${C.borderL}`, color: C.text, borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+              Uzman Desteği Al
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  )
+}
+
+
+
+
+function TesisOzeti({ onTesisAc }: { onTesisAc: (t: any) => void }) {
   const [tesisler, setTesisler] = useState<any[]>([])
   const [acik, setAcik] = useState(false)
 
@@ -200,7 +319,7 @@ function TesisOzeti() {
             const uri = uriTahmini(t)
             const uriRenk = uri >= 60 ? '#EF4444' : uri >= 40 ? '#F97316' : '#22C55E'
             return (
-              <div key={i} style={{ padding: '6px 4px', borderBottom: i < tesisler.length-1 ? `1px solid ${C.border}` : 'none' }}>
+              <div key={i} onClick={() => onTesisAc(t)} style={{ padding: '6px 4px', borderBottom: i < tesisler.length-1 ? `1px solid ${C.border}` : 'none', cursor: 'pointer' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>
                   <span style={{ fontSize: 11, color: C.white, lineHeight: 1.3 }}>{t.name.length > 22 ? t.name.slice(0,22)+'…' : t.name}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: uriRenk, flexShrink: 0, marginLeft: 6 }}>{uri}</span>
@@ -220,6 +339,7 @@ function TesisOzeti() {
 
 export default function SiteHaritasiPage() {
   const [acikKategoriler, setAcikKategoriler] = useState<Set<string>>(new Set(['platform']))
+  const [secilenTesis, setSecilenTesis] = useState<any>(null)
   const [aktifUrl, setAktifUrl] = useState('')
   const [iframeError, setIframeError] = useState(false)
 
@@ -277,7 +397,7 @@ export default function SiteHaritasiPage() {
         <div style={{ width: 260, background: C.navy, display: 'flex', flexDirection: 'column', flexShrink: 0, borderRight: `1px solid ${C.border}`, overflow: 'hidden' }}>
 
           {/* Tesis Risk Mini Panel */}
-          <TesisOzeti />
+          <TesisOzeti onTesisAc={(t) => { setSecilenTesis(t); setAktifUrl(null) }} />
 
           {/* Panel Header */}
           <div style={{ padding: '12px 14px 10px', borderBottom: `1px solid ${C.border}` }}>
