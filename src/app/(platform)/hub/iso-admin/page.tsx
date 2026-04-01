@@ -142,37 +142,124 @@ function FormIzlemeSekme() {
 }
 
 // ─── SEKME 2: Soru Yönetimi ───────────────────────────────────────────────────
-type SoruAyar = { kod: string; agirlik: number; kritik: boolean }
+// ─── SEKME 2: Soru Yönetimi (v2) ─────────────────────────────────────────────
+// Bu dosyanın içeriği iso-admin/page.tsx içindeki eski SoruYonetimiSekme
+// fonksiyonunun YERİNE geçecek. Tüm bloğu kopyala-yapıştır.
+
+type SoruAyar = {
+  kod: string
+  agirlik: number
+  kritik: boolean
+  soru: string
+  rehber: [string, string, string, string]
+  mevzuat: string[]
+  siniflar: (1 | 2 | 3)[]
+}
 
 function SoruYonetimiSekme() {
   const [ayarlar, setAyarlar] = useState<Record<string, SoruAyar>>(() =>
-    Object.fromEntries(SORULAR_SANAYI.map(s => [s.kod, { kod: s.kod, agirlik: s.agirlik, kritik: s.kritik }]))
+    Object.fromEntries(
+      SORULAR_SANAYI.map(s => [
+        s.kod,
+        {
+          kod: s.kod,
+          agirlik: s.agirlik,
+          kritik: s.kritik,
+          soru: s.soru,
+          rehber: (s.rehber ?? ['', '', '', '']) as [string, string, string, string],
+          mevzuat: (s as any).mevzuat ?? [],
+          siniflar: (s as any).siniflar ?? [1, 2, 3],
+        },
+      ])
+    )
   )
   const [kaydediliyor, setKaydediliyor] = useState(false)
   const [mesaj, setMesaj] = useState('')
+  const [acikKod, setAcikKod] = useState<string | null>(null)
+  const [sinifFiltre, setSinifFiltre] = useState<0 | 1 | 2 | 3>(0) // 0 = hepsi
+  const [aramaMetni, setAramaMetni] = useState('')
 
-  const setAgirlik = (kod: string, agirlik: number) => setAyarlar(a => ({ ...a, [kod]: { ...a[kod], agirlik } }))
-  const setKritik = (kod: string, kritik: boolean) => setAyarlar(a => ({ ...a, [kod]: { ...a[kod], kritik } }))
+  const setAlan = (kod: string, alan: Partial<SoruAyar>) =>
+    setAyarlar(a => ({ ...a, [kod]: { ...a[kod], ...alan } }))
+
+  const setRehber = (kod: string, idx: number, val: string) =>
+    setAyarlar(a => {
+      const r = [...a[kod].rehber] as [string, string, string, string]
+      r[idx] = val
+      return { ...a, [kod]: { ...a[kod], rehber: r } }
+    })
+
+  const toggleSinif = (kod: string, sinif: 1 | 2 | 3) =>
+    setAyarlar(a => {
+      const prev = a[kod].siniflar
+      const next = prev.includes(sinif) ? prev.filter(s => s !== sinif) : [...prev, sinif].sort() as (1 | 2 | 3)[]
+      return { ...a, [kod]: { ...a[kod], siniflar: next } }
+    })
 
   const kaydet = async () => {
-    setKaydediliyor(true); setMesaj('')
-    const rows = Object.values(ayarlar).map(a => ({ ...a, guncelleme: new Date().toISOString() }))
+    setKaydediliyor(true)
+    setMesaj('')
+    const rows = Object.values(ayarlar).map(a => ({
+      ...a,
+      guncelleme: new Date().toISOString(),
+    }))
     const { error } = await sb.from('soru_ayarlari').upsert(rows, { onConflict: 'kod' })
     setMesaj(error ? 'Hata: ' + error.message : '✓ Değişiklikler kaydedildi.')
     setKaydediliyor(false)
   }
 
   const BOLUMLER = [
-    { baslik: 'Tehlike', sorular: SORULAR_SANAYI.filter(s => s.bolum === 'TEHLİKE'), renk: '#EF4444' },
-    { baslik: 'Kırılganlık', sorular: SORULAR_SANAYI.filter(s => s.bolum === 'KIRILGANLIK'), renk: '#F97316' },
-    { baslik: 'Kapasite', sorular: SORULAR_SANAYI.filter(s => s.bolum === 'KAPASİTE' && s.boyut !== 'HRO'), renk: '#10B981' },
-    { baslik: 'HRO', sorular: SORULAR_SANAYI.filter(s => s.boyut === 'HRO'), renk: '#8B5CF6' },
+    { baslik: 'Tehlike', bolum: 'TEHLİKE', renk: '#EF4444', bg: '#FEF2F2' },
+    { baslik: 'Kırılganlık', bolum: 'KIRILGANLIK', renk: '#F97316', bg: '#FFF7ED' },
+    { baslik: 'Kapasite', bolum: 'KAPASİTE_C', renk: '#10B981', bg: '#F0FDF4' },
+    { baslik: 'HRO', bolum: 'HRO', renk: '#8B5CF6', bg: '#F5F3FF' },
   ]
+
+  const SINIF_ETIKET: Record<number, string> = { 1: 'Çok Tehlikeli', 2: 'Tehlikeli', 3: 'Az Tehlikeli' }
+  const SINIF_RENK: Record<number, string> = { 1: '#EF4444', 2: '#F97316', 3: '#22C55E' }
+
+  const sorularFor = (bolum: string) => {
+    let liste = SORULAR_SANAYI.filter(s =>
+      bolum === 'KAPASİTE_C'
+        ? s.bolum === 'KAPASİTE' && s.boyut !== 'HRO'
+        : bolum === 'HRO'
+        ? s.boyut === 'HRO'
+        : s.bolum === bolum
+    )
+    if (sinifFiltre !== 0)
+      liste = liste.filter(s => ayarlar[s.kod]?.siniflar?.includes(sinifFiltre as 1 | 2 | 3))
+    if (aramaMetni.trim())
+      liste = liste.filter(s =>
+        s.soru.toLowerCase().includes(aramaMetni.toLowerCase()) ||
+        s.kod.toLowerCase().includes(aramaMetni.toLowerCase())
+      )
+    return liste
+  }
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <p style={{ fontSize: 13, color: '#64748B' }}>Ağırlık ve kritiklik ayarlarını değiştirip kaydedin. Değişiklikler URI hesabını etkiler.</p>
+      {/* Toolbar */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, gap: 12, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flex: 1, minWidth: 240 }}>
+          <input
+            placeholder="Soru kodu veya metin ara..."
+            value={aramaMetni}
+            onChange={e => setAramaMetni(e.target.value)}
+            style={{ flex: 1, padding: '7px 12px', border: `1px solid ${BORDER}`, borderRadius: 8, fontSize: 13, outline: 'none' }}
+          />
+          <div style={{ display: 'flex', gap: 4 }}>
+            {([0, 1, 2, 3] as const).map(s => (
+              <button key={s} onClick={() => setSinifFiltre(s)}
+                style={{
+                  padding: '5px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, border: 'none', cursor: 'pointer',
+                  background: sinifFiltre === s ? (s === 0 ? NAVY : SINIF_RENK[s]) : '#F1F5F9',
+                  color: sinifFiltre === s ? 'white' : '#475569',
+                }}>
+                {s === 0 ? 'Tümü' : `S${s}`}
+              </button>
+            ))}
+          </div>
+        </div>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           {mesaj && <span style={{ fontSize: 12, color: mesaj.startsWith('✓') ? '#15803D' : '#EF4444' }}>{mesaj}</span>}
           <button onClick={kaydet} disabled={kaydediliyor}
@@ -182,38 +269,158 @@ function SoruYonetimiSekme() {
         </div>
       </div>
 
-      {BOLUMLER.map(({ baslik, sorular, renk }) => (
-        <div key={baslik} style={{ background: 'white', border: `1px solid ${BORDER}`, borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
-          <div style={{ padding: '12px 20px', borderBottom: `1px solid ${BORDER}`, background: '#F8FAFC', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ width: 10, height: 10, borderRadius: '50%', background: renk, display: 'inline-block' }} />
-            <span style={{ fontSize: 13, fontWeight: 700, color: NAVY }}>{baslik}</span>
-            <span style={{ fontSize: 11, color: '#94A3B8' }}>· {sorular.length} soru</span>
-          </div>
-          {sorular.map(s => {
-            const ay = ayarlar[s.kod]
-            return (
-              <div key={s.kod} style={{ padding: '12px 20px', borderBottom: `1px solid ${BORDER}`, display: 'grid', gridTemplateColumns: '60px 1fr 180px 80px', gap: 16, alignItems: 'center' }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: 'white', background: renk, padding: '2px 8px', borderRadius: 4, textAlign: 'center' as const }}>{s.kod}</span>
-                <span style={{ fontSize: 12, color: '#374151', lineHeight: 1.4 }}>{s.soru.slice(0, 120)}{s.soru.length > 120 ? '…' : ''}</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{ fontSize: 11, color: '#94A3B8', width: 40 }}>Ağırlık</span>
-                  <input type="range" min={1} max={10} value={ay?.agirlik ?? s.agirlik}
-                    onChange={e => setAgirlik(s.kod, Number(e.target.value))}
-                    style={{ flex: 1, accentColor: TEAL }} />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: NAVY, width: 18, textAlign: 'center' as const }}>{ay?.agirlik ?? s.agirlik}</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <Toggle val={ay?.kritik ?? s.kritik} onChange={v => setKritik(s.kod, v)} />
-                  <span style={{ fontSize: 11, color: '#64748B' }}>Kritik</span>
-                </div>
-              </div>
-            )
-          })}
+      {/* İstatistik satırı */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+        {[1, 2, 3].map(s => {
+          const n = SORULAR_SANAYI.filter(q => (q as any).siniflar?.includes(s)).length
+          return (
+            <div key={s} style={{ padding: '6px 14px', borderRadius: 20, background: SINIF_RENK[s] + '18', border: `1px solid ${SINIF_RENK[s]}40`, fontSize: 12, fontWeight: 600, color: SINIF_RENK[s] }}>
+              Sınıf {s} — {n} soru
+            </div>
+          )
+        })}
+        <div style={{ padding: '6px 14px', borderRadius: 20, background: '#F1F5F9', fontSize: 12, fontWeight: 600, color: '#475569' }}>
+          Toplam {SORULAR_SANAYI.length} soru
         </div>
-      ))}
+      </div>
+
+      {/* Bölümler */}
+      {BOLUMLER.map(({ baslik, bolum, renk, bg }) => {
+        const sorular = sorularFor(bolum)
+        if (sorular.length === 0) return null
+        return (
+          <div key={bolum} style={{ background: 'white', border: `1px solid ${BORDER}`, borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
+            {/* Bölüm başlığı */}
+            <div style={{ padding: '12px 20px', borderBottom: `1px solid ${BORDER}`, background: bg, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: renk, display: 'inline-block' }} />
+              <span style={{ fontSize: 13, fontWeight: 700, color: NAVY }}>{baslik}</span>
+              <span style={{ fontSize: 11, color: '#94A3B8' }}>· {sorular.length} soru gösteriliyor</span>
+            </div>
+
+            {/* Sorular */}
+            {sorular.map(s => {
+              const ay = ayarlar[s.kod]
+              const acik = acikKod === s.kod
+              return (
+                <div key={s.kod} style={{ borderBottom: `1px solid ${BORDER}` }}>
+                  {/* Soru satırı (özet) */}
+                  <div
+                    onClick={() => setAcikKod(acik ? null : s.kod)}
+                    style={{ padding: '11px 20px', display: 'grid', gridTemplateColumns: '64px 1fr 200px 100px 90px', gap: 14, alignItems: 'center', cursor: 'pointer', background: acik ? '#F8FAFC' : 'white' }}
+                  >
+                    {/* Kod */}
+                    <span style={{ fontSize: 11, fontWeight: 700, color: 'white', background: renk, padding: '2px 8px', borderRadius: 4, textAlign: 'center' as const }}>{s.kod}</span>
+
+                    {/* Soru özeti */}
+                    <span style={{ fontSize: 12, color: '#374151', lineHeight: 1.4 }}>
+                      {ay?.soru?.slice(0, 100)}{(ay?.soru?.length ?? 0) > 100 ? '…' : ''}
+                    </span>
+
+                    {/* Sınıf rozetleri */}
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      {([1, 2, 3] as const).map(sinif => (
+                        <button key={sinif}
+                          onClick={e => { e.stopPropagation(); toggleSinif(s.kod, sinif) }}
+                          style={{
+                            padding: '2px 7px', borderRadius: 4, fontSize: 10, fontWeight: 700, border: 'none', cursor: 'pointer',
+                            background: ay?.siniflar?.includes(sinif) ? SINIF_RENK[sinif] : '#E2E8F0',
+                            color: ay?.siniflar?.includes(sinif) ? 'white' : '#94A3B8',
+                          }}>
+                          S{sinif}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Ağırlık */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <input type="range" min={1} max={10} value={ay?.agirlik ?? s.agirlik}
+                        onClick={e => e.stopPropagation()}
+                        onChange={e => setAlan(s.kod, { agirlik: Number(e.target.value) })}
+                        style={{ flex: 1, accentColor: TEAL }} />
+                      <span style={{ fontSize: 13, fontWeight: 700, color: NAVY, width: 16, textAlign: 'center' as const }}>{ay?.agirlik ?? s.agirlik}</span>
+                    </div>
+
+                    {/* Kritik toggle + expand */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Toggle val={ay?.kritik ?? s.kritik} onChange={v => { setAlan(s.kod, { kritik: v }) }} />
+                      <span style={{ fontSize: 18, color: '#94A3B8', transform: acik ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', userSelect: 'none' }}>⌄</span>
+                    </div>
+                  </div>
+
+                  {/* Genişletilmiş düzenleme paneli */}
+                  {acik && (
+                    <div style={{ padding: '16px 20px', background: '#F8FAFC', borderTop: `1px solid ${BORDER}` }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+
+                        {/* Sol: Soru metni */}
+                        <div>
+                          <label style={{ fontSize: 11, fontWeight: 700, color: '#64748B', display: 'block', marginBottom: 6 }}>SORU METNİ</label>
+                          <textarea
+                            value={ay?.soru ?? ''}
+                            onChange={e => setAlan(s.kod, { soru: e.target.value })}
+                            rows={3}
+                            style={{ width: '100%', padding: '8px 12px', border: `1px solid ${BORDER}`, borderRadius: 8, fontSize: 13, lineHeight: 1.5, resize: 'vertical', fontFamily: 'inherit', background: 'white', boxSizing: 'border-box' }}
+                          />
+
+                          {/* Mevzuat */}
+                          <label style={{ fontSize: 11, fontWeight: 700, color: '#64748B', display: 'block', marginTop: 12, marginBottom: 6 }}>MEVZUAT / STANDART REFERANSLARI</label>
+                          <textarea
+                            value={ay?.mevzuat?.join('\n') ?? ''}
+                            onChange={e => setAlan(s.kod, { mevzuat: e.target.value.split('\n').filter(Boolean) })}
+                            rows={3}
+                            placeholder="Her satıra bir referans yazın..."
+                            style={{ width: '100%', padding: '8px 12px', border: `1px solid ${BORDER}`, borderRadius: 8, fontSize: 12, lineHeight: 1.5, resize: 'vertical', fontFamily: 'inherit', background: 'white', boxSizing: 'border-box', color: '#64748B' }}
+                          />
+                          <p style={{ fontSize: 11, color: '#94A3B8', margin: '4px 0 0' }}>Her satır ayrı bir mevzuat referansı</p>
+                        </div>
+
+                        {/* Sağ: 4 şık */}
+                        <div>
+                          <label style={{ fontSize: 11, fontWeight: 700, color: '#64748B', display: 'block', marginBottom: 6 }}>CEVAP ŞIKLARI (1→ En İyi, 4→ En Kötü)</label>
+                          {[0, 1, 2, 3].map(idx => (
+                            <div key={idx} style={{ marginBottom: 8 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                                <span style={{
+                                  width: 20, height: 20, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                  fontSize: 10, fontWeight: 700, flexShrink: 0,
+                                  background: idx === 0 ? '#22C55E' : idx === 1 ? '#84CC16' : idx === 2 ? '#F97316' : '#EF4444',
+                                  color: 'white',
+                                }}>{idx + 1}</span>
+                                <span style={{ fontSize: 10, color: '#94A3B8' }}>
+                                  {idx === 0 ? 'Mükemmel / En İyi Durum' : idx === 1 ? 'İyi / Yeterli' : idx === 2 ? 'Orta / Geliştirilebilir' : 'Yetersiz / Kritik'}
+                                </span>
+                              </div>
+                              <textarea
+                                value={ay?.rehber?.[idx] ?? ''}
+                                onChange={e => setRehber(s.kod, idx, e.target.value)}
+                                rows={2}
+                                style={{ width: '100%', padding: '6px 10px', border: `1px solid ${BORDER}`, borderRadius: 7, fontSize: 12, lineHeight: 1.4, resize: 'vertical', fontFamily: 'inherit', background: 'white', boxSizing: 'border-box' }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Mevzuat rozet önizleme */}
+                      {ay?.mevzuat && ay.mevzuat.length > 0 && (
+                        <div style={{ marginTop: 12, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                          {ay.mevzuat.map((m, i) => (
+                            <span key={i} style={{ padding: '3px 8px', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 4, fontSize: 11, color: '#1D4ED8' }}>{m}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )
+      })}
     </div>
   )
 }
+
 
 // ─── SEKME 3: k Katsayısı Editörü ────────────────────────────────────────────
 const HAZARDS  = ['deprem', 'sel', 'natech', 'siber'] as const
