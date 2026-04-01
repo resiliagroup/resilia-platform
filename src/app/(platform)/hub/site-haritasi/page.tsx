@@ -163,9 +163,10 @@ const toplamSayfa = KATEGORILER.reduce((s, k) => s + k.sayfalar.length, 0)
 
 function TesisOzeti() {
   const [tesisler, setTesisler] = useState<any[]>([])
+  const [acik, setAcik] = useState(false)
 
   useEffect(() => {
-    fetch('https://gqguwgbopgnpwzjwcexl.supabase.co/rest/v1/facilities?select=id,name,sector,employee_count,seismic_zone,building_age&tenant_id=eq.11111111-0000-0000-0000-000000000001&limit=8&order=employee_count.desc', {
+    fetch('https://gqguwgbopgnpwzjwcexl.supabase.co/rest/v1/facilities?select=id,name,sector,employee_count,seismic_zone,building_age&tenant_id=eq.11111111-0000-0000-0000-000000000001&limit=6&order=employee_count.desc', {
       headers: { 'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzM5OTgzMywiZXhwIjoyMDg4OTc1ODMzfQ.Ku-JRx8JFH5a3SIj7sGP_Dy_nM89NMMW34gPyxVO_qI' }
     }).then(r => r.json()).then(setTesisler).catch(() => null)
   }, [])
@@ -179,40 +180,40 @@ function TesisOzeti() {
     return Math.min(skor, 95)
   }
 
-  const sinif = (t: any) => t.sector === 'INDUSTRIAL' ? 1 : 3
-
   if (tesisler.length === 0) return null
 
   return (
-    <div style={{ marginBottom: 32, background: C.navyL, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <p style={{ fontSize: 13, fontWeight: 700, color: C.white, letterSpacing: '0.05em', textTransform: 'uppercase' as const }}>Tesis Risk Özeti</p>
-        <a href="/tesis-formu/iso-canli-test-001" style={{ fontSize: 12, color: C.teal, textDecoration: 'none' }}>Yeni değerlendirme →</a>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
-        {tesisler.map((t, i) => {
-          const uri = uriTahmini(t)
-          const s = sinif(t)
-          const uriRenk = uri >= 60 ? '#EF4444' : uri >= 40 ? '#F97316' : '#22C55E'
-          const sinifRenk = s === 1 ? '#EF4444' : '#22C55E'
-          return (
-            <div key={i} style={{ background: C.navy, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12 }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: C.white, marginBottom: 6, lineHeight: 1.3 }}>{t.name.length > 28 ? t.name.slice(0,28)+'…' : t.name}</p>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                <span style={{ fontSize: 11, color: C.muted }}>{t.employee_count} çalışan</span>
-                <span style={{ fontSize: 12, fontWeight: 700, color: uriRenk }}>URI {uri}</span>
+    <div style={{ borderBottom: `1px solid ${C.border}` }}>
+      <button
+        onClick={() => setAcik(v => !v)}
+        style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '8px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <Building2 size={13} color={C.teal} />
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8', letterSpacing: '0.06em' }}>TESİSLER ({tesisler.length})</span>
+        </div>
+        <span style={{ fontSize: 10, color: C.muted, transform: acik ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▼</span>
+      </button>
+      {acik && (
+        <div style={{ padding: '4px 10px 10px' }}>
+          {tesisler.map((t, i) => {
+            const uri = uriTahmini(t)
+            const uriRenk = uri >= 60 ? '#EF4444' : uri >= 40 ? '#F97316' : '#22C55E'
+            return (
+              <div key={i} style={{ padding: '6px 4px', borderBottom: i < tesisler.length-1 ? `1px solid ${C.border}` : 'none' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>
+                  <span style={{ fontSize: 11, color: C.white, lineHeight: 1.3 }}>{t.name.length > 22 ? t.name.slice(0,22)+'…' : t.name}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: uriRenk, flexShrink: 0, marginLeft: 6 }}>{uri}</span>
+                </div>
+                <div style={{ height: 3, background: '#1E3A5F', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{ width: `${uri}%`, height: '100%', background: uriRenk, borderRadius: 2 }} />
+                </div>
               </div>
-              <div style={{ height: 4, background: '#1E3A5F', borderRadius: 2, overflow: 'hidden' }}>
-                <div style={{ width: `${uri}%`, height: '100%', background: uriRenk, borderRadius: 2 }} />
-              </div>
-              <div style={{ marginTop: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 10, color: sinifRenk, fontWeight: 600 }}>Sınıf {s}</span>
-                <span style={{ fontSize: 10, color: C.muted }}>{t.sector === 'INDUSTRIAL' ? 'Sanayi' : 'Belediye'}</span>
-              </div>
-            </div>
-          )
-        })}
-      </div>
+            )
+          })}
+          <a href="/tesis-formu/iso-canli-test-001" style={{ display: 'block', marginTop: 8, fontSize: 11, color: C.teal, textDecoration: 'none', textAlign: 'center' as const }}>+ Yeni değerlendirme</a>
+        </div>
+      )}
     </div>
   )
 }
