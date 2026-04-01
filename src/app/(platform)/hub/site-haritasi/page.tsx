@@ -397,7 +397,7 @@ export default function SiteHaritasiPage() {
         <div style={{ width: 260, background: C.navy, display: 'flex', flexDirection: 'column', flexShrink: 0, borderRight: `1px solid ${C.border}`, overflow: 'hidden' }}>
 
           {/* Tesis Risk Mini Panel */}
-          <TesisOzeti onTesisAc={(t) => { setSecilenTesis(t); setAktifUrl(null) }} />
+          <TesisOzeti onTesisAc={(t) => { setSecilenTesis(t); setAktifUrl(null as unknown as string) }} />
 
           {/* Panel Header */}
           <div style={{ padding: '12px 14px 10px', borderBottom: `1px solid ${C.border}` }}>
