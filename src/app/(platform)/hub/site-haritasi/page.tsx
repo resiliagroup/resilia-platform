@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ChevronDown, ExternalLink, Shield, BarChart2, Map, Building2, Zap, Settings, FileText, Globe, LayoutGrid } from 'lucide-react'
 
 const C = {
@@ -159,6 +159,63 @@ const ERISIM_DOT: Record<string, string> = {
 }
 
 const toplamSayfa = KATEGORILER.reduce((s, k) => s + k.sayfalar.length, 0)
+
+
+function TesisOzeti() {
+  const [tesisler, setTesisler] = useState<any[]>([])
+
+  useEffect(() => {
+    fetch('https://gqguwgbopgnpwzjwcexl.supabase.co/rest/v1/facilities?select=id,name,sector,employee_count,seismic_zone,building_age&tenant_id=eq.11111111-0000-0000-0000-000000000001&limit=8&order=employee_count.desc', {
+      headers: { 'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzM5OTgzMywiZXhwIjoyMDg4OTc1ODMzfQ.Ku-JRx8JFH5a3SIj7sGP_Dy_nM89NMMW34gPyxVO_qI' }
+    }).then(r => r.json()).then(setTesisler).catch(() => null)
+  }, [])
+
+  const uriTahmini = (t: any) => {
+    let skor = 50
+    if (t.building_age > 20) skor += 15
+    if (t.seismic_zone === 1) skor += 10
+    if (t.sector === 'INDUSTRIAL') skor += 12
+    if (t.employee_count > 200) skor += 5
+    return Math.min(skor, 95)
+  }
+
+  const sinif = (t: any) => t.sector === 'INDUSTRIAL' ? 1 : 3
+
+  if (tesisler.length === 0) return null
+
+  return (
+    <div style={{ marginBottom: 32, background: C.navyL, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <p style={{ fontSize: 13, fontWeight: 700, color: C.white, letterSpacing: '0.05em', textTransform: 'uppercase' as const }}>Tesis Risk Özeti</p>
+        <a href="/tesis-formu/iso-canli-test-001" style={{ fontSize: 12, color: C.teal, textDecoration: 'none' }}>Yeni değerlendirme →</a>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
+        {tesisler.map((t, i) => {
+          const uri = uriTahmini(t)
+          const s = sinif(t)
+          const uriRenk = uri >= 60 ? '#EF4444' : uri >= 40 ? '#F97316' : '#22C55E'
+          const sinifRenk = s === 1 ? '#EF4444' : s === 2 ? '#F97316' : '#22C55E'
+          return (
+            <div key={i} style={{ background: C.navy, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: C.white, marginBottom: 6, lineHeight: 1.3 }}>{t.name.length > 28 ? t.name.slice(0,28)+'…' : t.name}</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <span style={{ fontSize: 11, color: C.muted }}>{t.employee_count} çalışan</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: uriRenk }}>URI {uri}</span>
+              </div>
+              <div style={{ height: 4, background: '#1E3A5F', borderRadius: 2, overflow: 'hidden' }}>
+                <div style={{ width: `${uri}%`, height: '100%', background: uriRenk, borderRadius: 2 }} />
+              </div>
+              <div style={{ marginTop: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 10, color: sinifRenk, fontWeight: 600 }}>Sınıf {s}</span>
+                <span style={{ fontSize: 10, color: C.muted }}>{t.sector === 'INDUSTRIAL' ? 'Sanayi' : 'Belediye'}</span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
 
 export default function SiteHaritasiPage() {
   const [acikKategoriler, setAcikKategoriler] = useState<Set<string>>(new Set(['platform']))
