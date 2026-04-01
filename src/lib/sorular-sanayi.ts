@@ -17,6 +17,7 @@ export type SoruSanayi = Soru & {
   natech_flag?: boolean
   siniflar: (1 | 2 | 3)[]   // hangi tehlike sınıflarında gösterilsin
   mevzuat: string[]          // dayandığı mevzuat/standart referansları
+  kategori: 'insan' | 'mekan' | 'proses' | 'cevre' | 'ekonomi'
 }
 
 // ─── Tesis Kimlik Envanter ──────────────────────────────────────
@@ -40,7 +41,8 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
 
   {
     kod: 'T1', bolum: 'TEHLİKE', boyut: 'H', agirlik: 5, kritik: true, ters: true,
-    siniflar: [1, 2, 3], natech_flag: true,
+    siniflar: [1, 2, 3],
+    kategori: 'cevre', natech_flag: true,
     mevzuat: ['AFAD AADY 2025', 'TBDY 2018', 'ISO 22301:2019'],
     soru: 'Tesisin bulunduğu bölgenin deprem tehlike haritasındaki ivme değeri ve tarihsel deprem tekerrür sıklığı nedir?',
     rehber: [
@@ -53,6 +55,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T2', bolum: 'TEHLİKE', boyut: 'H', agirlik: 4, kritik: true, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'cevre',
     mevzuat: ['AFAD AADY 2025', 'Büyükşehir Belediyeleri Afet Yatırımları Yönetmeliği'],
     soru: 'Tesisin bulunduğu havzanın taşkın/sel tehlike derecesi ve tekerrür periyodu nedir?',
     rehber: [
@@ -64,7 +67,8 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'T3', bolum: 'TEHLİKE', boyut: 'H', agirlik: 5, kritik: true, ters: true,
-    siniflar: [1, 2], natech_flag: true,
+    siniflar: [1, 2],
+    kategori: 'cevre', natech_flag: true,
     mevzuat: ['Büyük Endüstriyel Kazaların Önlenmesi Yönetmeliği (Seveso III)', 'Büyük Kaza Önleme Politika Belgesi Tebliği', 'Güvenlik Raporu Tebliği'],
     soru: 'Tesiste üretilen, kullanılan veya depolanan tehlikeli maddelerin NATECH potansiyeli nedir?',
     rehber: [
@@ -76,7 +80,8 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'T4', bolum: 'TEHLİKE', boyut: 'H', agirlik: 5, kritik: true, ters: true,
-    siniflar: [1, 2], natech_flag: true,
+    siniflar: [1, 2],
+    kategori: 'proses', natech_flag: true,
     mevzuat: ['Binaların Yangından Korunması Hakkında Yönetmelik', 'Büyük Endüstriyel Kazalar Yönetmeliği', 'İSG Kanunu 6331'],
     soru: 'Tesis içi yangın ve patlama tehlikesi yoğunluğu nasıldır? (NACE kodu, proses sıcaklığı, basınçlı ekipman)',
     rehber: [
@@ -89,6 +94,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T5', bolum: 'TEHLİKE', boyut: 'H', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2],
+    kategori: 'cevre',
     mevzuat: ['Büyük Endüstriyel Kazalar Yönetmeliği Madde 9 (domino etkisi)', 'İSG Risk Değerlendirmesi Yönetmeliği'],
     soru: 'Komşu tesisler veya çevreden kaynaklanabilecek baskı, kaza ve kirlilik tehdidi var mı?',
     rehber: [
@@ -101,6 +107,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T6', bolum: 'TEHLİKE', boyut: 'H', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'ekonomi',
     mevzuat: ['ISO 28000:2022 (Tedarik Zinciri Güvenliği)', 'BS ISO 28001:2007', 'ISO 22301:2019 Madde 8.3'],
     soru: 'Kritik hammadde, enerji veya lojistik tedarikçisinin kesintiye uğrama sıklığı ve olası etki büyüklüğü?',
     rehber: [
@@ -113,6 +120,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T7', bolum: 'TEHLİKE', boyut: 'H', agirlik: 4, kritik: true, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['BS EN ISO-IEC 27005:2024', 'BS ISO-IEC 27031:2025 (ICT DR)', 'BS ISO-IEC 27035:2023 (Olay Müdahale)'],
     soru: 'Endüstriyel kontrol sistemleri (SCADA/PLC/DCS) ve BT altyapısına yönelik siber saldırı tehdidi seviyesi nedir?',
     rehber: [
@@ -125,6 +133,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T8', bolum: 'TEHLİKE', boyut: 'H', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['ISO 22301:2019 Madde 6.2 (BIA)', 'PD ISO-TS 22317:2021 (BIA Kılavuzu)'],
     soru: 'Üretim kesintisinin tedarik zinciri ve stratejik müşterilere zincirleme etkisi ne düzeyde?',
     rehber: [
@@ -137,6 +146,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T9', bolum: 'TEHLİKE', boyut: 'H', agirlik: 4, kritik: true, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'cevre',
     mevzuat: ['AFAD AADY 2025', 'Büyükşehir Belediyeleri Afet Yatırımları Yönetmeliği'],
     soru: 'Tesisin bulunduğu bölgede sel, taşkın veya aşırı yağış riski ve son 10 yıldaki tekerrür sıklığı nedir?',
     rehber: [
@@ -149,6 +159,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T10', bolum: 'TEHLİKE', boyut: 'H', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'cevre',
     mevzuat: ['ISO 14001:2015+A1:2024', 'ISO 50001:2018+A1:2024'],
     soru: 'Aşırı sıcak veya soğuk hava dalgaları tesisin üretim kapasitesini ve enerji maliyetlerini nasıl etkiliyor?',
     rehber: [
@@ -161,6 +172,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T11', bolum: 'TEHLİKE', boyut: 'H', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2],
+    kategori: 'cevre',
     mevzuat: ['ISO 50001:2018+A1:2024', 'ISO 22301:2019 Madde 8.7 (iş sürekliliği)'],
     soru: 'Tesisin enerji tüketim profili iklim kaynaklı şebeke yükü artışlarına (yaz/kış zirvesi) ne kadar duyarlı?',
     rehber: [
@@ -173,6 +185,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T12', bolum: 'TEHLİKE', boyut: 'H', agirlik: 4, kritik: true, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'ekonomi',
     mevzuat: ['Güvenlik ve Acil Durumlar Koordinasyon Merkezi Yönetmeliği', 'AFAD AADY 2025'],
     soru: 'Tesisin bulunduğu bölgede toplumsal olaylar, grev, sabotaj veya terör saldırısı riski nasıl değerlendiriliyor?',
     rehber: [
@@ -185,6 +198,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T13', bolum: 'TEHLİKE', boyut: 'H', agirlik: 5, kritik: true, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'ekonomi',
     mevzuat: ['ISO 22301:2019 Madde 6.1 (bağlam)', 'BS ISO 31000:2018'],
     soru: 'Tesisin tedarik zinciri, üretim ortağı veya ihracat pazarları jeopolitik çatışma bölgelerine yakınlık açısından nasıl değerlendiriliyor?',
     rehber: [
@@ -197,6 +211,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T14', bolum: 'TEHLİKE', boyut: 'H', agirlik: 4, kritik: true, ters: true,
     siniflar: [1, 2],
+    kategori: 'cevre',
     mevzuat: ['Radyasyon Acil Durumlarının Yönetimi Hakkında Yönetmelik', 'Nükleer Tesislerde Yangın Güvenliği Yönetmeliği'],
     soru: 'Tesisin yakın çevresinde nükleer, radyolojik veya yüksek frekanslı elektromanyetik alan kaynağı var mı?',
     rehber: [
@@ -209,6 +224,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T15', bolum: 'TEHLİKE', boyut: 'H', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'cevre',
     mevzuat: ['Orman Yangınlarının Önlenmesi Yönetmeliği', 'AFAD AADY 2025'],
     soru: 'Tesisin yakın çevresinde orman yangını veya kırsal yangın tehlikesi var mı?',
     rehber: [
@@ -221,6 +237,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T16', bolum: 'TEHLİKE', boyut: 'H', agirlik: 4, kritik: true, ters: true,
     siniflar: [1, 2],
+    kategori: 'insan',
     mevzuat: ['İSG Kanunu 6331', 'İSGYE Tehlike Sınıfları Tebliği', 'Maden İşyerlerinde İSG Yönetmeliği'],
     soru: 'Tesis faaliyetlerinden kaynaklanan toz, gürültü, titreşim veya kimyasal maruziyet düzeyi nasıldır?',
     rehber: [
@@ -233,6 +250,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T17', bolum: 'TEHLİKE', boyut: 'H', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'cevre',
     mevzuat: ['ISO 14001:2015+A1:2024', 'Büyük Endüstriyel Kazalar Yönetmeliği'],
     soru: 'Tesisin faaliyetlerinden kaynaklanan çevre kirliliği (hava, su, toprak) riski ve düzenleyici ceza geçmişi nasıldır?',
     rehber: [
@@ -245,6 +263,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T18', bolum: 'TEHLİKE', boyut: 'H', agirlik: 4, kritik: true, ters: true,
     siniflar: [1, 2],
+    kategori: 'proses',
     mevzuat: ['Büyük Endüstriyel Kazalar Yönetmeliği', 'Dahili Acil Durum Planları Hakkında Tebliğ'],
     soru: 'Tesisin tarihsel kaza kaydı (yangın, patlama, kimyasal sızıntı, iş kazası) nasıldır?',
     rehber: [
@@ -257,6 +276,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T19', bolum: 'TEHLİKE', boyut: 'H', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'cevre',
     mevzuat: ['BS ISO 31000:2018', 'BS EN IEC 31010:2019'],
     soru: 'İklim değişikliğinin uzun vadeli etkileri (aşırı hava, kıtlık, biyoçeşitlilik kaybı) tesisin operasyonunu nasıl etkiliyor?',
     rehber: [
@@ -269,6 +289,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'T20', bolum: 'TEHLİKE', boyut: 'H', agirlik: 4, kritik: true, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['İSG Kanunu 6331', 'Çalışanların İSG Eğitimleri Yönetmeliği', 'AFAD Tatbikatlar Yönetmeliği'],
     soru: 'Tesisin iç denetim, dış denetim ve müfettiş ziyaretlerinden kaynaklanan uyumsuzluk kaydı nasıldır?',
     rehber: [
@@ -286,6 +307,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S1', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 5, kritik: true, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'mekan',
     mevzuat: ['TBDY 2018', 'ISO 21542:2021 (yapı erişilebilirliği)', 'AFAD AADY 2025'],
     soru: 'Binanın inşa yılı, deprem yönetmeliği uyumu ve yapısal hasar riski nasıl değerlendirilir?',
     rehber: [
@@ -298,6 +320,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S2', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 4, kritik: true, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'mekan',
     mevzuat: ['TBDY 2018', 'Zemin ve Temel Etüdü Genelgesi'],
     soru: 'Zemin sınıflaması, sıvılaşma ve oturma potansiyeli nasıl?',
     rehber: [
@@ -310,6 +333,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S3', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 5, kritik: true, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['İSG Kanunu 6331', 'İşyerlerinde Acil Durumlar Hakkında Yönetmelik', 'ISO 45001:2023'],
     soru: 'Afet veya kaza anında çalışanların fiziksel zarar görme riski ve olası can kaybı ihtimali nedir?',
     rehber: [
@@ -322,6 +346,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S4', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 4, kritik: false, ters: true,
     siniflar: [1, 2],
+    kategori: 'mekan',
     mevzuat: ['ISO 55001:2024 (Varlık Yönetimi)', 'ISO 22301:2019 Madde 8.4'],
     soru: 'Kritik üretim ekipmanı ve makinelerin afet anında hasar görme riski nasıl?',
     rehber: [
@@ -333,7 +358,8 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'S5', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 5, kritik: true, ters: true,
-    siniflar: [1, 2], natech_flag: true,
+    siniflar: [1, 2],
+    kategori: 'cevre', natech_flag: true,
     mevzuat: ['Büyük Endüstriyel Kazalar Yönetmeliği', 'Büyük Kaza Senaryo Dokümanı Tebliği', 'Dahili Acil Durum Planları Tebliği'],
     soru: 'Tehlikeli kimyasal maddelerin depolanma koşulları ve afet anında sızıntı/yayılım riski?',
     rehber: [
@@ -346,6 +372,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S6', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 4, kritik: true, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'mekan',
     mevzuat: ['ISO 50001:2018', 'ISO 22301:2019 Madde 8.7', 'Binaların Yangından Korunması Yönetmeliği'],
     soru: 'Enerji altyapısı (elektrik, gaz, basınçlı hava) kırılganlığı ve tek hat bağımlılığı?',
     rehber: [
@@ -358,6 +385,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S7', bolum: 'KIRILGANLIK', boyut: 'E', agirlik: 4, kritik: true, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['BS ISO-IEC 27031:2025 (ICT DR)', 'BS EN ISO-IEC 27005:2024', 'BS ISO-IEC 24762:2008'],
     soru: 'OT/BT sistemleri (SCADA, PLC, MES) eski nesil cihaz oranı ve güvenlik açığı seviyesi?',
     rehber: [
@@ -370,6 +398,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S8', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['ISO 28000:2022+A1:2024', 'PD ISO-TS 22318:2021 (Tedarik Zinciri Sürekliliği)'],
     soru: 'Kritik hammadde veya girdi tedarikçisi sayısı ve coğrafi çeşitliliği (tedarik zinciri kırılganlığı)?',
     rehber: [
@@ -382,6 +411,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S9', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 4, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'mekan',
     mevzuat: ['TBDY 2018', 'AFAD AADY 2025', 'Büyükşehir Belediyeleri Afet Yatırımları Yönetmeliği'],
     soru: 'Tesisin coğrafi konumu açısından kümülatif risk: fay hattı, taşkın ovası, akarsu yatağı mesafesi?',
     rehber: [
@@ -394,6 +424,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S10', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 4, kritik: true, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['ISO 22301:2019 Madde 8.3 (SPOF analizi)', 'PD ISO-TS 22317:2021'],
     soru: 'Operasyonun tek bir makine, sistem, proses veya kilit kişiye bağımlılık düzeyi (SPOF)?',
     rehber: [
@@ -406,6 +437,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S11', bolum: 'KIRILGANLIK', boyut: 'E', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['ISO 22301:2019 Madde 7.2 (yetkinlik)', 'PD ISO-TS 22330:2018 (insan unsuru)'],
     soru: 'Kilit teknik personelin (operatör, usta, mühendis) ani yokluğunda üretim sürekliliği riski?',
     rehber: [
@@ -418,6 +450,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S12', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'ekonomi',
     mevzuat: ['ISO 22301:2019 Madde 8.3 (finansal kapasite)', 'PD ISO-TS 22331:2018'],
     soru: 'Üretim kesintisinde nakit akışı ve acil operasyonel giderleri karşılama kapasitesi?',
     rehber: [
@@ -430,6 +463,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S13', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'ekonomi',
     mevzuat: ['ISO 22301:2019 Madde 8.3', 'BS 31100:2021 (Risk Yönetimi Uygulama Kılavuzu)'],
     soru: 'Tesis sigortası kapsamı (yangın, deprem, iş durması, 3. şahıs sorumluluk) yeterliliği?',
     rehber: [
@@ -442,6 +476,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S14', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'ekonomi',
     mevzuat: ['İSG Kanunu 6331', 'Büyük Endüstriyel Kazalar Yönetmeliği', 'ISO 45001:2023'],
     soru: 'Yürürlükteki yasal düzenlemelere (6331 İSG, Seveso III, ISO standartları, AFAD mevzuatı) uyum durumu?',
     rehber: [
@@ -454,6 +489,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S15', bolum: 'KIRILGANLIK', boyut: 'E', agirlik: 2, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'ekonomi',
     mevzuat: ['BS ISO 31000:2018', 'ISO 22301:2019 Madde 4.2 (paydaş analizi)'],
     soru: 'Olası bir afet veya kaza sonrası tesisin itibar kaybı, müşteri/ortak güven erozyonu riski?',
     rehber: [
@@ -466,6 +502,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S16', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 4, kritik: true, ters: true,
     siniflar: [1, 2],
+    kategori: 'mekan',
     mevzuat: ['Büyük Endüstriyel Kazalar Yönetmeliği', 'İSG Risk Değerlendirmesi Yönetmeliği', 'BS EN ISO 13849-1:2023'],
     soru: 'Tesis içi boru hatları, depolama tankları ve basınçlı kapların periyodik muayene ve test durumu nasıldır?',
     rehber: [
@@ -478,6 +515,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S17', bolum: 'KIRILGANLIK', boyut: 'E', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['ISO 41001:2018+A1:2024 (Tesis Yönetimi)', 'ISO 55001:2024'],
     soru: 'Tesis bakım yönetim sisteminin etkinliği: arıza bakım oranı, önleyici bakım planı ve yedek parça stoku?',
     rehber: [
@@ -490,6 +528,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S18', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 4, kritik: true, ters: true,
     siniflar: [1, 2],
+    kategori: 'mekan',
     mevzuat: ['Binaların Yangından Korunması Hakkında Yönetmelik', 'Seyyar Yangın Söndürücüler Tebliği', 'TS 11827'],
     soru: 'Tesis yangın yükü (m²/MJ) ve yapısal yangın direnci (REI sınıfı) nasıl değerlendiriliyor?',
     rehber: [
@@ -502,6 +541,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S19', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'mekan',
     mevzuat: ['Yapı İşlerinde İSG Yönetmeliği', 'ISO 21542:2021'],
     soru: 'Tesisin erişim yolları ve tahliye güzergâhları afet sırasında işlevselliğini koruyabiliyor mu?',
     rehber: [
@@ -514,6 +554,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S20', bolum: 'KIRILGANLIK', boyut: 'E', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['BS EN ISO-IEC 27701:2025 (Gizlilik)', 'KVKK', 'BS EN ISO-IEC 27017:2021'],
     soru: 'Tesisin üretim, müşteri ve operasyonel verilerinin veri güvenliği ve gizlilik koruma düzeyi nasıldır?',
     rehber: [
@@ -526,6 +567,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S21', bolum: 'KIRILGANLIK', boyut: 'F', agirlik: 4, kritik: true, ters: true,
     siniflar: [1, 2],
+    kategori: 'mekan',
     mevzuat: ['ISO 19443:2022+A1:2024 (Nükleer Tedarik Zinciri)', 'BS ISO 28000:2022'],
     soru: 'Tesisin kritik güvenlik ekipmanları (yangın kapıları, acil çıkış kapıları, sprinkler) son muayene tarihi ve durumu nasıldır?',
     rehber: [
@@ -538,6 +580,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'S22', bolum: 'KIRILGANLIK', boyut: 'E', agirlik: 3, kritik: false, ters: true,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['BS ISO 39001:2012+A1:2024 (Trafik Güvenliği)', 'İSG Kanunu 6331'],
     soru: 'Tesisin iş yerinde ve çevresindeki trafik güvenliği düzenlemeleri ve yaya/araç ayrışması nasıl değerlendiriliyor?',
     rehber: [
@@ -556,6 +599,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y1', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['ISO 22301:2019 Madde 5 (Liderlik)', 'ISO 45001:2023 Madde 5', 'BS ISO 22316:2017'],
     soru: 'Üst yönetim afet/acil durum ve iş sürekliliği yönetimine liderlik ediyor, kaynak ve bütçe sağlıyor mu?',
     rehber: [
@@ -568,6 +612,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y2', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['BS ISO 31000:2018', 'BS 31100:2021', 'ISO 22301:2019 Madde 6.1'],
     soru: 'Entegre risk yönetim politikası ve risk iştahı belgesi kurumsal düzeyde onaylanmış ve uygulanıyor mu?',
     rehber: [
@@ -580,6 +625,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y3', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['ISO 9001:2015+A1:2024', 'ISO 14001:2015+A1:2024', 'ISO 22301:2019', 'ISO 45001:2023'],
     soru: 'ISO 9001, 14001, 22301, 45001 gibi ilgili yönetim sistemi sertifikasyonları güncel mi?',
     rehber: [
@@ -592,6 +638,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y4', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['ISO 45001:2023 Madde 10.2', 'ISO 22301:2019 Madde 10'],
     soru: 'Yasal ve düzenleyici denetimlerden elde edilen bulgular sistematik olarak takip ediliyor mu?',
     rehber: [
@@ -604,6 +651,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y5', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2],
+    kategori: 'proses',
     mevzuat: ['ISO 22301:2019 Madde 8.3 (darboğaz analizi)', 'BS ISO 22316:2017'],
     soru: 'TOC mantığıyla kısıt/darboğaz analizi yapılıp üretim süreklilik planı hazırlandı mı?',
     rehber: [
@@ -616,6 +664,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y6', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['ISO 37001:2025 (Anti-Rüşvet)', 'ISO 22301:2019 Madde 5.3', 'BS ISO 21001:2025'],
     soru: 'Kurumsal yönetişim: etik kurallar, iç kontrol ve ihbarcı koruma mekanizması mevcut mu?',
     rehber: [
@@ -630,6 +679,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y7', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['Afet ve Acil Durum Müdahale Hizmetleri Yönetmeliği', 'İşyerlerinde Acil Durumlar Yönetmeliği', 'AFAD AADY 2025'],
     soru: 'Afet ve Acil Durum Yönetim Planı (AADYP) güncel, test edilmiş ve tüm personele duyurulmuş mu?',
     rehber: [
@@ -642,6 +692,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y8', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['ISO 22301:2019+A1:2024 Madde 8.4', 'BS EN ISO 22301:2019', 'ISO 22313:2020'],
     soru: 'İş Sürekliliği Planları (BCP): kritik üretim duruşu, tedarik zinciri ve kilit personel senaryoları için hazırlanmış mı?',
     rehber: [
@@ -654,6 +705,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y9', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
     siniflar: [1, 2],
+    kategori: 'proses',
     mevzuat: ['ISO 22301:2019 Madde 8.4', 'PD ISO-TS 22317:2021 (BIA)', 'ISO 22313:2020'],
     soru: 'Alternatif üretim yeri (yedek tesis) veya fason üretim anlaşması belirlenmiş ve aktif mi?',
     rehber: [
@@ -666,6 +718,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y10', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['BS ISO-IEC 27031:2025 (ICT DR)', 'BS ISO-IEC 24762:2008', 'ISO 22301:2019 Madde 8.7'],
     soru: 'IT Felaket Kurtarma Planı (DRP) ve OT/SCADA kurtarma prosedürü mevcut ve test edilmiş mi? (RTO/RPO tanımlı)',
     rehber: [
@@ -678,6 +731,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y11', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['PD ISO-TS 22318:2021 (Tedarik Zinciri Sürekliliği)', 'ISO 28000:2022+A1:2024'],
     soru: 'Kritik tedarikçi arızasına karşı onaylı alternatif tedarikçi ve emniyet stoğu stratejisi hazır mı?',
     rehber: [
@@ -690,6 +744,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y12', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
     siniflar: [1, 2],
+    kategori: 'proses',
     mevzuat: ['Büyük Endüstriyel Kazalar Yönetmeliği', 'Dahili Acil Durum Planları Tebliği', 'ISO 22301:2019'],
     soru: 'Büyük endüstriyel kaza senaryoları (Seveso) için dahili ve harici acil durum planları hazırlanmış mı?',
     rehber: [
@@ -702,6 +757,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y13', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['ISO 22398:2013 (Tatbikat Kılavuzu)', 'AFAD Tatbikatlar Yönetmeliği'],
     soru: 'Acil durum senaryoları için masa başı (TTX) ve saha tatbikatları düzenli olarak yapılıyor mu?',
     rehber: [
@@ -714,6 +770,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y14', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['ISO 22301:2019 Madde 8.5', 'PD ISO-TS 22331:2018'],
     soru: 'İş sürekliliği tatbikatlarından elde edilen bulgular ve iyileştirme önerileri sistematik olarak uygulanıyor mu?',
     rehber: [
@@ -728,6 +785,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y15', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'mekan',
     mevzuat: ['Binaların Yangından Korunması Yönetmeliği', 'TS 11827', 'Seyyar Yangın Söndürücüler Tebliği'],
     soru: 'Yangın algılama, ihbar, sprinkler ve söndürme sistemleri mevcut ve periyodik kontrollü mu?',
     rehber: [
@@ -740,6 +798,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y16', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'mekan',
     mevzuat: ['ISO 50001:2018', 'Binaların Yangından Korunması Yönetmeliği', 'İSG Kanunu 6331'],
     soru: 'Enerji güvenliği: çift besleme, topraklama, kaçak akım koruması, yedek jeneratör ve UPS mevcut mu?',
     rehber: [
@@ -752,6 +811,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y17', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'cevre',
     mevzuat: ['AFAD AADY 2025', 'Büyükşehir Belediyeleri Afet Yatırımları Yönetmeliği'],
     soru: 'Sel/taşkın önlemleri: su geçirmez bariyer, tahliye pompası, algılama sistemi var mı?',
     rehber: [
@@ -763,7 +823,8 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   },
   {
     kod: 'Y18', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
-    siniflar: [1, 2], natech_flag: true,
+    siniflar: [1, 2],
+    kategori: 'cevre', natech_flag: true,
     mevzuat: ['Büyük Endüstriyel Kazalar Yönetmeliği', 'Dahili Acil Durum Planları Tebliği', 'ISO 22301:2019'],
     soru: 'NATECH önlem sistemi: kimyasal sızıntı detektörü, otomatik kesme vanası ve güvenli tahliye havalandırması var mı?',
     rehber: [
@@ -776,6 +837,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y19', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
     siniflar: [1, 2],
+    kategori: 'mekan',
     mevzuat: ['BS EN ISO 13849-1:2023 (Makine Güvenliği)', 'İSG Kanunu 6331', 'ISO 45001:2023'],
     soru: 'Makine koruma: emniyetli durdurma (ESD), aşırı ısınma koruması ve basınç tahliye valfi mevcut mu?',
     rehber: [
@@ -788,6 +850,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y20', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'cevre',
     mevzuat: ['TBDY 2018', 'ISO 55001:2024', 'AFAD AADY 2025'],
     soru: 'Deprem dayanıklılık önlemleri: geoteknik rapor, deprem izolasyon sistemi, raf ve ekipman ankrajları var mı?',
     rehber: [
@@ -800,6 +863,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y21', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'mekan',
     mevzuat: ['Binaların Yangından Korunması Yönetmeliği', 'ISO 21542:2021', 'İşyerlerinde Acil Durumlar Yönetmeliği'],
     soru: 'Acil durum yönlendirme, kaçış yolu aydınlatması ve push-bar acil çıkış kapıları periyodik test ediliyor mu?',
     rehber: [
@@ -812,6 +876,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y22', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'mekan',
     mevzuat: ['AFAD AADY 2025', 'Afet ve Acil Durum Yönetim Merkezleri Yönetmeliği'],
     soru: 'Erken uyarı sistemleri (deprem, kimyasal sızıntı, yangın, sel) merkez sistemle entegre mi?',
     rehber: [
@@ -824,6 +889,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y23', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'mekan',
     mevzuat: ['Güvenlik ve Acil Durumlar Koordinasyon Merkezi Yönetmeliği', 'ISO 22301:2019'],
     soru: 'Tesis Acil Durum Yönetim Merkezi (ADYM) fiziksel/sanal kurulumu ve iletişim altyapısı hazır mı?',
     rehber: [
@@ -836,6 +902,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y24', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'mekan',
     mevzuat: ['Binaların Yangından Korunması Yönetmeliği', 'İşyerlerinde Acil Durumlar Yönetmeliği'],
     soru: 'Tesisin güvenlik kamera sistemi, alarm sistemi ve perimeter güvenliği afet sonrası da çalışabiliyor mu?',
     rehber: [
@@ -850,6 +917,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y25', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['AFAD Arama ve Kurtarma Yönetmeliği', 'İşyerlerinde Acil Durumlar Yönetmeliği', 'ISO 22301:2019'],
     soru: 'Afet operasyon personeli: ilkyardım, hafif USAR (arama-kurtarma) ve yangın müdahale ekipleri aktif mi?',
     rehber: [
@@ -862,6 +930,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y26', bolum: 'KAPASİTE', boyut: 'C', agirlik: 5, kritik: true, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['ISO 22301:2019 Madde 7.2', 'BS ISO 45002:2023', 'CBCP/MBCI sertifikasyonu'],
     soru: 'Planlama personeli: ISO 22301 uzmanı, afet yöneticisi veya risk analizi sertifikalı uzman görevlendirilmiş mi?',
     rehber: [
@@ -874,6 +943,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y27', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['Çalışanların İSG Eğitimleri Yönetmeliği', 'ISO 45001:2023 Madde 7.2', 'AFAD Tatbikatlar Yönetmeliği'],
     soru: 'Yönetici ve personele yönelik düzenli afet yönetimi eğitimi ve farkındalık programı uygulanıyor mu?',
     rehber: [
@@ -886,6 +956,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y28', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['ISO 22398:2013', 'AFAD Tatbikatlar Yönetmeliği', 'ISO 22301:2019 Madde 8.5'],
     soru: 'Düzenli tatbikat: masa başı ve tam saha tatbikatları yapılıyor, öğrenilen dersler kayıt altına alınıyor mu?',
     rehber: [
@@ -898,6 +969,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y29', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['İşyerlerinde Acil Durumlar Yönetmeliği', 'AFAD Arama ve Kurtarma Yönetmeliği'],
     soru: 'Aktif Acil Durum Ekipleri (ADE): görev tanımı, iletişim hiyerarşisi ve 7/24 ulaşılabilirlik sağlanmış mı?',
     rehber: [
@@ -910,6 +982,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y30', bolum: 'KAPASİTE', boyut: 'C', agirlik: 2, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['İşyerlerinde Acil Durumlar Yönetmeliği', 'ISO 45001:2023 Madde 7.4'],
     soru: 'Dezavantajlı çalışanları kapsayan özel tahliye prosedürü (engelli, hamile, yabancı uyruklu) var mı?',
     rehber: [
@@ -922,6 +995,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y31', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['PD ISO-TS 22330:2018 (İnsan Unsuru)', 'ISO 45003:2021 (Psikolojik Güvenlik)'],
     soru: 'Afet sonrası çalışan psikolojik iyileşme ve refah programı mevcut mu?',
     rehber: [
@@ -934,6 +1008,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y32', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'ekonomi',
     mevzuat: ['ISO 10002:2018 (Müşteri Şikâyeti)', 'ISO 22301:2019 Madde 7.4 (iletişim)'],
     soru: 'Tedarikçi ve taşeron firmalarla ortak acil durum tatbikatları ve bilgi paylaşım platformu var mı?',
     rehber: [
@@ -948,6 +1023,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y33', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['BS ISO-IEC 27035-1:2023 (Olay Müdahale)', 'BS EN ISO-IEC 27005:2024', 'BS ISO-IEC 27031:2025'],
     soru: 'OT/BT siber güvenlik: ağ segmentasyonu, yama yönetimi, sızma testi ve olay müdahale planı mevcut mu?',
     rehber: [
@@ -960,6 +1036,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y34', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['BS ISO-IEC 27031:2025 (ICT DR)', 'ISO 22301:2019 Madde 8.7'],
     soru: 'Üretim ve operasyon verilerinin yedekleme sıklığı, saklama konumu (offsite/bulut) ve kurtarma testi durumu?',
     rehber: [
@@ -972,6 +1049,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y35', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['ISO 22301:2019 Madde 8.4 (manuel süreklilik)', 'BS ISO-IEC 24762:2008'],
     soru: 'Dijital sistemler arızasında üretimin manuel olarak belirli bir kapasitede sürdürülmesi için prosedür var mı?',
     rehber: [
@@ -984,6 +1062,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y36', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['BS EN ISO-IEC 27701:2025 (Gizlilik)', 'BS EN ISO-IEC 27017:2021 (Bulut Güvenliği)'],
     soru: 'Bulut ve SaaS hizmetlerinin iş sürekliliği senaryolarına entegrasyonu ve SLA yönetimi nasıldır?',
     rehber: [
@@ -996,6 +1075,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y37', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['BS ISO-IEC 27036-1:2021 (Tedarikçi Güvenliği)', 'BS ISO-IEC 27036-3:2023'],
     soru: 'Kritik yazılım/donanım tedarikçilerinin güvenlik ve süreklilik koşullarını karşılamaktaki durumu nasıl?',
     rehber: [
@@ -1010,6 +1090,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y38', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'ekonomi',
     mevzuat: ['ISO 22301:2019 Madde 7.4', 'PD ISO-TS 22331:2018 (Kriz İletişimi)'],
     soru: 'Kriz iletişim stratejisi, medya sözcüsü ve paydaş bilgilendirme şablonları hazır mı?',
     rehber: [
@@ -1022,6 +1103,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y39', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'ekonomi',
     mevzuat: ['Afet ve Acil Durum Müdahale Hizmetleri Yönetmeliği', 'AFAD AADY 2025', 'Afet ve Acil Durum Yönetim Merkezleri Yönetmeliği'],
     soru: 'AFAD, OSB Yönetimi, belediye ve sağlık kuruluşlarıyla aktif koordinasyon ve karşılıklı yardım protokolleri var mı?',
     rehber: [
@@ -1034,6 +1116,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y40', bolum: 'KAPASİTE', boyut: 'C', agirlik: 2, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'ekonomi',
     mevzuat: ['AFAD AADY 2025', 'Büyükşehir Belediyeleri Afet Yatırımları Yönetmeliği'],
     soru: 'Tesisin topluma sağlayabileceği afet sonrası destek kapasitesi (alan, ekipman, araç) tanımlanmış mı?',
     rehber: [
@@ -1046,6 +1129,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y41', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'ekonomi',
     mevzuat: ['ISO 22301:2019 Madde 8.4', 'ISO 22313:2020'],
     soru: 'Afet için finansal koruma: kapsamlı sigorta, iş durması sigortası ve acil nakit fon rezervi var mı?',
     rehber: [
@@ -1058,6 +1142,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y42', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'ekonomi',
     mevzuat: ['ISO 20400:2017 (Sürdürülebilir Tedarik)', 'BS ISO 20400:2017'],
     soru: 'Tedarikçi ve taşeron firmaların afet/acil durum hazırlık düzeyi değerlendiriliyor ve izleniyor mu?',
     rehber: [
@@ -1072,6 +1157,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y43', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['ISO 22301:2019 Madde 10 (iyileştirme)', 'ISO 9001:2015+A1:2024 Madde 10.3'],
     soru: 'Geçmiş olaylar, tatbikat bulguları ve dış denetim önerilerinden sistematik ders çıkarma süreci aktif mi?',
     rehber: [
@@ -1084,6 +1170,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y44', bolum: 'KAPASİTE', boyut: 'C', agirlik: 2, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['BS ISO 22316:2017 (Örgütsel Dayanıklılık)', 'ISO 22301:2019 Madde 10'],
     soru: 'Risk yönetiminde PDCA döngüsü ve sürekli iyileştirme kültürü yerleşmiş mi?',
     rehber: [
@@ -1096,6 +1183,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y45', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['ISO 45001:2023 Madde 10.2 (near-miss)', 'BS ISO 45002:2023', 'BS ISO 45003:2021'],
     soru: 'Çalışanlar "neredeyse kaza/near-miss" olaylarını raporlamaktan çekinmeden bildiriyor mu?',
     rehber: [
@@ -1108,6 +1196,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y46', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2],
+    kategori: 'ekonomi',
     mevzuat: ['ISO 19443:2022+A1:2024', 'ISO 28000:2022+A1:2024', 'BS ISO-IEC 20243-1:2023'],
     soru: 'Tedarik zinciri güvenliği ve bütünlüğü: tedarikçi davranış kuralları, etik tedarik ve izleme mekanizması var mı?',
     rehber: [
@@ -1120,6 +1209,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y47', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['BS EN IEC 31010:2019 (Risk Değerlendirme Teknikleri)', 'BS ISO 31000:2018'],
     soru: 'Yılda en az bir kez kapsamlı risk değerlendirmesi güncelleniyor ve yönetim onayından geçiyor mu?',
     rehber: [
@@ -1132,6 +1222,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y48', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['ISO 22316:2017', 'PD ISO-TS 22317:2021 (İş Etki Analizi)'],
     soru: 'İş Etki Analizi (BIA) tamamlanmış ve kritik ürün/hizmet ile maksimum tolere edilebilir kesinti (MTPD) tanımlanmış mı?',
     rehber: [
@@ -1144,6 +1235,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y49', bolum: 'KAPASİTE', boyut: 'C', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['ISO 14001:2015+A1:2024', 'ISO 22301:2019 Madde 4.1 (bağlam)'],
     soru: 'Çevresel ve sosyal sürdürülebilirlik hedefleri acil durum ve iş sürekliliği planlarına entegre edilmiş mi?',
     rehber: [
@@ -1156,6 +1248,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'Y50', bolum: 'KAPASİTE', boyut: 'C', agirlik: 4, kritik: true, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['İSG Kurulları Hakkında Yönetmelik', 'İSG Hizmetleri Yönetmeliği', 'ISO 45001:2023 Madde 5.4'],
     soru: 'İSG Kurulu aktif ve etkin çalışıyor mu? Gündemde risk, acil durum ve süreklilik konuları yer alıyor mu?',
     rehber: [
@@ -1173,6 +1266,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'HRO1', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 5, kritik: true, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['BS ISO 22316:2017 (Örgütsel Dayanıklılık)', 'ISO 45001:2023 Madde 5.1'],
     soru: 'Başarısızlığa takıntı: personel "sistemimiz güvenli, sorun olmaz" varsayımından kaçınıyor mu?',
     rehber: [
@@ -1185,6 +1279,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'HRO2', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['BS EN IEC 31010:2019 (kök neden analizi teknikleri)', 'ISO 9001:2015+A1:2024 Madde 10.2'],
     soru: 'Basitleştirmeye direnç: tesis, karmaşık sorunları tek bir nedene indirgemekten kaçınıyor mu?',
     rehber: [
@@ -1197,6 +1292,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'HRO3', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['ISO 45001:2023 Madde 5.4 (katılım)', 'BS ISO 45002:2023'],
     soru: 'Operasyona duyarlılık: saha çalışanları anormallik gördüklerinde üretimi durdurma yetkisine sahip mi?',
     rehber: [
@@ -1209,6 +1305,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'HRO4', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['BS ISO 22316:2017', 'ISO 22301:2019 Madde 10'],
     soru: 'Dayanıklılığa bağlılık: tesis beklenmedik olaylardan hızlı toparlanma kapasitesi geliştiriyor mu?',
     rehber: [
@@ -1221,6 +1318,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'HRO5', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['BS ISO 22316:2017', 'ISO 45003:2021 (Liderlik ve Psikolojik Güvenlik)'],
     soru: 'Uzmanlığa saygı: kriz anında karar en üst kademeden değil en bilgili kişiden mi alınıyor?',
     rehber: [
@@ -1233,6 +1331,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'HRO6', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
     siniflar: [1, 2],
+    kategori: 'proses',
     mevzuat: ['ISO 9001:2015+A1:2024 (Kaizen)', 'BS ISO 45002:2023'],
     soru: 'Yalın düşünce (Lean): tesis, afet hazırlığında israfı (waste) tanımlıyor ve sistematik olarak elimine ediyor mu?',
     rehber: [
@@ -1245,6 +1344,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'HRO7', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
     siniflar: [1, 2],
+    kategori: 'proses',
     mevzuat: ['ISO 9001:2015+A1:2024 (DMAIC)', 'BS EN IEC 31010:2019'],
     soru: 'Six Sigma kalite: kritik güvenlik proseslerinde değişkenlik (varyasyon) ölçülüyor ve kontrol altında tutuluyor mu?',
     rehber: [
@@ -1257,6 +1357,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'HRO8', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 5, kritik: true, ters: false,
     siniflar: [1, 2],
+    kategori: 'proses',
     mevzuat: ['ISO 22301:2019 Madde 8.3 (TOC)', 'BS ISO 22316:2017'],
     soru: 'Kısıt yönetimi (TOC): tesisin afet müdahale kapasitesindeki en kritik darboğaz (constraint) tanımlanmış mı?',
     rehber: [
@@ -1269,6 +1370,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'HRO9', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['BS ISO 45003:2021 (Blame-Free Kültür)', 'ISO 45001:2023 Madde 10.2'],
     soru: 'Sistem düşüncesi: tesis, olayları bireysel hatalar yerine sistem zayıflıkları olarak mı değerlendiriyor?',
     rehber: [
@@ -1281,6 +1383,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'HRO10', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['ISO 22301:2019 Madde 10 (Agile Review)', 'BS ISO 22316:2017'],
     soru: 'Çevik toparlanma (Agile Resilience): tesis, büyük planlar yerine kısa döngülerle (sprint) iyileşme yapıyor mu?',
     rehber: [
@@ -1293,6 +1396,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'HRO11', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 4, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'proses',
     mevzuat: ['BS ISO 22316:2017 Madde 7 (Öğrenme)', 'ISO 22301:2019 Madde 9.1'],
     soru: 'Öğrenen organizasyon: sektördeki kazalar ve olaylar (benchmarking) sistematik olarak takip edilip ders çıkarılıyor mu?',
     rehber: [
@@ -1305,6 +1409,7 @@ export const SORULAR_SANAYI: SoruSanayi[] = [
   {
     kod: 'HRO12', bolum: 'KAPASİTE', boyut: 'HRO', agirlik: 3, kritik: false, ters: false,
     siniflar: [1, 2, 3],
+    kategori: 'insan',
     mevzuat: ['BS ISO 45003:2021', 'PD ISO-TS 22330:2018 (İnsan ve Kültür)'],
     soru: 'Güvenlik kültürü ölçümü: güvenlik iklimi anketleri düzenli yapılıyor ve sonuçlar iyileştirme planına dönüşüyor mu?',
     rehber: [
