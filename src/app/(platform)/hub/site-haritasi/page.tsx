@@ -275,6 +275,9 @@ export default function SiteHaritasiPage() {
         {/* Sol Panel */}
         <div style={{ width: 260, background: C.navy, display: 'flex', flexDirection: 'column', flexShrink: 0, borderRight: `1px solid ${C.border}`, overflow: 'hidden' }}>
 
+          {/* Tesis Risk Mini Panel */}
+          <TesisOzeti />
+
           {/* Panel Header */}
           <div style={{ padding: '12px 14px 10px', borderBottom: `1px solid ${C.border}` }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
