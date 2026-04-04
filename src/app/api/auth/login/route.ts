@@ -24,20 +24,22 @@ export async function POST(request: Request) {
   const projectRef = 'gqguwgbopgnpwzjwcexl'
   const cookieOpts = {
     path: '/',
-    httpOnly: true,
+    httpOnly: false,
     sameSite: 'lax' as const,
-    secure: true,
+    secure: process.env.NODE_ENV === 'production',
     maxAge: 60 * 60 * 24 * 7,
   }
 
-  response.cookies.set(`sb-${projectRef}-auth-token`, JSON.stringify({
+  const cookieVal = encodeURIComponent(JSON.stringify({
     access_token: data.access_token,
     refresh_token: data.refresh_token,
     expires_at: data.expires_at,
     expires_in: data.expires_in,
     token_type: data.token_type,
     user: data.user,
-  }), cookieOpts)
+  }))
+
+  response.cookies.set(`sb-${projectRef}-auth-token`, cookieVal, cookieOpts)
 
   return response
 }
