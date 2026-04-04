@@ -1,4 +1,8 @@
 'use client'
+
+function uriToAdis(uri: number): number { return Math.round(200 + (uri / 100) * 1000) }
+function adisRenk(a: number): string { return a<450?'#EF4444':a<650?'#F97316':a<850?'#EAB308':a<1050?'#22C55E':'#16A34A' }
+function adisLabel(a: number): string { return a<450?'Kritik Risk':a<650?'Yüksek Risk':a<850?'Orta Risk':a<1050?'İyi':'Güçlü' }
 import { useState, useEffect, useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import { createClient } from '@supabase/supabase-js'
@@ -1465,7 +1469,7 @@ export default function BeylikduzuKomuta() {
                                   background:  RISK_CLASS_COLOR[skor.data.risk_class] + '15',
                                 }}
                               >
-                                URI {skor.data.uri_score.toFixed(1)}
+                                ADİS {uriToAdis(Math.round(skor.data.uri_score))}
                               </span>
                               <span
                                 className="text-[10px] font-semibold"

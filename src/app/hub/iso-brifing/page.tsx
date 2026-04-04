@@ -1,5 +1,9 @@
 'use client'
 
+function uriToAdis(uri: number): number { return Math.round(200 + (uri / 100) * 1000) }
+function adisRenk(a: number): string { return a<450?'#EF4444':a<650?'#F97316':a<850?'#EAB308':a<1050?'#22C55E':'#16A34A' }
+function adisLabel(a: number): string { return a<450?'Kritik Risk':a<650?'Yüksek Risk':a<850?'Orta Risk':a<1050?'İyi':'Güçlü' }
+
 import React, { useEffect, useRef, useState } from 'react'
 import { Outfit, DM_Mono } from 'next/font/google'
 import { Shield, TrendingUp, Globe, GraduationCap, AlertTriangle, Building2, Factory, Users, CheckCircle, Clock, Target, BarChart3, Zap, FileCheck, Radio, Eye, RefreshCw } from 'lucide-react'
@@ -195,7 +199,7 @@ export default function IsoBrifingV3() {
         data: {
           labels: SEKTORLER.map(s => s.ad.length > 14 ? s.ad.slice(0, 13) + '…' : s.ad),
           datasets: [{
-            label: 'URI Skoru',
+            label: 'ADİS Skoru',
             data: SEKTORLER.map(s => s.uri),
             backgroundColor: SEKTORLER.map(s =>
               s.uri >= 40 ? '#EF444455' : s.uri >= 30 ? '#F9731655' : s.uri >= 25 ? '#EAB30855' : '#22C55E55'),

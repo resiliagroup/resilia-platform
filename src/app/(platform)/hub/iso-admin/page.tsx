@@ -1,4 +1,8 @@
 'use client'
+
+function uriToAdis(uri: number): number { return Math.round(200 + (uri / 100) * 1000) }
+function adisRenk(a: number): string { return a<450?'#EF4444':a<650?'#F97316':a<850?'#EAB308':a<1050?'#22C55E':'#16A34A' }
+function adisLabel(a: number): string { return a<450?'Kritik Risk':a<650?'Yüksek Risk':a<850?'Orta Risk':a<1050?'İyi':'Güçlü' }
 import { useState, useEffect } from 'react'
 import { Users, Building2, Settings2, Leaf, TrendingUp, LayoutGrid } from 'lucide-react'
 import { createClient } from '@supabase/supabase-js'
@@ -102,7 +106,7 @@ function FormIzlemeSekme() {
             <table style={{ width: '100%', borderCollapse: 'collapse' as const, fontSize: 13 }}>
               <thead>
                 <tr style={{ background: '#F8FAFC' }}>
-                  {['Token', 'Firma Adı', 'URI Skoru', 'Risk', 'Gönderim Tarihi', 'Konum'].map(h => (
+                  {['Token', 'Firma Adı', 'ADİS Skoru', 'Risk', 'Gönderim Tarihi', 'Konum'].map(h => (
                     <th key={h} style={{ padding: '10px 16px', textAlign: 'left' as const, fontWeight: 600, color: '#64748B', borderBottom: `1px solid ${BORDER}` }}>{h}</th>
                   ))}
                 </tr>

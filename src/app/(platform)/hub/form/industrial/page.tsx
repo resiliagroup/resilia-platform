@@ -1,4 +1,8 @@
 'use client'
+
+function uriToAdis(uri: number): number { return Math.round(200 + (uri / 100) * 1000) }
+function adisRenk(a: number): string { return a<450?'#EF4444':a<650?'#F97316':a<850?'#EAB308':a<1050?'#22C55E':'#16A34A' }
+function adisLabel(a: number): string { return a<450?'Kritik Risk':a<650?'Yüksek Risk':a<850?'Orta Risk':a<1050?'İyi':'Güçlü' }
 import { useState } from 'react'
 import { SORULAR_SANAYI, type SoruSanayi } from '@/lib/sorular-sanayi'
 import { createFacility, createAssessment, type OmniAssessment, RISK_CLASS_TR, RISK_CLASS_COLOR } from '@/lib/api'
@@ -236,7 +240,7 @@ export default function SanayiFormuPage() {
             <div style={{ background: 'white', borderRadius: 16, border: `1px solid ${BORDER}`, padding: 48, marginBottom: 24 }}>
               <div style={{ fontSize: 13, color: '#94A3B8', marginBottom: 8 }}>URI SKORU</div>
               <div style={{ fontSize: 80, fontWeight: 900, color: RISK_CLASS_COLOR[sonuc.risk_class], fontFamily: 'DM Mono,monospace', lineHeight: 1 }}>
-                {Math.round(sonuc.uri_score)}
+                {uriToAdis(Math.round(sonuc.uri_score))}
               </div>
               <div style={{ fontSize: 20, fontWeight: 700, color: RISK_CLASS_COLOR[sonuc.risk_class], marginTop: 8 }}>
                 {RISK_CLASS_TR[sonuc.risk_class]}

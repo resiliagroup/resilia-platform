@@ -1,4 +1,8 @@
 'use client'
+
+function uriToAdis(uri: number): number { return Math.round(200 + (uri / 100) * 1000) }
+function adisRenk(a: number): string { return a<450?'#EF4444':a<650?'#F97316':a<850?'#EAB308':a<1050?'#22C55E':'#16A34A' }
+function adisLabel(a: number): string { return a<450?'Kritik Risk':a<650?'Yüksek Risk':a<850?'Orta Risk':a<1050?'İyi':'Güçlü' }
 import { useState, useEffect } from 'react'
 import { ChevronDown, ExternalLink, Shield, BarChart2, Map, Building2, Zap, Settings, FileText, Globe, LayoutGrid } from 'lucide-react'
 
@@ -213,7 +217,7 @@ function TesisDetay({ tesis, onKapat }: { tesis: any; onKapat: () => void }) {
         {/* KPI Kartları */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
           {[
-            { lbl: 'URI Skoru', val: String(uri), renk: uriRenk },
+            { lbl: 'ADİS Skoru', val: String(uri), renk: uriRenk },
             { lbl: 'Çalışan', val: String(tesis.employee_count), renk: C.text },
             { lbl: 'Bina Yaşı', val: `${tesis.building_age}y`, renk: C.text },
             { lbl: 'Deprem Zonu', val: `${tesis.seismic_zone}. Bölge`, renk: '#EF4444' },

@@ -1,4 +1,8 @@
 'use client'
+
+function uriToAdis(uri: number): number { return Math.round(200 + (uri / 100) * 1000) }
+function adisRenk(a: number): string { return a<450?'#EF4444':a<650?'#F97316':a<850?'#EAB308':a<1050?'#22C55E':'#16A34A' }
+function adisLabel(a: number): string { return a<450?'Kritik Risk':a<650?'Yüksek Risk':a<850?'Orta Risk':a<1050?'İyi':'Güçlü' }
 import { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { supabase } from '@/lib/supabase'
@@ -378,7 +382,7 @@ export default function FormPage() {
               omniRISK · URI Dayanıklılık Skoru
             </div>
             <div style={{fontSize:80,fontWeight:800,lineHeight:1,color:renkHex,marginBottom:8}}>
-              {Math.round(s.uri_score)}
+              {uriToAdis(Math.round(s.uri_score))}
             </div>
             <div style={{fontSize:12,color:'#9CA3AF',marginBottom:20}}>/100</div>
             <div style={{

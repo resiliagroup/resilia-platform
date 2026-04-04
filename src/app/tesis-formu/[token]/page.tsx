@@ -57,7 +57,7 @@ const ADIM_ETIKET = [
   'Kapasite & Yönetim',
   'HRO Olgunluğu',
   'Destek Kapasitesi',
-  'Sonuç & URI Skoru',
+  'Sonuç & ADİS Skoru',
 ]
 
 // ─── URI hesaplama ────────────────────────────────────────────────────────────

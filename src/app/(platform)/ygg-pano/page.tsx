@@ -1,4 +1,8 @@
 'use client'
+
+function uriToAdis(uri: number): number { return Math.round(200 + (uri / 100) * 1000) }
+function adisRenk(a: number): string { return a<450?'#EF4444':a<650?'#F97316':a<850?'#EAB308':a<1050?'#22C55E':'#16A34A' }
+function adisLabel(a: number): string { return a<450?'Kritik Risk':a<650?'Yüksek Risk':a<850?'Orta Risk':a<1050?'İyi':'Güçlü' }
 import { useState, useEffect, useMemo } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { Loader2, Download, AlertTriangle, TrendingUp, Shield, Zap } from 'lucide-react'
@@ -257,7 +261,7 @@ export default function YGGPano() {
         .filter(f => skorlar[f.id]?.s === 'ok')
         .map(f => {
           const sk = skorlar[f.id] as Extract<SkorDurum, { s: 'ok' }>
-          const uri = Math.round(sk.data.uri_score)
+          const uri = uriToAdis(Math.round(sk.data.uri_score))
           const isNatech = !!f.extra_data?.hazmat_flag
           const mtpd = ((f.employee_count ?? 0) * 850 * 8 * sektorCarpan(f.sector) / 1_000_000).toFixed(1)
           return [
