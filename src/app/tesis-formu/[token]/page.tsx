@@ -79,6 +79,35 @@ function hesaplaUri(puanlar: Record<string, number>, sektorTipi?: SektorTipi): n
   )))
 }
 
+// ─── ADİS Skoru (200-1200) ────────────────────────────────────────────────────
+function uriToAdis(uri: number): number {
+  return Math.round(200 + (uri / 100) * 1000)
+}
+
+function adisRenk(adis: number): string {
+  if (adis < 450)  return '#EF4444'  // Kritik
+  if (adis < 650)  return '#F97316'  // Yüksek
+  if (adis < 850)  return '#EAB308'  // Orta
+  if (adis < 1050) return '#22C55E'  // İyi
+  return '#16A34A'                    // Güçlü
+}
+
+function adisLabel(adis: number): string {
+  if (adis < 450)  return 'Kritik Risk'
+  if (adis < 650)  return 'Yüksek Risk'
+  if (adis < 850)  return 'Orta Risk'
+  if (adis < 1050) return 'İyi'
+  return 'Güçlü / Dayanıklı'
+}
+
+function adisBant(adis: number): string {
+  if (adis < 450)  return '200 – 449'
+  if (adis < 650)  return '450 – 649'
+  if (adis < 850)  return '650 – 849'
+  if (adis < 1050) return '850 – 1049'
+  return '1050 – 1200'
+}
+
 function uriRenk(uri: number): string {
   return uri < 30 ? '#22C55E' : uri < 50 ? '#EAB308' : uri < 70 ? '#F97316' : '#EF4444'
 }
@@ -769,6 +798,46 @@ export default function TesisFormuPage() {
                 <p style={{ fontSize: 14, color: '#166534', maxWidth: 420, margin: '0 auto 20px', lineHeight: 1.6 }}>
                   Değerlendirmeniz İSO Afet Yönetimi Şubesi uzmanları tarafından incelenecek ve en kısa sürede sizinle iletişime geçilecektir.
                 </p>
+                {/* ── ADİS Skoru ── */}
+                {(() => {
+                  const adis = uriToAdis(uri)
+                  const aRenk = adisRenk(adis)
+                  const aLabel = adisLabel(adis)
+                  const aBant = adisBant(adis)
+                  return (
+                    <div style={{ margin: '24px auto', maxWidth: 360 }}>
+                      <div style={{ background: 'white', borderRadius: 16, border: `2px solid ${aRenk}`, padding: '24px 32px', boxShadow: `0 4px 24px ${aRenk}22` }}>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 8 }}>ADİS Dayanıklılık Skoru</p>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, justifyContent: 'center', marginBottom: 8 }}>
+                          <span style={{ fontSize: 64, fontWeight: 900, color: aRenk, lineHeight: 1, fontFamily: 'DM Mono, monospace' }}>{adis}</span>
+                          <span style={{ fontSize: 14, color: '#94A3B8' }}>/ 1200</span>
+                        </div>
+                        <div style={{ display: 'inline-block', background: aRenk + '18', border: `1px solid ${aRenk}44`, borderRadius: 20, padding: '4px 16px', marginBottom: 12 }}>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: aRenk }}>{aLabel}</span>
+                        </div>
+                        <div style={{ height: 8, background: '#F1F5F9', borderRadius: 4, overflow: 'hidden', margin: '0 0 8px' }}>
+                          <div style={{ height: '100%', width: `${((adis - 200) / 1000) * 100}%`, background: aRenk, borderRadius: 4, transition: 'width 1s ease' }} />
+                        </div>
+                        <p style={{ fontSize: 11, color: '#94A3B8', margin: 0 }}>Bant: {aBant}  •  URI: {uri} / 100</p>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 4, marginTop: 12 }}>
+                        {[
+                          { label: 'Kritik', range: '200-449', renk: '#EF4444' },
+                          { label: 'Yüksek', range: '450-649', renk: '#F97316' },
+                          { label: 'Orta', range: '650-849', renk: '#EAB308' },
+                          { label: 'İyi', range: '850-1049', renk: '#22C55E' },
+                          { label: 'Güçlü', range: '1050-1200', renk: '#16A34A' },
+                        ].map(b => (
+                          <div key={b.label} style={{ background: b.renk + '15', borderRadius: 6, padding: '4px 2px', textAlign: 'center', border: aLabel === b.label || (aLabel === 'Güçlü / Dayanıklı' && b.label === 'Güçlü') ? `1.5px solid ${b.renk}` : 'none' }}>
+                            <div style={{ fontSize: 9, fontWeight: 700, color: b.renk }}>{b.label}</div>
+                            <div style={{ fontSize: 8, color: '#94A3B8' }}>{b.range}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })()}
+
                 <div style={{ background: 'white', borderRadius: 8, padding: '10px 20px', display: 'inline-block', border: '1px solid #BBF7D0' }}>
                   <span style={{ fontSize: 12, color: '#64748B' }}>Referans No: </span>
                   <span style={{ fontSize: 13, fontWeight: 700, color: '#15803D', fontFamily: 'DM Mono, monospace' }}>{token}</span>
