@@ -869,7 +869,7 @@ export default function TesisFormuPage() {
           {/* ── Rapor CTA ─────────────────────────────── */}
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button
-              onClick={() => window.print()}
+              onClick={() => window.open(`/tesis-formu/${token}/rapor`, '_blank')}
               style={{ padding: '12px 24px', background: '#0A1628', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
               📄 Raporu İndir
             </button>
