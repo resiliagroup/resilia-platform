@@ -52,20 +52,48 @@ export default function RaporPage() {
   const aLabel = adisLabel(adis)
   const tarih  = new Date(form.gonderim_tarihi).toLocaleDateString('tr-TR',{day:'2-digit',month:'long',year:'numeric'})
 
-  // Boyut puanları — puanlar objesinden hesapla
+  // Boyut puanları — İnsan/Mekan/Proses/Çevre/Ekonomi kategorileri
+  // Soru kodu → kategori eşleşmesi (sorular-sanayi.ts'deki kategori alanından)
   const p = form.puanlar || {}
-  const tehlikePuan  = Math.round(Object.entries(p).filter(([k])=>k.startsWith('T')).reduce((s,[,v])=>s+v,0) / Math.max(Object.keys(p).filter(k=>k.startsWith('T')).length,1) * 20)
-  const kirilganPuan = Math.round(Object.entries(p).filter(([k])=>k.startsWith('S')).reduce((s,[,v])=>s+v,0) / Math.max(Object.keys(p).filter(k=>k.startsWith('S')).length,1) * 20)
-  const kapasitePuan = Math.round(Object.entries(p).filter(([k])=>k.startsWith('Y')).reduce((s,[,v])=>s+v,0) / Math.max(Object.keys(p).filter(k=>k.startsWith('Y')).length,1) * 20)
-  const hroPuan      = Math.round(Object.entries(p).filter(([k])=>k.startsWith('H')).reduce((s,[,v])=>s+v,0) / Math.max(Object.keys(p).filter(k=>k.startsWith('H')).length,1) * 20)
-  const destekPuan   = Math.round(Object.entries(p).filter(([k])=>k.startsWith('D')).reduce((s,[,v])=>s+v,0) / Math.max(Object.keys(p).filter(k=>k.startsWith('D')).length,1) * 20)
+
+  const KATEGORI_MAP: Record<string,string> = {
+    T1:'cevre',T2:'cevre',T3:'cevre',T4:'proses',T5:'cevre',
+    T6:'ekonomi',T7:'proses',T8:'proses',T9:'cevre',T10:'cevre',
+    T11:'cevre',T12:'ekonomi',T13:'ekonomi',T14:'cevre',T15:'cevre',
+    T16:'insan',T17:'cevre',T18:'proses',T19:'cevre',T20:'insan',
+    S1:'mekan',S2:'mekan',S3:'insan',S4:'mekan',S5:'cevre',
+    S6:'mekan',S7:'proses',S8:'proses',S9:'mekan',S10:'proses',
+    S11:'insan',S12:'ekonomi',S13:'ekonomi',S14:'ekonomi',S15:'ekonomi',
+    S16:'mekan',S17:'proses',S18:'mekan',S19:'mekan',S20:'proses',
+    S21:'mekan',S22:'insan',
+    Y1:'proses',Y2:'proses',Y3:'proses',Y4:'proses',Y5:'proses',
+    Y6:'proses',Y7:'proses',Y8:'proses',Y9:'proses',Y10:'proses',
+    Y11:'proses',Y12:'proses',Y13:'proses',Y14:'proses',Y15:'mekan',
+    Y16:'mekan',Y17:'cevre',Y18:'cevre',Y19:'mekan',Y20:'cevre',
+    Y21:'mekan',Y22:'mekan',Y23:'mekan',Y24:'mekan',Y25:'insan',
+    Y26:'insan',Y27:'insan',Y28:'insan',Y29:'insan',Y30:'insan',
+    Y31:'insan',Y32:'ekonomi',Y33:'proses',Y34:'proses',Y35:'proses',
+    Y36:'proses',Y37:'proses',Y38:'ekonomi',Y39:'ekonomi',Y40:'ekonomi',
+    Y41:'ekonomi',Y42:'ekonomi',Y43:'proses',Y44:'proses',Y45:'insan',
+    Y46:'ekonomi',Y47:'proses',Y48:'proses',Y49:'proses',Y50:'insan',
+    HRO1:'insan',HRO2:'insan',HRO3:'insan',HRO4:'proses',HRO5:'insan',
+    HRO6:'proses',HRO7:'proses',HRO8:'proses',HRO9:'insan',HRO10:'proses',
+    HRO11:'proses',HRO12:'insan',
+  }
+
+  function kategoriPuan(kat: string): number {
+    const sorular = Object.entries(p).filter(([k]) => KATEGORI_MAP[k] === kat)
+    if (!sorular.length) return 50
+    const ort = sorular.reduce((s,[,v])=>s+v,0) / sorular.length
+    return Math.round((ort / 5) * 100)
+  }
 
   const boyutlar = [
-    { ad: 'Tehlike Analizi', kod:'T', puan: tehlikePuan,  agirlik:'%20', aciklama:'Doğal ve teknolojik tehlike maruziyeti' },
-    { ad: 'Kırılganlık',     kod:'S', puan: kirilganPuan, agirlik:'%25', aciklama:'Yapısal ve operasyonel savunmasızlık' },
-    { ad: 'Kapasite',        kod:'Y', puan: kapasitePuan, agirlik:'%30', aciklama:'Hazırlık, planlama ve yönetim kapasitesi' },
-    { ad: 'HRO Olgunluğu',   kod:'H', puan: hroPuan,      agirlik:'%15', aciklama:'Yüksek güvenilirlik örgütü olgunluk seviyesi' },
-    { ad: 'Destek Kapasitesi',kod:'D', puan: destekPuan,  agirlik:'%10', aciklama:'Kurumsal ve finansal destek altyapısı' },
+    { ad:'İnsan',   ikon:'👤', puan:kategoriPuan('insan'),   agirlik:'%20', aciklama:'Çalışan güvenliği, eğitim, tahliye, psikolojik hazırlık' },
+    { ad:'Mekan',   ikon:'🏭', puan:kategoriPuan('mekan'),   agirlik:'%25', aciklama:'Yapısal dayanıklılık, yangın sistemleri, kaçış yolları' },
+    { ad:'Proses',  ikon:'⚙️', puan:kategoriPuan('proses'),  agirlik:'%30', aciklama:'İş sürekliliği, BCP/DRP, siber güvenlik, tedarik zinciri' },
+    { ad:'Çevre',   ikon:'🌿', puan:kategoriPuan('cevre'),   agirlik:'%15', aciklama:'Doğal tehlikeler, NATECH riski, iklim uyumu' },
+    { ad:'Ekonomi', ikon:'📊', puan:kategoriPuan('ekonomi'), agirlik:'%10', aciklama:'Sigorta, finansal rezerv, tedarikçi riski, mevzuat uyumu' },
   ]
 
   const bantlar = [
