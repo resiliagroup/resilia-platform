@@ -200,7 +200,7 @@ export default function RaporPage() {
             <td style={{width:'30%',padding:'0 0 0 8px'}}>
               <div style={{fontSize:9,fontWeight:700,color:'#7F8C8D',letterSpacing:'0.1em',marginBottom:8}}>DEĞERLENDİRME BİLEŞENLERİ</div>
               {boyutlar.map(b=>(
-                <div key={b.kod} style={{marginBottom:6}}>
+                <div key={b.ad.slice(0,1)} style={{marginBottom:6}}>
                   <div style={{display:'flex',justifyContent:'space-between',marginBottom:2}}>
                     <span style={{fontSize:9,color:'#2C3E50',fontWeight:500}}>{b.ad}</span>
                     <span style={{fontSize:9,fontWeight:700,color:boyutRenk(b.puan)}}>{b.agirlik}</span>
