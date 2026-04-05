@@ -27,6 +27,27 @@ const TÜRKİYE_İLLERİ = [
 
 const CALISAN_GRUPLAR = ['50 altı', '50 – 250', '250 – 1.000', '1.000+']
 
+const IL_ILCE: Record<string, string[]> = {
+  'İstanbul': ['Adalar','Arnavutköy','Ataşehir','Avcılar','Bağcılar',
+    'Bahçelievler','Bakırköy','Başakşehir','Bayrampaşa','Beşiktaş','Beykoz',
+    'Beylikdüzü','Beyoğlu','Büyükçekmece','Çatalca','Çekmeköy','Esenler',
+    'Esenyurt','Eyüpsultan','Fatih','Gaziosmanpaşa','Güngören','Kadıköy',
+    'Kağıthane','Kartal','Küçükçekmece','Maltepe','Pendik','Sancaktepe',
+    'Sarıyer','Şile','Silivri','Şişli','Sultanbeyli','Sultangazi','Tuzla',
+    'Ümraniye','Üsküdar','Zeytinburnu'],
+  'Ankara': ['Altındağ','Çankaya','Etimesgut','Gölbaşı','Keçiören',
+    'Mamak','Pursaklar','Sincan','Yenimahalle'],
+  'İzmir': ['Aliağa','Balçova','Bayraklı','Bornova','Buca','Çiğli',
+    'Gaziemir','Karşıyaka','Konak','Menemen','Narlıdere','Torbalı'],
+  'Bursa': ['Gemlik','İnegöl','İznik','Mudanya','Nilüfer','Osmangazi','Yıldırım'],
+  'Kocaeli': ['Başiskele','Darıca','Gebze','Gölcük','İzmit','Kartepe','Körfez'],
+  'Antalya': ['Aksu','Alanya','Döşemealtı','Gazipaşa','Kemer','Kepez','Konyaaltı','Muratpaşa','Serik'],
+  'Gaziantep': ['Nizip','Nurdağı','Oğuzeli','Şahinbey','Şehitkamil'],
+  'Konya': ['Karatay','Meram','Selçuklu'],
+  'Adana': ['Çukurova','Sarıçam','Seyhan','Yüreğir'],
+  'Mersin': ['Akdeniz','Mezitli','Tarsus','Toroslar','Yenişehir'],
+}
+
 /* ─── İlerleme göstergesi ────────────────────────────────────────────────── */
 function ProgressBar({ adim }: { adim: number }) {
   const adimlar = ['Profil', 'Form', 'Rapor']
@@ -73,6 +94,7 @@ export default function OnboardingPage() {
   const [calisan, setCalisan]             = useState('')
   const [il, setIl]                       = useState('')
   const [ilce, setIlce]                   = useState('')
+  const [konumYukleniyor, setKonumYukleniyor] = useState(false)
   const [kaydediliyor, setKaydediliyor]   = useState(false)
   const [hata, setHata]                   = useState('')
   const aramaRef = useRef<HTMLInputElement>(null)
@@ -307,17 +329,65 @@ export default function OnboardingPage() {
             </div>
             <div>
               <label style={lbl}>İl <span style={{ color: '#EF4444' }}>*</span></label>
-              <select value={il} onChange={e => setIl(e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
+              <select value={il} onChange={e => { setIl(e.target.value); setIlce('') }} style={{ ...inp, cursor: 'pointer' }}>
                 <option value="">— İl seçin —</option>
                 {TÜRKİYE_İLLERİ.map(i => <option key={i} value={i}>{i}</option>)}
               </select>
             </div>
           </div>
 
-          {/* İlçe */}
-          <div style={{ marginBottom: 28 }}>
+          {/* İlçe — il'e bağlı dropdown veya serbest giriş */}
+          <div style={{ marginBottom: 16 }}>
             <label style={lbl}>İlçe</label>
-            <input value={ilce} onChange={e => setIlce(e.target.value)} placeholder="İlçe adı" style={inp} />
+            {il && IL_ILCE[il] ? (
+              <select value={ilce} onChange={e => setIlce(e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
+                <option value="">— İlçe seçin —</option>
+                {IL_ILCE[il].map(i => <option key={i} value={i}>{i}</option>)}
+              </select>
+            ) : (
+              <input value={ilce} onChange={e => setIlce(e.target.value)} placeholder="İlçe adı" style={inp} />
+            )}
+          </div>
+
+          {/* Konumumu Otomatik Bul */}
+          <div style={{ marginBottom: 28 }}>
+            <button
+              type="button"
+              disabled={konumYukleniyor}
+              onClick={() => {
+                if (!navigator.geolocation) return
+                setKonumYukleniyor(true)
+                navigator.geolocation.getCurrentPosition(
+                  async (pos) => {
+                    try {
+                      const r = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=tr`
+                      )
+                      const d = await r.json()
+                      const adres = d.address || {}
+                      const il2   = adres.province || adres.state || ''
+                      const ilce2 = adres.district || adres.suburb || adres.city_district || ''
+                      const ilKey = Object.keys(IL_ILCE).find(k => il2.includes(k) || k.includes(il2))
+                      if (ilKey) { setIl(ilKey); setIlce('') }
+                      if (ilce2) setTimeout(() => setIlce(ilce2), 100)
+                    } catch { setHata('Konum alınamadı.') }
+                    setKonumYukleniyor(false)
+                  },
+                  () => { setHata('Konum izni reddedildi.'); setKonumYukleniyor(false) }
+                )
+              }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '9px 16px', fontSize: 13, fontWeight: 600,
+                border: `1px solid ${konumYukleniyor ? '#CBD5E1' : TEAL}`,
+                color: konumYukleniyor ? '#94A3B8' : TEAL,
+                background: '#FFFFFF', borderRadius: 8, cursor: konumYukleniyor ? 'not-allowed' : 'pointer',
+                transition: 'all .15s',
+              }}
+            >
+              <span style={{ fontSize: 15 }}>{konumYukleniyor ? '📡' : '📍'}</span>
+              {konumYukleniyor ? 'Konum alınıyor…' : 'Konumumu Otomatik Bul'}
+            </button>
           </div>
 
           {hata && (
