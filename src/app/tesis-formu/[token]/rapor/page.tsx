@@ -115,25 +115,44 @@ function RadarSVG({ boyutlar }: { boyutlar: { ad: string; puan: number }[] }) {
       {dataPolygon.map((p, i) => (
         <circle key={i} cx={p.x} cy={p.y} r="5" fill={boyutRenk(boyutlar[i].puan)} stroke="white" strokeWidth="2" />
       ))}
-      {/* Labels */}
+      {/* Labels — beyaz arka plan + büyük font */}
       {boyutlar.map((b, i) => {
-        const p = getPoint(i, maxR + 26)
+        const p = getPoint(i, maxR + 28)
+        const px = Number(p.x.toFixed(1))
+        const py = Number(p.y.toFixed(1))
+        const labelW = b.ad.length * 9 + 14
         return (
-          <text key={i} x={p.x.toFixed(1)} y={p.y.toFixed(1)} textAnchor="middle"
-            dominantBaseline="middle" fontSize="11" fontWeight="700" fill={NAVY}>
-            {b.ad}
-          </text>
+          <g key={i}>
+            <rect
+              x={px - labelW / 2}
+              y={py - 11}
+              width={labelW}
+              height={20}
+              rx={3}
+              fill="white"
+              opacity={0.92}
+            />
+            <text x={px} y={py} textAnchor="middle"
+              dominantBaseline="middle" fontSize="14" fontWeight="bold" fill={NAVY}>
+              {b.ad}
+            </text>
+          </g>
         )
       })}
       {/* Puan labels */}
       {boyutlar.map((b, i) => {
-        const r = maxR * Math.max(0.06, b.puan / 100) + 14
+        const r = maxR * Math.max(0.06, b.puan / 100) + 16
         const p = getPoint(i, r)
+        const px = Number(p.x.toFixed(1))
+        const py = Number(p.y.toFixed(1))
         return (
-          <text key={`s${i}`} x={p.x.toFixed(1)} y={p.y.toFixed(1)} textAnchor="middle"
-            dominantBaseline="middle" fontSize="9.5" fontWeight="800" fill={boyutRenk(b.puan)}>
-            {b.puan}
-          </text>
+          <g key={`s${i}`}>
+            <rect x={px - 13} y={py - 9} width={26} height={17} rx={3} fill="white" opacity={0.88} />
+            <text x={px} y={py} textAnchor="middle"
+              dominantBaseline="middle" fontSize="13" fontWeight="bold" fill={boyutRenk(b.puan)}>
+              {b.puan}
+            </text>
+          </g>
         )
       })}
     </svg>
@@ -323,8 +342,8 @@ export default function RaporPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { font-family: 'DM Sans', Arial, Helvetica, sans-serif; background: #94A3B8; color: #0A1628; font-size: 12px; }
-        @page { size: A4; margin: 0; }
+        html, body { font-family: 'Times New Roman', Times, serif; background: #94A3B8; color: #0A1628; font-size: 13px; }
+        @page { size: A4; margin: 10mm 12mm; }
         @media print {
           html, body { background: white; }
           .no-print { display: none !important; }
@@ -334,7 +353,7 @@ export default function RaporPage() {
         }
         .sayfa { box-shadow: 0 6px 32px rgba(0,0,0,.16); margin-bottom: 20px; }
         table { border-collapse: collapse; width: 100%; }
-        td, th { vertical-align: top; }
+        td, th { vertical-align: top; font-size: 11px; }
       `}</style>
 
       {/* ─── NO-PRINT BAR ─────────────────────────────────────────── */}
@@ -466,20 +485,20 @@ export default function RaporPage() {
 
           {/* Sağ: Bant tablosu */}
           <div>
-            <div style={{ fontSize: 9.5, fontWeight: 700, color: '#64748B', letterSpacing: '.1em', marginBottom: 10 }}>SKOR BANTLARI</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', letterSpacing: '.1em', marginBottom: 10 }}>SKOR BANTLARI</div>
             {bantlar.map(b => {
               const aktif = adis >= b.lo && adis <= b.hi
               return (
                 <div key={b.label} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 7, padding: '8px 10px', background: aktif ? b.renk + '18' : '#F8FAFC', borderRadius: 8, border: aktif ? `1.5px solid ${b.renk}` : '1px solid #E2E8F0' }}>
                   <div style={{ width: 11, height: 11, borderRadius: 3, background: b.renk, flexShrink: 0 }} />
                   <div style={{ flex: 1, fontSize: 11, fontWeight: aktif ? 800 : 500, color: aktif ? b.renk : '#374151' }}>{b.label}</div>
-                  <div style={{ fontSize: 9.5, color: '#94A3B8', fontFamily: 'monospace' }}>{b.aralik}</div>
-                  {aktif && <div style={{ fontSize: 8.5, fontWeight: 800, color: b.renk, letterSpacing: '.04em' }}>◄ MEVCUT</div>}
+                  <div style={{ fontSize: 11, color: '#94A3B8', fontFamily: 'monospace' }}>{b.aralik}</div>
+                  {aktif && <div style={{ fontSize: 10, fontWeight: 800, color: b.renk, letterSpacing: '.04em' }}>◄ MEVCUT</div>}
                 </div>
               )
             })}
             <div style={{ marginTop: 12, padding: '10px 12px', background: '#F8FAFC', borderRadius: 8, border: '1px solid #E2E8F0' }}>
-              <div style={{ fontSize: 9, color: '#64748B', lineHeight: 1.7 }}>
+              <div style={{ fontSize: 11, color: '#64748B', lineHeight: 1.7 }}>
                 <b>Metodoloji:</b> HIFYEA (H·F×E·Y·A)<br />
                 URI Skoru: <b>{Math.round(form.uri_skoru)}/100</b> → ADİS: <b>{adis}/1200</b><br />
                 ISO 22301 · ISO 31000 · AFAD AADY 2025
@@ -540,13 +559,13 @@ export default function RaporPage() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, alignItems: 'start' }}>
           {/* Sol: Radar */}
           <div>
-            <div style={{ fontSize: 9.5, fontWeight: 700, color: '#64748B', letterSpacing: '.08em', marginBottom: 10 }}>BOYUT RADAR ANALİZİ</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', letterSpacing: '.08em', marginBottom: 10 }}>BOYUT RADAR ANALİZİ</div>
             <div style={{ display: 'flex', justifyContent: 'center', background: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0', padding: '14px' }}>
               <RadarSVG boyutlar={boyutlar} />
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 10, justifyContent: 'center' }}>
               {boyutlar.map(b => (
-                <div key={b.key} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 9 }}>
+                <div key={b.key} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11 }}>
                   <div style={{ width: 9, height: 9, borderRadius: '50%', background: boyutRenk(b.puan) }} />
                   <span style={{ color: '#374151' }}>{b.ad}</span>
                   <span style={{ fontWeight: 700, color: boyutRenk(b.puan) }}>({b.puan})</span>
@@ -567,7 +586,7 @@ export default function RaporPage() {
                       <div style={{ fontSize: 13, fontWeight: 700, color: NAVY }}>{b.ad}</div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <span style={{ fontSize: 16, fontWeight: 900, color: durum.renk }}>{b.puan}</span>
-                        <span style={{ fontSize: 9, color: '#94A3B8' }}>/100</span>
+                        <span style={{ fontSize: 11, color: '#94A3B8' }}>/100</span>
                         <span style={{ fontSize: 10, fontWeight: 700, color: durum.renk, background: durum.renk + '18', padding: '2px 8px', borderRadius: 12 }}>
                           {durum.ikon} {durum.label}
                         </span>
@@ -576,7 +595,7 @@ export default function RaporPage() {
                     <div style={{ height: 7, background: '#E2E8F0', borderRadius: 4, overflow: 'hidden', marginBottom: 5 }}>
                       <div style={{ height: '100%', width: `${b.puan}%`, background: `linear-gradient(90deg, ${boyutRenk(b.puan)}CC, ${boyutRenk(b.puan)})`, borderRadius: 4 }} />
                     </div>
-                    <div style={{ fontSize: 9, color: '#64748B', lineHeight: 1.5 }}>{b.aciklama}</div>
+                    <div style={{ fontSize: 11, color: '#64748B', lineHeight: 1.5 }}>{b.aciklama}</div>
                   </div>
                 )
               })}
@@ -587,7 +606,7 @@ export default function RaporPage() {
         {/* Alt not */}
         <div style={{ marginTop: 18, padding: '12px 16px', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 10, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
           <div style={{ fontSize: 15, flexShrink: 0, color: '#3B82F6' }}>ℹ</div>
-          <div style={{ fontSize: 9.5, color: '#1D4ED8', lineHeight: 1.7 }}>
+          <div style={{ fontSize: 11, color: '#1D4ED8', lineHeight: 1.7 }}>
             <b>Radar Analiz Yorumu:</b> Pentagon grafiği 5 boyuttaki performansı görsel olarak göstermektedir. İdeal durum; tüm boyutların dışa yayıldığı, simetrik ve geniş bir pentagon oluşturmasıdır. Herhangi bir boyutun çöküşü, o alandaki zayıflığa işaret eder. Düşük puanlı boyutlar için Sayfa 4&apos;teki detaylı bulgular incelenmelidir.
           </div>
         </div>
@@ -623,21 +642,21 @@ export default function RaporPage() {
 
                 {/* Sorular */}
                 <div style={{ marginBottom: 8 }}>
-                  <div style={{ fontSize: 8.5, fontWeight: 700, color: '#64748B', marginBottom: 6, letterSpacing: '.07em' }}>EN KRİTİK SORULAR</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', marginBottom: 6, letterSpacing: '.07em' }}>EN KRİTİK SORULAR</div>
                   {kritikSorular.length === 0 ? (
-                    <div style={{ fontSize: 9.5, color: '#94A3B8', fontStyle: 'italic' }}>Bu boyut için değerlendirme verisi mevcut değil.</div>
+                    <div style={{ fontSize: 11, color: '#94A3B8', fontStyle: 'italic' }}>Bu boyut için değerlendirme verisi mevcut değil.</div>
                   ) : (
                     kritikSorular.map((s, i) => {
                       const metin = SORU_METIN[s.kod] || s.kod
                       const sRenk = s.puan < 40 ? '#EF4444' : s.puan < 60 ? '#F97316' : '#EAB308'
                       return (
                         <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 6, padding: '6px 8px', background: sRenk + '0D', borderRadius: 6, border: `1px solid ${sRenk}22` }}>
-                          <div style={{ fontSize: 8.5, fontWeight: 800, color: 'white', background: sRenk, padding: '2px 6px', borderRadius: 4, flexShrink: 0, alignSelf: 'flex-start', marginTop: 1 }}>{s.kod}</div>
+                          <div style={{ fontSize: 11, fontWeight: 800, color: 'white', background: sRenk, padding: '2px 6px', borderRadius: 4, flexShrink: 0, alignSelf: 'flex-start', marginTop: 1 }}>{s.kod}</div>
                           <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 9, color: '#374151', lineHeight: 1.5, marginBottom: 2 }}>
-                              {metin.slice(0, 105)}{metin.length > 105 ? '…' : ''}
+                            <div style={{ fontSize: 11, color: '#374151', lineHeight: 1.5, marginBottom: 2 }}>
+                              {metin.slice(0, 110)}{metin.length > 110 ? '…' : ''}
                             </div>
-                            <div style={{ fontSize: 9, fontWeight: 800, color: sRenk }}>{s.puan}/100</div>
+                            <div style={{ fontSize: 11, fontWeight: 800, color: sRenk }}>{s.puan}/100</div>
                           </div>
                         </div>
                       )
@@ -646,7 +665,7 @@ export default function RaporPage() {
                 </div>
 
                 {/* Footer */}
-                <div style={{ fontSize: 8.5, color: '#64748B', padding: '6px 8px', background: '#F8FAFC', borderRadius: 6, lineHeight: 1.5, borderLeft: `3px solid ${durum.renk}` }}>
+                <div style={{ fontSize: 11, color: '#64748B', padding: '6px 8px', background: '#F8FAFC', borderRadius: 6, lineHeight: 1.5, borderLeft: `3px solid ${durum.renk}` }}>
                   <b>Etki alanı:</b> {boyut.aciklama}
                 </div>
               </div>
@@ -707,7 +726,7 @@ export default function RaporPage() {
             <thead>
               <tr style={{ background: NAVY }}>
                 {['#', 'Aksiyon', 'Süre', 'Maliyet', 'Mevzuat'].map((h, i) => (
-                  <th key={h} style={{ padding: '7px 9px', textAlign: i === 0 ? 'center' : 'left', fontSize: 8.5, fontWeight: 700, color: 'white', width: i === 0 ? 28 : i === 2 ? 72 : i === 3 ? 72 : i === 4 ? 88 : undefined }}>{h}</th>
+                  <th key={h} style={{ padding: '7px 9px', textAlign: i === 0 ? 'center' : 'left', fontSize: 11, fontWeight: 700, color: 'white', width: i === 0 ? 28 : i === 2 ? 72 : i === 3 ? 72 : i === 4 ? 88 : undefined }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -717,19 +736,19 @@ export default function RaporPage() {
                 return (
                   <tr key={i} style={{ borderBottom: '1px solid #F1F5F9', background: i % 2 === 0 ? '#FFF' : '#F8FAFC' }}>
                     <td style={{ padding: '6px 9px', textAlign: 'center' }}>
-                      <div style={{ width: 18, height: 18, background: NAVY, color: 'white', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8.5, fontWeight: 800, margin: '0 auto' }}>{i + 1}</div>
+                      <div style={{ width: 20, height: 20, background: NAVY, color: 'white', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, margin: '0 auto' }}>{i + 1}</div>
                     </td>
                     <td style={{ padding: '6px 9px' }}>
-                      <div style={{ fontWeight: 700, color: NAVY, fontSize: 9.5, marginBottom: 1 }}>{c.baslik}</div>
-                      <div style={{ color: '#64748B', fontSize: 8.5, lineHeight: 1.4 }}>{(c.aciklama || '').slice(0, 80)}{(c.aciklama?.length || 0) > 80 ? '…' : ''}</div>
+                      <div style={{ fontWeight: 700, color: NAVY, fontSize: 11, marginBottom: 1 }}>{c.baslik}</div>
+                      <div style={{ color: '#64748B', fontSize: 10, lineHeight: 1.4 }}>{(c.aciklama || '').slice(0, 80)}{(c.aciklama?.length || 0) > 80 ? '…' : ''}</div>
                     </td>
-                    <td style={{ padding: '6px 9px', fontSize: 9, color: '#374151' }}>{c.tahmini_sure || '—'}</td>
+                    <td style={{ padding: '6px 9px', fontSize: 11, color: '#374151' }}>{c.tahmini_sure || '—'}</td>
                     <td style={{ padding: '6px 9px' }}>
-                      <span style={{ fontWeight: 700, color: mRenk, background: mRenk + '18', padding: '2px 7px', borderRadius: 5, fontSize: 8.5 }}>
+                      <span style={{ fontWeight: 700, color: mRenk, background: mRenk + '18', padding: '2px 7px', borderRadius: 5, fontSize: 10 }}>
                         {maliyetLabel(c.maliyet_seviyesi)}
                       </span>
                     </td>
-                    <td style={{ padding: '6px 9px', fontSize: 8, color: '#64748B' }}>{c.mevzuat_ref?.[0] || '—'}</td>
+                    <td style={{ padding: '6px 9px', fontSize: 10, color: '#64748B' }}>{c.mevzuat_ref?.[0] || '—'}</td>
                   </tr>
                 )
               })}
