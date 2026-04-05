@@ -139,17 +139,18 @@ function RadarSVG({ boyutlar }: { boyutlar: { ad: string; puan: number }[] }) {
           </g>
         )
       })}
-      {/* Puan labels */}
+      {/* Puan labels — isim etiketinin tersine, iç tarafa */}
       {boyutlar.map((b, i) => {
-        const r = maxR * Math.max(0.06, b.puan / 100) + 16
+        // İsim maxR+28'de dışarıda — puan cx/cy'ye doğru maxR*0.55'te
+        const r = maxR * 0.55
         const p = getPoint(i, r)
         const px = Number(p.x.toFixed(1))
         const py = Number(p.y.toFixed(1))
         return (
           <g key={`s${i}`}>
-            <rect x={px - 13} y={py - 9} width={26} height={17} rx={3} fill="white" opacity={0.88} />
+            <circle cx={px} cy={py} r={12} fill="white" opacity={0.92} stroke={boyutRenk(b.puan)} strokeWidth={1.5} />
             <text x={px} y={py} textAnchor="middle"
-              dominantBaseline="middle" fontSize="13" fontWeight="bold" fill={boyutRenk(b.puan)}>
+              dominantBaseline="middle" fontSize="11" fontWeight="bold" fill={boyutRenk(b.puan)}>
               {b.puan}
             </text>
           </g>
