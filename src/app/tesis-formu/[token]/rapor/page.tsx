@@ -301,6 +301,7 @@ export default function RaporPage() {
 
   function kategoriPuan(kat: string): number {
     const sorular = Object.entries(p).filter(([k]) => KATEGORI_MAP[k] === kat)
+    if (kat === 'ekonomi' && sorular.length === 0) return 50 // varsayılan
     if (!sorular.length) return 50
     return Math.min(100, Math.round((sorular.reduce((s, [, v]) => s + v, 0) / sorular.length / 5) * 100))
   }
