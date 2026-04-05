@@ -86,7 +86,7 @@ interface Cozum {
 
 /* ─── Radar (Pentagon) SVG ────────────────────────────────────── */
 function RadarSVG({ boyutlar }: { boyutlar: { ad: string; puan: number }[] }) {
-  const SIZE = 260, cx = SIZE / 2, cy = SIZE / 2, maxR = 90, n = boyutlar.length
+  const SIZE = 300, cx = SIZE / 2, cy = SIZE / 2, maxR = 95, n = boyutlar.length
   function getPoint(i: number, r: number) {
     const a = (i * 2 * Math.PI) / n - Math.PI / 2
     return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) }
@@ -96,7 +96,7 @@ function RadarSVG({ boyutlar }: { boyutlar: { ad: string; puan: number }[] }) {
   }
   const dataPolygon = boyutlar.map((b, i) => getPoint(i, maxR * Math.max(0.06, b.puan / 100)))
   return (
-    <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} style={{ display: 'block' }}>
+    <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} style={{ display: 'block', overflow: 'visible' }}>
       {/* Background fill */}
       <polygon points={pts(boyutlar.map((_, i) => getPoint(i, maxR)))} fill="#F1F5F9" stroke="#E2E8F0" strokeWidth="1" />
       {/* Grid rings */}
@@ -302,7 +302,7 @@ export default function RaporPage() {
   function kategoriPuan(kat: string): number {
     const sorular = Object.entries(p).filter(([k]) => KATEGORI_MAP[k] === kat)
     if (!sorular.length) return 50
-    return Math.round((sorular.reduce((s, [, v]) => s + v, 0) / sorular.length / 5) * 100)
+    return Math.min(100, Math.round((sorular.reduce((s, [, v]) => s + v, 0) / sorular.length / 5) * 100))
   }
 
   const boyutlar = [
