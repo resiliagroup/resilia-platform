@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { MESLEK_GRUPLARI, getTehlikeRenk, type MeslekGrubu } from '@/lib/nace-gruplari'
 
 const SUPA_URL = 'https://gqguwgbopgnpwzjwcexl.supabase.co'
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzM5OTgzMywiZXhwIjoyMDg4OTc1ODMzfQ.Ku-JRx8JFH5a3SIj7sGP_Dy_nM89NMMW34gPyxVO_qI'
@@ -9,23 +10,6 @@ const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
 const NAVY  = '#0A1628'
 const TEAL  = '#009B8D'
 const BORDER = '#E2E8F0'
-
-/* ─── Sektör ve alt sektör listesi ───────────────────────────────────────── */
-const SEKTORLER: Record<string, string[]> = {
-  'Kimya & Petrokimya':   ['Ham kimya üretimi', 'Petrokimya rafinerisi', 'Boya & Vernik', 'Plastik hammadde', 'Gübre & Tarım kimyasalı'],
-  'Enerji & Utilities':   ['Elektrik üretimi', 'Doğalgaz dağıtımı', 'Yenilenebilir enerji', 'Petrol depolama', 'Su & Atıksu'],
-  'İmalat & Metal':       ['Demir-çelik', 'Alüminyum', 'Bakır & alaşımlar', 'Makine imalatı', 'Döküm & Hadde'],
-  'Tekstil & Gıda':       ['Pamuk tekstil', 'Sentetik tekstil', 'Gıda işleme', 'İçecek', 'Ambalaj'],
-  'İnşaat & Yapı':        ['Konut inşaatı', 'Sanayi yapıları', 'Altyapı', 'Beton & prefabrik', 'Cam & seramik'],
-  'Bankacılık & Finans':  ['Ticaret bankası', 'Katılım bankası', 'Leasing & Faktoring', 'Sermaye piyasaları', 'Ödeme sistemleri'],
-  'Sigorta':              ['Hayat sigortası', 'Yangın & Doğal afet', 'Sağlık sigortası', 'Nakliyat sigortası', 'Mühendislik sigortası'],
-  'Sağlık':              ['Hastane', 'Klinik & poliklinik', 'Eczane zinciri', 'Medikal cihaz', 'Laboratuvar'],
-  'Eğitim':              ['İlk & ortaöğretim', 'Üniversite', 'Mesleki eğitim', 'Özel dershane', 'Uzaktan eğitim'],
-  'Ulaşım & Lojistik':   ['Kara taşımacılığı', 'Demiryolu', 'Liman & deniz', 'Hava kargo', 'Depo & antrepo'],
-  'Kamu & Belediye':     ['Belediye hizmetleri', 'Bakanlık birimi', 'AFAD & İl MD.', 'Altyapı kuruluşu', 'İtfaiye & acil'],
-  'OSB Yönetimi':        ['Ağır sanayi OSB', 'Kimya OSB', 'Teknoloji OSB', 'Karma OSB', 'Küçük sanayi sitesi'],
-  'Diğer':              ['Perakende', 'Turizm & Otelcilik', 'Medya & Telekomünikasyon', 'Savunma & Güvenlik', 'Diğer'],
-}
 
 const TÜRKİYE_İLLERİ = [
   'Adana','Adıyaman','Afyonkarahisar','Ağrı','Amasya','Ankara','Antalya','Artvin',
@@ -42,17 +26,6 @@ const TÜRKİYE_İLLERİ = [
 ]
 
 const CALISAN_GRUPLAR = ['50 altı', '50 – 250', '250 – 1.000', '1.000+']
-
-/* ─── Tehlike sınıfı tahmini ──────────────────────────────────────────────── */
-function getTehlikeSinifi(sektor: string): { sinif: 1 | 2 | 3; label: string; renk: string; bg: string; border: string } {
-  if (['Kimya & Petrokimya', 'Enerji & Utilities'].includes(sektor)) {
-    return { sinif: 1, label: 'Sınıf 1 — Çok Tehlikeli', renk: '#DC2626', bg: '#FEF2F2', border: '#FECACA' }
-  }
-  if (['İmalat & Metal', 'Tekstil & Gıda', 'İnşaat & Yapı', 'Ulaşım & Lojistik', 'OSB Yönetimi'].includes(sektor)) {
-    return { sinif: 2, label: 'Sınıf 2 — Tehlikeli', renk: '#EA580C', bg: '#FFF7ED', border: '#FED7AA' }
-  }
-  return { sinif: 3, label: 'Sınıf 3 — Az Tehlikeli', renk: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0' }
-}
 
 /* ─── İlerleme göstergesi ────────────────────────────────────────────────── */
 function ProgressBar({ adim }: { adim: number }) {
@@ -92,52 +65,31 @@ function ProgressBar({ adim }: { adim: number }) {
 export default function OnboardingPage() {
   const router = useRouter()
 
-  const [tesisAdi, setTesisAdi] = useState('')
-  const [sektor, setSektor]     = useState('')
-  const [altSektor, setAlt]     = useState('')
-  const [calisan, setCalisan]   = useState('')
-  const [il, setIl]             = useState('')
-  const [ilce, setIlce]         = useState('')
-  const [nace, setNace]         = useState('')
-  const [naceLoad, setNaceLoad] = useState(false)
-  const [naceTehlike, setNaceTehlike] = useState<{ sinif: number; label: string } | null>(null)
-  const [kaydediliyor, setKaydediliyor] = useState(false)
-  const [hata, setHata] = useState('')
+  const [tesisAdi, setTesisAdi]           = useState('')
+  const [meslekGrubu, setMeslekGrubu]     = useState<MeslekGrubu | null>(null)
+  const [aramaMetni, setAramaMetni]       = useState('')
+  const [dropdownAcik, setDropdownAcik]   = useState(false)
+  const [secilenNace, setSecilenNace]     = useState('')
+  const [calisan, setCalisan]             = useState('')
+  const [il, setIl]                       = useState('')
+  const [ilce, setIlce]                   = useState('')
+  const [kaydediliyor, setKaydediliyor]   = useState(false)
+  const [hata, setHata]                   = useState('')
+  const aramaRef = useRef<HTMLInputElement>(null)
 
-  const tehlike = naceTehlike
-    ? { sinif: naceTehlike.sinif as 1|2|3, label: naceTehlike.label,
-        renk: naceTehlike.sinif === 1 ? '#DC2626' : naceTehlike.sinif === 2 ? '#EA580C' : '#16A34A',
-        bg: naceTehlike.sinif === 1 ? '#FEF2F2' : naceTehlike.sinif === 2 ? '#FFF7ED' : '#F0FDF4',
-        border: naceTehlike.sinif === 1 ? '#FECACA' : naceTehlike.sinif === 2 ? '#FED7AA' : '#BBF7D0' }
-    : sektor ? getTehlikeSinifi(sektor) : null
-
-  const onNaceChange = async (val: string) => {
-    setNace(val)
-    const temiz = val.replace(/\s/g, '')
-    if (temiz.length >= 4) {
-      setNaceLoad(true)
-      const r = await fetch(
-        `${SUPA_URL}/rest/v1/nace_tehlike?nace_alti_kod=like.${encodeURIComponent(temiz)}*&select=tehlike_sinifi,tehlike_label&order=nace_alti_kod.asc&limit=1`,
-        { headers: { apikey: SUPA_KEY } }
+  const filtreliGruplar = aramaMetni.trim()
+    ? MESLEK_GRUPLARI.filter(g =>
+        g.ad.toLowerCase().includes(aramaMetni.toLowerCase()) ||
+        g.id.toString() === aramaMetni.trim()
       )
-      if (r.ok) {
-        const data = await r.json()
-        if (data.length > 0) {
-          setNaceTehlike({ sinif: data[0].tehlike_sinifi, label: data[0].tehlike_label })
-        } else {
-          setNaceTehlike(null)
-        }
-      }
-      setNaceLoad(false)
-    } else {
-      setNaceTehlike(null)
-    }
-  }
+    : MESLEK_GRUPLARI
+
+  const tehlike = meslekGrubu ? getTehlikeRenk(meslekGrubu.tehlikeSinifi) : null
 
   const kaydet = async () => {
-    if (!tesisAdi) { setHata('Tesis adı zorunludur.'); return }
-    if (!sektor)   { setHata('Sektör seçimi zorunludur.'); return }
-    if (!il)       { setHata('İl seçimi zorunludur.'); return }
+    if (!tesisAdi)    { setHata('Tesis adı zorunludur.'); return }
+    if (!meslekGrubu) { setHata('Meslek grubu seçimi zorunludur.'); return }
+    if (!il)          { setHata('İl seçimi zorunludur.'); return }
 
     setKaydediliyor(true); setHata('')
     try {
@@ -151,13 +103,15 @@ export default function OnboardingPage() {
         },
         body: JSON.stringify({
           tesis_adi: tesisAdi,
-          sektor,
-          alt_sektor: altSektor || null,
+          sektor: meslekGrubu.ad,
+          alt_sektor: null,
           calisan_grubu: calisan || null,
           il,
           ilce: ilce || null,
-          nace_kodu: nace || null,
-          tehlike_sinifi: tehlike?.sinif ?? null,
+          nace_kodu: secilenNace || null,
+          tehlike_sinifi: meslekGrubu.tehlikeSinifi,
+          risk_profili: meslekGrubu.riskProfili,
+          meslek_grubu_id: meslekGrubu.id,
           olusturma_tarihi: new Date().toISOString(),
         }),
       })
@@ -182,6 +136,7 @@ export default function OnboardingPage() {
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         select option { color: #0A1628; }
+        .meslek-item:hover { background: #F1F5F9 !important; }
       `}</style>
 
       <div style={{ width: '100%', maxWidth: 640 }}>
@@ -210,27 +165,120 @@ export default function OnboardingPage() {
             <input value={tesisAdi} onChange={e => setTesisAdi(e.target.value)} placeholder="Örn: XYZ Kimya Sanayi A.Ş." style={inp} />
           </div>
 
-          {/* Sektör */}
-          <div style={{ marginBottom: 20 }}>
-            <label style={lbl}>Sektör <span style={{ color: '#EF4444' }}>*</span></label>
-            <select value={sektor} onChange={e => { setSektor(e.target.value); setAlt('') }} style={{ ...inp, cursor: 'pointer' }}>
-              <option value="">— Sektör seçin —</option>
-              {Object.keys(SEKTORLER).map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
+          {/* Meslek Grubu — Arama Destekli Dropdown */}
+          <div style={{ marginBottom: 20, position: 'relative' }}>
+            <label style={lbl}>Meslek Grubu <span style={{ color: '#EF4444' }}>*</span></label>
+            <div style={{ position: 'relative' }}>
+              <input
+                ref={aramaRef}
+                value={aramaMetni}
+                onChange={e => { setAramaMetni(e.target.value); setDropdownAcik(true) }}
+                onFocus={() => setDropdownAcik(true)}
+                onBlur={() => setTimeout(() => setDropdownAcik(false), 160)}
+                placeholder={meslekGrubu ? `${meslekGrubu.id} — ${meslekGrubu.ad}` : '— Meslek grubu ara veya seçin (81 grup) —'}
+                style={{
+                  ...inp,
+                  color: meslekGrubu && !aramaMetni ? '#64748B' : NAVY,
+                  paddingRight: 36,
+                }}
+              />
+              {/* Chevron */}
+              <span style={{
+                position: 'absolute', right: 12, top: '50%', transform: `translateY(-50%) rotate(${dropdownAcik ? 180 : 0}deg)`,
+                transition: 'transform .2s', pointerEvents: 'none', color: '#94A3B8', fontSize: 16,
+              }}>▾</span>
+            </div>
+
+            {/* Dropdown listesi */}
+            {dropdownAcik && (
+              <div style={{
+                position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, zIndex: 200,
+                background: '#FFFFFF', border: `1px solid ${BORDER}`, borderRadius: 10,
+                maxHeight: 260, overflowY: 'auto',
+                boxShadow: '0 8px 32px rgba(10,22,40,0.12)',
+              }}>
+                {filtreliGruplar.length === 0 ? (
+                  <div style={{ padding: '14px 16px', fontSize: 13, color: '#94A3B8' }}>Sonuç bulunamadı.</div>
+                ) : (
+                  filtreliGruplar.map(g => {
+                    const sinifRenk = g.tehlikeSinifi === 1 ? '#DC2626' : g.tehlikeSinifi === 2 ? '#EA580C' : '#16A34A'
+                    const aktif = meslekGrubu?.id === g.id
+                    return (
+                      <div
+                        key={g.id}
+                        className="meslek-item"
+                        onMouseDown={() => {
+                          setMeslekGrubu(g)
+                          setAramaMetni('')
+                          setSecilenNace('')
+                          setDropdownAcik(false)
+                        }}
+                        style={{
+                          padding: '9px 14px',
+                          cursor: 'pointer',
+                          fontSize: 13,
+                          borderBottom: `1px solid #F1F5F9`,
+                          background: aktif ? '#F0F9FF' : '#FFFFFF',
+                          display: 'flex', alignItems: 'center', gap: 10,
+                        }}
+                      >
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8', minWidth: 22 }}>{g.id}</span>
+                        <span style={{ flex: 1, color: NAVY, fontWeight: aktif ? 600 : 400 }}>{g.ad}</span>
+                        <span style={{
+                          fontSize: 10, fontWeight: 800, color: sinifRenk,
+                          background: sinifRenk + '15', border: `1px solid ${sinifRenk}30`,
+                          borderRadius: 20, padding: '2px 8px', whiteSpace: 'nowrap',
+                        }}>
+                          S{g.tehlikeSinifi}
+                        </span>
+                      </div>
+                    )
+                  })
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Alt sektör (dinamik) */}
-          {sektor && (
+          {/* Seçilen meslek grubu bilgisi */}
+          {meslekGrubu && !dropdownAcik && (
+            <div style={{ marginBottom: 16, padding: '10px 14px', borderRadius: 8, background: '#F8FAFC', border: `1px solid ${BORDER}`, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
+              <span style={{ color: '#64748B' }}>Seçilen grup:</span>
+              <span style={{ fontWeight: 700, color: NAVY }}>{meslekGrubu.id} — {meslekGrubu.ad}</span>
+              <button
+                onClick={() => { setMeslekGrubu(null); setSecilenNace(''); setAramaMetni('') }}
+                style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', fontSize: 16, lineHeight: 1, padding: 0 }}
+              >×</button>
+            </div>
+          )}
+
+          {/* NACE Kodu — Seçilen gruba göre dinamik */}
+          {meslekGrubu && (
             <div style={{ marginBottom: 20 }}>
-              <label style={lbl}>Alt Sektör</label>
-              <select value={altSektor} onChange={e => setAlt(e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
-                <option value="">— Alt sektör seçin (opsiyonel) —</option>
-                {SEKTORLER[sektor]?.map(s => <option key={s} value={s}>{s}</option>)}
+              <label style={lbl}>NACE Kodu <span style={{ color: '#94A3B8', fontWeight: 400 }}>(opsiyonel)</span></label>
+              <select value={secilenNace} onChange={e => setSecilenNace(e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
+                <option value="">— NACE kodu seçin —</option>
+                {meslekGrubu.naceKodlari.map(n => (
+                  <option key={n.kod} value={n.kod}>{n.kod} — {n.aciklama}</option>
+                ))}
               </select>
             </div>
           )}
 
-          {/* 2 kolon: Çalışan + NACE */}
+          {/* Tehlike sınıfı badge */}
+          {tehlike && meslekGrubu && (
+            <div style={{ marginBottom: 20, padding: '12px 16px', borderRadius: 10, background: tehlike.bg, border: `1px solid ${tehlike.border}`, display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 12, fontWeight: 800, color: tehlike.renk, background: tehlike.renk + '18', border: `1px solid ${tehlike.renk}33`, borderRadius: 20, padding: '3px 12px' }}>
+                {tehlike.label}
+              </span>
+              <span style={{ fontSize: 12, color: '#374151' }}>
+                {meslekGrubu.tehlikeSinifi === 1 && 'Detaylı form doldurmanız gerekmektedir.'}
+                {meslekGrubu.tehlikeSinifi === 2 && 'Standart form doldurmanız önerilmektedir.'}
+                {meslekGrubu.tehlikeSinifi === 3 && 'Kısa formu hızlıca tamamlayabilirsiniz.'}
+              </span>
+            </div>
+          )}
+
+          {/* 2 kolon: Çalışan + İl/İlçe */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
             <div>
               <label style={lbl}>Çalışan Sayısı</label>
@@ -240,39 +288,18 @@ export default function OnboardingPage() {
               </select>
             </div>
             <div>
-              <label style={lbl}>NACE Kodu <span style={{ color: '#94A3B8', fontWeight: 400 }}>(opsiyonel)</span></label>
-              <input value={nace} onChange={e => onNaceChange(e.target.value)} placeholder="Örn: 20.13" style={inp} />
-              {naceLoad && <span style={{ fontSize: 11, color: '#94A3B8', marginTop: 4, display: 'block' }}>Sınıf kontrol ediliyor…</span>}
-            </div>
-          </div>
-
-          {/* Tehlike sınıfı badge */}
-          {tehlike && (
-            <div style={{ marginBottom: 20, padding: '12px 16px', borderRadius: 10, background: tehlike.bg, border: `1px solid ${tehlike.border}`, display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 12, fontWeight: 800, color: tehlike.renk, background: tehlike.renk + '18', border: `1px solid ${tehlike.renk}33`, borderRadius: 20, padding: '3px 12px' }}>
-                {tehlike.label}
-              </span>
-              <span style={{ fontSize: 12, color: '#374151' }}>
-                {tehlike.sinif === 1 && 'Detaylı form doldurmanız gerekmektedir.'}
-                {tehlike.sinif === 2 && 'Standart form doldurmanız önerilmektedir.'}
-                {tehlike.sinif === 3 && 'Kısa formu hızlıca tamamlayabilirsiniz.'}
-              </span>
-            </div>
-          )}
-
-          {/* 2 kolon: İl + İlçe */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 28 }}>
-            <div>
               <label style={lbl}>İl <span style={{ color: '#EF4444' }}>*</span></label>
               <select value={il} onChange={e => setIl(e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
                 <option value="">— İl seçin —</option>
                 {TÜRKİYE_İLLERİ.map(i => <option key={i} value={i}>{i}</option>)}
               </select>
             </div>
-            <div>
-              <label style={lbl}>İlçe</label>
-              <input value={ilce} onChange={e => setIlce(e.target.value)} placeholder="İlçe adı" style={inp} />
-            </div>
+          </div>
+
+          {/* İlçe */}
+          <div style={{ marginBottom: 28 }}>
+            <label style={lbl}>İlçe</label>
+            <input value={ilce} onChange={e => setIlce(e.target.value)} placeholder="İlçe adı" style={inp} />
           </div>
 
           {hata && (
