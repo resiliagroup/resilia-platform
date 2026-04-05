@@ -115,7 +115,25 @@ export default function OnboardingPage() {
           olusturma_tarihi: new Date().toISOString(),
         }),
       })
-      router.push('/hub/site-haritasi')
+      // Token oluştur ve tesis formuna yönlendir
+      const token = `onb-${Date.now()}-${Math.random().toString(36).slice(2,8)}`
+      await fetch(`${SUPA_URL}/rest/v1/iso_tokenlar`, {
+        method: 'POST',
+        headers: {
+          apikey: SUPA_KEY,
+          Authorization: `Bearer ${SUPA_KEY}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal',
+        },
+        body: JSON.stringify({
+          token,
+          aciklama: `${tesisAdi} — ${meslekGrubu.ad}`,
+          olusturan: 'onboarding',
+          dolduruldu: false,
+          olusturma_tarihi: new Date().toISOString(),
+        }),
+      })
+      router.push(`/tesis-formu/${token}`)
     } catch {
       setHata('Kaydedilemedi, lütfen tekrar deneyin.')
       setKaydediliyor(false)
