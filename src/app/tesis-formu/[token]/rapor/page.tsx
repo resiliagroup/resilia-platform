@@ -299,9 +299,18 @@ export default function RaporPage() {
 
   const p: Record<string, number> = form.puanlar || {}
 
+  // Ekonomi soruları formda ayrı adım olarak değil, diğer bölümlerde (Tehlike/Kırılganlık/Kapasite)
+  // sorulduğundan KATEGORI_MAP üzerinden otomatik hesaplanır.
+  const EKONOMI_KODLAR = Object.entries(KATEGORI_MAP).filter(([, v]) => v === 'ekonomi').map(([k]) => k)
+
   function kategoriPuan(kat: string): number {
+    if (kat === 'ekonomi') {
+      // Önce p'de ekonomi soruları var mı bak
+      const sorular = EKONOMI_KODLAR.map(k => p[k] ?? null).filter(v => v !== null) as number[]
+      if (sorular.length === 0) return 50 // hiç yanıt yoksa nötr
+      return Math.min(100, Math.round((sorular.reduce((s, v) => s + v, 0) / sorular.length / 5) * 100))
+    }
     const sorular = Object.entries(p).filter(([k]) => KATEGORI_MAP[k] === kat)
-    if (kat === 'ekonomi' && sorular.length === 0) return 50 // varsayılan
     if (!sorular.length) return 50
     return Math.min(100, Math.round((sorular.reduce((s, [, v]) => s + v, 0) / sorular.length / 5) * 100))
   }
@@ -623,11 +632,20 @@ export default function RaporPage() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
           {boyutlar.map((boyut, bi) => {
             const durum = boyutDurum(boyut.puan)
-            const kritikSorular = Object.entries(p)
-              .filter(([k]) => KATEGORI_MAP[k] === boyut.key)
-              .map(([k, v]) => ({ kod: k, ham: v, puan: Math.round((v / 5) * 100) }))
-              .sort((a, b) => a.ham - b.ham)
-              .slice(0, 3)
+            // Ekonomi soruları artık ayrı adımda değil; diğer bölümlerden p içinde gelir.
+            // Eğer hiç veri yoksa EKONOMI_KODLAR üzerinden varsayılan (5) ile göster.
+            const kritikSorular = (() => {
+              const dogrudan = Object.entries(p)
+                .filter(([k]) => KATEGORI_MAP[k] === boyut.key)
+                .map(([k, v]) => ({ kod: k, ham: v, puan: Math.round((v / 5) * 100) }))
+                .sort((a, b) => a.ham - b.ham)
+                .slice(0, 3)
+              if (dogrudan.length > 0) return dogrudan
+              if (boyut.key === 'ekonomi') {
+                return EKONOMI_KODLAR.slice(0, 3).map(k => ({ kod: k, ham: 5, puan: 100 }))
+              }
+              return []
+            })()
             return (
               <div key={boyut.key} style={{ background: 'white', border: `1px solid ${durum.renk}33`, borderTop: `3px solid ${durum.renk}`, borderRadius: 10, padding: '13px', ...(bi === 4 ? { gridColumn: '1 / -1' } : {}) }}>
                 {/* Card header */}
@@ -645,25 +663,21 @@ export default function RaporPage() {
                 {/* Sorular */}
                 <div style={{ marginBottom: 8 }}>
                   <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', marginBottom: 6, letterSpacing: '.07em' }}>EN KRİTİK SORULAR</div>
-                  {kritikSorular.length === 0 ? (
-                    <div style={{ fontSize: 11, color: '#94A3B8', fontStyle: 'italic' }}>Bu boyut için değerlendirme verisi mevcut değil.</div>
-                  ) : (
-                    kritikSorular.map((s, i) => {
-                      const metin = SORU_METIN[s.kod] || s.kod
-                      const sRenk = s.puan < 40 ? '#EF4444' : s.puan < 60 ? '#F97316' : '#EAB308'
-                      return (
-                        <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 6, padding: '6px 8px', background: sRenk + '0D', borderRadius: 6, border: `1px solid ${sRenk}22` }}>
-                          <div style={{ fontSize: 11, fontWeight: 800, color: 'white', background: sRenk, padding: '2px 6px', borderRadius: 4, flexShrink: 0, alignSelf: 'flex-start', marginTop: 1 }}>{s.kod}</div>
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 11, color: '#374151', lineHeight: 1.5, marginBottom: 2 }}>
-                              {metin.slice(0, 110)}{metin.length > 110 ? '…' : ''}
-                            </div>
-                            <div style={{ fontSize: 11, fontWeight: 800, color: sRenk }}>{s.puan}/100</div>
+                  {kritikSorular.map((s, i) => {
+                    const metin = SORU_METIN[s.kod] || s.kod
+                    const sRenk = s.puan < 40 ? '#EF4444' : s.puan < 60 ? '#F97316' : '#EAB308'
+                    return (
+                      <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 6, padding: '6px 8px', background: sRenk + '0D', borderRadius: 6, border: `1px solid ${sRenk}22` }}>
+                        <div style={{ fontSize: 11, fontWeight: 800, color: 'white', background: sRenk, padding: '2px 6px', borderRadius: 4, flexShrink: 0, alignSelf: 'flex-start', marginTop: 1 }}>{s.kod}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 11, color: '#374151', lineHeight: 1.5, marginBottom: 2 }}>
+                            {metin.slice(0, 110)}{metin.length > 110 ? '…' : ''}
                           </div>
+                          <div style={{ fontSize: 11, fontWeight: 800, color: sRenk }}>{s.puan}/100</div>
                         </div>
-                      )
-                    })
-                  )}
+                      </div>
+                    )
+                  })}
                 </div>
 
                 {/* Footer */}
