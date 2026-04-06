@@ -337,7 +337,23 @@ export default function OnboardingPage() {
           {meslekGrubu && (
             <div style={{ marginBottom: 20 }}>
               <label style={lbl}>NACE Kodu <span style={{ color: '#94A3B8', fontWeight: 400 }}>(opsiyonel)</span></label>
-              <select value={secilenNace} onChange={e => setSecilenNace(e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
+              <select value={secilenNace} onChange={async e => {
+                const nace = e.target.value
+                setSecilenNace(nace)
+                if (nace && meslekGrubu) {
+                  try {
+                    const temiz = nace.replace('.','')
+                    const r = await fetch(
+                      `${SUPA_URL}/rest/v1/nace_tehlike?nace_alti_kod=like.${encodeURIComponent(temiz)}*&select=tehlike_sinifi&order=nace_alti_kod.asc&limit=1`,
+                      { headers: { apikey: SUPA_KEY } }
+                    )
+                    const d = await r.json()
+                    if (d?.[0]?.tehlike_sinifi) {
+                      setMeslekGrubu({ ...meslekGrubu, tehlikeSinifi: d[0].tehlike_sinifi as 1|2|3 })
+                    }
+                  } catch { /* sessiz hata */ }
+                }
+              }} style={{ ...inp, cursor: 'pointer' }}>
                 <option value="">— NACE kodu seçin —</option>
                 {meslekGrubu.naceKodlari.map(n => (
                   <option key={n.kod} value={n.kod}>{n.kod} — {n.aciklama}</option>
