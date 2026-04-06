@@ -331,8 +331,8 @@ export default function TesisFormuPage() {
           }))
           // Onboarding'den gelen ek bilgiler
           if (data.tehlike_sinifi) {
-            const sinif = data.tehlike_sinifi as number
-            setTehlikeSinifi({ sinif: sinif as 1|2|3, label: sinif === 1 ? 'Çok Tehlikeli' : sinif === 2 ? 'Tehlikeli' : 'Az Tehlikeli', renk: sinif === 1 ? '#EF4444' : sinif === 2 ? '#F97316' : '#22C55E' })
+            const sinif = data.tehlike_sinifi as 1|2|3
+            setTehlikeSinifi({ sinif, label: sinif === 1 ? 'Çok Tehlikeli' : sinif === 2 ? 'Tehlikeli' : 'Az Tehlikeli', mevzuat: [] })
           }
           setTesisYuklendi(true)
           const fid = (data.facility_id as string) ?? null
