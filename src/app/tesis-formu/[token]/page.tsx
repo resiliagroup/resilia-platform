@@ -321,6 +321,8 @@ export default function TesisFormuPage() {
       .then((rows: Record<string, unknown>[]) => {
         const data = rows?.[0]
         if (data) {
+          // Önce flag'i set et — naceChange guard'ı doğru çalışsın
+          setTesisYuklendi(true)
           setEnvanter(prev => ({
             ...prev,
             E01: (data.tesis_adi as string) ?? '',
@@ -334,7 +336,6 @@ export default function TesisFormuPage() {
             const sinif = data.tehlike_sinifi as 1|2|3
             setTehlikeSinifi({ sinif, label: sinif === 1 ? 'Çok Tehlikeli' : sinif === 2 ? 'Tehlikeli' : 'Az Tehlikeli', mevzuat: [] })
           }
-          setTesisYuklendi(true)
           const fid = (data.facility_id as string) ?? null
           setFacilityId(fid)
           // Sektör tespiti: tesis_profil tablosundan sektor çek
@@ -353,9 +354,11 @@ export default function TesisFormuPage() {
             }).catch(() => null)
           }
 
-          if (data.nace_kodu && (data.nace_kodu as string).length >= 4) {
+          // Token'da tehlike_sinifi yoksa nace_tehlike'den çek.
+          // !tesisYuklendi kullanılamaz — stale closure nedeniyle her zaman false görünür.
+          if (!data.tehlike_sinifi && data.nace_kodu && (data.nace_kodu as string).length >= 4) {
             const temiz = (data.nace_kodu as string).replace(/\s/g, '')
-            if (!tesisYuklendi) fetch(
+            fetch(
               `${SUPA_URL}/rest/v1/nace_tehlike?nace_alti_kod=like.${encodeURIComponent(temiz)}*&select=tehlike_sinifi,tehlike_label,zorunlu_mevzuat&order=nace_alti_kod.asc&limit=1`,
               { headers: { 'apikey': SUPA_KEY } }
             ).then(r => r.json()).then((rows: Record<string, unknown>[]) => {
