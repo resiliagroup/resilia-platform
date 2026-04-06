@@ -131,6 +131,14 @@ export default function OnboardingPage() {
           olusturan: 'onboarding',
           dolduruldu: false,
           olusturma_tarihi: new Date().toISOString(),
+          // Onboarding'den gelen hazır bilgiler
+          tesis_adi: tesisAdi,
+          nace_kodu: secilenNace || null,
+          il: il || null,
+          ilce: ilce || null,
+          calisan_grubu: calisan || null,
+          tehlike_sinifi: meslekGrubu.tehlikeSinifi,
+          meslek_grubu_id: meslekGrubu.id,
         }),
       })
       router.push(`/tesis-formu/${token}`)
