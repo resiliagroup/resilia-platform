@@ -355,7 +355,7 @@ export default function TesisFormuPage() {
 
           if (data.nace_kodu && (data.nace_kodu as string).length >= 4) {
             const temiz = (data.nace_kodu as string).replace(/\s/g, '')
-            fetch(
+            if (!tesisYuklendi) fetch(
               `${SUPA_URL}/rest/v1/nace_tehlike?nace_alti_kod=like.${encodeURIComponent(temiz)}*&select=tehlike_sinifi,tehlike_label,zorunlu_mevzuat&order=nace_alti_kod.asc&limit=1`,
               { headers: { 'apikey': SUPA_KEY } }
             ).then(r => r.json()).then((rows: Record<string, unknown>[]) => {
