@@ -46,6 +46,8 @@ function kodPrefix(kod: string): string {
 }
 
 const TEHLIKE  = SORULAR_SANAYI.filter(s => s.bolum === 'TEHLİKE')
+
+const EKONOMI  = SORULAR_SANAYI.filter(s => (s as any).kategori === 'ekonomi')
 const KIRILGAN = SORULAR_SANAYI.filter(s => s.bolum === 'KIRILGANLIK')
 const KAPASITE = SORULAR_SANAYI.filter(s => s.bolum === 'KAPASİTE' && s.boyut !== 'HRO')
 const HRO      = SORULAR_SANAYI.filter(s => s.boyut === 'HRO')
@@ -57,6 +59,7 @@ const ADIM_ETIKET = [
   'Kapasite & Yönetim',
   'HRO Olgunluğu',
   'Destek Kapasitesi',
+  'Ekonomi & Finansal',
   'Sonuç & ADİS Skoru',
 ]
 
@@ -367,7 +370,7 @@ export default function TesisFormuPage() {
       })
   }, [token])
 
-  useEffect(() => { if (adim === 6) setUri(hesaplaUri(puanlar, sektorTipi)) }, [adim, puanlar, sektorTipi])
+  useEffect(() => { if (adim === 7) setUri(hesaplaUri(puanlar, sektorTipi)) }, [adim, puanlar, sektorTipi])
 
   const setEnv = (kod: string, val: unknown) => setEnvanter(e => ({ ...e, [kod]: val }))
 
@@ -581,7 +584,7 @@ export default function TesisFormuPage() {
           </div>
         </div>
         <div style={{ height: 3, background: '#F1F5F9' }}>
-          <div style={{ height: '100%', background: TEAL, width: `${(adim / 6) * 100}%`, transition: 'width .3s' }} />
+          <div style={{ height: '100%', background: TEAL, width: `${(adim / 7) * 100}%`, transition: 'width .3s' }} />
         </div>
       </div>
 
@@ -774,8 +777,23 @@ export default function TesisFormuPage() {
           </div>
         )}
 
-        {/* ── ADIM 6 — Sonuç ── */}
+        {/* ── ADIM 6 — Ekonomi & Finansal Dayanıklılık ── */}
         {adim === 6 && (
+          <BolumSoru
+            baslik="Bölüm 6 — Ekonomi & Finansal Dayanıklılık"
+            sorular={EKONOMI}
+            puanlar={puanlar}
+            setPuan={setPuan}
+            detayliMod={detayliMod}
+            onDetayliMod={() => setDetayliMod(true)}
+            onGeri={geri}
+            onIleri={ileri}
+            tehlikeSinifi={tehlikeSinifi}
+          />
+        )}
+
+        {/* ── ADIM 7 — Sonuç ── */}
+        {adim === 7 && (
           <div>
             {!gonderildi ? (
               <div style={{ background: 'white', borderRadius: 12, border: `1px solid ${BORDER}`, padding: 32, textAlign: 'center' }}>
