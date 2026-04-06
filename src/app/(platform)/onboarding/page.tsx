@@ -154,6 +154,8 @@ export default function OnboardingPage() {
   const [aramaMetni, setAramaMetni]       = useState('')
   const [dropdownAcik, setDropdownAcik]   = useState(false)
   const [secilenNace, setSecilenNace]     = useState('')
+  const [itoNaceListesi, setItoNaceListesi] = useState<{nace_kodu: string, faaliyet_adi: string}[]>([])
+  const [naceYukleniyor, setNaceYukleniyor] = useState(false)
   const [calisan, setCalisan]             = useState('')
   const [il, setIl]                       = useState('')
   const [ilce, setIlce]                   = useState('')
