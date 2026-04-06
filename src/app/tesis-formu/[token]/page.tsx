@@ -383,19 +383,21 @@ export default function TesisFormuPage() {
     setEnvanter(prev => ({ ...prev, E03: nace }))
     const temiz = nace.replace(/\s/g, '')
     if (temiz.length >= 4) {
-      const r = await fetch(
-        `${SUPA_URL}/rest/v1/nace_tehlike?nace_alti_kod=like.${encodeURIComponent(temiz)}*&select=tehlike_sinifi,tehlike_label,zorunlu_mevzuat,seveso_kapsam,natech_olasilik&order=nace_alti_kod.asc&limit=1`,
-        { headers: { 'apikey': SUPA_KEY } }
-      )
-      if (r.ok) {
-        const data = await r.json()
-        if (data.length > 0) {
-          const d = data[0]
-          setTehlikeSinifi({ sinif: d.tehlike_sinifi, label: d.tehlike_label, mevzuat: d.zorunlu_mevzuat ?? [] })
-          const isgLabel = d.tehlike_sinifi === 1 ? '1 — Çok Tehlikeli' : d.tehlike_sinifi === 2 ? '2 — Tehlikeli' : '3 — Az Tehlikeli'
-          setEnvanter(prev => ({ ...prev, E04: isgLabel }))
-        } else {
-          setTehlikeSinifi(null)
+      if (!tesisYuklendi) {
+        const r = await fetch(
+          `${SUPA_URL}/rest/v1/nace_tehlike?nace_alti_kod=like.${encodeURIComponent(temiz)}*&select=tehlike_sinifi,tehlike_label,zorunlu_mevzuat,seveso_kapsam,natech_olasilik&order=nace_alti_kod.asc&limit=1`,
+          { headers: { 'apikey': SUPA_KEY } }
+        )
+        if (r.ok) {
+          const data = await r.json()
+          if (data.length > 0) {
+            const d = data[0]
+            setTehlikeSinifi({ sinif: d.tehlike_sinifi, label: d.tehlike_label, mevzuat: d.zorunlu_mevzuat ?? [] })
+            const isgLabel = d.tehlike_sinifi === 1 ? '1 — Çok Tehlikeli' : d.tehlike_sinifi === 2 ? '2 — Tehlikeli' : '3 — Az Tehlikeli'
+            setEnvanter(prev => ({ ...prev, E04: isgLabel }))
+          } else {
+            setTehlikeSinifi(null)
+          }
         }
       }
     } else {
@@ -599,11 +601,12 @@ export default function TesisFormuPage() {
         {adim === 0 && (() => {
           const TEMEL = ['E01','E03','E04','E10','E12','E13','E16','E15','E36']
           const ORTA  = [...TEMEL, 'E02','E09','E11','E14','E17','E18','E19','E20','E26','E28']
-          const aktifEnvanter = !tehlikeSinifi || tehlikeSinifi.sinif === 3
+          const aktifEnvanter = (!tehlikeSinifi || tehlikeSinifi.sinif === 3
             ? TESIS_ENVANTER.filter(a => TEMEL.includes(a.kod))
             : tehlikeSinifi.sinif === 2
               ? TESIS_ENVANTER.filter(a => ORTA.includes(a.kod))
               : TESIS_ENVANTER
+          ).filter(a => !tesisYuklendi || !['E01','E03','E04','E10','E13'].includes(a.kod))
           return (
           <div style={{ background: 'white', borderRadius: 12, border: `1px solid ${BORDER}`, padding: 28 }}>
             <h2 style={{ fontSize: 17, fontWeight: 700, color: NAVY, marginBottom: 4 }}>Tesis Kimlik & Yapısal Envanter</h2>
@@ -612,6 +615,14 @@ export default function TesisFormuPage() {
                 ? <><span style={{ fontSize: 14 }}>✓</span> Tesis bilgileriniz sisteme kayıtlı verilerden getirilmiştir. Lütfen kontrol edip eksik alanları tamamlayın.</>
                 : 'Lütfen tesis bilgilerinizi eksiksiz doldurun.'}
             </p>
+            {tesisYuklendi && (
+              <div style={{ background: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: 8, padding: '10px 14px', marginBottom: 12, fontSize: 12, color: '#15803D', display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+                {!!envanter.E01 && <span><strong>✓ Firma:</strong> {String(envanter.E01)}</span>}
+                {!!envanter.E03 && <span><strong>NACE:</strong> {String(envanter.E03)}</span>}
+                {!!tehlikeSinifi?.label && <span><strong>Sınıf:</strong> {tehlikeSinifi!.label}</span>}
+                {!!envanter.E13 && <span><strong>İlçe:</strong> {String(envanter.E13)}</span>}
+              </div>
+            )}
             {!tehlikeSinifi && (
               <p style={{ fontSize: 11, color: '#94A3B8', marginBottom: 12 }}>
                 NACE kodunuzu girdikten sonra form otomatik olarak tesisınıza özel hale gelir.
