@@ -115,28 +115,6 @@ export default function OnboardingPage() {
 
     setKaydediliyor(true); setHata('')
     try {
-      await fetch(`${SUPA_URL}/rest/v1/tesis_profil`, {
-        method: 'POST',
-        headers: {
-          apikey: SUPA_KEY,
-          Authorization: `Bearer ${SUPA_KEY}`,
-          'Content-Type': 'application/json',
-          Prefer: 'return=minimal',
-        },
-        body: JSON.stringify({
-          tesis_adi: tesisAdi,
-          sektor: meslekGrubu.ad,
-          alt_sektor: null,
-          calisan_grubu: calisan || null,
-          il,
-          ilce: ilce || null,
-          nace_kodu: secilenNace || null,
-          tehlike_sinifi: meslekGrubu.tehlikeSinifi,
-          risk_profili: meslekGrubu.riskProfili,
-          meslek_grubu_id: meslekGrubu.id,
-          olusturma_tarihi: new Date().toISOString(),
-        }),
-      })
       // Token oluştur ve tesis formuna yönlendir
       const token = `onb-${Date.now()}-${Math.random().toString(36).slice(2,8)}`
       await fetch(`${SUPA_URL}/rest/v1/iso_tokenlar`, {
