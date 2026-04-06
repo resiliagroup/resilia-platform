@@ -423,8 +423,11 @@ export default function OnboardingPage() {
                       )
                       const d = await r.json()
                       const adres = d.address || {}
-                      const il2   = adres.province || adres.state || ''
-                      const ilce2 = adres.district || adres.suburb || adres.city_district || ''
+                      // Nominatim TR: il için state, ilçe için county/district/suburb
+                      const il2raw = adres.province || adres.state || adres.city || ''
+                      const ilce2  = adres.county || adres.district || adres.suburb || adres.city_district || adres.town || ''
+                      // İstanbul gibi şehirlerde state = "İstanbul" gelir
+                      const il2 = il2raw.replace(' İli','').replace(' Province','').trim()
                       const ilKey = Object.keys(IL_ILCE).find(k => il2.includes(k) || k.includes(il2))
                       if (ilKey) { setIl(ilKey); setIlce('') }
                       if (ilce2) setTimeout(() => setIlce(ilce2), 100)
