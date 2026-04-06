@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { MESLEK_GRUPLARI, getTehlikeRenk, type MeslekGrubu } from '@/lib/nace-gruplari'
+import { MESLEK_GRUPLARI, MESLEK_GRUPLARI_SIRALI, getTehlikeRenk, type MeslekGrubu } from '@/lib/nace-gruplari'
 
 const SUPA_URL = 'https://gqguwgbopgnpwzjwcexl.supabase.co'
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZ3V3Z2JvcGducHd6andjZXhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzM5OTgzMywiZXhwIjoyMDg4OTc1ODMzfQ.Ku-JRx8JFH5a3SIj7sGP_Dy_nM89NMMW34gPyxVO_qI'
@@ -100,11 +100,11 @@ export default function OnboardingPage() {
   const aramaRef = useRef<HTMLInputElement>(null)
 
   const filtreliGruplar = aramaMetni.trim()
-    ? MESLEK_GRUPLARI.filter(g =>
+    ? MESLEK_GRUPLARI_SIRALI.filter(g =>
         g.ad.toLowerCase().includes(aramaMetni.toLowerCase()) ||
         g.id.toString() === aramaMetni.trim()
       )
-    : MESLEK_GRUPLARI
+    : MESLEK_GRUPLARI_SIRALI
 
   const tehlike = meslekGrubu ? getTehlikeRenk(meslekGrubu.tehlikeSinifi) : null
 

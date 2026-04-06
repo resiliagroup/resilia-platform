@@ -828,6 +828,11 @@ export const MESLEK_GRUPLARI: MeslekGrubu[] = [
   },
 ]
 
+
+export const MESLEK_GRUPLARI_SIRALI = [...MESLEK_GRUPLARI].sort((a, b) =>
+  a.ad.localeCompare(b.ad, 'tr', { sensitivity: 'base' })
+)
+
 export function getMeslekGrubuById(id: number): MeslekGrubu | undefined {
   return MESLEK_GRUPLARI.find(g => g.id === id)
 }
