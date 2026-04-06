@@ -295,6 +295,13 @@ export default function OnboardingPage() {
                           setMeslekGrubu(g)
                           setAramaMetni('')
                           setSecilenNace('')
+                          setNaceYukleniyor(true)
+                          fetch(`${SUPA_URL}/rest/v1/ito_nace_gruplari?meslek_grubu_no=eq.${g.id}&select=nace_kodu,faaliyet_adi&order=nace_kodu.asc`, {
+                            headers: { apikey: SUPA_KEY }
+                          }).then(r => r.json()).then(d => {
+                            setItoNaceListesi(d || [])
+                            setNaceYukleniyor(false)
+                          }).catch(() => setNaceYukleniyor(false))
                           setDropdownAcik(false)
                         }}
                         style={{
@@ -357,8 +364,10 @@ export default function OnboardingPage() {
                 }
               }} style={{ ...inp, cursor: 'pointer' }}>
                 <option value="">— NACE kodu seçin —</option>
-                {meslekGrubu.naceKodlari.map(n => (
-                  <option key={n.kod} value={n.kod}>{n.kod} — {n.aciklama}</option>
+                {naceYukleniyor
+                ? <option>Yükleniyor...</option>
+                : (itoNaceListesi.length > 0 ? itoNaceListesi : meslekGrubu.naceKodlari.map(n => ({nace_kodu: n.kod, faaliyet_adi: n.aciklama}))).map(n => (
+                  <option key={n.nace_kodu} value={n.nace_kodu}>{n.nace_kodu} — {n.faaliyet_adi.slice(0,60)}</option>
                 ))}
               </select>
             </div>
