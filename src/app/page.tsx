@@ -1,413 +1,221 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import Nav from '@/components/Nav'
-import Footer from '@/components/Footer'
+import { useRouter } from 'next/navigation'
+import './home-blast.css'
 
-/* ── tokens ─────────────────────────────────────────────────────── */
-const C = {
-  navy950: '#F8FAFC',
-  navy900: '#F8FAFC',
-  navy800: '#FFFFFF',
-  navy700: '#F1F5F9',
-  teal:    '#2D8A87',
-  tealL:   '#3BA8A5',
-  amber:   '#F59E0B',
-  green:   '#22C55E',
-  muted:   '#64748B',
-  dim:     '#374151',
-  border:  '#E2E8F0',
-}
-
-const FONT = "'Plus Jakarta Sans', sans-serif"
-
-/* ── modules data ────────────────────────────────────────────────── */
-const MODULES = [
-  {
-    code: 'omniRISK', href: '/platform/omnirisk',
-    short: 'Quantitative facility risk scoring',
-    detail: 'Multi-parameter facility risk scoring — hazard, fragility, exposure and capacity synthesized into a single, auditable resilience index.',
-    features: ['URI score for every facility', 'Sector & hazard calibration', 'FEMA mission area alignment'],
-  },
-  {
-    code: 'omniIMPACT', href: '/platform/omniimpact',
-    short: 'Business impact analysis & downtime modeling',
-    detail: 'Identify critical functions, model downtime costs and establish evidence-based RTO/RPO targets for every business unit.',
-    features: ['Critical function prioritization', 'Downtime cost modeling', 'MTPD and RTO/RPO tracking'],
-  },
-  {
-    code: 'omniPLAN', href: '/platform/omniplan',
-    short: 'BCM planning with RTO/RPO tracking',
-    detail: 'Build, test and maintain business continuity plans aligned to ISO 22301 — with lifecycle management from draft to approved.',
-    features: ['Clause-by-clause gap analysis', 'Drill & exercise management', 'Plan lifecycle tracking'],
-  },
-  {
-    code: 'omniCRISIS', href: '/platform/omnicrisis',
-    short: 'Real-time crisis command',
-    detail: 'ICS-based crisis management with real-time incident tracking, role assignments and structured post-incident review.',
-    features: ['ICS role structure', 'Escalation protocols', 'After-action learning'],
-  },
-  {
-    code: 'omniAUDIT', href: '/platform/omniaudit',
-    short: 'Compliance scorecards',
-    detail: 'Continuous compliance monitoring across Sendai Framework, ISO 22301, BDDK and Basel III — audit-ready at all times.',
-    features: ['Multi-framework tracking', 'Evidence collection', 'Automated gap analysis'],
-  },
-  {
-    code: 'omniVENDOR', href: '/platform/omnivendor',
-    short: 'Third-party risk assessment',
-    detail: 'Score, monitor and tier critical suppliers against disruption risk — from natural hazard cascades to cyber dependencies.',
-    features: ['Supplier risk scoring', 'Dependency mapping', 'Cascade analysis'],
-  },
-  {
-    code: 'omniPIPE', href: '/platform/omnipipe',
-    short: 'Pipeline & energy risk',
-    detail: 'Purpose-built for pipeline operators, LNG terminals and energy distributors — quantitative consequence modeling and structural integrity assessment.',
-    features: ['Gas release consequence modeling', 'Pipeline integrity scoring', 'SCADA integration ready'],
-    soon: true,
-  },
-  {
-    code: 'omniHRO', href: '/platform/omni-hro',
-    short: 'Near miss & reliability culture',
-    detail: 'Operational signal intelligence for high-reliability organizations. Near-miss reporting, culture measurement and reliability coefficient scoring.',
-    features: ['Structured near-miss reporting', 'HRO alpha coefficient scoring', 'Reliability culture survey'],
-    soon: true,
-  },
+const NAV = [
+  { href: '/', label: 'Ana sayfa' },
+  { href: '#calismalar', label: 'Çalışmalar' },
+  { href: '#gunluk', label: 'Günlük' },
+  { href: '/hakkimizda', label: 'Hakkımızda' },
+  { href: '/metodoloji', label: 'Yaklaşım' },
+  { href: '#sektorler', label: 'Sektörler' },
+  { href: 'mailto:info@omniversel.com', label: 'İletişim' },
 ]
 
-/* ── page ────────────────────────────────────────────────────────── */
+const WORK = [
+  { href: '/solutions/banking', kicker: 'DenizBank', title: 'Şube ağını tek notada okumak', tone: '#d5dee3', wide: true, tall: true },
+  { href: '/solutions/industrial', kicker: 'Sanayi', title: 'Tehlike sınıfından sürekliliğe', tone: '#c9d4d2', wide: true },
+  { href: '/solutions/health', kicker: 'Sağlık', title: 'Hastanenin ayakta kalma hesabı', tone: '#e4e8e3' },
+  { href: '/solutions/energy', kicker: 'Enerji', title: 'Hat, terminal, ardışık etki', tone: '#d8d3cc', wide: true },
+  { href: '/solutions/education', kicker: 'Üniversite', title: 'Kampüsün ortak riski', tone: '#cfd6dc' },
+]
+
+const SERVICES = [
+  { href: '/platform/omnirisk', name: 'Risk ölçümü', line: 'Tehlike, kırılganlık ve kapasite tek notada.' },
+  { href: '/platform/omniimpact', name: 'Etki analizi', line: 'Hangi işlev durursa kurum durur.' },
+  { href: '/platform/omniplan', name: 'Süreklilik planı', line: 'ISO 22301 boyunca taslaktan onaylı plana.' },
+  { href: '/platform/omnicrisis', name: 'Kriz yönetimi', line: 'Olay komuta ile operasyon merkezi aynı masada.' },
+  { href: '/platform/omniaudit', name: 'Denetim', line: 'BDDK, Basel ve ISO için iz bırakır.' },
+  { href: '/platform/omnivendor', name: 'Tedarik riski', line: 'Tek tedarikçinin zinciri koparması.' },
+  { href: '/platform/omni-hro', name: 'Güvenilirlik kültürü', line: 'Ramak kala, öğrenen kurum.' },
+  { href: '/solutions/public-sector', name: 'Saha ve komuta', line: 'Belediye, kampüs, tesis ağı.' },
+]
+
+const NOTES = [
+  { href: '/metodoloji', date: '12.11.2026', title: 'Masa başı tatbikat, alarm tatbikatı değildir' },
+  { href: '/methodology', date: '06.11.2026', title: 'Finansal dayanıklılık, operasyon notunun yanına gelir' },
+  { href: '/hakkimizda', date: '19.04.2026', title: 'Bir tesis, üç eksen, tek skor' },
+]
+
+function Field() {
+  const ref = useRef<HTMLCanvasElement>(null)
+  useEffect(() => {
+    const canvas = ref.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    let frame = 0
+    let alive = true
+    const draw = () => {
+      if (!alive) return
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      const w = canvas.clientWidth
+      const h = canvas.clientHeight
+      if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+        canvas.width = w * dpr
+        canvas.height = h * dpr
+      }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      ctx.clearRect(0, 0, w, h)
+      ctx.strokeStyle = 'rgba(60,80,90,0.16)'
+      ctx.lineWidth = 1
+      const step = 76
+      const drift = (frame % 480) / 480
+      for (let x = step / 2; x < w; x += step) {
+        for (let y = step / 2; y < h; y += step) {
+          const n = Math.sin((x + y) * 0.01 + drift * Math.PI * 2)
+          const s = 4 + n * 1.5
+          ctx.beginPath()
+          ctx.moveTo(x - s, y)
+          ctx.lineTo(x + s, y)
+          ctx.moveTo(x, y - s)
+          ctx.lineTo(x, y + s)
+          ctx.stroke()
+        }
+      }
+      frame += 1
+      requestAnimationFrame(draw)
+    }
+    draw()
+    return () => { alive = false }
+  }, [])
+  return <canvas ref={ref} aria-hidden />
+}
+
 export default function HomePage() {
-  const [activeMod, setActiveMod] = useState(0)
-  const mod = MODULES[activeMod]
+  const router = useRouter()
+  const [open, setOpen] = useState(false)
+  const [svc, setSvc] = useState(0)
+  const current = SERVICES[svc]
 
   return (
-    <div style={{ fontFamily: FONT, background: C.navy950, minHeight: '100vh' }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-        a{text-decoration:none;color:inherit}
-        body{-webkit-font-smoothing:antialiased;background:${C.navy950}}
-        .mod-row{cursor:pointer;transition:background .15s}
-        .mod-row:hover{background:${C.navy900}!important}
-        .sector-card{transition:border-color .18s,transform .18s;cursor:default}
-        .sector-card:hover{border-color:${C.teal}!important;transform:translateY(-2px)}
-        .cta-pill{transition:background .15s,transform .15s}
-        .cta-pill:hover{background:${C.tealL}!important;transform:scale(1.02)}
-        .ghost-pill{transition:border-color .15s}
-        .ghost-pill:hover{border-color:${C.teal}!important;color:${C.teal}!important}
-        @media(max-width:900px){
-          .hero-grid{grid-template-columns:1fr!important}
-          .hero-right{display:none!important}
-          .mod-grid{grid-template-columns:1fr!important}
-          .metrics-grid{grid-template-columns:repeat(2,1fr)!important}
-          .sectors-grid{grid-template-columns:1fr!important}
-          .cs-grid{grid-template-columns:1fr!important}
-          .footer-grid{grid-template-columns:1fr!important;gap:40px!important}
-        }
-      `}</style>
+    <div className="blast">
+      <header className="blast-nav">
+        <Link href="/" className="blast-mark" aria-label="Omniversel ana sayfa">
+          <svg width="18" height="22" viewBox="0 0 18 22" aria-hidden>
+            <rect x="1" y="1" width="16" height="20" rx="1" fill="none" stroke="#3C505A" strokeWidth="1.4" />
+            <path d="M5 11h8M9 7v8" stroke="#3C505A" strokeWidth="1.2" />
+          </svg>
+          OMNIVERSEL
+        </Link>
+        <button className="blast-menu-btn" type="button" onClick={() => setOpen(v => !v)}>
+          {open ? 'Kapat' : 'Menü'}
+        </button>
+        <nav className={open ? 'blast-links open' : 'blast-links'}>
+          {NAV.map(item => (
+            <Link key={item.label} href={item.href} onClick={() => setOpen(false)}>{item.label}</Link>
+          ))}
+        </nav>
+      </header>
 
-      {/* ── NAV ────────────────────────────────────────────────────── */}
-      <Nav />
-
-      {/* ── HERO ───────────────────────────────────────────────────── */}
-      <section style={{
-        minHeight: 'calc(100vh - 64px)',
-        background: C.navy900,
-        position: 'relative', overflow: 'hidden',
-        display: 'flex', alignItems: 'center',
-        padding: '80px 40px',
-      }}>
-        {/* Background glows */}
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-          <div style={{ position: 'absolute', top: 0, right: 0, width: '70%', height: '100%',
-            background: 'radial-gradient(ellipse 80% 60% at 70% 40%, rgba(0,155,141,0.06) 0%, transparent 60%)' }} />
-          <div style={{ position: 'absolute', bottom: 0, left: 0, width: '50%', height: '70%',
-            background: 'radial-gradient(ellipse 50% 40% at 10% 80%, rgba(0,155,141,0.04) 0%, transparent 70%)' }} />
+      <section className="blast-hero">
+        <Field />
+        <div className="blast-hero-copy">
+          <p>
+            <Link href="/platform/omnirisk"><span className="blast-ul">Ölçün</span> ötesini</Link>
+            <span className="blast-slash">/</span>
+            <Link href="/metodoloji"><span className="blast-ul">Keşfedin</span> dayanıklılığı</Link>
+          </p>
         </div>
+      </section>
 
-        <div className="hero-grid" style={{ maxWidth: 1200, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: '55% 45%', gap: 80, alignItems: 'center', position: 'relative', zIndex: 1 }}>
-          {/* Left */}
-          <div>
-            <div style={{
-              display: 'inline-block', fontSize: 11, fontWeight: 600, color: C.teal,
-              letterSpacing: '2px', textTransform: 'uppercase',
-              border: `1px solid ${C.teal}40`, borderRadius: 20, padding: '4px 14px', marginBottom: 32,
-            }}>
-              Enterprise Resilience Platform
-            </div>
+      <section className="blast-statement">
+        <div className="blast-statement-grid">
+          <h2>
+            Tesis, şube, hastane ve kampüs için tek okuma. Afet, iş sürekliliği, kriz ve güvenilirlik kültürü aynı notanın içinde durur.
+          </h2>
+        </div>
+      </section>
 
-            <h1 style={{ lineHeight: 1.0, marginBottom: 24 }}>
-              <span style={{ display: 'block', fontSize: 'clamp(44px,5.5vw,72px)', fontWeight: 800, color: '#0A1628', letterSpacing: '-0.03em' }}>Quantify Risk.</span>
-              <span style={{ display: 'block', fontSize: 'clamp(44px,5.5vw,72px)', fontWeight: 800, color: C.teal, letterSpacing: '-0.03em', marginTop: 4 }}>Ensure Continuity.</span>
-              <span style={{ display: 'block', fontSize: 'clamp(44px,5.5vw,72px)', fontWeight: 800, color: '#0A1628', letterSpacing: '-0.03em', marginTop: 4 }}>Manage Crises.</span>
-            </h1>
+      <div className="blast-rule" aria-hidden><span /></div>
 
-            <p style={{ fontSize: 18, color: C.muted, lineHeight: 1.7, maxWidth: 480, marginBottom: 40 }}>
-              An integrated platform for organizational resilience — disaster risk assessment, business continuity and crisis management in one workspace.
-            </p>
-
-            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 32 }}>
-              <Link href="/platform/omnirisk" className="cta-pill" style={{
-                fontSize: 16, fontWeight: 600, color: '#0A1628', fontFamily: FONT,
-                background: C.teal, padding: '14px 32px', borderRadius: 30, display: 'inline-block',
-              }}>
-                Explore Platform
-              </Link>
-              <Link href="/methodology" className="ghost-pill" style={{
-                fontSize: 16, fontWeight: 600, color: C.muted, fontFamily: FONT,
-                padding: '14px 32px', borderRadius: 30, border: `1px solid ${C.border}`,
-                display: 'inline-block',
-              }}>
-                Watch Overview
-              </Link>
-            </div>
-
-            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-              {['ISO 22301 Aligned', 'FEMA Core Capabilities', 'ITU AYM Validated'].map(t => (
-                <span key={t} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: C.muted }}>
-                  <span style={{ color: C.green, fontWeight: 700 }}>✓</span> {t}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Right — product cards */}
-          <div className="hero-right" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {[
-              { code: 'omniRISK — Quantitative Risk Scoring', sub: 'URI score for every facility. Multi-parameter model.', active: true, href: '/platform/omnirisk' },
-              { code: 'omniPLAN — Business Continuity Management', sub: 'ISO 22301 aligned. RTO/RPO tracking.', active: false, href: '/platform/omniplan' },
-              { code: 'omniCRISIS — Real-Time Crisis Command', sub: 'Live incident management. Post-event analysis.', active: false, href: '/platform/omnicrisis' },
-            ].map((card, i) => (
-              <Link key={i} href={card.href} style={{
-                display: 'block',
-                background: card.active ? '#E8F7F6' : '#FFFFFF',
-                border: `1px solid ${card.active ? C.teal : C.border}`,
-                borderRadius: 12, padding: '20px 20px 20px 20px',
-                textDecoration: 'none',
-                transition: 'border-color .15s',
-              }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = C.teal)}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = card.active ? C.teal : C.border)}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
-                  <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: card.active ? C.teal : C.muted, flexShrink: 0, marginTop: 5 }} />
-                    <div>
-                      <div style={{ fontSize: 15, fontWeight: 600, color: card.active ? '#0A1628' : C.muted, marginBottom: 4 }}>{card.code}</div>
-                      <div style={{ fontSize: 13, color: card.active ? '#374151' : '#64748B' }}>{card.sub}</div>
-                    </div>
-                  </div>
-                  <span style={{ fontSize: 16, color: card.active ? C.teal : '#64748B', flexShrink: 0 }}>→</span>
-                </div>
-              </Link>
-            ))}
-            <Link href="#modules" style={{ fontSize: 13, color: C.teal, fontWeight: 600, marginTop: 4, fontFamily: FONT }}>
-              + 5 more modules →
+      <section className="blast-wrap" id="calismalar">
+        <h2 className="blast-kicker">Seçilen işler</h2>
+        <div className="blast-bento">
+          {WORK.map(item => (
+            <Link
+              key={item.title}
+              href={item.href}
+              className={`blast-card${item.wide ? ' wide' : ''}${item.tall ? ' tall' : ''}`}
+              style={{ background: item.tone }}
+            >
+              <i />
+              <div>
+                <small>{item.kicker}</small>
+                <strong>{item.title}</strong>
+              </div>
+              <em>GÖR</em>
             </Link>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* ── TRUST BAND ─────────────────────────────────────────────── */}
-      <section style={{ background: C.navy950, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}`, padding: '32px 40px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: 11, fontWeight: 600, color: C.muted, letterSpacing: '3px', textTransform: 'uppercase', marginBottom: 24 }}>
-            Trusted across critical sectors
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 48, flexWrap: 'wrap' }}>
-            {['BANKING','HEALTHCARE','ENERGY','INDUSTRY','PUBLIC SECTOR','EDUCATION','CRITICAL INFRASTRUCTURE'].map(s => (
-              <span key={s} style={{ fontSize: 12, fontWeight: 600, color: '#374151', letterSpacing: '1px' }}>{s}</span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── PLATFORM MODULES ───────────────────────────────────────── */}
-      <section id="modules" style={{ background: C.navy950, padding: '120px 40px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          {/* Heading */}
-          <div style={{ textAlign: 'center', marginBottom: 72 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '3px', textTransform: 'uppercase', marginBottom: 16 }}>
-              THE PLATFORM
-            </p>
-            <h2 style={{ fontSize: 'clamp(36px,4.5vw,52px)', fontWeight: 800, color: '#0A1628', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 16 }}>
-              One Platform. <span style={{ color: C.teal }}>Every Risk.</span>
-            </h2>
-            <p style={{ fontSize: 18, color: C.muted, maxWidth: 600, margin: '0 auto', lineHeight: 1.7 }}>
-              Six integrated modules covering the complete resilience lifecycle — from first assessment to live crisis command.
-            </p>
-          </div>
-
-          {/* 2-col layout */}
-          <div className="mod-grid" style={{ display: 'grid', gridTemplateColumns: '40% 60%', gap: 24, alignItems: 'start' }}>
-            {/* Left list */}
-            <div style={{ border: `1px solid ${C.border}`, borderRadius: 12, overflow: 'hidden' }}>
-              {MODULES.map((m, i) => (
-                <div
-                  key={m.code}
-                  className="mod-row"
-                  onClick={() => setActiveMod(i)}
-                  style={{
-                    padding: '16px 20px',
-                    borderBottom: i < MODULES.length - 1 ? `1px solid ${C.border}` : 'none',
-                    borderLeft: activeMod === i ? `3px solid ${C.teal}` : '3px solid transparent',
-                    background: activeMod === i ? C.navy800 : C.navy950,
-                    opacity: m.soon && activeMod !== i ? 0.6 : 1,
-                  }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 3 }}>
-                    <span style={{ fontSize: 15, fontWeight: 600, color: activeMod === i ? '#0A1628' : C.muted, fontFamily: FONT }}>
-                      {m.code}
-                    </span>
-                    {m.soon && (
-                      <span style={{ fontSize: 9, fontWeight: 700, color: C.amber, border: `1px solid ${C.amber}50`, borderRadius: 4, padding: '1px 6px', letterSpacing: 1, textTransform: 'uppercase' as const }}>
-                        Soon
-                      </span>
-                    )}
-                  </div>
-                  <div style={{ fontSize: 13, color: '#374151' }}>{m.short}</div>
-                </div>
-              ))}
+      <section className="blast-wrap" id="sektorler" style={{ paddingTop: 0 }}>
+        <h2 className="blast-kicker">Ne yapıyoruz</h2>
+        <div className="blast-services">
+          <Link href={current.href} className="blast-stage" style={{ ['--stage' as string]: '#e3e8e8' }}>
+            <div className="blast-stage-inner">
+              <small>0{svc + 1}</small>
+              <strong>{current.line}</strong>
             </div>
-
-            {/* Right detail */}
-            <div style={{ background: C.navy900, border: `1px solid ${C.border}`, borderRadius: 16, padding: '40px 36px', minHeight: 360 }}>
-              <div style={{ borderLeft: `3px solid ${C.teal}`, paddingLeft: 16, marginBottom: 20 }}>
-                <h3 style={{ fontSize: 28, fontWeight: 700, color: '#0A1628', fontFamily: FONT, marginBottom: 8 }}>{mod.code}</h3>
-                <p style={{ fontSize: 16, color: C.muted }}>{mod.short}</p>
-              </div>
-              <p style={{ fontSize: 15, color: C.dim, lineHeight: 1.75, marginBottom: 28 }}>{mod.detail}</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
-                {mod.features.map(f => (
-                  <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{ color: C.teal, fontWeight: 700, fontSize: 14, flexShrink: 0 }}>✓</span>
-                    <span style={{ fontSize: 14, color: '#0A1628' }}>{f}</span>
-                  </div>
-                ))}
-              </div>
-              <Link href={mod.href} style={{ fontSize: 14, fontWeight: 600, color: C.teal, fontFamily: FONT }}>
-                Learn more →
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── METRICS BAND ───────────────────────────────────────────── */}
-      <section style={{ padding: '80px 40px', background: C.navy950 }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div className="metrics-grid" style={{
-            display: 'grid', gridTemplateColumns: 'repeat(4,1fr)',
-            background: 'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)',
-            border: `1px solid ${C.border}`, borderRadius: 16, overflow: 'hidden',
-          }}>
-            {[
-              { num: '782+',  title: 'Facilities Assessed',    sub: 'In a single metropolitan deployment' },
-              { num: '103',   title: 'Critical Risk Points',   sub: 'Identified across industrial clusters' },
-              { num: '94%',   title: 'Compliance Rate',        sub: 'Across assessed organizations' },
-              { num: '03:00', title: 'The Hour Systems Fail',  sub: 'We\'re already prepared' },
-            ].map((m, i) => (
-              <div key={i} style={{
-                padding: '48px 32px', textAlign: 'center',
-                borderRight: i < 3 ? `1px solid ${C.border}` : 'none',
-              }}>
-                <div style={{ fontSize: 48, fontWeight: 800, color: C.teal, fontFamily: "'DM Mono', monospace", lineHeight: 1, marginBottom: 12 }}>{m.num}</div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#0A1628', marginBottom: 6 }}>{m.title}</div>
-                <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.5 }}>{m.sub}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── SECTORS ────────────────────────────────────────────────── */}
-      <section style={{ background: C.navy950, padding: '80px 40px 120px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <h2 style={{ fontSize: 'clamp(32px,4vw,42px)', fontWeight: 800, color: '#0A1628', letterSpacing: '-0.02em', marginBottom: 16 }}>
-              Purpose-Built for Every Sector
-            </h2>
-            <p style={{ fontSize: 18, color: C.muted, maxWidth: 540, margin: '0 auto' }}>
-              Sector-specific risk models, regulatory frameworks and compliance requirements — built in.
-            </p>
-          </div>
-          <div className="sectors-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
-            {[
-              { name: 'Banking & Finance',        ref: 'BDDK · Basel III · ISO 22301',  desc: 'Operational risk inventory and business continuity planning aligned to banking regulators.',       href: '/solutions/banking' },
-              { name: 'Healthcare & Hospital',    ref: 'JCI · Kaiser HVA · HEICS',      desc: 'Critical patient service continuity and emergency operations center integration.',                 href: '/solutions/health'  },
-              { name: 'Industrial & Manufacturing', ref: 'NATECH · SEVESO III · ISO 45001', desc: 'NATECH cascade scenario analysis and supply chain disruption modeling.',                       href: '/solutions'         },
-              { name: 'Energy & Utilities',       ref: 'EPDK · Pipeline Safety · SCADA', desc: 'Infrastructure risk modeling for energy distributors, terminals and pipeline operators.',         href: '/solutions/energy'  },
-              { name: 'Public Sector',            ref: 'AFAD · Sendai Framework · FEMA',  desc: 'Urban-scale vulnerability assessment and investment planning for municipalities.',               href: '/solutions'         },
-              { name: 'Education',                ref: 'Campus Safety · Emergency Planning', desc: 'School disaster risk management plans, drill management and resilience assessment.',           href: '/solutions'         },
-            ].map((s, i) => (
-              <div key={i} className="sector-card" style={{
-                background: C.navy900, border: `1px solid ${C.border}`,
-                borderRadius: 12, padding: 32,
-              }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0A1628', marginBottom: 8 }}>{s.name}</h3>
-                <p style={{ fontSize: 12, color: C.dim, marginBottom: 12, letterSpacing: '0.3px' }}>{s.ref}</p>
-                <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.6, marginBottom: 16 }}>{s.desc}</p>
-                <Link href={s.href} style={{ fontSize: 13, fontWeight: 600, color: C.teal, fontFamily: FONT }}>View solutions →</Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── CASE STUDIES ───────────────────────────────────────────── */}
-      <section style={{ background: C.navy900, padding: '120px 40px', borderTop: `1px solid ${C.border}` }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(28px,3.5vw,42px)', fontWeight: 800, color: '#0A1628', letterSpacing: '-0.02em', marginBottom: 48 }}>
-            Real Deployments. Measurable Outcomes.
-          </h2>
-          <div className="cs-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            {[
-              {
-                label: 'METROPOLITAN DEPLOYMENT',
-                num: '782', numSub: 'facilities assessed across 10 neighborhoods and 6 sectors in metropolitan Istanbul',
-                result: '103 critical risk points identified',
-              },
-              {
-                label: 'BANKING SECTOR',
-                num: '94%', numSub: 'operational resilience compliance rate achieved across multi-branch assessment',
-                result: 'BDDK requirements fully mapped and verified',
-              },
-            ].map((cs, i) => (
-              <div key={i} style={{ background: C.navy950, border: `1px solid ${C.border}`, borderRadius: 16, padding: 48 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: C.teal, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 20 }}>{cs.label}</p>
-                <div style={{ fontSize: 'clamp(52px,6vw,72px)', fontWeight: 800, color: C.teal, fontFamily: "'DM Mono', monospace", lineHeight: 1, marginBottom: 12 }}>{cs.num}</div>
-                <p style={{ fontSize: 15, color: C.muted, lineHeight: 1.7, marginBottom: 20 }}>{cs.numSub}</p>
-                <p style={{ fontSize: 15, fontWeight: 600, color: '#0A1628' }}>{cs.result}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── CTA ────────────────────────────────────────────────────── */}
-      <section style={{
-        padding: '160px 40px',
-        background: 'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 50%, #F8FAFC 100%)',
-        borderTop: `1px solid ${C.border}`,
-        textAlign: 'center',
-      }}>
-        <div style={{ maxWidth: 640, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(36px,5vw,56px)', fontWeight: 800, color: '#0A1628', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 16 }}>
-            Start measuring resilience.
-          </h2>
-          <p style={{ fontSize: 20, color: C.muted, lineHeight: 1.7, marginBottom: 48 }}>
-            No commitment. Our advisory team walks you through your first assessment.
-          </p>
-          <Link href="/login" className="cta-pill" style={{
-            fontSize: 18, fontWeight: 600, color: '#0A1628', fontFamily: FONT,
-            background: C.teal, padding: '18px 48px', borderRadius: 30, display: 'inline-block',
-          }}>
-            Request Free Assessment →
           </Link>
+          <div className="blast-slist">
+            {SERVICES.map((item, i) => (
+              <button
+                key={item.name}
+                type="button"
+                className={i === svc ? 'on' : ''}
+                onMouseEnter={() => setSvc(i)}
+                onFocus={() => setSvc(i)}
+                onClick={() => router.push(item.href)}
+              >
+                {item.name}
+              </button>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ── FOOTER ─────────────────────────────────────────────────── */}
-      <Footer />
+      <section className="blast-wrap" id="gunluk" style={{ paddingTop: 10 }}>
+        <h2 className="blast-kicker">Günlük</h2>
+        <div className="blast-news">
+          {NOTES.map(note => (
+            <Link key={note.title} href={note.href} className="blast-note">
+              <time>{note.date}</time>
+              <strong>{note.title}</strong>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <footer className="blast-foot">
+        <div>
+          <b>OMNIVERSEL</b>
+          Kentsel dayanıklılık platformu.
+          <br />İTÜ AYM akademik ortağı.
+        </div>
+        <div>
+          <b>İLETİŞİM</b>
+          <a href="mailto:info@omniversel.com">info@omniversel.com</a>
+          <br />İstanbul
+        </div>
+        <div>
+          <b>GİRİŞ</b>
+          <Link href="/login">Değerlendirme</Link>
+          <br />
+          <Link href="/pricing">Fiyatlandırma</Link>
+        </div>
+        <div>
+          <div className="blast-count">
+            782
+            <span>ÖLÇÜLEN TESİS</span>
+          </div>
+        </div>
+        <div className="blast-legal">© 2026 OMNIVERSEL · İstanbul</div>
+      </footer>
     </div>
   )
 }
