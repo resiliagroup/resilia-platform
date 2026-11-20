@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { HeroField } from './hero-field'
 import './home-blast.css'
 
 const NAV = [
@@ -38,65 +39,6 @@ const POOLS = {
   field: ['/home/field.jpg', '/home/plant.jpg', '/home/command.jpg'],
 }
 
-function Field() {
-  const ref = useRef<HTMLCanvasElement>(null)
-  useEffect(() => {
-    const canvas = ref.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    let frame = 0
-    let alive = true
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const paint = () => {
-      if (!alive) return
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      const w = canvas.clientWidth
-      const h = canvas.clientHeight
-      if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
-        canvas.width = Math.floor(w * dpr)
-        canvas.height = Math.floor(h * dpr)
-      }
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      const t = frame * 0.004
-      const sweep = (Math.sin(t * 0.35) + 1) / 2
-      const hue = (Math.sin(t * 0.22) + 1) / 2
-      const g = ctx.createLinearGradient(w * sweep, h, w * (1 - sweep), 0)
-      g.addColorStop(0, '#14080e')
-      g.addColorStop(0.42, hue > 0.5 ? '#6a2418' : '#4a1840')
-      g.addColorStop(0.72, hue > 0.5 ? '#2a1848' : '#3a2010')
-      g.addColorStop(1, '#0c0612')
-      ctx.fillStyle = g
-      ctx.fillRect(0, 0, w, h)
-      ctx.save()
-      ctx.translate(w * (0.15 + sweep * 0.55), h * (0.42 + Math.sin(t * 0.5) * 0.08))
-      ctx.rotate(-0.55)
-      const band = ctx.createLinearGradient(-w * 0.7, 0, w * 0.7, 0)
-      band.addColorStop(0, 'rgba(0,0,0,0)')
-      band.addColorStop(0.45, `rgba(${210 + hue * 30}, ${70 + hue * 40}, ${20 + (1 - hue) * 40}, 0.62)`)
-      band.addColorStop(1, 'rgba(0,0,0,0)')
-      ctx.fillStyle = band
-      ctx.fillRect(-w, -h * 0.22, w * 2, h * 0.44)
-      ctx.restore()
-      const blobs = [
-        { x: w * (0.22 + Math.sin(t) * 0.12), y: h * (0.7 + Math.cos(t * 0.8) * 0.08), r: w * 0.42, c: `rgba(220,80,24,${0.35 + sweep * 0.25})` },
-        { x: w * (0.78 + Math.cos(t * 0.6) * 0.1), y: h * (0.28 + Math.sin(t * 0.7) * 0.1), r: w * 0.46, c: `rgba(110,40,150,${0.25 + (1 - hue) * 0.3})` },
-      ]
-      for (const b of blobs) {
-        const rg = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r)
-        rg.addColorStop(0, b.c)
-        rg.addColorStop(1, 'rgba(0,0,0,0)')
-        ctx.fillStyle = rg
-        ctx.fillRect(0, 0, w, h)
-      }
-      frame += reduce ? 0 : 1
-      if (!reduce) requestAnimationFrame(paint)
-    }
-    paint()
-    return () => { alive = false }
-  }, [])
-  return <canvas ref={ref} aria-hidden />
-}
 
 function Shot({ frames, beat, alt }: { frames: string[], beat: number, alt: string }) {
   const src = frames[beat % frames.length]
@@ -210,7 +152,7 @@ export default function HomePage() {
       )}
 
       <div className="hero">
-        <Field />
+        <HeroField />
         <div className="pill">
           <Link href={phrase.ah}>{phrase.a.slice(0, aCount)}</Link>
           {(phase !== 'a' || aCount === phrase.a.length) && bCount + aCount > 0 && <span className="slash">/</span>}
