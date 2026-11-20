@@ -20,6 +20,7 @@ const LINES = [
   { a: 'BANKING SECTOR', ah: '/solutions/banking', b: 'ENERGY NETWORK', bh: '/solutions/energy' },
   { a: 'READ THE METHOD', ah: '/methodology', b: 'START MEASURING', bh: '/login' },
 ]
+const MODULES = [
   { code: 'omniRISK', href: '/platform/omnirisk', short: 'Quantitative facility risk scoring', image: '/home/office.jpg' },
   { code: 'omniIMPACT', href: '/platform/omniimpact', short: 'Business impact analysis and downtime modeling', image: '/home/command.jpg' },
   { code: 'omniPLAN', href: '/platform/omniplan', short: 'BCM planning with RTO/RPO tracking', image: '/home/office.jpg' },
