@@ -20,15 +20,6 @@ const LINES = [
   { a: 'BANKING SECTOR', ah: '/solutions/banking', b: 'ENERGY NETWORK', bh: '/solutions/energy' },
   { a: 'READ THE METHOD', ah: '/methodology', b: 'START MEASURING', bh: '/login' },
 ]
-
-const SPOTS = [
-  { left: '18%', top: '44%' },
-  { left: '47%', top: '74%' },
-  { left: '72%', top: '36%' },
-  { left: '32%', top: '68%' },
-]
-
-const MODULES = [
   { code: 'omniRISK', href: '/platform/omnirisk', short: 'Quantitative facility risk scoring', image: '/home/office.jpg' },
   { code: 'omniIMPACT', href: '/platform/omniimpact', short: 'Business impact analysis and downtime modeling', image: '/home/command.jpg' },
   { code: 'omniPLAN', href: '/platform/omniplan', short: 'BCM planning with RTO/RPO tracking', image: '/home/office.jpg' },
@@ -67,16 +58,28 @@ function Field() {
       }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       const t = frame * 0.004
-      const g = ctx.createLinearGradient(0, h, w, 0)
-      g.addColorStop(0, '#1a0c10')
-      g.addColorStop(0.45, '#3a140e')
-      g.addColorStop(1, '#140818')
+      const sweep = (Math.sin(t * 0.35) + 1) / 2
+      const hue = (Math.sin(t * 0.22) + 1) / 2
+      const g = ctx.createLinearGradient(w * sweep, h, w * (1 - sweep), 0)
+      g.addColorStop(0, '#14080e')
+      g.addColorStop(0.42, hue > 0.5 ? '#6a2418' : '#4a1840')
+      g.addColorStop(0.72, hue > 0.5 ? '#2a1848' : '#3a2010')
+      g.addColorStop(1, '#0c0612')
       ctx.fillStyle = g
       ctx.fillRect(0, 0, w, h)
+      ctx.save()
+      ctx.translate(w * (0.15 + sweep * 0.55), h * (0.42 + Math.sin(t * 0.5) * 0.08))
+      ctx.rotate(-0.55)
+      const band = ctx.createLinearGradient(-w * 0.7, 0, w * 0.7, 0)
+      band.addColorStop(0, 'rgba(0,0,0,0)')
+      band.addColorStop(0.45, `rgba(${210 + hue * 30}, ${70 + hue * 40}, ${20 + (1 - hue) * 40}, 0.62)`)
+      band.addColorStop(1, 'rgba(0,0,0,0)')
+      ctx.fillStyle = band
+      ctx.fillRect(-w, -h * 0.22, w * 2, h * 0.44)
+      ctx.restore()
       const blobs = [
-        { x: w * (0.28 + Math.sin(t) * 0.18), y: h * (0.62 + Math.cos(t * 0.8) * 0.12), r: w * 0.55, c: 'rgba(196,72,24,0.55)' },
-        { x: w * (0.72 + Math.cos(t * 0.7) * 0.16), y: h * (0.38 + Math.sin(t * 0.9) * 0.14), r: w * 0.48, c: 'rgba(92,28,120,0.45)' },
-        { x: w * (0.5 + Math.sin(t * 0.5) * 0.2), y: h * (0.5 + Math.cos(t * 1.1) * 0.1), r: w * 0.36, c: 'rgba(180,70,30,0.28)' },
+        { x: w * (0.22 + Math.sin(t) * 0.12), y: h * (0.7 + Math.cos(t * 0.8) * 0.08), r: w * 0.42, c: `rgba(220,80,24,${0.35 + sweep * 0.25})` },
+        { x: w * (0.78 + Math.cos(t * 0.6) * 0.1), y: h * (0.28 + Math.sin(t * 0.7) * 0.1), r: w * 0.46, c: `rgba(110,40,150,${0.25 + (1 - hue) * 0.3})` },
       ]
       for (const b of blobs) {
         const rg = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r)
@@ -109,15 +112,29 @@ export default function HomePage() {
   const [bCount, setBCount] = useState(0)
   const [phase, setPhase] = useState<'a' | 'b' | 'hold' | 'clear'>('a')
   const [beat, setBeat] = useState(0)
+  const cursor = useRef<HTMLDivElement>(null)
+  const [fine, setFine] = useState(false)
   const current = MODULES[mod]
   const phrase = LINES[line]
-  const spot = SPOTS[line]
 
   useEffect(() => {
     const onScroll = () => setLight(window.scrollY > window.innerHeight - 80)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    const mq = window.matchMedia('(pointer: fine)')
+    setFine(mq.matches)
+    if (!mq.matches) return
+    const move = (e: MouseEvent) => {
+      const el = cursor.current
+      if (!el) return
+      el.style.transform = `translate3d(${e.clientX - 7}px, ${e.clientY - 7}px, 0)`
+    }
+    window.addEventListener('mousemove', move)
+    return () => window.removeEventListener('mousemove', move)
   }, [])
 
   useEffect(() => {
@@ -172,9 +189,12 @@ export default function HomePage() {
   }, [])
 
   return (
-    <div className="site">
+    <div className={fine ? 'site fine' : 'site'}>
+      <div ref={cursor} className="cursor" aria-hidden />
       <header className={light || open ? 'bar light' : 'bar'}>
-        <Link href="/" className="word" onClick={() => setOpen(false)}>omniversel</Link>
+        <Link href="/" className={light && !open ? 'markbox' : 'word'} aria-label="Omniversel" onClick={() => setOpen(false)}>
+          {light && !open ? 'o' : 'omniversel'}
+        </Link>
         <button className="menu-btn" type="button" onClick={() => setOpen(v => !v)}>
           {open ? 'CLOSE' : 'MENU'}
         </button>
@@ -190,7 +210,6 @@ export default function HomePage() {
 
       <div className="hero">
         <Field />
-        <i className="spark" style={{ left: spot.left, top: spot.top }} aria-hidden />
         <div className="pill">
           <Link href={phrase.ah}>{phrase.a.slice(0, aCount)}</Link>
           {(phase !== 'a' || aCount === phrase.a.length) && bCount + aCount > 0 && <span className="slash">/</span>}

@@ -12,7 +12,32 @@
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }
-.site a { color: inherit; text-decoration: none; }
+.site.fine, .site.fine a, .site.fine button { cursor: none; }
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 80;
+  display: none;
+  width: 14px;
+  height: 14px;
+  background: #f26a2a;
+  pointer-events: none;
+}
+.site.fine .cursor { display: block; }
+.markbox {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 6px;
+  background: #f4f6f7;
+  color: #314049;
+  font-weight: 500;
+  font-size: 30px;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
 .site * { box-sizing: border-box; }
 
 .bar {
