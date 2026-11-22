@@ -7,12 +7,16 @@ import { HeroField } from './hero-field'
 import './home-blast.css'
 
 const NAV = [
-  { href: '/platform/omnirisk', label: 'Platform' },
-  { href: '/solutions', label: 'Solutions' },
-  { href: '/methodology', label: 'Methodology' },
+  { href: '/', label: 'Home' },
+  { href: '/solutions', label: 'Work' },
+  { href: '/resources', label: 'Journal' },
   { href: '/about', label: 'About' },
+  { href: '/methodology', label: 'Approach' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/login', label: 'Contact' },
+  { href: '/platform/omnirisk', label: 'omniRISK' },
+  { href: '/platform/omniplan', label: 'omniPLAN' },
+  { href: '/platform/omnicrisis', label: 'omniCRISIS' },
 ]
 
 const LINES = [
@@ -145,8 +149,11 @@ export default function HomePage() {
 
       {open && (
         <nav className="sheet">
-          {NAV.map(item => (
-            <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>{item.label}</Link>
+          {NAV.map((item, i) => (
+            <span key={item.href}>
+              {i === 7 && <span className="sheet-split" />}
+              <Link href={item.href} onClick={() => setOpen(false)}>{item.label}</Link>
+            </span>
           ))}
         </nav>
       )}
