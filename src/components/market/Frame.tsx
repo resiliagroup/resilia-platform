@@ -62,9 +62,10 @@ export function Market({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function Intro({ kicker, statement }: { kicker: string, statement: string }) {
+export function Intro({ kicker, statement, image }: { kicker: string, statement: string, image?: string }) {
   return (
     <>
+      {image && <img className="mk-hero" src={image} alt="" />}
       <p className="mk-kicker">{kicker}</p>
       <h1>{statement}</h1>
       <div className="mk-rule" aria-hidden />

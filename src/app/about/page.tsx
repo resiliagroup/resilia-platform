@@ -11,10 +11,10 @@ const MILESTONES = [
 ]
 
 const AREAS = [
-  { title: 'Platform', text: 'Software for quantitative risk scoring, continuity planning and crisis command.' },
-  { title: 'Consulting', text: 'Sector-calibrated facility assessments, continuity plans and exercises.' },
-  { title: 'Testing', text: 'Fire testing, NATECH field analysis and expert work for regulatory proceedings.' },
-  { title: 'Research', text: 'Joint work with ITU AYM, training and capacity development.' },
+  { title: 'Platform', text: 'Software for quantitative risk scoring, continuity planning and crisis command.', image: '/market/about-platform.jpg' },
+  { title: 'Consulting', text: 'Sector-calibrated facility assessments, continuity plans and exercises.', image: '/market/about-field.jpg' },
+  { title: 'Testing', text: 'Fire testing, NATECH field analysis and expert work for regulatory proceedings.', image: '/market/about-lab.jpg' },
+  { title: 'Research', text: 'Joint work with ITU AYM, training and capacity development.', image: '/market/about-library.jpg' },
 ]
 
 export default function AboutPage() {
@@ -22,15 +22,19 @@ export default function AboutPage() {
     <Market>
       <Intro
         kicker="About"
+        image="/market/about-hero.jpg"
         statement="Omniversel is a resilience analytics company. The platform is academically grounded and tested in the field."
       />
       <section className="mk-block">
         <h2>Practice</h2>
         <div className="mk-grid">
           {AREAS.map(item => (
-            <article key={item.title} className="mk-card">
-              <strong>{item.title}</strong>
-              <p>{item.text}</p>
+            <article key={item.title} className="mk-card has-img">
+              <img src={item.image} alt="" />
+              <div>
+                <strong>{item.title}</strong>
+                <p>{item.text}</p>
+              </div>
             </article>
           ))}
         </div>

@@ -6,18 +6,22 @@ import { Intro, Market } from '@/components/market/Frame'
 const STEPS = [
   {
     title: 'Risk assessment',
+    image: '/market/approach-risk.jpg',
     text: 'Hazard, fragility, exposure, capacity and the bottleneck that would stop throughput. Weights change by sector. A hospital and a bank are not scored the same way. Aligned to FEMA mission areas: prevention, protection, mitigation, response, recovery.',
   },
   {
     title: 'Business continuity',
+    image: '/market/approach-continuity.jpg',
     text: 'Recovery objectives come from impact data, not preference. Plans follow ISO 22301. Work runs in 15-day cycles. Scenarios include earthquake, flood, NATECH, cyber and supply chain failure.',
   },
   {
     title: 'Crisis command',
+    image: '/market/approach-crisis.jpg',
     text: 'Incident command, named roles, live awareness. Squads with clear authority. Near misses feed the model. Every event ends in a structured debrief.',
   },
   {
     title: 'Compliance',
+    image: '/market/approach-standards.jpg',
     text: 'Sendai Framework, ISO 22301, BDDK and Basel III sit in the same scorecard. Evidence is collected as the assessment runs, not assembled afterwards.',
   },
 ]
@@ -35,6 +39,7 @@ export default function MethodologyPage() {
         <h2>What we do</h2>
         <div className="mk-services">
           <div className="mk-stage">
+            <img src={current.image} alt="" />
             <strong>{current.text}</strong>
           </div>
           <div className="mk-slist">

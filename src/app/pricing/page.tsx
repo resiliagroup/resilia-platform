@@ -35,6 +35,7 @@ export default function PricingPage() {
     <Market>
       <Intro
         kicker="Pricing"
+        image="/market/pricing-hero.jpg"
         statement="Start with one facility. The program grows when the first score is useful."
       />
       <section className="mk-block">

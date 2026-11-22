@@ -4,12 +4,12 @@ import Link from 'next/link'
 import { Intro, Market } from '@/components/market/Frame'
 
 const NOTES = [
-  { cat: 'Method', title: 'The URI model, in one page', text: 'Hazard, fragility, exposure, bottleneck and capacity. Why a single adjective is not a score.' },
-  { cat: 'Banking', title: 'Operational resilience and BDDK', text: 'What a Turkish bank can show a supervisor beyond a self-assessment.' },
-  { cat: 'Cities', title: 'Sendai, ten years on', text: 'What the framework asks of a municipality that still has to choose where to spend.' },
-  { cat: 'Industry', title: 'NATECH, when the hazard starts the accident', text: 'Why a flood model and a process-safety model have to sit in the same room.' },
-  { cat: 'Health', title: 'A hospital is not a compliance file', text: 'JCI is a checklist. Continuity is the hour the operating theatre still has power.' },
-  { cat: 'Culture', title: 'High-reliability, applied to a city', text: 'Near misses, drills, and the coefficient that moves when people report early.' },
+  { cat: 'Method', image: '/market/journal-uri.jpg', title: 'The URI model, in one page', text: 'Hazard, fragility, exposure, bottleneck and capacity. Why a single adjective is not a score.' },
+  { cat: 'Banking', image: '/market/journal-bank.jpg', title: 'Operational resilience and BDDK', text: 'What a Turkish bank can show a supervisor beyond a self-assessment.' },
+  { cat: 'Cities', image: '/market/journal-city.jpg', title: 'Sendai, ten years on', text: 'What the framework asks of a municipality that still has to choose where to spend.' },
+  { cat: 'Industry', image: '/market/journal-natech.jpg', title: 'NATECH, when the hazard starts the accident', text: 'Why a flood model and a process-safety model have to sit in the same room.' },
+  { cat: 'Health', image: '/market/journal-health.jpg', title: 'A hospital is not a compliance file', text: 'JCI is a checklist. Continuity is the hour the operating theatre still has power.' },
+  { cat: 'Culture', image: '/market/journal-culture.jpg', title: 'High-reliability, applied to a city', text: 'Near misses, drills, and the coefficient that moves when people report early.' },
 ]
 
 export default function ResourcesPage() {
@@ -22,7 +22,8 @@ export default function ResourcesPage() {
       <section className="mk-block">
         <div className="mk-grid">
           {NOTES.map(note => (
-            <article key={note.title} className="mk-card">
+            <article key={note.title} className="mk-card has-img">
+              <img src={note.image} alt="" />
               <small>{note.cat}</small>
               <div>
                 <strong>{note.title}</strong>
