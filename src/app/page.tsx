@@ -26,28 +26,15 @@ const LINES = [
   { a: 'READ THE METHOD', ah: '/methodology', b: 'START MEASURING', bh: '/login' },
 ]
 const MODULES = [
-  { code: 'omniRISK', href: '/platform/omnirisk', short: 'Quantitative facility risk scoring', image: '/home/office.jpg' },
-  { code: 'omniIMPACT', href: '/platform/omniimpact', short: 'Business impact analysis and downtime modeling', image: '/home/command.jpg' },
-  { code: 'omniPLAN', href: '/platform/omniplan', short: 'BCM planning with RTO/RPO tracking', image: '/home/office.jpg' },
+  { code: 'omniRISK', href: '/platform/omnirisk', short: 'Quantitative facility risk scoring', image: '/home/workshop.jpg' },
+  { code: 'omniIMPACT', href: '/platform/omniimpact', short: 'Business impact analysis and downtime modeling', image: '/home/analysis.jpg' },
+  { code: 'omniPLAN', href: '/platform/omniplan', short: 'BCM planning with RTO/RPO tracking', image: '/home/planning.jpg' },
   { code: 'omniCRISIS', href: '/platform/omnicrisis', short: 'Real-time crisis command', image: '/home/command.jpg' },
-  { code: 'omniAUDIT', href: '/platform/omniaudit', short: 'Compliance scorecards', image: '/home/field.jpg' },
-  { code: 'omniVENDOR', href: '/platform/omnivendor', short: 'Third-party risk assessment', image: '/home/plant.jpg' },
-  { code: 'omniHRO', href: '/platform/omni-hro', short: 'Near miss and reliability culture', image: '/home/plant.jpg' },
-  { code: 'omniPIPE', href: '/platform/omnipipe', short: 'Pipeline and energy risk', image: '/home/field.jpg' },
+  { code: 'omniAUDIT', href: '/platform/omniaudit', short: 'Compliance scorecards', image: '/home/audit.jpg' },
+  { code: 'omniVENDOR', href: '/platform/omnivendor', short: 'Third-party risk assessment', image: '/home/port.jpg' },
+  { code: 'omniHRO', href: '/platform/omni-hro', short: 'Near miss and reliability culture', image: '/home/shopfloor.jpg' },
+  { code: 'omniPIPE', href: '/platform/omnipipe', short: 'Pipeline and energy risk', image: '/home/steelworks.jpg' },
 ]
-
-const POOLS = {
-  office: ['/home/office.jpg', '/home/command.jpg', '/home/plant.jpg'],
-  command: ['/home/command.jpg', '/home/field.jpg', '/home/office.jpg'],
-  plant: ['/home/plant.jpg', '/home/office.jpg', '/home/field.jpg'],
-  field: ['/home/field.jpg', '/home/plant.jpg', '/home/command.jpg'],
-}
-
-
-function Shot({ frames, beat, alt }: { frames: string[], beat: number, alt: string }) {
-  const src = frames[beat % frames.length]
-  return <img key={src + beat} className="rise" src={src} alt={alt} />
-}
 
 export default function HomePage() {
   const router = useRouter()
@@ -58,7 +45,6 @@ export default function HomePage() {
   const [aCount, setACount] = useState(0)
   const [bCount, setBCount] = useState(0)
   const [phase, setPhase] = useState<'a' | 'b' | 'hold' | 'clear'>('a')
-  const [beat, setBeat] = useState(0)
   const cursor = useRef<HTMLDivElement>(null)
   const [fine, setFine] = useState(false)
   const current = MODULES[mod]
@@ -115,26 +101,6 @@ export default function HomePage() {
     return () => window.clearTimeout(timer)
   }, [phase, aCount, bCount, line, phrase.a.length, phrase.b.length])
 
-  useEffect(() => {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduce) return
-    const timer = window.setInterval(() => setBeat(b => b + 1), 5200)
-    const mosaic = document.getElementById('deployments')
-    if (!mosaic) return () => window.clearInterval(timer)
-    const seen = { value: false }
-    const io = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !seen.value) {
-        seen.value = true
-        setBeat(b => b + 1)
-      }
-    }, { threshold: 0.35 })
-    io.observe(mosaic)
-    return () => {
-      window.clearInterval(timer)
-      io.disconnect()
-    }
-  }, [])
-
   return (
     <div className={fine ? 'site fine' : 'site'}>
       <div ref={cursor} className="cursor" aria-hidden />
@@ -179,12 +145,12 @@ export default function HomePage() {
         <h2>Real Deployments.</h2>
         <div className="mosaic">
           <Link href="/platform/omnirisk" className="tile a">
-            <Shot frames={POOLS.office} beat={beat} alt="Professionals reviewing a facility risk assessment" />
+            <img className="rise" src="/home/risk-board.jpg" alt="Risk workshop around a planning table" />
             <span className="big">Quantify<br />Risk</span>
             <span className="actions"><span className="plus">+</span><span className="view">VIEW</span></span>
           </Link>
           <Link href="/solutions/banking" className="tile b">
-            <Shot frames={POOLS.command} beat={beat + 1} alt="Operations room during a continuity exercise" />
+            <img className="rise" src="/home/bank-district.jpg" alt="Financial district, early morning" />
             <span className="cap">Banking sector<br />94% compliance rate</span>
             <span className="actions"><span className="plus">+</span><span className="view">VIEW</span></span>
           </Link>
@@ -192,12 +158,12 @@ export default function HomePage() {
             <span className="big">Continuity</span>
           </Link>
           <Link href="/solutions/energy" className="tile d">
-            <Shot frames={POOLS.plant} beat={beat} alt="Engineer walking a utilities plant" />
+            <img className="rise" src="/home/grid.jpg" alt="Transmission lines over open country" />
             <span className="cap">Energy & utilities<br />EPDK · Pipeline safety</span>
             <span className="actions"><span className="plus">+</span><span className="view">VIEW</span></span>
           </Link>
           <Link href="/solutions" className="tile e">
-            <Shot frames={POOLS.field} beat={beat + 2} alt="Abstract map of assessed facilities" />
+            <img className="rise" src="/home/city.jpg" alt="Dense city where facilities are scored" />
             <span className="cap">Metropolitan deployment<br />782 facilities assessed</span>
             <span className="actions"><span className="plus">+</span><span className="view">VIEW</span></span>
           </Link>
@@ -235,12 +201,12 @@ export default function HomePage() {
         <h2>Measurable Outcomes.</h2>
         <div className="mosaic">
           <Link href="/solutions" className="tile a">
-            <Shot frames={POOLS.plant} beat={beat + 1} alt="Industrial site included in a metropolitan assessment" />
+            <img className="rise" src="/home/refinery.jpg" alt="Process plant assessed for cascade risk" />
             <span className="cap">103 critical risk points<br />Identified across industrial clusters</span>
             <span className="actions"><span className="plus">+</span><span className="view">VIEW</span></span>
           </Link>
           <Link href="/login" className="tile b">
-            <Shot frames={POOLS.office} beat={beat + 2} alt="Team preparing a resilience assessment" />
+            <img className="rise" src="/home/ops-floor.jpg" alt="Operations floor during an incident" />
             <span className="big">Manage<br />Crises</span>
           </Link>
         </div>
