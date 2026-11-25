@@ -160,7 +160,10 @@
 }
 .mk-card.has-img small,
 .mk-card.has-img div { padding: 0 18px; }
-.mk-card.has-img small { display: block; margin-top: 14px; }
+.mk-card.has-img > strong,
+.mk-card.has-img > p { padding: 0 18px; }
+.mk-card.has-img small,
+.mk-card.has-img > strong { display: block; margin-top: 14px; }
 .mk-card small {
   font-size: 12px;
   letter-spacing: 0.1em;

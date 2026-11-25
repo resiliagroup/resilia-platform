@@ -26,6 +26,23 @@ const HERO: Record<string, string> = {
   Telecom: '/market/sector-telecom.jpg',
 }
 
+const CARD: Record<string, string> = {
+  'Banking & finance::Scrutiny': '/market/c-scrutiny.jpg',
+  'Banking & finance::Dependence': '/market/c-dependence.jpg',
+  'Banking & finance::Hazards together': '/market/c-hazards.jpg',
+  'Healthcare::Patients': '/market/c-patients.jpg',
+  'Healthcare::The center': '/market/c-eoc.jpg',
+  'Energy & utilities::Consequence': '/market/c-wind.jpg',
+  'Energy & utilities::The line': '/market/c-line.jpg',
+  'Public sector::Stock': '/market/c-stock.jpg',
+  'Public sector::Framework': '/market/c-framework.jpg',
+  'Education::Plan': '/market/c-campus-plan.jpg',
+  'omniRISK::Collect': '/market/c-collect.jpg',
+  'omniRISK::Report': '/market/c-report.jpg',
+  'omniRISK::Sector weights': '/market/c-weights.jpg',
+  'omniRISK::Audit trail': '/market/c-trail.jpg',
+}
+
 export function Leaf({
   kicker,
   statement,
@@ -44,12 +61,16 @@ export function Leaf({
         <section key={group.heading} className="mk-block">
           <h2>{group.heading}</h2>
           <div className="mk-grid">
-            {group.points.map(point => (
-              <article key={point.title} className="mk-card">
-                <strong>{point.title}</strong>
-                <p>{point.text}</p>
-              </article>
-            ))}
+            {group.points.map(point => {
+              const shot = CARD[`${kicker}::${point.title}`]
+              return (
+                <article key={point.title} className={shot ? 'mk-card has-img' : 'mk-card'}>
+                  {shot && <img src={shot} alt="" />}
+                  <strong>{point.title}</strong>
+                  <p>{point.text}</p>
+                </article>
+              )
+            })}
           </div>
         </section>
       ))}
