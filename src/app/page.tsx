@@ -172,6 +172,7 @@ export default function HomePage() {
 
       <div className="slab" id="platform">
         <h2>One Platform. Every Risk.</h2>
+        <p className="count">Six core modules. Two specialized: omniHRO, omniPIPE.</p>
         <div className="services">
           <Link href={current.href} className="stage">
             <img src={current.image} alt="" />
@@ -197,6 +198,39 @@ export default function HomePage() {
         </div>
       </div>
 
+      <div className="slab" id="index">
+        <h2>The index.</h2>
+        <div className="index">
+          <div>
+            <p className="formula">URI = (H × F × E × B) / (1 + k(s,t) × C²) × HRO</p>
+            <p className="plain">
+              Hazard, fragility, exposure, the bottleneck, and the capacity to absorb it. Weights change by sector. A questionnaire average is not a score.
+            </p>
+            <p className="plain">
+              The board reads ADİS, from 200 to 1200. Higher is more resilient. URI, from 0 to 100, runs the other way: higher is more risk.
+            </p>
+          </div>
+          <div className="sheet-card" aria-label="Illustrative score card">
+            <span className="eyebrow">Illustrative facility · not a live account</span>
+            <ol>
+              <li><b>H</b> Hazard</li>
+              <li><b>F</b> Fragility</li>
+              <li><b>E</b> Exposure</li>
+              <li><b>B</b> Bottleneck</li>
+              <li><b>C</b> Capacity</li>
+            </ol>
+            <p>Same record feeds impact, the plan, and the crisis log.</p>
+          </div>
+        </div>
+        <div className="bands">
+          <div><b>Kritik</b><span>200–449</span></div>
+          <div><b>Yüksek</b><span>450–649</span></div>
+          <div><b>Orta</b><span>650–849</span></div>
+          <div><b>İyi</b><span>850–1049</span></div>
+          <div><b>Güçlü</b><span>1050–1200</span></div>
+        </div>
+      </div>
+
       <div className="slab">
         <h2>Measurable Outcomes.</h2>
         <div className="mosaic">
@@ -215,7 +249,7 @@ export default function HomePage() {
       <footer className="foot">
         <div>
           Omniversel
-          <br />Urban resilience platform
+          <br />Enterprise resilience platform
           <br />Istanbul, Turkey
         </div>
         <div>

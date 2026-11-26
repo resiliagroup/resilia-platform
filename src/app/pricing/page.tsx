@@ -18,7 +18,7 @@ const PLANS = [
     note: 'Up to 50 facilities. Annual.',
     href: 'mailto:info@omniversel.com',
     cta: 'Write to us',
-    items: ['All six modules', 'Sprint board', 'Near-miss tracking', 'Continuity templates', 'Crisis command', 'Onboarding and a quarterly review'],
+    items: ['Six core modules', 'Sprint board', 'Near-miss tracking', 'Continuity templates', 'Crisis command', 'Onboarding and a quarterly review'],
   },
   {
     name: 'Enterprise',

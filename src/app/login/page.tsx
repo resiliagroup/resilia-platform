@@ -46,7 +46,7 @@ function LoginForm() {
           <div style={{marginBottom:48}}>
             <a href="/" style={{textDecoration:'none'}}>
               <div style={{color:'#0A1628',fontWeight:800,fontSize:20,letterSpacing:2}}>OMNIVERSEL</div>
-              <div style={{color:'#2D8A87',fontSize:12,marginTop:4}}>Urban Resilience Platform</div>
+              <div style={{color:'#2D8A87',fontSize:12,marginTop:4}}>Enterprise Resilience Platform</div>
             </a>
           </div>
           <div style={{fontSize:'clamp(24px,3.5vw,42px)',fontWeight:800,lineHeight:1.12,color:'#0A1628',marginBottom:16}}>
@@ -70,7 +70,7 @@ function LoginForm() {
           <div className="lp-form">
             <div style={{textAlign:'center',marginBottom:32}}>
               <div style={{color:'#0A1628',fontWeight:800,fontSize:20,letterSpacing:2}}>OMNIVERSEL</div>
-              <div style={{color:'#2D8A87',fontSize:12,marginTop:4}}>Urban Resilience Platform</div>
+              <div style={{color:'#2D8A87',fontSize:12,marginTop:4}}>Enterprise Resilience Platform</div>
             </div>
             <div style={{fontSize:18,fontWeight:700,color:'#0A1628',marginBottom:4}}>Platform Access</div>
             <div style={{fontSize:13,color:'#374151',marginBottom:28}}>Sign in to your workspace</div>

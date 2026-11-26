@@ -43,7 +43,7 @@ export default function Footer() {
           {/* Col 1 — Brand */}
           <div>
             <div style={{ fontSize: 18, fontWeight: 800, color: C.white, letterSpacing: -0.5 }}>OMNIVERSEL</div>
-            <div style={{ fontSize: 12, color: C.dim, marginTop: 4 }}>Urban Resilience Platform</div>
+            <div style={{ fontSize: 12, color: C.dim, marginTop: 4 }}>Enterprise Resilience Platform</div>
             <p style={{ fontSize: 13, color: C.dim, lineHeight: 1.6, marginTop: 16, maxWidth: 220 }}>
               An academically grounded, operationally tested platform for multi-hazard organizational risk management.
             </p>
@@ -72,7 +72,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="ft-bottom" style={{ borderTop: `1px solid ${C.border}`, marginTop: 48, paddingTop: 24,
           display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 12, color: '#475569' }}>Omniversel · Urban Resilience Platform · Istanbul, Turkey</span>
+          <span style={{ fontSize: 12, color: '#475569' }}>Omniversel · Enterprise Resilience Platform · Istanbul, Turkey</span>
           <span style={{ fontSize: 12, color: '#475569' }}>ITU AYM Academic Partner</span>
         </div>
       </div>

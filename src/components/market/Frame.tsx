@@ -45,7 +45,7 @@ export function Market({ children }: { children: React.ReactNode }) {
       )}
       <main className="mk-main">{children}</main>
       <footer className="mk-foot">
-        <div>Omniversel<br />Urban resilience platform<br />Istanbul, Turkey</div>
+        <div>Omniversel<br />Enterprise resilience platform<br />Istanbul, Turkey</div>
         <div>
           <Link href="/about">About</Link>
           <Link href="/methodology">Approach</Link>

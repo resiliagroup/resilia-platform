@@ -193,6 +193,70 @@
   font-size: 22px;
   letter-spacing: -0.01em;
 }
+.count {
+  margin: -6px 0 22px 6px;
+  max-width: 36em;
+  color: var(--ink);
+  font-size: 16px;
+}
+.index {
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 18px;
+  align-items: stretch;
+}
+.formula {
+  margin: 0 0 16px;
+  font-weight: 500;
+  font-size: clamp(22px, 2.4vw, 34px);
+  letter-spacing: -0.035em;
+  line-height: 1.25;
+}
+.plain {
+  max-width: 42em;
+  margin: 0 0 12px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.sheet-card {
+  padding: 22px;
+  background: #d7e0e4;
+}
+.eyebrow {
+  display: block;
+  margin-bottom: 14px;
+  color: var(--mute);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.sheet-card ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sheet-card li {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 1px solid #c5cfd3;
+  font-size: 16px;
+}
+.sheet-card b { min-width: 1.2em; font-weight: 500; }
+.sheet-card p { margin: 14px 0 0; font-size: 14px; line-height: 1.45; }
+.bands {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-top: 18px;
+}
+.bands div {
+  min-height: 88px;
+  padding: 14px 12px;
+  background: #dfe6e8;
+}
+.bands b { display: block; font-weight: 500; font-size: 16px; letter-spacing: -0.02em; }
+.bands span { color: var(--mute); font-size: 13px; }
 
 .mosaic {
   display: grid;
@@ -355,7 +419,7 @@
 @media (max-width: 900px) {
   .speak h1 { width: 100%; }
   .pill { flex-wrap: wrap; justify-content: center; text-align: center; white-space: normal; }
-  .mosaic, .services, .foot { grid-template-columns: 1fr; }
+  .mosaic, .services, .foot, .index, .bands { grid-template-columns: 1fr; }
   .tile.a, .tile.b, .tile.c, .tile.d, .tile.e {
     grid-column: auto;
     min-height: 260px;
