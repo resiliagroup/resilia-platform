@@ -11,6 +11,7 @@ export const MENU = [
   { href: '/about', label: 'About' },
   { href: '/methodology', label: 'Approach' },
   { href: '/pricing', label: 'Pricing' },
+  { href: '/score', label: 'Score' },
   { href: '/login', label: 'Contact' },
 ]
 

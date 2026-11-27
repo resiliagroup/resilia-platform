@@ -13,6 +13,7 @@ const NAV = [
   { href: '/about', label: 'About' },
   { href: '/methodology', label: 'Approach' },
   { href: '/pricing', label: 'Pricing' },
+  { href: '/score', label: 'Score' },
   { href: '/login', label: 'Contact' },
   { href: '/platform/omnirisk', label: 'omniRISK' },
   { href: '/platform/omniplan', label: 'omniPLAN' },
@@ -117,7 +118,7 @@ export default function HomePage() {
         <nav className="sheet">
           {NAV.map((item, i) => (
             <span key={item.href}>
-              {i === 7 && <span className="sheet-split" />}
+              {i === 8 && <span className="sheet-split" />}
               <Link href={item.href} onClick={() => setOpen(false)}>{item.label}</Link>
             </span>
           ))}
@@ -220,6 +221,7 @@ export default function HomePage() {
               <li><b>C</b> Capacity</li>
             </ol>
             <p>Same record feeds impact, the plan, and the crisis log.</p>
+            <p><Link href="/score">Open the score →</Link></p>
           </div>
         </div>
         <div className="bands">
