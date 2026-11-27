@@ -29,9 +29,9 @@ function score(p: Fac) {
   const hazard = (p.H / 100) * (p.F / 100) * (p.E / 100) * (p.B / 100)
   const absorb = (1 + p.k * (p.C / 100) ** 2) * (0.55 + p.hro / 180)
   const uri = Math.round(Math.min(100, Math.max(0, (hazard / absorb) * 260)))
-  const adis = 1200 - uri * 10
-  const band = adis < 450 ? 'Kritik' : adis < 650 ? 'Yüksek' : adis < 850 ? 'Orta' : adis < 1050 ? 'İyi' : 'Güçlü'
-  return { uri, adis, band }
+  const edeks = 1200 - uri * 10
+  const band = edeks < 450 ? 'Critical' : edeks < 650 ? 'High' : edeks < 850 ? 'Moderate' : edeks < 1050 ? 'Good' : 'Strong'
+  return { uri, edeks, band }
 }
 
 const ROWS: { key: keyof Fac, label: string }[] = [
@@ -70,7 +70,7 @@ export default function ScorePage() {
           })}
         </nav>
         <main className="score-main">
-          <p className="score-note">Worked example. Not a live account. The engine is HFER-720. Higher URI is more risk. Higher ADİS is more resilient.</p>
+          <p className="score-note">Worked example. Not a live account. Higher URI is more risk. Higher EDEKS is more resilient.</p>
           <div className="score-grid">
             <section className="panel">
               <h1>{fac.name}</h1>
@@ -81,8 +81,8 @@ export default function ScorePage() {
                   <span>URI · 0–100 · risk</span>
                 </div>
                 <div>
-                  <b>{s.adis}</b>
-                  <span>ADİS · 200–1200</span>
+                  <b>{s.edeks}</b>
+                  <span>EDEKS · 200–1200</span>
                 </div>
               </div>
               <div className="band">{s.band}</div>
@@ -103,7 +103,7 @@ export default function ScorePage() {
                 </li>
               </ul>
             </section>
-            <p className="formula">URI = (H × F × E × B) / (1 + k(s,t) × C²) × HRO. The same record opens impact, the plan, and the crisis log.</p>
+            <p className="formula">Hazard, fragility, exposure, bottleneck, capacity, sector weight, and HRO. The same record opens impact, the plan, and the crisis log.</p>
           </div>
         </main>
       </div>

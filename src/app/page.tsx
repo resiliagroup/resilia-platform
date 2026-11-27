@@ -203,12 +203,11 @@ export default function HomePage() {
         <h2>The index.</h2>
         <div className="index">
           <div>
-            <p className="formula">URI = (H × F × E × B) / (1 + k(s,t) × C²) × HRO</p>
             <p className="plain">
-              Hazard, fragility, exposure, the bottleneck, and the capacity to absorb it. Weights change by sector. A questionnaire average is not a score.
+              Six parameters, each scored on its own. Hazard, fragility, exposure, the bottleneck, capacity, and the sector weight.
             </p>
             <p className="plain">
-              The board reads ADİS, from 200 to 1200. Higher is more resilient. URI, from 0 to 100, runs the other way: higher is more risk.
+              Together they produce URI and the EDEKS band. URI runs from 0 to 100. Higher is more risk. EDEKS runs from 200 to 1200. Higher is more resilient.
             </p>
           </div>
           <div className="sheet-card" aria-label="Illustrative score card">
@@ -225,11 +224,11 @@ export default function HomePage() {
           </div>
         </div>
         <div className="bands">
-          <div><b>Kritik</b><span>200–449</span></div>
-          <div><b>Yüksek</b><span>450–649</span></div>
-          <div><b>Orta</b><span>650–849</span></div>
-          <div><b>İyi</b><span>850–1049</span></div>
-          <div><b>Güçlü</b><span>1050–1200</span></div>
+          <div><b>Critical</b><span>200–449</span></div>
+          <div><b>High</b><span>450–649</span></div>
+          <div><b>Moderate</b><span>650–849</span></div>
+          <div><b>Good</b><span>850–1049</span></div>
+          <div><b>Strong</b><span>1050–1200</span></div>
         </div>
       </div>
 
